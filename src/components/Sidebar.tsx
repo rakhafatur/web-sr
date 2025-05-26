@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../assets/logosr.png';
 
-function Sidebar() {
+function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const location = useLocation();
   const [showParameterMenu, setShowParameterMenu] = useState(true);
 
@@ -17,19 +17,37 @@ function Sidebar() {
         background: 'linear-gradient(to bottom, #1b0036, #0f001e)',
         color: 'white',
         overflowY: 'auto',
+        position: 'fixed',
+        top: 0,
+        left: isOpen ? 0 : '-250px',
+        zIndex: 1000,
+        transition: 'left 0.3s ease-in-out',
       }}
     >
+      {/* Tombol close untuk HP */}
+      <div className="text-end d-md-none mb-2">
+        <button
+          onClick={onClose}
+          style={{
+            background: 'none',
+            color: 'white',
+            border: 'none',
+            fontSize: '1.5rem',
+          }}
+        >
+          ✕
+        </button>
+      </div>
+
       {/* Logo */}
       <div className="mb-4 text-center">
         <img src={logo} alt="SR Agency Logo" style={{ maxWidth: '120px', borderRadius: 12 }} />
       </div>
 
-      {/* Menu utama */}
+      {/* Menu */}
       <ul className="nav flex-column gap-2">
         <li className="nav-item">
-          <Link to="/" className={`nav-link sidebar-link ${isActive('/') ? 'active' : ''}`}>
-            🏠 Home
-          </Link>
+          <Link to="/" className={`nav-link sidebar-link ${isActive('/') ? 'active' : ''}`}>🏠 Home</Link>
         </li>
 
         <li className="nav-item">
@@ -44,26 +62,17 @@ function Sidebar() {
           {showParameterMenu && (
             <ul className="nav flex-column ms-3">
               <li className="nav-item">
-                <Link
-                  to="/users"
-                  className={`nav-link sidebar-link ${isActive('/users') ? 'active' : ''}`}
-                >
+                <Link to="/users" className={`nav-link sidebar-link ${isActive('/users') ? 'active' : ''}`}>
                   👥 Users
                 </Link>
               </li>
               <li className="nav-item">
-                <Link
-                  to="/pengawas"
-                  className={`nav-link sidebar-link ${isActive('/pengawas') ? 'active' : ''}`}
-                >
+                <Link to="/pengawas" className={`nav-link sidebar-link ${isActive('/pengawas') ? 'active' : ''}`}>
                   🧑‍💼 Pengawas
                 </Link>
               </li>
               <li className="nav-item">
-                <Link
-                  to="/ladies"
-                  className={`nav-link sidebar-link ${isActive('/ladies') ? 'active' : ''}`}
-                >
+                <Link to="/ladies" className={`nav-link sidebar-link ${isActive('/ladies') ? 'active' : ''}`}>
                   💃 Ladies
                 </Link>
               </li>
@@ -72,42 +81,25 @@ function Sidebar() {
         </li>
 
         <li className="nav-item">
-          <Link
-            to="/absensi"
-            className={`nav-link sidebar-link ${isActive('/absensi') ? 'active' : ''}`}
-          >
-            🗓️ Absensi
-          </Link>
+          <Link to="/absensi" className={`nav-link sidebar-link ${isActive('/absensi') ? 'active' : ''}`}>🗓️ Absensi</Link>
         </li>
         <li className="nav-item">
-          <Link
-            to="/buku-kuning"
-            className={`nav-link sidebar-link ${isActive('/buku-kuning') ? 'active' : ''}`}
-          >
+          <Link to="/buku-kuning" className={`nav-link sidebar-link ${isActive('/buku-kuning') ? 'active' : ''}`}>
             📒 Buku Kuning
           </Link>
         </li>
         <li className="nav-item">
-          <Link
-            to="/add-transaksi"
-            className={`nav-link sidebar-link ${isActive('/add-transaksi') ? 'active' : ''}`}
-          >
+          <Link to="/add-transaksi" className={`nav-link sidebar-link ${isActive('/add-transaksi') ? 'active' : ''}`}>
             ➕ Add Transaksi
           </Link>
         </li>
         <li className="nav-item">
-          <Link
-            to="/rekap-voucher"
-            className={`nav-link sidebar-link ${isActive('/rekap-voucher') ? 'active' : ''}`}
-          >
+          <Link to="/rekap-voucher" className={`nav-link sidebar-link ${isActive('/rekap-voucher') ? 'active' : ''}`}>
             💰 Rekap Voucher
           </Link>
         </li>
         <li className="nav-item">
-          <Link
-            to="/performa-ladies"
-            className={`nav-link sidebar-link ${isActive('/performa-ladies') ? 'active' : ''}`}
-          >
+          <Link to="/performa-ladies" className={`nav-link sidebar-link ${isActive('/performa-ladies') ? 'active' : ''}`}>
             📊 Performa Ladies
           </Link>
         </li>
