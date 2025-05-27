@@ -34,10 +34,15 @@ function DataTable<T extends { id: string }>({
   };
 
   return (
-    <div style={{ overflowX: 'auto' }}>
+    <div style={{ overflowX: 'auto', width: '100%' }}>
       <table
         className="table table-dark table-bordered table-hover text-light"
-        style={{ minWidth: '600px', fontSize: '0.9rem', borderRadius: 8, overflow: 'hidden' }}
+        style={{
+          minWidth: `${columns.length * 120}px`, // lebar dinamis berdasarkan kolom
+          fontSize: '0.9rem',
+          borderRadius: 8,
+          overflow: 'hidden',
+        }}
       >
         <thead className="table-secondary text-dark">
           <tr>
@@ -49,6 +54,7 @@ function DataTable<T extends { id: string }>({
                   cursor: col.sortable ? 'pointer' : 'default',
                   padding: '10px 12px',
                   whiteSpace: 'nowrap',
+                  minWidth: '120px',
                 }}
               >
                 {col.label}
@@ -68,7 +74,18 @@ function DataTable<T extends { id: string }>({
             data.map((item) => (
               <tr key={item.id}>
                 {columns.map((col) => (
-                  <td key={String(col.key)} style={{ padding: '8px 12px', verticalAlign: 'middle' }}>
+                  <td
+                    key={String(col.key)}
+                    style={{
+                      padding: '8px 12px',
+                      verticalAlign: 'middle',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      maxWidth: '150px',
+                    }}
+                    title={String(item[col.key] ?? '')} // tooltip kalau terpotong
+                  >
                     {col.render ? col.render(item) : (item[col.key] as React.ReactNode)}
                   </td>
                 ))}
