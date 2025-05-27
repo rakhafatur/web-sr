@@ -48,10 +48,10 @@ function Sidebar({
         className="d-flex flex-column p-3"
         style={{
           width: '250px',
-          minHeight: '100vh',
+          height: '100vh', // fix: agar tidak lebih dari layar
+          overflowY: 'auto', // fix: agar bisa discroll
           background: 'linear-gradient(to bottom, #1b0036, #0f001e)',
           color: 'white',
-          overflowY: 'auto',
           position: 'fixed',
           top: 0,
           left: isOpen ? 0 : '-250px',
