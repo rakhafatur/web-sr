@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import './DataTable.css';
+import React from 'react';
 
 type Column<T> = {
   key: keyof T;
@@ -25,19 +24,6 @@ function DataTable<T extends { id: string }>({
   sortOrder,
   onSort,
 }: Props<T>) {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    handleResize(); // inisialisasi saat pertama kali
-    window.addEventListener('resize', handleResize);
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   const renderSortIcon = (key: keyof T) => {
     if (!onSort || sortKey !== key) return null;
     return (
@@ -46,27 +32,6 @@ function DataTable<T extends { id: string }>({
       </span>
     );
   };
-
-  if (isMobile) {
-    return (
-      <div className="d-flex flex-column gap-3">
-        {data.length === 0 ? (
-          <div className="text-muted text-center">{emptyMessage}</div>
-        ) : (
-          data.map((item) => (
-            <div key={item.id} className="card bg-dark text-light p-3 shadow-sm">
-              {columns.map((col) => (
-                <div key={String(col.key)} className="mb-2">
-                  <div className="fw-bold small text-secondary">{col.label}</div>
-                  <div>{col.render ? col.render(item) : (item[col.key] as React.ReactNode)}</div>
-                </div>
-              ))}
-            </div>
-          ))
-        )}
-      </div>
-    );
-  }
 
   return (
     <div style={{ overflowX: 'auto' }}>
