@@ -34,7 +34,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
         overflowX: 'hidden', // cegah scroll horizontal
       }}
     >
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} isMobile={isMobile} />
 
       <div
         className="flex-grow-1 d-flex flex-column"

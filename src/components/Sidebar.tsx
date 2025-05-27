@@ -2,7 +2,15 @@ import { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../assets/logosr.png';
 
-function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+function Sidebar({
+  isOpen,
+  onClose,
+  isMobile,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  isMobile: boolean;
+}) {
   const location = useLocation();
 
   useEffect(() => {
@@ -72,7 +80,13 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
         {/* Menu */}
         <ul className="nav flex-column gap-2">
           <li className="nav-item">
-            <Link to="/" className={`nav-link sidebar-link ${isActive('/') ? 'active' : ''}`}>🏠 Home</Link>
+            <Link
+              to="/"
+              onClick={isMobile ? onClose : undefined}
+              className={`nav-link sidebar-link ${isActive('/') ? 'active' : ''}`}
+            >
+              🏠 Home
+            </Link>
           </li>
 
           <li className="nav-item">
@@ -89,31 +103,79 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
 
             <ul id="param-submenu" className="nav flex-column ms-3">
               <li className="nav-item">
-                <Link to="/users" className={`nav-link sidebar-link ${isActive('/users') ? 'active' : ''}`}>👥 Users</Link>
+                <Link
+                  to="/users"
+                  onClick={isMobile ? onClose : undefined}
+                  className={`nav-link sidebar-link ${isActive('/users') ? 'active' : ''}`}
+                >
+                  👥 Users
+                </Link>
               </li>
               <li className="nav-item">
-                <Link to="/pengawas" className={`nav-link sidebar-link ${isActive('/pengawas') ? 'active' : ''}`}>🧑‍💼 Pengawas</Link>
+                <Link
+                  to="/pengawas"
+                  onClick={isMobile ? onClose : undefined}
+                  className={`nav-link sidebar-link ${isActive('/pengawas') ? 'active' : ''}`}
+                >
+                  🧑‍💼 Pengawas
+                </Link>
               </li>
               <li className="nav-item">
-                <Link to="/ladies" className={`nav-link sidebar-link ${isActive('/ladies') ? 'active' : ''}`}>💃 Ladies</Link>
+                <Link
+                  to="/ladies"
+                  onClick={isMobile ? onClose : undefined}
+                  className={`nav-link sidebar-link ${isActive('/ladies') ? 'active' : ''}`}
+                >
+                  💃 Ladies
+                </Link>
               </li>
             </ul>
           </li>
 
           <li className="nav-item">
-            <Link to="/absensi" className={`nav-link sidebar-link ${isActive('/absensi') ? 'active' : ''}`}>🗓️ Absensi</Link>
+            <Link
+              to="/absensi"
+              onClick={isMobile ? onClose : undefined}
+              className={`nav-link sidebar-link ${isActive('/absensi') ? 'active' : ''}`}
+            >
+              🗓️ Absensi
+            </Link>
           </li>
           <li className="nav-item">
-            <Link to="/buku-kuning" className={`nav-link sidebar-link ${isActive('/buku-kuning') ? 'active' : ''}`}>📒 Buku Kuning</Link>
+            <Link
+              to="/buku-kuning"
+              onClick={isMobile ? onClose : undefined}
+              className={`nav-link sidebar-link ${isActive('/buku-kuning') ? 'active' : ''}`}
+            >
+              📒 Buku Kuning
+            </Link>
           </li>
           <li className="nav-item">
-            <Link to="/add-transaksi" className={`nav-link sidebar-link ${isActive('/add-transaksi') ? 'active' : ''}`}>➕ Add Transaksi</Link>
+            <Link
+              to="/add-transaksi"
+              onClick={isMobile ? onClose : undefined}
+              className={`nav-link sidebar-link ${isActive('/add-transaksi') ? 'active' : ''}`}
+            >
+              ➕ Add Transaksi
+            </Link>
           </li>
           <li className="nav-item">
-            <Link to="/rekap-voucher" className={`nav-link sidebar-link ${isActive('/rekap-voucher') ? 'active' : ''}`}>💰 Rekap Voucher</Link>
+            <Link
+              to="/rekap-voucher"
+              onClick={isMobile ? onClose : undefined}
+              className={`nav-link sidebar-link ${isActive('/rekap-voucher') ? 'active' : ''}`}
+            >
+              💰 Rekap Voucher
+            </Link>
           </li>
           <li className="nav-item">
-            <Link to="/performa-ladies" className={`nav-link sidebar-link ${isActive('/performa-ladies') ? 'active' : ''}`}>📊 Performa Ladies</Link>
+            <Link
+              to="/performa-ladies"
+              onClick={isMobile ? onClose : undefined}
+              className={`nav-link sidebar-link ${isActive('/performa-ladies') ? 'active' : ''}`}
+            >
+              📊 Performa Ladies
+            </Link>
           </li>
         </ul>
       </div>
