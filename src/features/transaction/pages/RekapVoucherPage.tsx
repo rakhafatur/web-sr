@@ -55,7 +55,15 @@ const RekapVoucherPage = () => {
       return;
     }
 
-    const vouchers = data as unknown as VoucherRow[];
+    const vouchers = (data as any[]).map((v) => ({
+      jumlah: v.jumlah,
+      tanggal: v.tanggal,
+      ladies: v.ladies as {
+        id: string;
+        nama_ladies: string;
+        nama_outlet: string;
+      } | null,
+    })) as VoucherRow[];
 
     const grouped: Record<string, OutletGroup> = {};
     let totalVoucher = 0;
@@ -118,9 +126,6 @@ const RekapVoucherPage = () => {
         ]);
         const totalVoucherOutlet = outletGroup.data.reduce((sum, d) => sum + d.totalVoucher, 0);
 
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(0);
-        doc.setFontSize(11);
         doc.text(`Outlet: ${outletGroup.outlet}`, 14, currentY);
 
         autoTable(doc, {
@@ -128,31 +133,13 @@ const RekapVoucherPage = () => {
           head: [['Nama Ladies', 'Voucher (pcs)']],
           body: tableData,
           theme: 'grid',
-          headStyles: {
-            fillColor: [43, 7, 82],
-            textColor: 255,
-            font: 'helvetica',
-            fontStyle: 'normal',
-          },
-          bodyStyles: {
-            font: 'helvetica',
-            fontStyle: 'normal',
-            textColor: 0,
-          },
-          styles: {
-            font: 'helvetica',
-            fontStyle: 'normal',
-            fontSize: 10,
-            textColor: 0,
-          },
+          headStyles: { fillColor: [43, 7, 82], textColor: 255 },
+          bodyStyles: { textColor: 0 },
+          styles: { fontSize: 10 },
         });
 
         const lastY = (doc as any).lastAutoTable.finalY || 0;
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(0);
-        doc.setFontSize(10);
         doc.text(`Total Voucher: ${totalVoucherOutlet.toFixed(0)} pcs`, 14, lastY + 6);
-
         currentY = lastY + 14;
       });
 
@@ -160,8 +147,6 @@ const RekapVoucherPage = () => {
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
 
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(0);
       doc.setFontSize(10);
       doc.text(`Dicetak: ${today}`, 14, pageHeight - 10);
       doc.text('SR Agency', pageWidth - 14, pageHeight - 10, { align: 'right' });
@@ -175,7 +160,7 @@ const RekapVoucherPage = () => {
     <div className="container py-4">
       <h2 className="text-light fw-bold fs-4 mb-4">📊 Rekap Voucher per Outlet</h2>
 
-      <div className="row mb-3">
+      <div className="row gy-3 gx-3 align-items-end mb-4">
         <div className="col-md-4">
           <label className="form-label text-light">Dari Tanggal</label>
           <input
@@ -194,16 +179,18 @@ const RekapVoucherPage = () => {
             onChange={(e) => setEnd(e.target.value)}
           />
         </div>
-        <div className="col-md-2 d-flex align-items-end">
-          <button className="btn btn-primary w-100" onClick={fetchData}>
+        <div className="col-md-2 d-grid">
+          <button className="btn btn-primary" onClick={fetchData}>
             🔄 Tampilkan
           </button>
         </div>
-        <div className="col-md-2 d-flex align-items-end">
-          <button className="btn btn-outline-light w-100" onClick={handleExportPDF}>
-            📄 Export PDF
-          </button>
-        </div>
+        {dataPerOutlet.length > 0 && (
+          <div className="col-md-2 d-grid">
+            <button className="btn btn-outline-light" onClick={handleExportPDF}>
+              📄 Export PDF
+            </button>
+          </div>
+        )}
       </div>
 
       {dataPerOutlet.length > 0 && (

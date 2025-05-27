@@ -14,11 +14,13 @@ function Sidebar({
   const location = useLocation();
 
   useEffect(() => {
-    document.body.style.overflow = isOpen ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
+    if (isMobile) {
+      document.body.style.overflow = isOpen ? 'hidden' : '';
+      return () => {
+        document.body.style.overflow = '';
+      };
+    }
+  }, [isOpen, isMobile]);
 
   const isActive = (path: string) => location.pathname === path;
 

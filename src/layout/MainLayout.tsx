@@ -15,25 +15,26 @@ function MainLayout({ children }: { children: React.ReactNode }) {
       setSidebarOpen(!isNowMobile);
     };
 
-    handleResize(); // jalankan saat pertama kali load
-    window.addEventListener('resize', handleResize); // update saat resize
-
+    handleResize(); // run once
+    window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   useEffect(() => {
-    // Scroll ke atas setiap kali pindah halaman
+    // Scroll to top on route change
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
+  useEffect(() => {
+    // only disable horizontal scroll
+    document.body.style.overflowX = 'hidden';
+    return () => {
+      document.body.style.overflowX = '';
+    };
+  }, []);
+
   return (
-    <div
-      className="d-flex"
-      style={{
-        minHeight: '100vh',
-        overflowX: 'hidden', // cegah scroll horizontal
-      }}
-    >
+    <div className="d-flex" style={{ minHeight: '100vh', width: '100%' }}>
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} isMobile={isMobile} />
 
       <div
@@ -46,7 +47,6 @@ function MainLayout({ children }: { children: React.ReactNode }) {
           width: '100%',
         }}
       >
-        {/* Tombol hamburger hanya di HP */}
         {isMobile && (
           <div className="p-2">
             <button
@@ -56,7 +56,6 @@ function MainLayout({ children }: { children: React.ReactNode }) {
                 border: 'none',
                 color: 'white',
                 fontSize: '1.5rem',
-                transition: 'transform 0.2s ease',
               }}
             >
               ☰
@@ -65,7 +64,15 @@ function MainLayout({ children }: { children: React.ReactNode }) {
         )}
 
         <Header />
-        <main className="flex-grow-1 p-4" style={{ overflowX: 'auto' }}>
+
+        <main
+          className="p-4"
+          style={{
+            flex: 1,
+            overflowX: 'auto',
+            overflowY: 'auto',
+          }}
+        >
           {children}
         </main>
       </div>
