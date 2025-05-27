@@ -2,6 +2,9 @@ import { useState } from 'react';
 import dayjs from 'dayjs';
 import { supabase } from '../../../lib/supabaseClient';
 import DataTable from '../../../components/DataTable';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import logo from '../../../assets/logosr-black.png';
 
 type VoucherRow = {
   jumlah: number;
@@ -92,6 +95,82 @@ const RekapVoucherPage = () => {
     setTotalNominalAll(totalNominal);
   };
 
+  const handleExportPDF = () => {
+    const doc = new jsPDF();
+    const img = new Image();
+    img.src = logo;
+
+    img.onload = () => {
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0);
+      doc.addImage(img, 'PNG', 10, 12, 16, 16);
+      doc.setFontSize(14);
+      doc.text('REKAP VOUCHER PER OUTLET', 30, 20);
+      doc.setFontSize(12);
+      doc.text(`Periode: ${start} s/d ${end}`, 30, 26);
+
+      let currentY = 38;
+
+      dataPerOutlet.forEach((outletGroup) => {
+        const tableData = outletGroup.data.map((d) => [
+          d.nama_ladies,
+          d.totalVoucher.toFixed(0),
+        ]);
+        const totalVoucherOutlet = outletGroup.data.reduce((sum, d) => sum + d.totalVoucher, 0);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(0);
+        doc.setFontSize(11);
+        doc.text(`Outlet: ${outletGroup.outlet}`, 14, currentY);
+
+        autoTable(doc, {
+          startY: currentY + 6,
+          head: [['Nama Ladies', 'Voucher (pcs)']],
+          body: tableData,
+          theme: 'grid',
+          headStyles: {
+            fillColor: [43, 7, 82],
+            textColor: 255,
+            font: 'helvetica',
+            fontStyle: 'normal',
+          },
+          bodyStyles: {
+            font: 'helvetica',
+            fontStyle: 'normal',
+            textColor: 0,
+          },
+          styles: {
+            font: 'helvetica',
+            fontStyle: 'normal',
+            fontSize: 10,
+            textColor: 0,
+          },
+        });
+
+        const lastY = (doc as any).lastAutoTable.finalY || 0;
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(0);
+        doc.setFontSize(10);
+        doc.text(`Total Voucher: ${totalVoucherOutlet.toFixed(0)} pcs`, 14, lastY + 6);
+
+        currentY = lastY + 14;
+      });
+
+      const today = new Date().toLocaleDateString('id-ID');
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0);
+      doc.setFontSize(10);
+      doc.text(`Dicetak: ${today}`, 14, pageHeight - 10);
+      doc.text('SR Agency', pageWidth - 14, pageHeight - 10, { align: 'right' });
+      doc.text(`Halaman 1`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+
+      doc.save(`Rekap-Voucher-${start}-sampai-${end}.pdf`);
+    };
+  };
+
   return (
     <div className="container py-4">
       <h2 className="text-light fw-bold fs-4 mb-4">📊 Rekap Voucher per Outlet</h2>
@@ -115,9 +194,14 @@ const RekapVoucherPage = () => {
             onChange={(e) => setEnd(e.target.value)}
           />
         </div>
-        <div className="col-md-4 d-flex align-items-end">
+        <div className="col-md-2 d-flex align-items-end">
           <button className="btn btn-primary w-100" onClick={fetchData}>
             🔄 Tampilkan
+          </button>
+        </div>
+        <div className="col-md-2 d-flex align-items-end">
+          <button className="btn btn-outline-light w-100" onClick={handleExportPDF}>
+            📄 Export PDF
           </button>
         </div>
       </div>
@@ -165,7 +249,6 @@ const RekapVoucherPage = () => {
                   }))}
                 />
 
-                {/* Summary per outlet */}
                 <div className="mt-3 p-3 bg-secondary bg-opacity-10 border border-info rounded">
                   <p className="mb-1 text-light"><strong>Total Voucher:</strong> {totalVoucher.toFixed(0)} pcs</p>
                   <p className="mb-1 text-light"><strong>Total Ladies:</strong> {formatRupiah(totalNominal)}</p>
@@ -176,7 +259,6 @@ const RekapVoucherPage = () => {
             );
           })}
 
-          {/* Summary Total Keseluruhan */}
           <div className="mt-5 p-4 bg-dark border border-info rounded-3 shadow-sm">
             <h5 className="text-light mb-3">
               <span className="badge bg-info text-dark me-2">🧾</span>
