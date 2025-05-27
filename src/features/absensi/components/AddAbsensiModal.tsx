@@ -98,8 +98,8 @@ const AddAbsensiModal = ({ show, onClose, onSubmit, absensi }: Props) => {
           <div className="modal-body">
             <div className="mb-3">
               <label className="form-label text-light fw-semibold">Status</label>
-              <div className="d-flex gap-3">
-                {['KERJA', 'MENS', 'OFF'].map((opt) => (
+              <div className="d-flex gap-3 flex-wrap">
+                {['KERJA', 'MENS', 'OFF', 'SAKIT'].map((opt) => (
                   <div className="form-check" key={opt}>
                     <input
                       className="form-check-input"

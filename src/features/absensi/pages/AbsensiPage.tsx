@@ -49,6 +49,19 @@ const AbsensiPage = () => {
   const handleSubmit = async () => {
     if (!selectedLadyId || !tanggal || !status) return alert('Lengkapi semua data!');
 
+    const today = dayjs().format('YYYY-MM-DD');
+    if (tanggal > today) return alert('🛑 Tanggal tidak boleh di masa depan!');
+
+    const { data: existing } = await supabase
+      .from('absensi')
+      .select('*')
+      .eq('ladies_id', selectedLadyId)
+      .eq('tanggal', tanggal);
+
+    if (existing && existing.length > 0) {
+      return alert('⚠️ Absensi untuk tanggal ini sudah ada!');
+    }
+
     const { error } = await supabase.from('absensi').upsert({
       ladies_id: selectedLadyId,
       tanggal,
@@ -155,6 +168,7 @@ const AbsensiPage = () => {
   const totalKERJA = rekapRiwayat.filter((r) => r.status === 'KERJA').length;
   const totalMENS = rekapRiwayat.filter((r) => r.status === 'MENS').length;
   const totalOFF = rekapRiwayat.filter((r) => r.status === 'OFF').length;
+  const totalSAKIT = rekapRiwayat.filter((r) => r.status === 'SAKIT').length;
 
   return (
     <div className="container py-4">
@@ -218,7 +232,7 @@ const AbsensiPage = () => {
         <div className="col-md-4 mb-3">
           <label className="form-label text-light">Status</label>
           <div className="d-flex gap-3">
-            {['KERJA', 'MENS', 'OFF'].map((opt) => (
+            {['KERJA', 'MENS', 'OFF', 'SAKIT'].map((opt) => (
               <div className="form-check" key={opt}>
                 <input
                   className="form-check-input"
@@ -262,7 +276,7 @@ const AbsensiPage = () => {
 
           <div className="text-light mb-4">
             <strong>Rekap Bulan Ini (semua data):</strong><br />
-            🟢 Kerja: {totalKERJA} hari | 🩸 Mens: {totalMENS} hari | ⚪ Off: {totalOFF} hari
+            🟢 Kerja: {totalKERJA} hari | 🩸 Mens: {totalMENS} hari | ⚪ Off: {totalOFF} hari | 🤒 Sakit: {totalSAKIT} hari
           </div>
 
           <table className="table table-dark table-bordered text-center align-middle mt-2">
@@ -278,7 +292,16 @@ const AbsensiPage = () => {
               {riwayat.map((a, i) => (
                 <tr key={i}>
                   <td>{a.tanggal}</td>
-                  <td>{a.status}</td>
+                  <td>
+                    <span className={`badge ${a.status === 'KERJA' ? 'bg-success' :
+                        a.status === 'MENS' ? 'bg-danger' :
+                          a.status === 'OFF' ? 'bg-secondary' :
+                            a.status === 'SAKIT' ? 'bg-warning text-dark' :
+                              'bg-light text-dark'
+                      }`}>
+                      {a.status}
+                    </span>
+                  </td>
                   <td>{a.keterangan || '-'}</td>
                   <td>
                     <button
