@@ -34,41 +34,50 @@ function DataTable<T extends { id: string }>({
   };
 
   return (
-    <table className="table table-dark table-bordered table-hover text-light">
-      <thead className="table-secondary text-dark">
-        <tr>
-          {columns.map((col) => (
-            <th
-              key={String(col.key)}
-              onClick={() => col.sortable && onSort?.(col.key)}
-              style={{ cursor: col.sortable ? 'pointer' : 'default' }}
-            >
-              {col.label}
-              {col.sortable && renderSortIcon(col.key)}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {data.length === 0 ? (
+    <div style={{ overflowX: 'auto' }}>
+      <table
+        className="table table-dark table-bordered table-hover text-light"
+        style={{ minWidth: '600px', fontSize: '0.9rem', borderRadius: 8, overflow: 'hidden' }}
+      >
+        <thead className="table-secondary text-dark">
           <tr>
-            <td colSpan={columns.length} className="text-center text-muted">
-              {emptyMessage}
-            </td>
+            {columns.map((col) => (
+              <th
+                key={String(col.key)}
+                onClick={() => col.sortable && onSort?.(col.key)}
+                style={{
+                  cursor: col.sortable ? 'pointer' : 'default',
+                  padding: '10px 12px',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {col.label}
+                {col.sortable && renderSortIcon(col.key)}
+              </th>
+            ))}
           </tr>
-        ) : (
-          data.map((item) => (
-            <tr key={item.id}>
-              {columns.map((col) => (
-                <td key={String(col.key)}>
-                  {col.render ? col.render(item) : (item[col.key] as React.ReactNode)}
-                </td>
-              ))}
+        </thead>
+        <tbody>
+          {data.length === 0 ? (
+            <tr>
+              <td colSpan={columns.length} className="text-center text-muted py-3">
+                {emptyMessage}
+              </td>
             </tr>
-          ))
-        )}
-      </tbody>
-    </table>
+          ) : (
+            data.map((item) => (
+              <tr key={item.id}>
+                {columns.map((col) => (
+                  <td key={String(col.key)} style={{ padding: '8px 12px', verticalAlign: 'middle' }}>
+                    {col.render ? col.render(item) : (item[col.key] as React.ReactNode)}
+                  </td>
+                ))}
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
