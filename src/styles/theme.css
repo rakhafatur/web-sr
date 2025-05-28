@@ -2,9 +2,9 @@
    GLOBAL ROOT THEME VARIABLES
 ============================================ */
 :root {
-  --bg-color: #0f001e;
+  --bg-color: #1a102b;
   --text-color: #f8f9fa;
-  --card-bg: #1a0030;
+  --card-bg: #24103a;
   --accent-color: #ffc107;
 }
 
