@@ -6,6 +6,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import dayjs from 'dayjs';
 import logo from '../../../assets/logosr-black.png';
+import { useMediaQuery } from 'react-responsive';
 
 type Lady = {
   id: string;
@@ -41,7 +42,8 @@ const BukuKuningPage = () => {
   const [tahun, setTahun] = useState(new Date().getFullYear());
   const [rows, setRows] = useState<Row[]>([]);
 
-  const isMobile = window.innerWidth <= 768;
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+
   const [page, setPage] = useState(0);
   const rowsPerPage = 5;
   const sortedRows = [...rows].sort((a, b) => dayjs(b.tanggal).unix() - dayjs(a.tanggal).unix());
