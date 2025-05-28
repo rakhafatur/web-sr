@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../../lib/supabaseClient';
 import DataTable from '../../../components/DataTable';
-import CardTable from '../../../components/CardTable'; // ⬅️ import CardTable
+import CardTable from '../../../components/CardTable';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import dayjs from 'dayjs';
@@ -43,10 +43,11 @@ const BukuKuningPage = () => {
   const [rows, setRows] = useState<Row[]>([]);
 
   const isMobile = useMediaQuery({ maxWidth: 768 });
-
   const [page, setPage] = useState(0);
   const rowsPerPage = 5;
-  const sortedRows = [...rows].sort((a, b) => dayjs(b.tanggal).unix() - dayjs(a.tanggal).unix());
+
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const getLastDay = (year: number, month: number) => new Date(year, month, 0).getDate();
 
   useEffect(() => {
     const fetchLadies = async () => {
@@ -55,9 +56,6 @@ const BukuKuningPage = () => {
     };
     fetchLadies();
   }, []);
-
-  const pad = (n: number) => String(n).padStart(2, '0');
-  const getLastDay = (year: number, month: number) => new Date(year, month, 0).getDate();
 
   useEffect(() => {
     if (!selectedLadyId) return;
@@ -213,7 +211,7 @@ const BukuKuningPage = () => {
       <h2 className="text-light fw-bold fs-4 mb-4">📒 Buku Kuning Bulanan</h2>
 
       <div className="row mb-3">
-        <div className="col-md-4">
+        <div className="col-12 col-md-4 mb-2">
           <label className="form-label text-light">Pilih Ladies</label>
           <select className="form-select bg-dark text-light" value={selectedLadyId} onChange={(e) => setSelectedLadyId(e.target.value)}>
             <option value="">-- Pilih --</option>
@@ -225,7 +223,7 @@ const BukuKuningPage = () => {
           </select>
         </div>
 
-        <div className="col-md-4">
+        <div className="col-6 col-md-4 mb-2">
           <label className="form-label text-light">Bulan</label>
           <select className="form-select bg-dark text-light" value={bulan} onChange={(e) => setBulan(Number(e.target.value))}>
             {monthNames.map((name, index) => (
@@ -234,18 +232,18 @@ const BukuKuningPage = () => {
           </select>
         </div>
 
-        <div className="col-md-4">
+        <div className="col-6 col-md-4 mb-2">
           <label className="form-label text-light">Tahun</label>
           <input type="number" className="form-control bg-dark text-light" min={2020} max={2030} value={tahun} onChange={(e) => setTahun(Number(e.target.value))} />
         </div>
       </div>
 
       {selectedLadyId && rows.length > 0 && (
-        <div className="d-flex gap-2 mb-3">
-          <button className="btn btn-warning" onClick={handleTutupBuku}>
+        <div className="d-flex flex-wrap gap-2 mb-3">
+          <button className="btn btn-sm btn-warning" onClick={handleTutupBuku}>
             🧾 Tutup Buku Bulan Ini
           </button>
-          <button className="btn btn-outline-light" onClick={handleExportPDF}>
+          <button className="btn btn-sm btn-outline-light" onClick={handleExportPDF}>
             📄 Export ke PDF
           </button>
         </div>
@@ -253,39 +251,43 @@ const BukuKuningPage = () => {
 
       {!selectedLadyId && <div className="alert alert-warning">⚠️ Silakan pilih ladies terlebih dahulu.</div>}
 
-      {selectedLadyId && rows.length > 0 && (
+      {selectedLadyId && (
         <>
-          {isMobile ? (
-            <CardTable
-              data={sortedRows}
-              page={page}
-              rowsPerPage={rowsPerPage}
-              onPageChange={setPage}
-            />
+          {rows.length > 0 ? (
+            isMobile ? (
+              <CardTable
+                data={rows.filter(r => r.tanggal !== 'Sisa Kasbon').sort((a, b) => dayjs(b.tanggal).unix() - dayjs(a.tanggal).unix())}
+                page={page}
+                rowsPerPage={rowsPerPage}
+                onPageChange={setPage}
+              />
+            ) : (
+              <DataTable
+                columns={[
+                  { key: 'tanggal', label: 'Tanggal' },
+                  { key: 'keterangan', label: 'Keterangan' },
+                  { key: 'voucher', label: 'Voucher' },
+                  {
+                    key: 'pemasukan',
+                    label: 'Pemasukan',
+                    render: (row) => formatRupiah(row.pemasukan),
+                  },
+                  {
+                    key: 'pengeluaran',
+                    label: 'Pengeluaran',
+                    render: (row) => formatRupiah(row.pengeluaran),
+                  },
+                  {
+                    key: 'saldo',
+                    label: 'Saldo',
+                    render: (row) => formatRupiah(row.saldo),
+                  },
+                ]}
+                data={rows.map((row, i) => ({ id: `${i}`, ...row }))}
+              />
+            )
           ) : (
-            <DataTable
-              columns={[
-                { key: 'tanggal', label: 'Tanggal' },
-                { key: 'keterangan', label: 'Keterangan' },
-                { key: 'voucher', label: 'Voucher' },
-                {
-                  key: 'pemasukan',
-                  label: 'Pemasukan',
-                  render: (row) => formatRupiah(row.pemasukan),
-                },
-                {
-                  key: 'pengeluaran',
-                  label: 'Pengeluaran',
-                  render: (row) => formatRupiah(row.pengeluaran),
-                },
-                {
-                  key: 'saldo',
-                  label: 'Saldo',
-                  render: (row) => formatRupiah(row.saldo),
-                },
-              ]}
-              data={rows.map((row, i) => ({ id: `${i}`, ...row }))}
-            />
+            <div className="alert alert-info">ℹ️ Tidak ada transaksi di bulan ini.</div>
           )}
         </>
       )}
