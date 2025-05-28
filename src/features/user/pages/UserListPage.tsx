@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs';
 import DataTable from '../../../components/DataTable';
 import UserCardList from '../components/UserCardList';
 import { useMediaQuery } from 'react-responsive';
+import { FiPlus } from 'react-icons/fi';
 
 type User = {
   id: string;
@@ -104,6 +105,7 @@ const UserListPage = () => {
         minHeight: '100vh',
         background: 'radial-gradient(ellipse at center, #1b0036 0%, #0f001e 100%)',
         color: 'white',
+        paddingBottom: isMobile ? '80px' : undefined,
       }}
     >
       {/* Mobile Search Input */}
@@ -154,7 +156,7 @@ const UserListPage = () => {
                 setShowForm(true);
               }}
             >
-              ➕ Tambah User
+              <FiPlus className="me-2" /> Tambah User
             </button>
             <input
               type="text"
@@ -176,7 +178,7 @@ const UserListPage = () => {
               {
                 key: 'id',
                 label: 'Aksi',
-                render: (u) => (
+                render: (u: User) => (
                   <>
                     <button
                       className="btn btn-sm btn-outline-warning me-2"
@@ -185,13 +187,13 @@ const UserListPage = () => {
                         setShowForm(true);
                       }}
                     >
-                      ✏️ Edit
+                      ✏️
                     </button>
                     <button
                       className="btn btn-sm btn-outline-danger"
                       onClick={() => handleDelete(u.id)}
                     >
-                      🗑️ Hapus
+                      🗑️
                     </button>
                   </>
                 ),
@@ -211,7 +213,7 @@ const UserListPage = () => {
         >
           ← Prev
         </button>
-        <span>Halaman {page} dari {totalPages}</span>
+        <span>📄 Halaman {page} dari {totalPages}</span>
         <button
           className="btn btn-outline-light"
           onClick={() => setPage(page + 1)}
@@ -223,17 +225,24 @@ const UserListPage = () => {
 
       {/* Floating Add Button for Mobile */}
       {isMobile && (
-        <div className="position-fixed bottom-0 start-0 end-0 p-3 bg-dark border-top border-secondary" style={{ zIndex: 999 }}>
-          <button
-            className="btn btn-warning w-100 fw-bold"
-            onClick={() => {
-              setEditUser(null);
-              setShowForm(true);
-            }}
-          >
-            ➕ Tambah User
-          </button>
-        </div>
+        <button
+          onClick={() => {
+            setEditUser(null);
+            setShowForm(true);
+          }}
+          className="btn btn-warning rounded-circle position-fixed"
+          style={{
+            bottom: '20px',
+            right: '20px',
+            width: '56px',
+            height: '56px',
+            fontSize: '24px',
+            zIndex: 1000,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+          }}
+        >
+          <FiPlus />
+        </button>
       )}
     </div>
   );

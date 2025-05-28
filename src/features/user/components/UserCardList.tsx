@@ -1,4 +1,5 @@
 import React from 'react';
+import { FiEdit, FiTrash2 } from 'react-icons/fi';
 
 type User = {
   id: string;
@@ -27,14 +28,16 @@ const UserCardList = ({ users, onEdit, onDelete }: Props) => {
             <button
               className="btn btn-sm btn-outline-warning"
               onClick={() => onEdit(u)}
+              title="Edit"
             >
-              ✏️ Edit
+              <FiEdit />
             </button>
             <button
               className="btn btn-sm btn-outline-danger"
               onClick={() => onDelete(u.id)}
+              title="Hapus"
             >
-              🗑️ Hapus
+              <FiTrash2 />
             </button>
           </div>
         </div>
