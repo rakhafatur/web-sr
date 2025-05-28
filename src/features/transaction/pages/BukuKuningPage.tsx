@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../../lib/supabaseClient';
 import DataTable from '../../../components/DataTable';
+import CardTable from '../../../components/CardTable'; // ⬅️ import CardTable
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import logo from '../../../assets/logosr-black.png'; // logo hitam SR
+import dayjs from 'dayjs';
+import logo from '../../../assets/logosr-black.png';
 
 type Lady = {
   id: string;
@@ -38,6 +40,11 @@ const BukuKuningPage = () => {
   const [bulan, setBulan] = useState(new Date().getMonth() + 1);
   const [tahun, setTahun] = useState(new Date().getFullYear());
   const [rows, setRows] = useState<Row[]>([]);
+
+  const isMobile = window.innerWidth <= 768;
+  const [page, setPage] = useState(0);
+  const rowsPerPage = 5;
+  const sortedRows = [...rows].sort((a, b) => dayjs(b.tanggal).unix() - dayjs(a.tanggal).unix());
 
   useEffect(() => {
     const fetchLadies = async () => {
@@ -157,7 +164,7 @@ const BukuKuningPage = () => {
     img.src = logo;
 
     img.onload = () => {
-      doc.addImage(img, 'PNG', 10, 12, 16, 16); // sejajarkan logo
+      doc.addImage(img, 'PNG', 10, 12, 16, 16);
       doc.setFontSize(14);
       doc.text(`TOTALAN - ${monthNames[bulan - 1].toUpperCase()} - ${tahun}`, 30, 20);
 
@@ -181,25 +188,18 @@ const BukuKuningPage = () => {
           formatRupiah(r.saldo),
         ]),
         headStyles: {
-          fillColor: [43, 7, 82], // SR purple
+          fillColor: [43, 7, 82],
           textColor: 255,
         },
       });
 
-      // 🦶 Footer
       const today = new Date().toLocaleDateString('id-ID');
       const pageWidth = doc.internal.pageSize.getWidth();
 
       doc.setFontSize(10);
       doc.setTextColor(100);
-
-      // Kiri: Dicetak
       doc.text(`Dicetak: ${today}`, 14, 285);
-
-      // Kanan: SR Agency sejajar kanan (tanpa offset manual)
       doc.text('SR Agency', pageWidth - 14, 285, { align: 'right' });
-
-      // Tengah opsional (misal: Halaman 1)
       doc.text(`Halaman 1`, pageWidth / 2, 285, { align: 'center' });
 
       doc.save(`Totalan-${namaLabel}-${bulan}-${tahun}.pdf`);
@@ -253,29 +253,38 @@ const BukuKuningPage = () => {
 
       {selectedLadyId && rows.length > 0 && (
         <>
-          <DataTable
-            columns={[
-              { key: 'tanggal', label: 'Tanggal' },
-              { key: 'keterangan', label: 'Keterangan' },
-              { key: 'voucher', label: 'Voucher' },
-              {
-                key: 'pemasukan',
-                label: 'Pemasukan',
-                render: (row) => formatRupiah(row.pemasukan),
-              },
-              {
-                key: 'pengeluaran',
-                label: 'Pengeluaran',
-                render: (row) => formatRupiah(row.pengeluaran),
-              },
-              {
-                key: 'saldo',
-                label: 'Saldo',
-                render: (row) => formatRupiah(row.saldo),
-              },
-            ]}
-            data={rows.map((row, i) => ({ id: `${i}`, ...row }))}
-          />
+          {isMobile ? (
+            <CardTable
+              data={sortedRows}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              onPageChange={setPage}
+            />
+          ) : (
+            <DataTable
+              columns={[
+                { key: 'tanggal', label: 'Tanggal' },
+                { key: 'keterangan', label: 'Keterangan' },
+                { key: 'voucher', label: 'Voucher' },
+                {
+                  key: 'pemasukan',
+                  label: 'Pemasukan',
+                  render: (row) => formatRupiah(row.pemasukan),
+                },
+                {
+                  key: 'pengeluaran',
+                  label: 'Pengeluaran',
+                  render: (row) => formatRupiah(row.pengeluaran),
+                },
+                {
+                  key: 'saldo',
+                  label: 'Saldo',
+                  render: (row) => formatRupiah(row.saldo),
+                },
+              ]}
+              data={rows.map((row, i) => ({ id: `${i}`, ...row }))}
+            />
+          )}
         </>
       )}
     </div>
