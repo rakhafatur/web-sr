@@ -4,6 +4,8 @@ import AddUserModal from '../components/AddUserModal';
 import bcrypt from 'bcryptjs';
 import DataTable from '../../../components/DataTable';
 import ListToolbar from '../../../components/ListToolBar';
+import UserCardList from '../components/UserCardList';
+import { useMediaQuery } from 'react-responsive';
 
 type User = {
   id: string;
@@ -20,6 +22,8 @@ const UserListPage = () => {
   const limit = 10;
   const [total, setTotal] = useState(0);
   const [keyword, setKeyword] = useState('');
+
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const fetchUsers = async () => {
     const from = (page - 1) * limit;
@@ -127,36 +131,47 @@ const UserListPage = () => {
         user={editUser}
       />
 
-      <DataTable
-        columns={[
-          { key: 'username', label: 'Username' },
-          { key: 'nama', label: 'Nama Lengkap' },
-          {
-            key: 'id',
-            label: 'Aksi',
-            render: (u) => (
-              <>
-                <button
-                  className="btn btn-sm btn-outline-warning me-2"
-                  onClick={() => {
-                    setEditUser(u);
-                    setShowForm(true);
-                  }}
-                >
-                  ✏️ Edit
-                </button>
-                <button
-                  className="btn btn-sm btn-outline-danger"
-                  onClick={() => handleDelete(u.id)}
-                >
-                  🗑️ Hapus
-                </button>
-              </>
-            ),
-          },
-        ]}
-        data={userList}
-      />
+      {isMobile ? (
+        <UserCardList
+          users={userList}
+          onEdit={(u) => {
+            setEditUser(u);
+            setShowForm(true);
+          }}
+          onDelete={handleDelete}
+        />
+      ) : (
+        <DataTable
+          columns={[
+            { key: 'username', label: 'Username' },
+            { key: 'nama', label: 'Nama Lengkap' },
+            {
+              key: 'id',
+              label: 'Aksi',
+              render: (u) => (
+                <>
+                  <button
+                    className="btn btn-sm btn-outline-warning me-2"
+                    onClick={() => {
+                      setEditUser(u);
+                      setShowForm(true);
+                    }}
+                  >
+                    ✏️ Edit
+                  </button>
+                  <button
+                    className="btn btn-sm btn-outline-danger"
+                    onClick={() => handleDelete(u.id)}
+                  >
+                    🗑️ Hapus
+                  </button>
+                </>
+              ),
+            },
+          ]}
+          data={userList}
+        />
+      )}
 
       <div className="d-flex justify-content-between align-items-center mt-3">
         <button
