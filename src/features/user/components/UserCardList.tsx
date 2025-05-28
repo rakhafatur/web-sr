@@ -22,7 +22,7 @@ const UserCardList = ({ users, onEdit, onDelete }: Props) => {
           style={{ backgroundColor: '#1e0036', border: '1px solid #999' }}
         >
           <div><strong>👤 Username:</strong> {u.username}</div>
-          <div><strong>📛 Nama:</strong> {u.nama || '-'}</div>
+          <div><strong>🪪 Nama:</strong> {u.nama || '-'}</div>
           <div className="mt-2 d-flex gap-2">
             <button
               className="btn btn-sm btn-outline-warning"

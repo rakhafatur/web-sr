@@ -3,7 +3,6 @@ import { supabase } from '../../../lib/supabaseClient';
 import AddUserModal from '../components/AddUserModal';
 import bcrypt from 'bcryptjs';
 import DataTable from '../../../components/DataTable';
-import ListToolbar from '../../../components/ListToolBar';
 import UserCardList from '../components/UserCardList';
 import { useMediaQuery } from 'react-responsive';
 
@@ -107,20 +106,23 @@ const UserListPage = () => {
         color: 'white',
       }}
     >
-      <ListToolbar
-        keyword={keyword}
-        onKeywordChange={(val) => {
-          setPage(1);
-          setKeyword(val);
-        }}
-        onAddClick={() => {
-          setEditUser(null);
-          setShowForm(true);
-        }}
-        addLabel="➕ Tambah User"
-        buttonColor="btn-warning"
-      />
+      {/* Mobile Search Input */}
+      {isMobile && (
+        <div className="mb-3">
+          <input
+            type="text"
+            className="form-control bg-dark text-light border-secondary"
+            placeholder="🔍 Cari user..."
+            value={keyword}
+            onChange={(e) => {
+              setPage(1);
+              setKeyword(e.target.value);
+            }}
+          />
+        </div>
+      )}
 
+      {/* Modal Form */}
       <AddUserModal
         show={showForm}
         onClose={() => {
@@ -131,6 +133,7 @@ const UserListPage = () => {
         user={editUser}
       />
 
+      {/* Main List */}
       {isMobile ? (
         <UserCardList
           users={userList}
@@ -141,38 +144,65 @@ const UserListPage = () => {
           onDelete={handleDelete}
         />
       ) : (
-        <DataTable
-          columns={[
-            { key: 'username', label: 'Username' },
-            { key: 'nama', label: 'Nama Lengkap' },
-            {
-              key: 'id',
-              label: 'Aksi',
-              render: (u) => (
-                <>
-                  <button
-                    className="btn btn-sm btn-outline-warning me-2"
-                    onClick={() => {
-                      setEditUser(u);
-                      setShowForm(true);
-                    }}
-                  >
-                    ✏️ Edit
-                  </button>
-                  <button
-                    className="btn btn-sm btn-outline-danger"
-                    onClick={() => handleDelete(u.id)}
-                  >
-                    🗑️ Hapus
-                  </button>
-                </>
-              ),
-            },
-          ]}
-          data={userList}
-        />
+        <>
+          {/* Desktop Search + Add */}
+          <div className="d-flex justify-content-between align-items-stretch mb-3 gap-2">
+            <button
+              className="btn btn-warning fw-bold"
+              onClick={() => {
+                setEditUser(null);
+                setShowForm(true);
+              }}
+            >
+              ➕ Tambah User
+            </button>
+            <input
+              type="text"
+              className="form-control bg-dark text-light border-secondary"
+              placeholder="🔍 Cari user..."
+              value={keyword}
+              onChange={(e) => {
+                setPage(1);
+                setKeyword(e.target.value);
+              }}
+              style={{ maxWidth: 300 }}
+            />
+          </div>
+
+          <DataTable
+            columns={[
+              { key: 'username', label: 'Username' },
+              { key: 'nama', label: 'Nama Lengkap' },
+              {
+                key: 'id',
+                label: 'Aksi',
+                render: (u) => (
+                  <>
+                    <button
+                      className="btn btn-sm btn-outline-warning me-2"
+                      onClick={() => {
+                        setEditUser(u);
+                        setShowForm(true);
+                      }}
+                    >
+                      ✏️ Edit
+                    </button>
+                    <button
+                      className="btn btn-sm btn-outline-danger"
+                      onClick={() => handleDelete(u.id)}
+                    >
+                      🗑️ Hapus
+                    </button>
+                  </>
+                ),
+              },
+            ]}
+            data={userList}
+          />
+        </>
       )}
 
+      {/* Pagination */}
       <div className="d-flex justify-content-between align-items-center mt-3">
         <button
           className="btn btn-outline-light"
@@ -190,6 +220,21 @@ const UserListPage = () => {
           Next →
         </button>
       </div>
+
+      {/* Floating Add Button for Mobile */}
+      {isMobile && (
+        <div className="position-fixed bottom-0 start-0 end-0 p-3 bg-dark border-top border-secondary" style={{ zIndex: 999 }}>
+          <button
+            className="btn btn-warning w-100 fw-bold"
+            onClick={() => {
+              setEditUser(null);
+              setShowForm(true);
+            }}
+          >
+            ➕ Tambah User
+          </button>
+        </div>
+      )}
     </div>
   );
 };
