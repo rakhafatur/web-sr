@@ -105,7 +105,7 @@ const UserListPage = () => {
         minHeight: '100vh',
         background: 'radial-gradient(ellipse at center, #1b0036 0%, #0f001e 100%)',
         color: 'white',
-        paddingBottom: isMobile ? '80px' : undefined,
+        paddingBottom: isMobile ? '100px' : undefined,
       }}
     >
       {/* Mobile Search Input */}
@@ -137,14 +137,39 @@ const UserListPage = () => {
 
       {/* Main List */}
       {isMobile ? (
-        <UserCardList
-          users={userList}
-          onEdit={(u) => {
-            setEditUser(u);
-            setShowForm(true);
-          }}
-          onDelete={handleDelete}
-        />
+        <>
+          <UserCardList
+            users={userList}
+            onEdit={(u) => {
+              setEditUser(u);
+              setShowForm(true);
+            }}
+            onDelete={handleDelete}
+          />
+
+          {/* Mobile Pagination */}
+          {totalPages > 1 && (
+            <div className="text-center mt-4" style={{ fontSize: '0.85rem' }}>
+              <button
+                className="btn btn-outline-light btn-sm me-2"
+                onClick={() => setPage(page - 1)}
+                disabled={page <= 1}
+              >
+                ← Prev
+              </button>
+              <span style={{ color: '#bbb' }}>
+                Halaman {page} dari {totalPages}
+              </span>
+              <button
+                className="btn btn-outline-light btn-sm ms-2"
+                onClick={() => setPage(page + 1)}
+                disabled={page >= totalPages}
+              >
+                Next →
+              </button>
+            </div>
+          )}
+        </>
       ) : (
         <>
           {/* Desktop Search + Add */}
@@ -203,25 +228,6 @@ const UserListPage = () => {
           />
         </>
       )}
-
-      {/* Pagination */}
-      <div className="d-flex justify-content-between align-items-center mt-3">
-        <button
-          className="btn btn-outline-light"
-          onClick={() => setPage(page - 1)}
-          disabled={page <= 1}
-        >
-          ← Prev
-        </button>
-        <span>📄 Halaman {page} dari {totalPages}</span>
-        <button
-          className="btn btn-outline-light"
-          onClick={() => setPage(page + 1)}
-          disabled={page >= totalPages}
-        >
-          Next →
-        </button>
-      </div>
 
       {/* Floating Add Button for Mobile */}
       {isMobile && (
