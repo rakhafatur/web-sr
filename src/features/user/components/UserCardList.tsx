@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FiMoreHorizontal, FiEdit, FiTrash2 } from 'react-icons/fi';
+import { FiUser, FiType } from 'react-icons/fi';
 
 type User = {
   id: string;
@@ -15,9 +16,23 @@ type Props = {
 
 const UserCardList = ({ users, onEdit, onDelete }: Props) => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      setActiveMenu(null);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const toggleMenu = (id: string) => {
-    setActiveMenu(activeMenu === id ? null : id);
+    setActiveMenu((prev) => (prev === id ? null : id));
   };
 
   return (
@@ -28,8 +43,8 @@ const UserCardList = ({ users, onEdit, onDelete }: Props) => {
           className="p-3 mb-3 rounded position-relative"
           style={{ backgroundColor: '#1e0036', border: '1px solid #999' }}
         >
-          <div><strong>👤 Username:</strong> {u.username}</div>
-          <div><strong>🪪 Nama:</strong> {u.nama || '-'}</div>
+          <div><strong><FiUser className="me-2" />Username:</strong> {u.username}</div>
+          <div><strong><FiType className="me-2" />Nama:</strong> {u.nama || '-'}</div>
 
           <div className="mt-2 d-flex justify-content-end">
             <button
@@ -43,6 +58,7 @@ const UserCardList = ({ users, onEdit, onDelete }: Props) => {
 
           {activeMenu === u.id && (
             <div
+              ref={menuRef}
               className="position-absolute bg-dark border p-2 rounded shadow"
               style={{
                 top: '60%',
