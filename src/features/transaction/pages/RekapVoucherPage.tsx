@@ -58,11 +58,7 @@ const RekapVoucherPage = () => {
     const vouchers = (data as any[]).map((v) => ({
       jumlah: v.jumlah,
       tanggal: v.tanggal,
-      ladies: v.ladies as {
-        id: string;
-        nama_ladies: string;
-        nama_outlet: string;
-      } | null,
+      ladies: v.ladies,
     })) as VoucherRow[];
 
     const grouped: Record<string, OutletGroup> = {};
@@ -133,7 +129,7 @@ const RekapVoucherPage = () => {
           head: [['Nama Ladies', 'Voucher (pcs)']],
           body: tableData,
           theme: 'grid',
-          headStyles: { fillColor: [43, 7, 82], textColor: 255 },
+          headStyles: { fillColor: [56, 176, 0], textColor: 255 },
           bodyStyles: { textColor: 0 },
           styles: { fontSize: 10 },
         });
@@ -157,36 +153,48 @@ const RekapVoucherPage = () => {
   };
 
   return (
-    <div className="container py-4">
-      <h2 className="text-light fw-bold fs-4 mb-4">📊 Rekap Voucher per Outlet</h2>
+    <div className="container py-4" style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
+      <h2 className="fw-bold fs-4 mb-4" style={{ color: 'var(--color-dark)' }}>
+        📊 Rekap Voucher per Outlet
+      </h2>
 
       <div className="row gy-3 gx-3 align-items-end mb-4">
         <div className="col-md-4">
-          <label className="form-label text-light">Dari Tanggal</label>
+          <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>Dari Tanggal</label>
           <input
             type="date"
-            className="form-control bg-dark text-light border-secondary"
+            className="form-control"
+            style={{
+              backgroundColor: 'var(--color-white)',
+              color: 'var(--color-dark)',
+              borderColor: 'var(--color-green)',
+            }}
             value={start}
             onChange={(e) => setStart(e.target.value)}
           />
         </div>
         <div className="col-md-4">
-          <label className="form-label text-light">Sampai Tanggal</label>
+          <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>Sampai Tanggal</label>
           <input
             type="date"
-            className="form-control bg-dark text-light border-secondary"
+            className="form-control"
+            style={{
+              backgroundColor: 'var(--color-white)',
+              color: 'var(--color-dark)',
+              borderColor: 'var(--color-green)',
+            }}
             value={end}
             onChange={(e) => setEnd(e.target.value)}
           />
         </div>
         <div className="col-md-2 d-grid">
-          <button className="btn btn-primary" onClick={fetchData}>
+          <button className="btn btn-success" onClick={fetchData}>
             🔄 Tampilkan
           </button>
         </div>
         {dataPerOutlet.length > 0 && (
           <div className="col-md-2 d-grid">
-            <button className="btn btn-outline-light" onClick={handleExportPDF}>
+            <button className="btn btn-outline-success" onClick={handleExportPDF}>
               📄 Export PDF
             </button>
           </div>
@@ -203,7 +211,9 @@ const RekapVoucherPage = () => {
 
             return (
               <div key={idx} className="mb-5">
-                <h5 className="text-info fw-bold mb-2">Outlet: {outletGroup.outlet}</h5>
+                <h5 className="fw-bold mb-2" style={{ color: 'var(--color-green)' }}>
+                  Outlet: {outletGroup.outlet}
+                </h5>
                 <DataTable
                   columns={[
                     { key: 'nama_ladies', label: 'Nama Ladies' },
@@ -236,32 +246,39 @@ const RekapVoucherPage = () => {
                   }))}
                 />
 
-                <div className="mt-3 p-3 bg-secondary bg-opacity-10 border border-info rounded">
-                  <p className="mb-1 text-light"><strong>Total Voucher:</strong> {totalVoucher.toFixed(0)} pcs</p>
-                  <p className="mb-1 text-light"><strong>Total Ladies:</strong> {formatRupiah(totalNominal)}</p>
-                  <p className="mb-1 text-light"><strong>Total Hasil:</strong> {formatRupiah(totalHasil)}</p>
-                  <p className="mb-0 text-light"><strong>Total Didapat:</strong> {formatRupiah(totalDidapat)}</p>
+                <div className="mt-3 p-3" style={{
+                  backgroundColor: 'var(--color-green-light)',
+                  border: '1px solid var(--color-green)',
+                  borderRadius: '0.5rem',
+                }}>
+                  <p className="mb-1" style={{ color: 'var(--color-dark)' }}><strong>Total Voucher:</strong> {totalVoucher.toFixed(0)} pcs</p>
+                  <p className="mb-1" style={{ color: 'var(--color-dark)' }}><strong>Total Ladies:</strong> {formatRupiah(totalNominal)}</p>
+                  <p className="mb-1" style={{ color: 'var(--color-dark)' }}><strong>Total Hasil:</strong> {formatRupiah(totalHasil)}</p>
+                  <p className="mb-0" style={{ color: 'var(--color-dark)' }}><strong>Total Didapat:</strong> {formatRupiah(totalDidapat)}</p>
                 </div>
               </div>
             );
           })}
 
-          <div className="mt-5 p-4 bg-dark border border-info rounded-3 shadow-sm">
-            <h5 className="text-light mb-3">
-              <span className="badge bg-info text-dark me-2">🧾</span>
-              Total Keseluruhan
+          <div className="mt-5 p-4 shadow-sm" style={{
+            backgroundColor: 'var(--color-green-light)',
+            border: '1px solid var(--color-green)',
+            borderRadius: '0.75rem',
+          }}>
+            <h5 className="mb-3" style={{ color: 'var(--color-dark)' }}>
+              <span className="badge text-bg-success me-2">🧾</span> Total Keseluruhan
             </h5>
             <ul className="list-group list-group-horizontal-md gap-3 flex-wrap">
-              <li className="list-group-item bg-transparent text-light border-secondary">
+              <li className="list-group-item bg-transparent border-success" style={{ color: 'var(--color-dark)' }}>
                 <strong>Total Voucher:</strong><br /> {totalVoucherAll.toFixed(0)} pcs
               </li>
-              <li className="list-group-item bg-transparent text-light border-secondary">
+              <li className="list-group-item bg-transparent border-success" style={{ color: 'var(--color-dark)' }}>
                 <strong>Total Ladies:</strong><br /> {formatRupiah(totalNominalAll)}
               </li>
-              <li className="list-group-item bg-transparent text-light border-secondary">
+              <li className="list-group-item bg-transparent border-success" style={{ color: 'var(--color-dark)' }}>
                 <strong>Total Hasil:</strong><br /> {formatRupiah(totalVoucherAll * 75000)}
               </li>
-              <li className="list-group-item bg-transparent text-light border-secondary">
+              <li className="list-group-item bg-transparent border-success" style={{ color: 'var(--color-dark)' }}>
                 <strong>Total Didapat:</strong><br /> {formatRupiah(totalVoucherAll * 225000)}
               </li>
             </ul>

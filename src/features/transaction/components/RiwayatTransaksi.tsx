@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../../lib/supabaseClient';
 import DataTable from '../../../components/DataTable';
-
-import { useMediaQuery } from 'react-responsive';
 import dayjs from 'dayjs';
 
 type Props = {
@@ -131,12 +129,17 @@ const RiwayatTransaksi = ({ ladiesId, refresh }: Props) => {
     <div className="mt-3">
       <div className="mb-3 d-flex justify-content-between align-items-center gap-2">
         <div className="d-flex gap-2 align-items-center">
-          <label className="text-light fw-semibold mb-0">Tipe:</label>
+          <label className="fw-semibold mb-0" style={{ color: 'var(--color-dark)' }}>Tipe:</label>
           <select
-            className="form-select bg-dark text-light border-secondary"
+            className="form-select"
+            style={{
+              width: '180px',
+              backgroundColor: 'var(--color-white)',
+              color: 'var(--color-dark)',
+              borderColor: 'var(--color-green)',
+            }}
             value={filterTipe}
             onChange={(e) => { setPage(1); setFilterTipe(e.target.value); }}
-            style={{ width: '180px' }}
           >
             <option value="">Semua</option>
             <option value="voucher">Voucher</option>
@@ -146,9 +149,14 @@ const RiwayatTransaksi = ({ ladiesId, refresh }: Props) => {
         </div>
         <input
           type="text"
-          className="form-control bg-dark text-light border-secondary"
+          className="form-control"
+          style={{
+            maxWidth: '300px',
+            backgroundColor: 'var(--color-white)',
+            color: 'var(--color-dark)',
+            borderColor: 'var(--color-green)',
+          }}
           placeholder="Cari tanggal / keterangan..."
-          style={{ maxWidth: '300px' }}
           value={searchText}
           onChange={(e) => { setPage(1); setSearchText(e.target.value); }}
         />
@@ -165,6 +173,11 @@ const RiwayatTransaksi = ({ ladiesId, refresh }: Props) => {
               editId === row.id ? (
                 <input
                   className="form-control"
+                  style={{
+                    backgroundColor: 'var(--color-white)',
+                    color: 'var(--color-dark)',
+                    borderColor: 'var(--color-green)',
+                  }}
                   type="text"
                   value={editForm.jumlah}
                   onChange={(e) => setEditForm({ ...editForm, jumlah: e.target.value })}
@@ -182,6 +195,11 @@ const RiwayatTransaksi = ({ ladiesId, refresh }: Props) => {
               ) : editId === row.id ? (
                 <input
                   className="form-control"
+                  style={{
+                    backgroundColor: 'var(--color-white)',
+                    color: 'var(--color-dark)',
+                    borderColor: 'var(--color-green)',
+                  }}
                   type="text"
                   value={editForm.keterangan}
                   onChange={(e) => setEditForm({ ...editForm, keterangan: e.target.value })}
@@ -218,11 +236,19 @@ const RiwayatTransaksi = ({ ladiesId, refresh }: Props) => {
       />
 
       <div className="d-flex justify-content-between align-items-center mt-3">
-        <button className="btn btn-secondary" onClick={() => setPage(page - 1)} disabled={page <= 1}>
+        <button
+          className="btn btn-outline-success"
+          onClick={() => setPage(page - 1)}
+          disabled={page <= 1}
+        >
           ← Prev
         </button>
-        <span>Halaman {page} dari {totalPages}</span>
-        <button className="btn btn-secondary" onClick={() => setPage(page + 1)} disabled={page >= totalPages}>
+        <span style={{ color: 'var(--color-dark)' }}>Halaman {page} dari {totalPages}</span>
+        <button
+          className="btn btn-outline-success"
+          onClick={() => setPage(page + 1)}
+          disabled={page >= totalPages}
+        >
           Next →
         </button>
       </div>

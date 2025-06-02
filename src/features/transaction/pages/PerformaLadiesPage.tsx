@@ -3,7 +3,9 @@ import { supabase } from '../../../lib/supabaseClient';
 import dayjs from 'dayjs';
 import FormField from '../../../components/FormField';
 import DataTable from '../../../components/DataTable';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+} from 'recharts';
 
 const monthNames = [
   'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
@@ -111,30 +113,61 @@ const PerformaLadiesPage = () => {
   }, [bulan, tahun, ladiesList]);
 
   return (
-    <div className="container py-4">
-      <h2 className="text-light fw-bold fs-4 mb-4">📊 Performa Ladies Bulan {monthNames[bulan - 1]} {tahun}</h2>
+    <div className="container py-4" style={{ background: 'var(--color-bg)', minHeight: '100vh' }}>
+      <h2 className="fw-bold fs-4 mb-4" style={{ color: 'var(--color-dark)' }}>
+        📊 Performa Ladies Bulan {monthNames[bulan - 1]} {tahun}
+      </h2>
 
       <div className="row mb-3">
         <div className="col-md-3">
           <FormField label="Bulan">
-            <select className="form-select bg-dark text-light border-secondary" value={bulan} onChange={e => setBulan(parseInt(e.target.value))}>
+            <select
+              className="form-select"
+              style={{
+                backgroundColor: 'var(--color-white)',
+                color: 'var(--color-dark)',
+                borderColor: 'var(--color-green)',
+              }}
+              value={bulan}
+              onChange={e => setBulan(parseInt(e.target.value))}
+            >
               {monthNames.map((m, i) => <option key={i + 1} value={i + 1}>{m}</option>)}
             </select>
           </FormField>
         </div>
         <div className="col-md-3">
           <FormField label="Tahun">
-            <input type="number" className="form-control bg-dark text-light border-secondary" value={tahun} onChange={e => setTahun(parseInt(e.target.value))} />
+            <input
+              type="number"
+              className="form-control"
+              style={{
+                backgroundColor: 'var(--color-white)',
+                color: 'var(--color-dark)',
+                borderColor: 'var(--color-green)',
+              }}
+              value={tahun}
+              onChange={e => setTahun(parseInt(e.target.value))}
+            />
           </FormField>
         </div>
       </div>
 
       <div className="mb-3 d-flex gap-2">
-        <button className={`btn ${mode === 'aktivitas' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setMode('aktivitas')}>Mode Aktivitas</button>
-        <button className={`btn ${mode === 'pendapatan' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setMode('pendapatan')}>Mode Pendapatan</button>
+        <button
+          className={`btn ${mode === 'aktivitas' ? 'btn-success' : 'btn-outline-success'}`}
+          onClick={() => setMode('aktivitas')}
+        >
+          Mode Aktivitas
+        </button>
+        <button
+          className={`btn ${mode === 'pendapatan' ? 'btn-success' : 'btn-outline-success'}`}
+          onClick={() => setMode('pendapatan')}
+        >
+          Mode Pendapatan
+        </button>
       </div>
 
-      <div style={{ width: '100%', height: 400, background: '#1e1e1e' }} className="mb-4">
+      <div style={{ width: '100%', height: 400, background: 'var(--color-green-light)' }} className="mb-4 rounded">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -142,10 +175,14 @@ const PerformaLadiesPage = () => {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey={mode === 'aktivitas' ? 'voucherTotal' : 'pendapatanVoucher'} fill="#8884d8" name={mode === 'aktivitas' ? 'Voucher (pcs)' : 'Pendapatan Voucher'} />
-            {mode === 'aktivitas' && <Bar dataKey="masuk" fill="#60a5fa" name="Hari Masuk" />}
-            {mode === 'pendapatan' && <Bar dataKey="pemasukan" fill="#22c55e" name="Pemasukan Lain" />}
-            {mode === 'pendapatan' && <Bar dataKey="kasbon" fill="#f43f5e" name="Kasbon (Pengeluaran)" />}
+            <Bar
+              dataKey={mode === 'aktivitas' ? 'voucherTotal' : 'pendapatanVoucher'}
+              fill="#38b000"
+              name={mode === 'aktivitas' ? 'Voucher (pcs)' : 'Pendapatan Voucher'}
+            />
+            {mode === 'aktivitas' && <Bar dataKey="masuk" fill="#a3e635" name="Hari Masuk" />}
+            {mode === 'pendapatan' && <Bar dataKey="pemasukan" fill="#66bb6a" name="Pemasukan Lain" />}
+            {mode === 'pendapatan' && <Bar dataKey="kasbon" fill="#ef4444" name="Kasbon (Pengeluaran)" />}
           </BarChart>
         </ResponsiveContainer>
       </div>

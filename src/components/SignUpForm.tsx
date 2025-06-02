@@ -56,67 +56,66 @@ function SignUpForm() {
       className="d-flex justify-content-center align-items-center"
       style={{
         minHeight: '100vh',
-        background: 'radial-gradient(ellipse at center, #1b0036 0%, #0f001e 100%)',
-        backgroundSize: 'cover',
-        color: 'white',
+        background: 'radial-gradient(circle, #e6f4ea, #d4edda)',
+        color: '#1a1a1a',
+        fontFamily: 'Segoe UI, sans-serif',
       }}
     >
       <div
         className="p-4 shadow"
         style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+          backgroundColor: '#ffffff',
           borderRadius: '1rem',
-          backdropFilter: 'blur(10px)',
           width: '100%',
           maxWidth: '500px',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          boxShadow: '0 0 30px rgba(137, 79, 255, 0.3)',
+          border: '1px solid #cde8d2',
+          boxShadow: '0 0 25px rgba(56, 176, 0, 0.15)',
         }}
       >
         <div className="text-center mb-4">
-          <h4>
-            Daftar ke <span className="text-warning">SR Agency</span>
+          <h4 className="fw-bold" style={{ color: '#38b000' }}>
+            Daftar ke SR Agency
           </h4>
-          <p style={{ fontSize: '0.9rem', color: '#ccc' }}>
+          <p style={{ fontSize: '0.9rem', color: '#555' }}>
             Buat akun barumu untuk melanjutkan
           </p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className="mb-3">
-            <label className="form-label text-light">Username</label>
+            <label className="form-label">Username</label>
             <input
               type="text"
-              className={`form-control bg-dark text-white border-secondary ${errors.username ? 'is-invalid' : ''}`}
+              className={`form-control ${errors.username ? 'is-invalid' : ''}`}
               {...register('username', { required: true })}
             />
             {errors.username && <div className="invalid-feedback">Username wajib diisi</div>}
           </div>
 
           <div className="mb-3">
-            <label className="form-label text-light">Password</label>
+            <label className="form-label">Password</label>
             <input
               type="password"
-              className={`form-control bg-dark text-white border-secondary ${errors.password ? 'is-invalid' : ''}`}
+              className={`form-control ${errors.password ? 'is-invalid' : ''}`}
               {...register('password', { required: true })}
             />
             {errors.password && <div className="invalid-feedback">Password wajib diisi</div>}
           </div>
 
           <div className="mb-3">
-            <label className="form-label text-light">Nama Lengkap</label>
+            <label className="form-label">Nama Lengkap</label>
             <input
               type="text"
-              className={`form-control bg-dark text-white border-secondary ${errors.nama ? 'is-invalid' : ''}`}
+              className={`form-control ${errors.nama ? 'is-invalid' : ''}`}
               {...register('nama', { required: true })}
             />
             {errors.nama && <div className="invalid-feedback">Nama wajib diisi</div>}
           </div>
 
           <div className="mb-3">
-            <label className="form-label text-light">Pilih Group</label>
+            <label className="form-label">Pilih Group</label>
             <select
-              className={`form-select bg-dark text-white border-secondary ${errors.role ? 'is-invalid' : ''}`}
+              className={`form-select ${errors.role ? 'is-invalid' : ''}`}
               {...register('role', { required: true })}
             >
               <option value="">-- Pilih Group --</option>
@@ -129,15 +128,24 @@ function SignUpForm() {
             {errors.role && <div className="invalid-feedback">Group wajib dipilih</div>}
           </div>
 
-          <button type="submit" className="btn btn-warning w-100 fw-bold">
+          <button
+            type="submit"
+            className="btn w-100 fw-bold"
+            style={{
+              backgroundColor: '#38b000',
+              color: 'white',
+              border: 'none',
+              padding: '10px 0',
+            }}
+          >
             ✨ Daftar
           </button>
         </form>
 
         <div className="text-center mt-3">
-          <small style={{ color: '#ccc' }}>
+          <small style={{ color: '#333' }}>
             Sudah punya akun?{' '}
-            <Link to="/login" className="text-warning fw-semibold">
+            <Link to="/login" className="fw-semibold" style={{ color: '#38b000' }}>
               Kembali ke Login
             </Link>
           </small>

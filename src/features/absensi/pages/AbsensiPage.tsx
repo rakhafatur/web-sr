@@ -171,14 +171,21 @@ const AbsensiPage = () => {
   const totalSAKIT = rekapRiwayat.filter((r) => r.status === 'SAKIT').length;
 
   return (
-    <div className="container py-4">
-      <h2 className="text-light fw-bold fs-4 mb-4">🗓️ Absensi Harian</h2>
+    <div className="container py-4" style={{ background: 'var(--color-bg)', minHeight: '100vh' }}>
+      <h2 className="fw-bold fs-4 mb-4" style={{ color: 'var(--color-dark)' }}>
+        🗓️ Absensi Harian
+      </h2>
 
       <div className="row mb-3">
         <div className="col-md-4 mb-3">
-          <label className="form-label text-light">Pilih Ladies</label>
+          <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>Pilih Ladies</label>
           <select
-            className="form-select bg-dark text-light border-secondary"
+            className="form-select"
+            style={{
+              backgroundColor: 'var(--color-white)',
+              color: 'var(--color-dark)',
+              borderColor: 'var(--color-green)',
+            }}
             value={selectedLadyId}
             onChange={(e) => {
               setSelectedLadyId(e.target.value);
@@ -195,42 +202,22 @@ const AbsensiPage = () => {
         </div>
 
         <div className="col-md-4 mb-3">
-          <label className="form-label text-light">Tanggal</label>
-          <div style={{ position: 'relative', maxWidth: '180px' }}>
-            <input
-              type="date"
-              className="form-control bg-dark text-light border-secondary pe-5"
-              value={tanggal}
-              onChange={(e) => setTanggal(e.target.value)}
-            />
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              right: 5,
-              height: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              gap: '2px',
-              fontSize: '13px',
-              userSelect: 'none',
-            }}>
-              <span onClick={() => {
-                const next = new Date(tanggal);
-                next.setDate(next.getDate() + 1);
-                setTanggal(next.toISOString().slice(0, 10));
-              }} style={{ cursor: 'pointer', color: 'white', textAlign: 'center' }}>▲</span>
-              <span onClick={() => {
-                const prev = new Date(tanggal);
-                prev.setDate(prev.getDate() - 1);
-                setTanggal(prev.toISOString().slice(0, 10));
-              }} style={{ cursor: 'pointer', color: 'white', textAlign: 'center' }}>▼</span>
-            </div>
-          </div>
+          <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>Tanggal</label>
+          <input
+            type="date"
+            className="form-control"
+            style={{
+              backgroundColor: 'var(--color-white)',
+              color: 'var(--color-dark)',
+              borderColor: 'var(--color-green)',
+            }}
+            value={tanggal}
+            onChange={(e) => setTanggal(e.target.value)}
+          />
         </div>
 
         <div className="col-md-4 mb-3">
-          <label className="form-label text-light">Status</label>
+          <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>Status</label>
           <div className="d-flex gap-3">
             {['KERJA', 'MENS', 'OFF', 'SAKIT'].map((opt) => (
               <div className="form-check" key={opt}>
@@ -243,7 +230,7 @@ const AbsensiPage = () => {
                   checked={status === opt}
                   onChange={(e) => setStatus(e.target.value)}
                 />
-                <label className="form-check-label text-light" htmlFor={opt}>
+                <label className="form-check-label" htmlFor={opt} style={{ color: 'var(--color-dark)' }}>
                   {opt}
                 </label>
               </div>
@@ -253,34 +240,39 @@ const AbsensiPage = () => {
       </div>
 
       <div className="mb-4">
-        <label className="form-label text-light">Keterangan (opsional)</label>
+        <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>Keterangan (opsional)</label>
         <textarea
-          className="form-control bg-dark text-light border-secondary"
+          className="form-control"
           rows={2}
+          style={{
+            backgroundColor: 'var(--color-white)',
+            color: 'var(--color-dark)',
+            borderColor: 'var(--color-green)',
+          }}
           value={keterangan}
           onChange={(e) => setKeterangan(e.target.value)}
         />
       </div>
 
-      <button className="btn btn-success mt-2 mb-4" onClick={handleSubmit}>
+      <button className="btn btn-success mt-2 mb-4">
         ✅ Simpan Absen
       </button>
 
       {selectedLadyId && (
         <>
           <div className="d-flex align-items-center gap-2 mt-4 mb-3">
-            <button className="btn btn-outline-light btn-sm" onClick={handlePrevMonth}>←</button>
-            <span className="text-light fw-semibold">{monthNames[bulan - 1]} {tahun}</span>
-            <button className="btn btn-outline-light btn-sm" onClick={handleNextMonth}>→</button>
+            <button className="btn btn-outline-success btn-sm" onClick={handlePrevMonth}>←</button>
+            <span className="fw-semibold" style={{ color: 'var(--color-dark)' }}>{monthNames[bulan - 1]} {tahun}</span>
+            <button className="btn btn-outline-success btn-sm" onClick={handleNextMonth}>→</button>
           </div>
 
-          <div className="text-light mb-4">
-            <strong>Rekap Bulan Ini (semua data):</strong><br />
-            🟢 Kerja: {totalKERJA} hari | 🩸 Mens: {totalMENS} hari | ⚪ Off: {totalOFF} hari | 🤒 Sakit: {totalSAKIT} hari
+          <div className="mb-4" style={{ color: 'var(--color-dark)' }}>
+            <strong>Rekap Bulan Ini:</strong><br />
+            🟢 Kerja: {totalKERJA} | 🩸 Mens: {totalMENS} | ⚪ Off: {totalOFF} | 🤒 Sakit: {totalSAKIT}
           </div>
 
-          <table className="table table-dark table-bordered text-center align-middle mt-2">
-            <thead className="table-secondary text-dark">
+          <table className="table table-bordered text-center align-middle mt-2">
+            <thead style={{ backgroundColor: 'var(--color-green-light)', color: 'var(--color-dark)' }}>
               <tr>
                 <th>Tanggal</th>
                 <th>Status</th>
@@ -293,29 +285,19 @@ const AbsensiPage = () => {
                 <tr key={i}>
                   <td>{a.tanggal}</td>
                   <td>
-                    <span className={`badge ${a.status === 'KERJA' ? 'bg-success' :
-                        a.status === 'MENS' ? 'bg-danger' :
-                          a.status === 'OFF' ? 'bg-secondary' :
-                            a.status === 'SAKIT' ? 'bg-warning text-dark' :
-                              'bg-light text-dark'
-                      }`}>
+                    <span className={`badge ${
+                      a.status === 'KERJA' ? 'bg-success' :
+                      a.status === 'MENS' ? 'bg-danger' :
+                      a.status === 'OFF' ? 'bg-secondary' :
+                      a.status === 'SAKIT' ? 'bg-warning text-dark' :
+                      'bg-light text-dark'}`}>
                       {a.status}
                     </span>
                   </td>
                   <td>{a.keterangan || '-'}</td>
                   <td>
-                    <button
-                      className="btn btn-sm btn-outline-warning me-2"
-                      onClick={() => handleEdit(a)}
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      className="btn btn-sm btn-outline-danger"
-                      onClick={() => handleDelete(a.tanggal)}
-                    >
-                      🗑️
-                    </button>
+                    <button className="btn btn-sm btn-outline-warning me-2" onClick={() => handleEdit(a)}>✏️</button>
+                    <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(a.tanggal)}>🗑️</button>
                   </td>
                 </tr>
               ))}
@@ -324,15 +306,15 @@ const AbsensiPage = () => {
 
           <div className="d-flex justify-content-between align-items-center mt-3">
             <button
-              className="btn btn-outline-light btn-sm"
+              className="btn btn-outline-success btn-sm"
               onClick={() => setPage((p) => p - 1)}
               disabled={page === 1}
             >
               ← Prev
             </button>
-            <span className="text-light">Halaman {page}</span>
+            <span style={{ color: 'var(--color-dark)' }}>Halaman {page}</span>
             <button
-              className="btn btn-outline-light btn-sm"
+              className="btn btn-outline-success btn-sm"
               onClick={() => setPage((p) => p + 1)}
               disabled={riwayat.length < limit}
             >

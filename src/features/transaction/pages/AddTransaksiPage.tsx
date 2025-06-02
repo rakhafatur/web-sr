@@ -26,14 +26,21 @@ const AddTransaksiPage = () => {
   }, []);
 
   return (
-    <div className="container py-4">
-      <h2 className="text-light fw-bold fs-4 mb-4">📄 Transaksi Voucher & Kasbon</h2>
+    <div className="container py-4" style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
+      <h2 className="fw-bold fs-4 mb-4" style={{ color: 'var(--color-dark)' }}>
+        📄 Transaksi Voucher & Kasbon
+      </h2>
 
       <div className="row mb-4">
         <div className="col-md-6">
-          <label className="form-label text-light">Pilih Ladies</label>
+          <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>Pilih Ladies</label>
           <select
-            className="form-select bg-dark text-light"
+            className="form-select"
+            style={{
+              backgroundColor: 'var(--color-white)',
+              color: 'var(--color-dark)',
+              borderColor: 'var(--color-green)',
+            }}
             value={selectedLadyId}
             onChange={(e) => setSelectedLadyId(e.target.value)}
           >
@@ -50,8 +57,13 @@ const AddTransaksiPage = () => {
       {selectedLady && (
         <>
           {/* ✏️ FORM TAMBAH */}
-          <div className="border p-3 mb-5" style={{ backgroundColor: '#1e1e2f' }}>
-            <h5 className="text-light mb-3">📌 Transaksi untuk {selectedLady.nama_ladies} ({selectedLady.nama_outlet})</h5>
+          <div className="p-3 mb-5 rounded" style={{
+            backgroundColor: 'var(--color-green-light)',
+            border: '1px solid var(--color-green)',
+          }}>
+            <h5 className="mb-3" style={{ color: 'var(--color-dark)' }}>
+              📌 Transaksi untuk {selectedLady.nama_ladies} ({selectedLady.nama_outlet})
+            </h5>
             <TransaksiForm
               ladiesId={selectedLadyId}
               onSuccess={() => setRefresh((r) => r + 1)}
@@ -59,8 +71,13 @@ const AddTransaksiPage = () => {
           </div>
 
           {/* 📜 RIWAYAT */}
-          <div className="border p-3" style={{ backgroundColor: '#1e1e2f' }}>
-            <h5 className="text-light mb-3">📋 Riwayat transaksi untuk {selectedLady.nama_ladies} ({selectedLady.nama_outlet})</h5>
+          <div className="p-3 rounded" style={{
+            backgroundColor: 'var(--color-green-light)',
+            border: '1px solid var(--color-green)',
+          }}>
+            <h5 className="mb-3" style={{ color: 'var(--color-dark)' }}>
+              📋 Riwayat transaksi untuk {selectedLady.nama_ladies} ({selectedLady.nama_outlet})
+            </h5>
             <RiwayatTransaksi ladiesId={selectedLadyId} refresh={refresh} />
           </div>
         </>

@@ -85,12 +85,23 @@ const TransaksiForm = ({ ladiesId, onSuccess }: Props) => {
     <div>
       <div className="row">
         <div className="col-md-6">
-          <label className="form-label fw-semibold text-light">Tipe Transaksi</label>
+          <label
+            className="form-label fw-semibold"
+            style={{ color: 'var(--color-dark)' }}
+          >
+            Tipe Transaksi
+          </label>
           <select
             name="tipe"
             value={form.tipe}
             onChange={handleChange}
-            className="form-select bg-dark text-light border-secondary mb-3"
+            className="form-select"
+            style={{
+              backgroundColor: 'var(--color-white)',
+              color: 'var(--color-dark)',
+              borderColor: 'var(--color-green)',
+              marginBottom: '1rem',
+            }}
           >
             <option value="voucher">Pemasukan (Voucher)</option>
             <option value="pemasukan_lain">Pemasukan Lain</option>
@@ -154,7 +165,11 @@ const TransaksiForm = ({ ladiesId, onSuccess }: Props) => {
       )}
 
       <div className="text-end">
-        <button className="btn btn-success mt-2 px-4" onClick={handleSubmit}>
+        <button
+          className="btn btn-success mt-2 px-4"
+          style={{ backgroundColor: 'var(--color-green)', borderColor: 'var(--color-green)' }}
+          onClick={handleSubmit}
+        >
           Tambah
         </button>
       </div>
