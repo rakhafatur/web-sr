@@ -29,7 +29,7 @@
   font-size: 1.25rem;
   line-height: 1.6;
   color: var(--color-dark);
-  white-space: nowrap; /* ⬅️ biar satu baris */
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -46,7 +46,7 @@
   }
 }
 
-/* === MOBILE (dengan gambar) === */
+/* === MOBILE (dengan gambar background) === */
 @media (max-width: 768px) {
   .home-wrapper {
     justify-content: center;
@@ -55,7 +55,7 @@
     padding: 0;
     width: 100vw;
     height: 100vh;
-    background-image: url('/assets/bg-home.png');
+    background-image: url('/assets/bg-home.png'); /* ✅ pastikan file ini ADA */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
