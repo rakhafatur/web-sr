@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react';
 import Sidebar from '../components/Sidebar/Sidebar';
 import Header from '../components/Header/Header';
 import { useLocation } from 'react-router-dom';
-import { HEADER_HEIGHT, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from '../constant';
+import {
+  HEADER_HEIGHT,
+  SIDEBAR_WIDTH,
+  SIDEBAR_COLLAPSED_WIDTH,
+} from '../constant';
 
 function MainLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -27,10 +31,17 @@ function MainLayout({ children }: { children: React.ReactNode }) {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  const sidebarWidth = isCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH;
+  const isHomePage = location.pathname === '/';
+  const sidebarWidth = isCollapsed
+    ? SIDEBAR_COLLAPSED_WIDTH
+    : SIDEBAR_WIDTH;
 
   return (
-    <div className="layout-container" style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
+    <div
+      className="layout-container"
+      style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}
+    >
+      {/* ✅ Tetap tampilkan Header, atau bisa kamu kondisikan isHomePage ? null : <Header /> */}
       <Header onToggleSidebar={() => setSidebarOpen(true)} />
 
       <div className="d-flex" style={{ width: '100%' }}>
@@ -45,12 +56,21 @@ function MainLayout({ children }: { children: React.ReactNode }) {
         <div
           className="flex-grow-1 d-flex flex-column"
           style={{
-            marginLeft: !isMobile && sidebarOpen ? sidebarWidth : 0,
+            marginLeft: isHomePage
+              ? 0
+              : !isMobile && sidebarOpen
+              ? sidebarWidth
+              : 0,
             transition: 'margin 0.3s ease',
             width: '100%',
           }}
         >
-          <main className="main-content" style={{ padding: '2rem' }}>
+          <main
+            className="main-content"
+            style={{
+              padding: isHomePage ? '0' : '2rem',
+            }}
+          >
             {children}
           </main>
         </div>
