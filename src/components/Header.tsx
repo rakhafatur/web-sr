@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { HEADER_HEIGHT } from '../constant';
-import { FiLogOut } from 'react-icons/fi';
+import { FiLogOut, FiMenu } from 'react-icons/fi';
 
 function Header() {
   const { logout } = useAuth();
@@ -12,9 +12,14 @@ function Header() {
     navigate('/login');
   };
 
+  const toggleSidebar = () => {
+    const sidebar = document.querySelector('.sidebar');
+    sidebar?.classList.toggle('collapsed');
+  };
+
   return (
     <div
-      className="d-flex justify-content-end align-items-center px-4 py-2"
+      className="d-flex align-items-center px-4 py-2 justify-content-between"
       style={{
         height: `${HEADER_HEIGHT}px`,
         background: 'linear-gradient(to right, #1b0036, #0f001e)',
@@ -26,12 +31,26 @@ function Header() {
         zIndex: 900,
       }}
     >
-      <button
-        onClick={handleLogout}
-        className="btn btn-sm btn-outline-warning fw-semibold d-flex align-items-center gap-1"
-      >
-        <FiLogOut /> Logout
-      </button>
+      {/* Spacer kiri */}
+      <div className="d-flex align-items-center">
+        {/* Hamburger only in mobile */}
+        <button
+          onClick={toggleSidebar}
+          className="btn btn-sm btn-outline-light d-md-none d-flex align-items-center gap-1"
+        >
+          <FiMenu />
+        </button>
+      </div>
+
+      {/* Spacer kanan */}
+      <div className="ms-auto">
+        <button
+          onClick={handleLogout}
+          className="btn btn-sm btn-outline-warning fw-semibold d-flex align-items-center gap-1"
+        >
+          <FiLogOut /> Logout
+        </button>
+      </div>
     </div>
   );
 }
