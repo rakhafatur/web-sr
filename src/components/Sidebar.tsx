@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../assets/logosr.png';
+import { FiHome, FiSettings, FiUsers, FiUserCheck, FiUser, FiCalendar, FiBook, FiPlus, FiDollarSign, FiBarChart2 } from 'react-icons/fi';
 
 function Sidebar({
   isOpen,
@@ -12,6 +13,7 @@ function Sidebar({
   isMobile: boolean;
 }) {
   const location = useLocation();
+  const [showParameter, setShowParameter] = useState(false); // kontrol visibility submenu
 
   useEffect(() => {
     if (isMobile) {
@@ -26,7 +28,7 @@ function Sidebar({
 
   return (
     <>
-      {/* Overlay belakang untuk mobile */}
+      {/* Overlay untuk mobile */}
       {isOpen && (
         <div
           onClick={onClose}
@@ -43,13 +45,12 @@ function Sidebar({
         />
       )}
 
-      {/* Sidebar utama */}
       <div
         className="d-flex flex-column p-3"
         style={{
           width: '250px',
-          height: '100vh', // fix: agar tidak lebih dari layar
-          overflowY: 'auto', // fix: agar bisa discroll
+          height: '100vh',
+          overflowY: 'auto',
           background: 'linear-gradient(to bottom, #1b0036, #0f001e)',
           color: 'white',
           position: 'fixed',
@@ -59,7 +60,6 @@ function Sidebar({
           transition: 'left 0.3s ease-in-out',
         }}
       >
-        {/* Tombol close (hanya muncul di mobile) */}
         <div className="text-end d-md-none mb-2">
           <button
             onClick={onClose}
@@ -74,12 +74,10 @@ function Sidebar({
           </button>
         </div>
 
-        {/* Logo */}
         <div className="mb-4 text-center">
           <img src={logo} alt="SR Agency Logo" style={{ maxWidth: '120px', borderRadius: 12 }} />
         </div>
 
-        {/* Menu */}
         <ul className="nav flex-column gap-2">
           <li className="nav-item">
             <Link
@@ -87,7 +85,7 @@ function Sidebar({
               onClick={isMobile ? onClose : undefined}
               className={`nav-link sidebar-link ${isActive('/') ? 'active' : ''}`}
             >
-              🏠 Home
+              <FiHome /> Home
             </Link>
           </li>
 
@@ -95,43 +93,42 @@ function Sidebar({
             <div
               className="nav-link sidebar-link fw-bold"
               style={{ cursor: 'pointer' }}
-              onClick={() => {
-                const el = document.getElementById('param-submenu');
-                if (el) el.classList.toggle('d-none');
-              }}
+              onClick={() => setShowParameter((prev) => !prev)}
             >
-              ⚙️ Parameter ▾
+              <FiSettings /> Parameter ▾
             </div>
 
-            <ul id="param-submenu" className="nav flex-column ms-3">
-              <li className="nav-item">
-                <Link
-                  to="/users"
-                  onClick={isMobile ? onClose : undefined}
-                  className={`nav-link sidebar-link ${isActive('/users') ? 'active' : ''}`}
-                >
-                  👥 Users
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  to="/pengawas"
-                  onClick={isMobile ? onClose : undefined}
-                  className={`nav-link sidebar-link ${isActive('/pengawas') ? 'active' : ''}`}
-                >
-                  🧑‍💼 Pengawas
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  to="/ladies"
-                  onClick={isMobile ? onClose : undefined}
-                  className={`nav-link sidebar-link ${isActive('/ladies') ? 'active' : ''}`}
-                >
-                  💃 Ladies
-                </Link>
-              </li>
-            </ul>
+            {showParameter && (
+              <ul className="nav flex-column ms-3">
+                <li className="nav-item">
+                  <Link
+                    to="/users"
+                    onClick={isMobile ? onClose : undefined}
+                    className={`nav-link sidebar-link ${isActive('/users') ? 'active' : ''}`}
+                  >
+                    <FiUsers /> Users
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link
+                    to="/pengawas"
+                    onClick={isMobile ? onClose : undefined}
+                    className={`nav-link sidebar-link ${isActive('/pengawas') ? 'active' : ''}`}
+                  >
+                    <FiUserCheck /> Pengawas
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link
+                    to="/ladies"
+                    onClick={isMobile ? onClose : undefined}
+                    className={`nav-link sidebar-link ${isActive('/ladies') ? 'active' : ''}`}
+                  >
+                    <FiUser /> Ladies
+                  </Link>
+                </li>
+              </ul>
+            )}
           </li>
 
           <li className="nav-item">
@@ -140,7 +137,7 @@ function Sidebar({
               onClick={isMobile ? onClose : undefined}
               className={`nav-link sidebar-link ${isActive('/absensi') ? 'active' : ''}`}
             >
-              🗓️ Absensi
+              <FiCalendar /> Absensi
             </Link>
           </li>
           <li className="nav-item">
@@ -149,7 +146,7 @@ function Sidebar({
               onClick={isMobile ? onClose : undefined}
               className={`nav-link sidebar-link ${isActive('/buku-kuning') ? 'active' : ''}`}
             >
-              📒 Buku Kuning
+              <FiBook /> Buku Kuning
             </Link>
           </li>
           <li className="nav-item">
@@ -158,7 +155,7 @@ function Sidebar({
               onClick={isMobile ? onClose : undefined}
               className={`nav-link sidebar-link ${isActive('/add-transaksi') ? 'active' : ''}`}
             >
-              ➕ Add Transaksi
+              <FiPlus /> Add Transaksi
             </Link>
           </li>
           <li className="nav-item">
@@ -167,7 +164,7 @@ function Sidebar({
               onClick={isMobile ? onClose : undefined}
               className={`nav-link sidebar-link ${isActive('/rekap-voucher') ? 'active' : ''}`}
             >
-              💰 Rekap Voucher
+              <FiDollarSign /> Rekap Voucher
             </Link>
           </li>
           <li className="nav-item">
@@ -176,7 +173,7 @@ function Sidebar({
               onClick={isMobile ? onClose : undefined}
               className={`nav-link sidebar-link ${isActive('/performa-ladies') ? 'active' : ''}`}
             >
-              📊 Performa Ladies
+              <FiBarChart2 /> Performa Ladies
             </Link>
           </li>
         </ul>
