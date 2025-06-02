@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import { useLocation } from 'react-router-dom';
+import { HEADER_HEIGHT, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from '../constant';
 
 function MainLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -13,6 +15,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
       const isNowMobile = window.innerWidth < 768;
       setIsMobile(isNowMobile);
       setSidebarOpen(!isNowMobile);
+      setIsCollapsed(false); // reset collapse saat pindah ke mobile
     };
 
     handleResize();
@@ -31,6 +34,8 @@ function MainLayout({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  const sidebarWidth = isCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH;
+
   return (
     <div className="layout-container">
       <div className="d-flex" style={{ flex: 1, width: '100%' }}>
@@ -38,12 +43,14 @@ function MainLayout({ children }: { children: React.ReactNode }) {
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
           isMobile={isMobile}
+          isCollapsed={isCollapsed}
+          onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
         />
 
         <div
           className="flex-grow-1 d-flex flex-column"
           style={{
-            marginLeft: !isMobile && sidebarOpen ? 250 : 0,
+            marginLeft: !isMobile && sidebarOpen ? sidebarWidth : 0,
             transition: 'margin 0.3s ease',
             backgroundColor: '#0f001e',
             color: '#eee',
@@ -68,7 +75,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
 
           <Header />
 
-          <main className="main-content">
+          <main className="main-content" style={{ paddingTop: `${HEADER_HEIGHT}px` }}>
             {children}
           </main>
         </div>
