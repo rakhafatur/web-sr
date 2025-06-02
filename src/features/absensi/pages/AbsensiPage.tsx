@@ -254,7 +254,7 @@ const AbsensiPage = () => {
         />
       </div>
 
-      <button className="btn btn-success mt-2 mb-4">
+      <button className="btn btn-success mt-2 mb-4" onClick={handleSubmit}>
         ✅ Simpan Absen
       </button>
 
@@ -285,12 +285,11 @@ const AbsensiPage = () => {
                 <tr key={i}>
                   <td>{a.tanggal}</td>
                   <td>
-                    <span className={`badge ${
-                      a.status === 'KERJA' ? 'bg-success' :
-                      a.status === 'MENS' ? 'bg-danger' :
-                      a.status === 'OFF' ? 'bg-secondary' :
-                      a.status === 'SAKIT' ? 'bg-warning text-dark' :
-                      'bg-light text-dark'}`}>
+                    <span className={`badge ${a.status === 'KERJA' ? 'bg-success' :
+                        a.status === 'MENS' ? 'bg-danger' :
+                          a.status === 'OFF' ? 'bg-secondary' :
+                            a.status === 'SAKIT' ? 'bg-warning text-dark' :
+                              'bg-light text-dark'}`}>
                       {a.status}
                     </span>
                   </td>
