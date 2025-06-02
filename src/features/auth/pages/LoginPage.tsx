@@ -26,7 +26,7 @@ function LoginPage() {
   return (
     <div className="login-page soft-green-theme">
       <div className="login-container">
-        {/* Ilustrasi kiri */}
+        {/* Ilustrasi kiri (desktop only) */}
         <div className="login-illustration d-none d-md-flex">
           <img
             src="/illustration.png"
@@ -39,8 +39,16 @@ function LoginPage() {
         {/* Form kanan */}
         <div className="login-form-wrapper">
           <div className="login-card">
+            {/* Logo SR */}
             <div className="text-center mb-4">
-              <h4 className="fw-bold">Welcome to <span className="brand">SR Agency</span></h4>
+              <img
+                src="../icons/sr-green-512.png"
+                alt="Logo SR"
+                className="mb-3 login-logo"
+              />
+              <h4 className="fw-bold">
+                Welcome to <span className="brand">SR Agency</span>
+              </h4>
               <p className="text-muted">Silakan login untuk melanjutkan</p>
             </div>
 
@@ -84,7 +92,8 @@ function LoginPage() {
 
             <div className="text-center mt-3">
               <small>
-                Belum punya akun? <Link to="/signup" className="text-green">Daftar</Link>
+                Belum punya akun?{' '}
+                <Link to="/signup" className="text-green">Daftar</Link>
               </small>
             </div>
           </div>

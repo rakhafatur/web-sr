@@ -27,6 +27,19 @@
   padding: 2rem;
 }
 
+.login-illustration img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 1rem;
+}
+
+/* Sembunyikan ilustrasi di mobile */
+@media (max-width: 768px) {
+  .login-illustration {
+    display: none;
+  }
+}
+
 .login-form-wrapper {
   flex: 1;
   padding: 2rem;
@@ -53,6 +66,18 @@
   border-color: #a3e635;
 }
 
+/* Logo SR */
+.login-card .login-logo {
+  max-height: 80px;
+  width: auto;
+}
+
+@media (max-width: 768px) {
+  .login-card .login-logo {
+    max-height: 64px;
+  }
+}
+
 .btn-green {
   background-color: #38b000;
   color: white;
@@ -69,8 +94,13 @@
   text-decoration: none;
 }
 
+.text-green:hover {
+  text-decoration: underline;
+}
+
 .brand {
   color: #38b000;
+  font-weight: 600;
 }
 
 .eye-toggle {
