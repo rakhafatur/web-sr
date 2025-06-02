@@ -3,9 +3,7 @@ import { supabase } from '../../../lib/supabaseClient';
 import dayjs from 'dayjs';
 import AddAbsensiModal from '../components/AddAbsensiModal';
 import { useMediaQuery } from 'react-responsive';
-const isMobile = useMediaQuery({ maxWidth: 768 });
 import CardTableAbsensi from '../components/CardTableAbsensi';
-
 
 type Lady = {
   id: string;
@@ -26,6 +24,8 @@ const monthNames = [
 ];
 
 const AbsensiPage = () => {
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+
   const [ladies, setLadies] = useState<Lady[]>([]);
   const [selectedLadyId, setSelectedLadyId] = useState('');
   const [tanggal, setTanggal] = useState(dayjs().format('YYYY-MM-DD'));
@@ -180,6 +180,7 @@ const AbsensiPage = () => {
         🗓️ Absensi Harian
       </h2>
 
+      {/* Form */}
       <div className="row mb-3">
         <div className="col-md-4 mb-3">
           <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>Pilih Ladies</label>
@@ -262,6 +263,7 @@ const AbsensiPage = () => {
         ✅ Simpan Absen
       </button>
 
+      {/* Ringkasan + Tabel/Card */}
       {selectedLadyId && (
         <>
           <div className="d-flex align-items-center gap-2 mt-4 mb-3">
@@ -309,7 +311,7 @@ const AbsensiPage = () => {
             </table>
           ) : (
             <CardTableAbsensi
-              data={rekapRiwayat}
+              data={riwayat}
               page={page - 1}
               rowsPerPage={limit}
               onPageChange={(p) => setPage(p + 1)}
@@ -317,24 +319,6 @@ const AbsensiPage = () => {
               onDelete={handleDelete}
             />
           )}
-
-          <div className="d-flex justify-content-between align-items-center mt-3">
-            <button
-              className="btn btn-outline-success btn-sm"
-              onClick={() => setPage((p) => p - 1)}
-              disabled={page === 1}
-            >
-              ← Prev
-            </button>
-            <span style={{ color: 'var(--color-dark)' }}>Halaman {page}</span>
-            <button
-              className="btn btn-outline-success btn-sm"
-              onClick={() => setPage((p) => p + 1)}
-              disabled={riwayat.length < limit}
-            >
-              Next →
-            </button>
-          </div>
         </>
       )}
 
