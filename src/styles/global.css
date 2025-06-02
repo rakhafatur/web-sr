@@ -1,6 +1,7 @@
 /* ✅ Import variabel tema dari file yang benar */
 @import './variable.css';
 
+/* ========= BASE RESET ========== */
 html, body, #root {
   height: 100%;
   margin: 0;
@@ -15,8 +16,9 @@ body {
   overflow-y: auto;
 }
 
+/* ========= TABLE SR CUSTOM ========== */
 .sr-table tr:hover {
-  background-color: #f0fdf4;
+  background-color: var(--color-green-lighter); /* ganti ke variabel */
 }
 
 .sr-table th,
@@ -33,6 +35,7 @@ body {
   transition: background-color 0.2s ease;
 }
 
+/* ========= FORM INPUT ========== */
 .form-input-sr {
   background-color: var(--color-white);
   color: var(--color-dark);
@@ -48,4 +51,46 @@ body {
   outline: none;
   border-color: var(--color-green);
   box-shadow: 0 0 0 0.15rem rgba(92, 184, 92, 0.25);
+}
+
+/* ========= SIDEBAR STYLE ========== */
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  color: var(--color-dark);
+  border-radius: var(--radius);
+  margin-bottom: 0.25rem;
+  transition: background-color 0.2s ease;
+}
+
+/* ========= PAGE TITLE ========== */
+.page-title {
+  color: var(--color-accent);
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+/* ========= BUTTON OUTLINE ========== */
+.button-outline {
+  border: 1.5px solid var(--color-accent);
+  color: var(--color-accent);
+  background-color: transparent;
+  border-radius: var(--radius);
+  padding: 0.4rem 1rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.button-outline:hover {
+  background-color: var(--color-accent);
+  color: var(--color-white);
+}
+
+/* ========= UTILITY SHADOW ========== */
+.shadow-sm {
+  box-shadow: var(--shadow);
 }

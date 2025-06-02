@@ -8,7 +8,7 @@ type HeaderProps = {
 };
 
 function Header({ onToggleSidebar }: HeaderProps) {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -18,12 +18,20 @@ function Header({ onToggleSidebar }: HeaderProps) {
 
   return (
     <div className="header">
-      <button onClick={onToggleSidebar} className="hamburger d-md-none">
-        <FiMenu />
-      </button>
-      <button onClick={handleLogout} className="logout-btn ms-auto">
-        <FiLogOut /> Logout
-      </button>
+      <div className="header-left d-flex align-items-center gap-3">
+        <button onClick={onToggleSidebar} className="hamburger d-md-none">
+          <FiMenu />
+        </button>
+      </div>
+
+      <div className="header-right d-flex align-items-center gap-3">
+        {user?.nama && (
+          <span className="user-greeting text-muted">Hi, {user.nama.split(' ')[0]}</span>
+        )}
+        <button onClick={handleLogout} className="logout-btn">
+          <FiLogOut /> Logout
+        </button>
+      </div>
     </div>
   );
 }

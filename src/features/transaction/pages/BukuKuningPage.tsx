@@ -147,6 +147,13 @@ const BukuKuningPage = () => {
 
   const handleTutupBuku = async () => {
     if (rows.length === 0) return alert('❌ Tidak ada data transaksi.');
+
+    const lady = ladiesList.find(l => l.id === selectedLadyId);
+    const nama = lady ? lady.nama_ladies : 'Unknown';
+
+    const confirm = window.confirm(`❗ Yakin tutup buku - ${nama} - ${monthNames[bulan - 1]} - ${tahun}?`);
+    if (!confirm) return;
+
     const lastSaldo = rows[rows.length - 1].saldo;
     const { error } = await supabase.from('rekap_bulanan').upsert({
       ladies_id: selectedLadyId,

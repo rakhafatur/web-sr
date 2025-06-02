@@ -8,7 +8,7 @@ function HomePage() {
   return (
     <div className="home-page-container">
       <div className="home-content">
-        <h1 className="home-title">Selamat Datang di <span className="brand">SR Agency</span></h1>
+        <h1 className="home-title"><span className="brand">SR Agency</span></h1>
         <p className="home-subtitle">
           {user
             ? `Halo, ${user.nama}! Work hard, party harder ✨`

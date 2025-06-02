@@ -63,7 +63,7 @@ function Sidebar({
 
         {!isMobile && (
           <div className="text-end mb-3">
-            <button onClick={onToggleCollapse} className="btn btn-sm btn-outline-success w-100">
+            <button onClick={onToggleCollapse} className="btn btn-sm btn-outline-accent w-100">
               {isCollapsed ? <FiChevronsRight /> : <FiChevronsLeft />}
             </button>
           </div>
@@ -72,28 +72,28 @@ function Sidebar({
         <ul className="nav flex-column gap-2">
           <li>
             <Link to="/" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/') ? 'active' : ''}`}>
-              <FiHome /> {renderText('Home')}
+              <FiHome className="sidebar-icon" /> {renderText('Home')}
             </Link>
           </li>
 
           <li>
             <div className="nav-link sidebar-link fw-bold" onClick={() => setShowParameter(p => !p)} style={{ cursor: 'pointer' }}>
-              <FiSettings /> {renderText('Parameter ▾')}
+              <FiSettings className="sidebar-icon" /> {renderText('Parameter ▾')}
             </div>
             {!isCollapsed && showParameter && (
               <ul className="nav flex-column ms-3">
-                <li><Link to="/users" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/users') ? 'active' : ''}`}><FiUsers /> {renderText('Users')}</Link></li>
-                <li><Link to="/pengawas" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/pengawas') ? 'active' : ''}`}><FiUserCheck /> {renderText('Pengawas')}</Link></li>
-                <li><Link to="/ladies" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/ladies') ? 'active' : ''}`}><FiUser /> {renderText('Ladies')}</Link></li>
+                <li><Link to="/users" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/users') ? 'active' : ''}`}><FiUsers className="sidebar-icon" /> {renderText('Users')}</Link></li>
+                <li><Link to="/pengawas" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/pengawas') ? 'active' : ''}`}><FiUserCheck className="sidebar-icon" /> {renderText('Pengawas')}</Link></li>
+                <li><Link to="/ladies" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/ladies') ? 'active' : ''}`}><FiUser className="sidebar-icon" /> {renderText('Ladies')}</Link></li>
               </ul>
             )}
           </li>
 
-          <li><Link to="/absensi" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/absensi') ? 'active' : ''}`}><FiCalendar /> {renderText('Absensi')}</Link></li>
-          <li><Link to="/buku-kuning" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/buku-kuning') ? 'active' : ''}`}><FiBook /> {renderText('Buku Kuning')}</Link></li>
-          <li><Link to="/add-transaksi" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/add-transaksi') ? 'active' : ''}`}><FiPlus /> {renderText('Add Transaksi')}</Link></li>
-          <li><Link to="/rekap-voucher" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/rekap-voucher') ? 'active' : ''}`}><FiDollarSign /> {renderText('Rekap Voucher')}</Link></li>
-          <li><Link to="/performa-ladies" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/performa-ladies') ? 'active' : ''}`}><FiBarChart2 /> {renderText('Performa Ladies')}</Link></li>
+          <li><Link to="/absensi" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/absensi') ? 'active' : ''}`}><FiCalendar className="sidebar-icon" /> {renderText('Absensi')}</Link></li>
+          <li><Link to="/buku-kuning" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/buku-kuning') ? 'active' : ''}`}><FiBook className="sidebar-icon" /> {renderText('Buku Kuning')}</Link></li>
+          <li><Link to="/add-transaksi" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/add-transaksi') ? 'active' : ''}`}><FiPlus className="sidebar-icon" /> {renderText('Add Transaksi')}</Link></li>
+          <li><Link to="/rekap-voucher" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/rekap-voucher') ? 'active' : ''}`}><FiDollarSign className="sidebar-icon" /> {renderText('Rekap Voucher')}</Link></li>
+          <li><Link to="/performa-ladies" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/performa-ladies') ? 'active' : ''}`}><FiBarChart2 className="sidebar-icon" /> {renderText('Performa Ladies')}</Link></li>
         </ul>
       </div>
     </>
