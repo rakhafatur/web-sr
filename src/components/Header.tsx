@@ -3,18 +3,17 @@ import { useAuth } from '../context/AuthContext';
 import { HEADER_HEIGHT } from '../constant';
 import { FiLogOut, FiMenu } from 'react-icons/fi';
 
-function Header() {
+type HeaderProps = {
+  onToggleSidebar: () => void;
+};
+
+function Header({ onToggleSidebar }: HeaderProps) {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
     navigate('/login');
-  };
-
-  const toggleSidebar = () => {
-    const sidebar = document.querySelector('.sidebar');
-    sidebar?.classList.toggle('collapsed');
   };
 
   return (
@@ -33,7 +32,7 @@ function Header() {
     >
       {/* Hamburger only in mobile */}
       <button
-        onClick={toggleSidebar}
+        onClick={onToggleSidebar}
         className="d-md-none"
         style={{
           background: 'none',
@@ -45,7 +44,7 @@ function Header() {
         <FiMenu />
       </button>
 
-      {/* Logout always on the right */}
+      {/* Logout */}
       <div className="ms-auto">
         <button
           onClick={handleLogout}

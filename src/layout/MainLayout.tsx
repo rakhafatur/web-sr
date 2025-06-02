@@ -57,9 +57,8 @@ function MainLayout({ children }: { children: React.ReactNode }) {
             width: '100%',
           }}
         >
-          {/* HAPUS tombol hamburger dari sini */}
-
-          <Header />
+          {/* Header dikasih prop buat buka sidebar */}
+          <Header onToggleSidebar={() => setSidebarOpen(true)} />
 
           <main className="main-content" style={{ paddingTop: `${HEADER_HEIGHT}px` }}>
             {children}
