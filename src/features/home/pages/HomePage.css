@@ -1,67 +1,72 @@
+/* DESKTOP & DEFAULT */
 .home-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3rem 2rem;
-  gap: 2rem;
-  min-height: calc(100vh - 64px); /* minus header */
+  text-align: center;
+  flex-direction: column;
+  min-height: calc(100vh - 64px); /* tinggi layar - header */
+  padding: 3rem 1.5rem;
   background-color: var(--color-bg);
+  position: relative;
+  z-index: 0;
 }
 
-.home-left {
-  flex: 1;
-  text-align: left;
+.home-overlay {
   max-width: 600px;
+  width: 100%;
+  animation: fadeIn 0.6s ease;
 }
 
 .home-title {
   font-size: 2.5rem;
   font-weight: 700;
   color: var(--color-accent);
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .home-subtitle {
   font-size: 1.25rem;
+  line-height: 1.6;
   color: var(--color-dark);
 }
 
-.home-right {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* ANIMASI */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.home-image {
-  width: 100%;
-  max-width: 480px;
-  border-radius: 1rem;
-  object-fit: cover;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-}
-
-/* RESPONSIVE */
+/* RESPONSIVE (MOBILE) */
 @media (max-width: 768px) {
   .home-wrapper {
-    flex-direction: column;
-    text-align: center;
+    background-image: url('/assets/bg-home.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: white;
   }
 
-  .home-left {
-    text-align: center;
+  .home-overlay {
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 2rem;
+    border-radius: 1rem;
+    color: white;
   }
 
   .home-title {
     font-size: 2rem;
+    color: white;
   }
 
   .home-subtitle {
     font-size: 1.1rem;
-  }
-
-  .home-image {
-    max-width: 100%;
-    margin-top: 1.5rem;
+    color: #f0f0f0;
   }
 }
