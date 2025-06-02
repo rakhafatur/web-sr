@@ -57,21 +57,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
             width: '100%',
           }}
         >
-          {isMobile && (
-            <div className="p-2">
-              <button
-                onClick={() => setSidebarOpen(true)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'white',
-                  fontSize: '1.5rem',
-                }}
-              >
-                ☰
-              </button>
-            </div>
-          )}
+          {/* HAPUS tombol hamburger dari sini */}
 
           <Header />
 

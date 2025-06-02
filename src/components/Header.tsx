@@ -31,18 +31,21 @@ function Header() {
         zIndex: 900,
       }}
     >
-      {/* Spacer kiri */}
-      <div className="d-flex align-items-center">
-        {/* Hamburger only in mobile */}
-        <button
-          onClick={toggleSidebar}
-          className="btn btn-sm btn-outline-light d-md-none d-flex align-items-center gap-1"
-        >
-          <FiMenu />
-        </button>
-      </div>
+      {/* Hamburger only in mobile */}
+      <button
+        onClick={toggleSidebar}
+        className="d-md-none"
+        style={{
+          background: 'none',
+          border: 'none',
+          color: 'white',
+          fontSize: '1.5rem',
+        }}
+      >
+        <FiMenu />
+      </button>
 
-      {/* Spacer kanan */}
+      {/* Logout always on the right */}
       <div className="ms-auto">
         <button
           onClick={handleLogout}
