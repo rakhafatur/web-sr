@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../../../lib/supabaseClient';
 import dayjs from 'dayjs';
 import AddAbsensiModal from '../components/AddAbsensiModal';
+import { useMediaQuery } from 'react-responsive';
+const isMobile = useMediaQuery({ maxWidth: 768 });
+import CardTableAbsensi from '../components/CardTableAbsensi';
+
 
 type Lady = {
   id: string;
@@ -271,37 +275,48 @@ const AbsensiPage = () => {
             🟢 Kerja: {totalKERJA} | 🩸 Mens: {totalMENS} | ⚪ Off: {totalOFF} | 🤒 Sakit: {totalSAKIT}
           </div>
 
-          <table className="table table-bordered text-center align-middle mt-2">
-            <thead style={{ backgroundColor: 'var(--color-green-light)', color: 'var(--color-dark)' }}>
-              <tr>
-                <th>Tanggal</th>
-                <th>Status</th>
-                <th>Keterangan</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {riwayat.map((a, i) => (
-                <tr key={i}>
-                  <td>{a.tanggal}</td>
-                  <td>
-                    <span className={`badge ${a.status === 'KERJA' ? 'bg-success' :
+          {!isMobile ? (
+            <table className="table table-bordered text-center align-middle mt-2">
+              <thead style={{ backgroundColor: 'var(--color-green-light)', color: 'var(--color-dark)' }}>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Status</th>
+                  <th>Keterangan</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {riwayat.map((a, i) => (
+                  <tr key={i}>
+                    <td>{a.tanggal}</td>
+                    <td>
+                      <span className={`badge ${a.status === 'KERJA' ? 'bg-success' :
                         a.status === 'MENS' ? 'bg-danger' :
                           a.status === 'OFF' ? 'bg-secondary' :
                             a.status === 'SAKIT' ? 'bg-warning text-dark' :
                               'bg-light text-dark'}`}>
-                      {a.status}
-                    </span>
-                  </td>
-                  <td>{a.keterangan || '-'}</td>
-                  <td>
-                    <button className="btn btn-sm btn-outline-warning me-2" onClick={() => handleEdit(a)}>✏️</button>
-                    <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(a.tanggal)}>🗑️</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                        {a.status}
+                      </span>
+                    </td>
+                    <td>{a.keterangan || '-'}</td>
+                    <td>
+                      <button className="btn btn-sm btn-outline-warning me-2" onClick={() => handleEdit(a)}>✏️</button>
+                      <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(a.tanggal)}>🗑️</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <CardTableAbsensi
+              data={rekapRiwayat}
+              page={page - 1}
+              rowsPerPage={limit}
+              onPageChange={(p) => setPage(p + 1)}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          )}
 
           <div className="d-flex justify-content-between align-items-center mt-3">
             <button
