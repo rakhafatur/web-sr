@@ -41,8 +41,8 @@ const BukuKuningPage = () => {
   const [bulan, setBulan] = useState(new Date().getMonth() + 1);
   const [tahun, setTahun] = useState(new Date().getFullYear());
   const [rows, setRows] = useState<Row[]>([]);
-
   const isMobile = useMediaQuery({ maxWidth: 768 });
+  const isSmallMobile = useMediaQuery({ maxWidth: 480 });
   const [page, setPage] = useState(0);
   const rowsPerPage = 5;
 
@@ -239,12 +239,35 @@ const BukuKuningPage = () => {
       </div>
 
       {selectedLadyId && rows.length > 0 && (
-        <div className="d-flex flex-wrap gap-2 mb-3">
-          <button className="btn btn-sm btn-success fw-semibold" onClick={handleTutupBuku}>
-            🧾 Tutup Buku Bulan Ini
+        <div
+          className="d-flex gap-2 mb-3 justify-content-start flex-wrap"
+          style={{
+            alignItems: 'center',
+          }}
+        >
+          <button
+            className="btn btn-sm btn-success fw-semibold d-flex align-items-center justify-content-center gap-2"
+            onClick={handleTutupBuku}
+            title={isSmallMobile ? 'Tutup Buku Bulan Ini' : ''}
+            style={{
+              minWidth: isSmallMobile ? 44 : 'auto',
+              height: 36,
+              padding: isSmallMobile ? '0.4rem' : '0.4rem 0.75rem',
+            }}
+          >
+            🧾 {isSmallMobile ? null : 'Tutup Buku Bulan Ini'}
           </button>
-          <button className="btn btn-sm btn-outline-success fw-semibold" onClick={handleExportPDF}>
-            📄 Export ke PDF
+          <button
+            className="btn btn-sm btn-outline-success fw-semibold d-flex align-items-center justify-content-center gap-2"
+            onClick={handleExportPDF}
+            title={isSmallMobile ? 'Export ke PDF' : ''}
+            style={{
+              minWidth: isSmallMobile ? 44 : 'auto',
+              height: 36,
+              padding: isSmallMobile ? '0.4rem' : '0.4rem 0.75rem',
+            }}
+          >
+            📄 {isSmallMobile ? null : 'Export ke PDF'}
           </button>
         </div>
       )}
