@@ -7,6 +7,7 @@ import autoTable from 'jspdf-autotable';
 import dayjs from 'dayjs';
 import logo from '../../../assets/logosr-black.png';
 import { useMediaQuery } from 'react-responsive';
+import { FiBook, FiPrinter } from 'react-icons/fi';
 
 type Lady = {
   id: string;
@@ -241,33 +242,33 @@ const BukuKuningPage = () => {
       {selectedLadyId && rows.length > 0 && (
         <div
           className="d-flex gap-2 mb-3 justify-content-start flex-wrap"
-          style={{
-            alignItems: 'center',
-          }}
+          style={{ alignItems: 'center' }}
         >
           <button
             className="btn btn-sm btn-success fw-semibold d-flex align-items-center justify-content-center gap-2"
             onClick={handleTutupBuku}
-            title={isSmallMobile ? 'Tutup Buku Bulan Ini' : ''}
+            title={isSmallMobile ? 'Tutup Buku' : ''}
             style={{
               minWidth: isSmallMobile ? 44 : 'auto',
               height: 36,
               padding: isSmallMobile ? '0.4rem' : '0.4rem 0.75rem',
             }}
           >
-            🧾 {isSmallMobile ? null : 'Tutup Buku Bulan Ini'}
+            <FiBook size={16} />
+            {isSmallMobile ? null : 'Tutup Buku'}
           </button>
           <button
             className="btn btn-sm btn-outline-success fw-semibold d-flex align-items-center justify-content-center gap-2"
             onClick={handleExportPDF}
-            title={isSmallMobile ? 'Export ke PDF' : ''}
+            title={isSmallMobile ? 'Cetak PDF' : ''}
             style={{
               minWidth: isSmallMobile ? 44 : 'auto',
               height: 36,
               padding: isSmallMobile ? '0.4rem' : '0.4rem 0.75rem',
             }}
           >
-            📄 {isSmallMobile ? null : 'Export ke PDF'}
+            <FiPrinter size={16} />
+            {isSmallMobile ? null : 'Cetak'}
           </button>
         </div>
       )}
