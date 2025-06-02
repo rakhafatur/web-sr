@@ -13,6 +13,7 @@
   box-shadow: var(--shadow);
 }
 
+/* KIRI */
 .header-left .app-title {
   font-size: 1.1rem;
   font-weight: 700;
@@ -26,6 +27,7 @@
   font-size: 1.6rem;
 }
 
+/* KANAN */
 .header-right {
   display: flex;
   align-items: center;
@@ -34,15 +36,8 @@
 
 .user-greeting {
   font-size: 0.9rem;
-  color: #6c757d;
-}
-
-.header-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--color-accent);
+  color: var(--color-dark);
+  font-weight: 500;
 }
 
 .logout-btn {
@@ -60,5 +55,5 @@
 }
 
 .logout-btn:hover {
-  background-color: #3d4f39; /* versi gelap olive */
+  background-color: #3d4f39; /* versi gelap dari olive */
 }

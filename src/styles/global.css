@@ -14,11 +14,40 @@ html, body, #root {
 
 body {
   overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+/* ========= GLOBAL UTILITY ========== */
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 1rem; }
+.mt-4 { margin-top: 1.5rem; }
+
+.p-2 { padding: 0.5rem; }
+.p-3 { padding: 1rem; }
+.px-3 { padding-left: 1rem; padding-right: 1rem; }
+
+.rounded {
+  border-radius: var(--radius);
+}
+
+.shadow-sm {
+  box-shadow: var(--shadow);
 }
 
 /* ========= TABLE SR CUSTOM ========== */
 .sr-table tr:hover {
-  background-color: var(--color-green-lighter); /* ganti ke variabel */
+  background-color: var(--color-green-lighter);
 }
 
 .sr-table th,
@@ -74,7 +103,7 @@ body {
   margin-bottom: 1rem;
 }
 
-/* ========= BUTTON OUTLINE ========== */
+/* ========= BUTTONS ========== */
 .button-outline {
   border: 1.5px solid var(--color-accent);
   color: var(--color-accent);
@@ -90,7 +119,39 @@ body {
   color: var(--color-white);
 }
 
-/* ========= UTILITY SHADOW ========== */
-.shadow-sm {
+.button-primary {
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.5rem 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.button-primary:hover {
+  background-color: #3d4f39;
+}
+
+/* ========= CARDS ========== */
+.card {
+  background-color: var(--color-white);
+  padding: 1.25rem;
+  border-radius: var(--radius);
   box-shadow: var(--shadow);
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+/* ========= TEXT STYLES ========== */
+.text-muted {
+  color: #6c757d;
+}
+
+.text-accent {
+  color: var(--color-accent);
 }

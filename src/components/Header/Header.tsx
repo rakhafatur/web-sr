@@ -26,7 +26,7 @@ function Header({ onToggleSidebar }: HeaderProps) {
 
       <div className="header-right d-flex align-items-center gap-3">
         {user?.nama && (
-          <span className="user-greeting text-muted">Hi, {user.nama.split(' ')[0]}</span>
+          <span className="user-greeting">Hi, {user.nama.split(' ')[0]}</span>
         )}
         <button onClick={handleLogout} className="logout-btn">
           <FiLogOut /> Logout
