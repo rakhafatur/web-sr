@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import Sidebar from '../components/Sidebar';
-import Header from '../components/Header';
+import Sidebar from '../components/Sidebar/Sidebar';
+import Header from '../components/Header/Header';
 import { useLocation } from 'react-router-dom';
 import { HEADER_HEIGHT, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from '../constant';
 
@@ -15,7 +15,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
       const isNowMobile = window.innerWidth < 768;
       setIsMobile(isNowMobile);
       setSidebarOpen(!isNowMobile);
-      setIsCollapsed(false); // reset collapse saat pindah ke mobile
+      setIsCollapsed(false);
     };
 
     handleResize();
@@ -27,18 +27,13 @@ function MainLayout({ children }: { children: React.ReactNode }) {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  useEffect(() => {
-    document.body.style.overflowX = 'hidden';
-    return () => {
-      document.body.style.overflowX = '';
-    };
-  }, []);
-
   const sidebarWidth = isCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH;
 
   return (
-    <div className="layout-container">
-      <div className="d-flex" style={{ flex: 1, width: '100%' }}>
+    <div className="layout-container" style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
+      <Header onToggleSidebar={() => setSidebarOpen(true)} />
+
+      <div className="d-flex" style={{ width: '100%' }}>
         <Sidebar
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
@@ -52,15 +47,10 @@ function MainLayout({ children }: { children: React.ReactNode }) {
           style={{
             marginLeft: !isMobile && sidebarOpen ? sidebarWidth : 0,
             transition: 'margin 0.3s ease',
-            backgroundColor: '#0f001e',
-            color: '#eee',
             width: '100%',
           }}
         >
-          {/* Header dikasih prop buat buka sidebar */}
-          <Header onToggleSidebar={() => setSidebarOpen(true)} />
-
-          <main className="main-content" style={{ paddingTop: `${HEADER_HEIGHT}px` }}>
+          <main className="main-content" style={{ padding: '2rem' }}>
             {children}
           </main>
         </div>

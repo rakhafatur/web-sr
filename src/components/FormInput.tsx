@@ -5,7 +5,7 @@ type FormInputProps = {
   name: string;
   value: string;
   onChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
-  type?: 'text' | 'password' | 'date' | 'textarea' | 'number'; // tambahkan 'number'
+  type?: 'text' | 'password' | 'date' | 'textarea' | 'number';
   readOnly?: boolean;
 };
 
@@ -22,12 +22,14 @@ const FormInput = ({
     value,
     onChange,
     readOnly,
-    className: 'form-control bg-dark text-light border-secondary',
+    className: 'form-input-sr',
   };
 
   return (
     <div className="mb-3">
-      <label className="form-label fw-semibold text-light">{label}</label>
+      <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>
+        {label}
+      </label>
       {type === 'textarea' ? (
         <textarea {...commonProps} rows={3} />
       ) : (

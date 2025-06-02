@@ -27,19 +27,23 @@ const FormField = (props: FormFieldProps) => {
 
   return (
     <div className="mb-3">
-      <label className="form-label fw-semibold text-light">{label}</label>
+      <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>
+        {label}
+      </label>
 
       {'children' in props ? (
         props.children
       ) : props.readonly ? (
-        <div className="form-control-plaintext text-light">{props.value || '-'}</div>
+        <div className="form-control-plaintext" style={{ color: 'var(--color-dark)' }}>
+          {props.value || '-'}
+        </div>
       ) : props.type === 'textarea' ? (
         <textarea
           name={props.name}
           value={props.value}
           onChange={props.onChange}
-          className="form-control bg-dark text-light border-secondary"
           rows={3}
+          className="form-input-sr"
         />
       ) : (
         <input
@@ -47,7 +51,7 @@ const FormField = (props: FormFieldProps) => {
           name={props.name}
           value={props.value}
           onChange={props.onChange}
-          className="form-control bg-dark text-light border-secondary"
+          className="form-input-sr"
         />
       )}
     </div>

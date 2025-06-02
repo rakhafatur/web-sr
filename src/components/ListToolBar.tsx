@@ -6,7 +6,7 @@ type Props = {
   onKeywordChange: (value: string) => void;
   onAddClick: () => void;
   addLabel?: string;
-  buttonColor?: string;
+  buttonColor?: string; // contoh: 'btn-success', 'btn-outline-success', dsb
 };
 
 const ListToolbar = ({
@@ -15,16 +15,17 @@ const ListToolbar = ({
   onAddClick,
   placeholder = '🔍 Cari...',
   addLabel = '➕ Tambah',
-  buttonColor = 'btn-primary',
+  buttonColor = 'btn-success',
 }: Props) => {
   return (
-    <div className="d-flex justify-content-between align-items-center mb-3">
+    <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
       <button className={`btn ${buttonColor} fw-bold`} onClick={onAddClick}>
         {addLabel}
       </button>
       <input
         type="text"
-        className="form-control w-25 bg-dark text-light border-secondary"
+        className="form-input-sr"
+        style={{ maxWidth: '300px' }}
         placeholder={placeholder}
         value={keyword}
         onChange={(e) => onKeywordChange(e.target.value)}

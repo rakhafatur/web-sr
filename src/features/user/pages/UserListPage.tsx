@@ -103,17 +103,16 @@ const UserListPage = () => {
       className="p-4"
       style={{
         minHeight: '100vh',
-        background: 'radial-gradient(ellipse at center, #1b0036 0%, #0f001e 100%)',
-        color: 'white',
+        backgroundColor: 'var(--color-bg)',
+        color: 'var(--color-dark)',
         paddingBottom: isMobile ? '100px' : undefined,
       }}
     >
-      {/* Mobile Search Input */}
       {isMobile && (
         <div className="mb-3">
           <input
             type="text"
-            className="form-control bg-dark text-light border-secondary"
+            className="form-control bg-white text-dark border border-success"
             placeholder="🔍 Cari user..."
             value={keyword}
             onChange={(e) => {
@@ -124,7 +123,6 @@ const UserListPage = () => {
         </div>
       )}
 
-      {/* Modal Form */}
       <AddUserModal
         show={showForm}
         onClose={() => {
@@ -135,7 +133,6 @@ const UserListPage = () => {
         user={editUser}
       />
 
-      {/* Main List */}
       {isMobile ? (
         <>
           <UserCardList
@@ -147,21 +144,20 @@ const UserListPage = () => {
             onDelete={handleDelete}
           />
 
-          {/* Mobile Pagination */}
           {totalPages > 1 && (
             <div className="text-center mt-4" style={{ fontSize: '0.85rem' }}>
               <button
-                className="btn btn-outline-light btn-sm me-2"
+                className="btn btn-outline-success btn-sm me-2"
                 onClick={() => setPage(page - 1)}
                 disabled={page <= 1}
               >
                 ← Prev
               </button>
-              <span style={{ color: '#bbb' }}>
+              <span style={{ color: 'var(--color-dark)' }}>
                 Halaman {page} dari {totalPages}
               </span>
               <button
-                className="btn btn-outline-light btn-sm ms-2"
+                className="btn btn-outline-success btn-sm ms-2"
                 onClick={() => setPage(page + 1)}
                 disabled={page >= totalPages}
               >
@@ -172,10 +168,9 @@ const UserListPage = () => {
         </>
       ) : (
         <>
-          {/* Desktop Search + Add */}
           <div className="d-flex justify-content-between align-items-stretch mb-3 gap-2">
             <button
-              className="btn btn-warning fw-bold"
+              className="btn btn-success fw-bold"
               onClick={() => {
                 setEditUser(null);
                 setShowForm(true);
@@ -185,7 +180,7 @@ const UserListPage = () => {
             </button>
             <input
               type="text"
-              className="form-control bg-dark text-light border-secondary"
+              className="form-control bg-white text-dark border border-success"
               placeholder="🔍 Cari user..."
               value={keyword}
               onChange={(e) => {
@@ -206,7 +201,7 @@ const UserListPage = () => {
                 render: (u: User) => (
                   <>
                     <button
-                      className="btn btn-sm btn-outline-warning me-2"
+                      className="btn btn-sm btn-outline-success me-2"
                       onClick={() => {
                         setEditUser(u);
                         setShowForm(true);
@@ -229,14 +224,13 @@ const UserListPage = () => {
         </>
       )}
 
-      {/* Floating Add Button for Mobile */}
       {isMobile && (
         <button
           onClick={() => {
             setEditUser(null);
             setShowForm(true);
           }}
-          className="btn btn-warning rounded-circle position-fixed"
+          className="btn btn-success rounded-circle position-fixed"
           style={{
             bottom: '20px',
             right: '20px',

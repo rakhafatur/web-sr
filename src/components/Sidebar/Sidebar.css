@@ -1,0 +1,94 @@
+/* ==========================================
+   SIDEBAR CONTAINER
+========================================== */
+.sidebar {
+  height: 100vh;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  color: var(--text-dark);
+  transition: all 0.3s ease-in-out;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: var(--shadow);
+  border-right: 1px solid #e0e0e0;
+}
+
+/* ==========================================
+   BACKDROP MOBILE
+========================================== */
+.sidebar-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+/* ==========================================
+   LOGO STYLE
+========================================== */
+.sidebar-logo {
+  max-width: 120px;
+  border-radius: 12px;
+  transition: max-width 0.3s;
+}
+
+.sidebar-logo.collapsed {
+  max-width: 48px;
+}
+
+/* ==========================================
+   SIDEBAR LINK
+========================================== */
+.sidebar-link,
+.sidebar .nav-link {
+  color: var(--text-dark) !important;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+}
+
+.sidebar-link:hover {
+  background-color: rgba(92, 184, 92, 0.12);
+  color: var(--color-green) !important;
+}
+
+.sidebar-link.active {
+  background-color: rgba(92, 184, 92, 0.2);
+  color: var(--color-green) !important;
+  font-weight: 600;
+  border-left: 4px solid var(--color-green);
+  padding-left: 12px;
+}
+
+/* ==========================================
+   CLOSE BUTTON (mobile)
+========================================== */
+.btn-close-mobile {
+  background: none;
+  color: var(--text-dark);
+  border: none;
+  font-size: 1.5rem;
+}
+
+/* ==========================================
+   COLLAPSE BUTTON
+========================================== */
+.btn-outline-success {
+  border-color: var(--color-green);
+  color: var(--color-green);
+}
+
+.btn-outline-success:hover {
+  background-color: var(--color-green);
+  color: var(--color-white);
+}

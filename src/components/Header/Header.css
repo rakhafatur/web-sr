@@ -1,0 +1,40 @@
+.header {
+  height: 64px;
+  background: var(--color-white);
+  border-bottom: 1px solid #eaeaea;
+  color: var(--color-dark);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-base);
+  box-shadow: var(--shadow);
+}
+
+.header .hamburger {
+  background: none;
+  border: none;
+  color: var(--color-green);
+  font-size: 1.6rem;
+}
+
+.header .logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-white);
+  background-color: var(--color-green);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  transition: background-color 0.3s ease;
+}
+
+.header .logout-btn:hover {
+  background-color: #449d44;
+}

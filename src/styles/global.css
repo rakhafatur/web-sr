@@ -1,0 +1,51 @@
+/* ✅ Import variabel tema dari file yang benar */
+@import './variable.css';
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+  color: var(--color-dark);
+  font-family: var(--font-base);
+  overflow-x: hidden;
+}
+
+body {
+  overflow-y: auto;
+}
+
+.sr-table tr:hover {
+  background-color: #f0fdf4;
+}
+
+.sr-table th,
+.sr-table td {
+  font-family: var(--font-base);
+  font-size: 0.9rem;
+}
+
+.sr-table thead tr {
+  background-color: var(--color-green-light);
+}
+
+.sr-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.form-input-sr {
+  background-color: var(--color-white);
+  color: var(--color-dark);
+  border: 1px solid #ccc;
+  border-radius: var(--radius);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.95rem;
+  width: 100%;
+  transition: border-color 0.2s ease;
+}
+
+.form-input-sr:focus {
+  outline: none;
+  border-color: var(--color-green);
+  box-shadow: 0 0 0 0.15rem rgba(92, 184, 92, 0.25);
+}

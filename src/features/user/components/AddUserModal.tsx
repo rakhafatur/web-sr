@@ -14,23 +14,13 @@ type Props = {
 };
 
 const AddUserModal = ({ show, onClose, onSubmit, user }: Props) => {
-  const [form, setForm] = useState({
-    username: '',
-    nama: '',
-    password: '',
-  });
-
+  const [form, setForm] = useState({ username: '', nama: '', password: '' });
   const [readonly, setReadonly] = useState<boolean>(false);
 
   useEffect(() => {
     if (!show) return;
-
     if (user) {
-      setForm({
-        username: user.username,
-        nama: user.nama || '',
-        password: '',
-      });
+      setForm({ username: user.username, nama: user.nama || '', password: '' });
       setReadonly(true);
     } else {
       setForm({ username: '', nama: '', password: '' });
@@ -38,29 +28,20 @@ const AddUserModal = ({ show, onClose, onSubmit, user }: Props) => {
     }
   }, [show, user]);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = () => {
-    if (!form.username || !form.nama) {
-      alert('Username dan Nama wajib diisi');
-      return;
-    }
-    if (!user && !form.password) {
-      alert('Password wajib diisi untuk user baru');
-      return;
-    }
+    if (!form.username || !form.nama) return alert('Username dan Nama wajib diisi');
+    if (!user && !form.password) return alert('Password wajib diisi untuk user baru');
 
     const payload = {
       username: form.username,
       nama: form.nama,
       ...(form.password ? { password: form.password } : {}),
     };
-
     onSubmit(payload);
     onClose();
   };
@@ -72,8 +53,8 @@ const AddUserModal = ({ show, onClose, onSubmit, user }: Props) => {
       className="modal d-block"
       tabIndex={-1}
       style={{
-        backgroundColor: 'rgba(0,0,0,0.7)',
-        backdropFilter: 'blur(4px)',
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        backdropFilter: 'blur(3px)',
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
@@ -83,36 +64,22 @@ const AddUserModal = ({ show, onClose, onSubmit, user }: Props) => {
     >
       <div className="modal-dialog">
         <div
-          className="modal-content text-light"
+          className="modal-content"
           style={{
-            background: 'linear-gradient(145deg, #1b0036, #0f001e)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            boxShadow: '0 0 20px rgba(137, 79, 255, 0.4)',
+            background: 'var(--color-white)',
+            border: '1px solid var(--color-green)',
             borderRadius: '1rem',
+            color: 'var(--color-dark)',
           }}
         >
           <div className="modal-header border-0">
-            <h5 className="modal-title">{user ? '👤 Detail User' : '➕ Tambah User'}</h5>
-            <button type="button" className="btn-close btn-close-white" onClick={onClose}></button>
+            <h5 className="modal-title fw-bold">{user ? '👤 Detail User' : '➕ Tambah User'}</h5>
+            <button type="button" className="btn-close" onClick={onClose}></button>
           </div>
 
           <div className="modal-body">
-            <FormInput
-              label="Username"
-              name="username"
-              value={form.username}
-              onChange={handleChange}
-              readOnly={readonly}
-            />
-
-            <FormInput
-              label="Nama Lengkap"
-              name="nama"
-              value={form.nama}
-              onChange={handleChange}
-              readOnly={readonly}
-            />
-
+            <FormInput label="Username" name="username" value={form.username} onChange={handleChange} readOnly={readonly} />
+            <FormInput label="Nama Lengkap" name="nama" value={form.nama} onChange={handleChange} readOnly={readonly} />
             {!readonly && (
               <FormInput
                 label={user ? 'Password Baru (Opsional)' : 'Password'}
@@ -126,11 +93,11 @@ const AddUserModal = ({ show, onClose, onSubmit, user }: Props) => {
 
           <div className="modal-footer border-0">
             {readonly ? (
-              <button className="btn btn-warning fw-bold" onClick={() => setReadonly(false)}>
+              <button className="btn btn-success fw-bold" onClick={() => setReadonly(false)}>
                 ✏️ Edit Form
               </button>
             ) : (
-              <button className="btn btn-primary fw-bold" onClick={handleSubmit}>
+              <button className="btn btn-success fw-bold" onClick={handleSubmit}>
                 Simpan
               </button>
             )}

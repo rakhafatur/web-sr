@@ -188,7 +188,7 @@ const BukuKuningPage = () => {
           formatRupiah(r.saldo),
         ]),
         headStyles: {
-          fillColor: [43, 7, 82],
+          fillColor: [56, 176, 0],
           textColor: 255,
         },
       });
@@ -208,12 +208,12 @@ const BukuKuningPage = () => {
 
   return (
     <div className="container py-4">
-      <h2 className="text-light fw-bold fs-4 mb-4">📒 Buku Kuning Bulanan</h2>
+      <h2 className="text-dark fw-bold fs-4 mb-4">📒 Buku Kuning Bulanan</h2>
 
       <div className="row mb-3">
         <div className="col-12 col-md-4 mb-2">
-          <label className="form-label text-light">Pilih Ladies</label>
-          <select className="form-select bg-dark text-light" value={selectedLadyId} onChange={(e) => setSelectedLadyId(e.target.value)}>
+          <label className="form-label text-dark">Pilih Ladies</label>
+          <select className="form-select bg-white text-dark border-success" value={selectedLadyId} onChange={(e) => setSelectedLadyId(e.target.value)}>
             <option value="">-- Pilih --</option>
             {ladiesList.map((lady) => (
               <option key={lady.id} value={lady.id}>
@@ -224,8 +224,8 @@ const BukuKuningPage = () => {
         </div>
 
         <div className="col-6 col-md-4 mb-2">
-          <label className="form-label text-light">Bulan</label>
-          <select className="form-select bg-dark text-light" value={bulan} onChange={(e) => setBulan(Number(e.target.value))}>
+          <label className="form-label text-dark">Bulan</label>
+          <select className="form-select bg-white text-dark border-success" value={bulan} onChange={(e) => setBulan(Number(e.target.value))}>
             {monthNames.map((name, index) => (
               <option key={index + 1} value={index + 1}>{name}</option>
             ))}
@@ -233,23 +233,23 @@ const BukuKuningPage = () => {
         </div>
 
         <div className="col-6 col-md-4 mb-2">
-          <label className="form-label text-light">Tahun</label>
-          <input type="number" className="form-control bg-dark text-light" min={2020} max={2030} value={tahun} onChange={(e) => setTahun(Number(e.target.value))} />
+          <label className="form-label text-dark">Tahun</label>
+          <input type="number" className="form-control bg-white text-dark border-success" min={2020} max={2030} value={tahun} onChange={(e) => setTahun(Number(e.target.value))} />
         </div>
       </div>
 
       {selectedLadyId && rows.length > 0 && (
         <div className="d-flex flex-wrap gap-2 mb-3">
-          <button className="btn btn-sm btn-warning" onClick={handleTutupBuku}>
+          <button className="btn btn-sm btn-success fw-semibold" onClick={handleTutupBuku}>
             🧾 Tutup Buku Bulan Ini
           </button>
-          <button className="btn btn-sm btn-outline-light" onClick={handleExportPDF}>
+          <button className="btn btn-sm btn-outline-success fw-semibold" onClick={handleExportPDF}>
             📄 Export ke PDF
           </button>
         </div>
       )}
 
-      {!selectedLadyId && <div className="alert alert-warning">⚠️ Silakan pilih ladies terlebih dahulu.</div>}
+      {!selectedLadyId && <div className="alert alert-warning text-dark bg-warning-subtle border-warning">⚠️ Silakan pilih ladies terlebih dahulu.</div>}
 
       {selectedLadyId && (
         <>

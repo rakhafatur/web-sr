@@ -36,10 +36,17 @@ function DataTable<T extends { id: string }>({
   return (
     <div style={{ overflowX: 'auto' }}>
       <table
-        className="table table-dark table-bordered table-hover text-light"
-        style={{ minWidth: '600px', fontSize: '0.9rem', borderRadius: 8, overflow: 'hidden' }}
+        className="sr-table"
+        style={{
+          minWidth: '600px',
+          fontSize: '0.9rem',
+          width: '100%',
+          borderCollapse: 'collapse',
+          borderRadius: '0.5rem',
+          overflow: 'hidden',
+        }}
       >
-        <thead className="table-secondary text-dark">
+        <thead>
           <tr>
             {columns.map((col) => (
               <th
@@ -47,8 +54,12 @@ function DataTable<T extends { id: string }>({
                 onClick={() => col.sortable && onSort?.(col.key)}
                 style={{
                   cursor: col.sortable ? 'pointer' : 'default',
-                  padding: '10px 12px',
+                  padding: '12px',
+                  backgroundColor: 'var(--color-green-light)',
+                  color: 'var(--color-dark)',
+                  textAlign: 'left',
                   whiteSpace: 'nowrap',
+                  borderBottom: '2px solid #c9ecd8',
                 }}
               >
                 {col.label}
@@ -60,15 +71,15 @@ function DataTable<T extends { id: string }>({
         <tbody>
           {data.length === 0 ? (
             <tr>
-              <td colSpan={columns.length} className="text-center text-muted py-3">
+              <td colSpan={columns.length} style={{ padding: '16px', textAlign: 'center', color: '#888' }}>
                 {emptyMessage}
               </td>
             </tr>
           ) : (
             data.map((item) => (
-              <tr key={item.id}>
+              <tr key={item.id} style={{ borderBottom: '1px solid #eee' }}>
                 {columns.map((col) => (
-                  <td key={String(col.key)} style={{ padding: '8px 12px', verticalAlign: 'middle' }}>
+                  <td key={String(col.key)} style={{ padding: '10px 12px' }}>
                     {col.render ? col.render(item) : (item[col.key] as React.ReactNode)}
                   </td>
                 ))}

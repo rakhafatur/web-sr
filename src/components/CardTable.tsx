@@ -23,7 +23,16 @@ const CardTable = ({ data, page, rowsPerPage, onPageChange }: Props) => {
   return (
     <>
       {paginatedRows.map((row, index) => (
-        <div key={index} className="p-3 mb-3 rounded" style={{ backgroundColor: '#1e0036', border: '1px solid #999' }}>
+        <div
+          key={index}
+          className="p-3 mb-3"
+          style={{
+            backgroundColor: 'var(--color-white)',
+            border: '1px solid #ddd',
+            borderRadius: '0.75rem',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+          }}
+        >
           <div><strong>📅 Tanggal:</strong> {dayjs(row.tanggal).format('YYYY-MM-DD')}</div>
           <div><strong>📋 Keterangan:</strong> {row.keterangan}</div>
           {row.voucher && <div><strong>🎫 Voucher:</strong> {row.voucher}</div>}
@@ -33,11 +42,19 @@ const CardTable = ({ data, page, rowsPerPage, onPageChange }: Props) => {
         </div>
       ))}
 
-      <div className="d-flex justify-content-between px-2">
-        <button disabled={page === 0} onClick={() => onPageChange(page - 1)}>
+      <div className="d-flex justify-content-between align-items-center mt-3 px-1">
+        <button
+          className="btn btn-outline-success"
+          disabled={page === 0}
+          onClick={() => onPageChange(page - 1)}
+        >
           ← Sebelumnya
         </button>
-        <button disabled={(page + 1) * rowsPerPage >= data.length} onClick={() => onPageChange(page + 1)}>
+        <button
+          className="btn btn-outline-success"
+          disabled={(page + 1) * rowsPerPage >= data.length}
+          onClick={() => onPageChange(page + 1)}
+        >
           Selanjutnya →
         </button>
       </div>
