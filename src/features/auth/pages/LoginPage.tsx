@@ -29,7 +29,7 @@ function LoginPage() {
         {/* Ilustrasi kiri (desktop only) */}
         <div className="login-illustration d-none d-md-flex">
           <img
-            src="/illustration.png"
+            src="/assets/bg-home.png"
             alt="SR Login Illustration"
             className="img-fluid"
             style={{ maxWidth: '90%', borderRadius: '1rem' }}
