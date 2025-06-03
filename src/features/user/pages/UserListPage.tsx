@@ -14,16 +14,15 @@ type User = {
 };
 
 const UserListPage = () => {
+  const isMobile = useMediaQuery({ maxWidth: 768 });
   const [userList, setUserList] = useState<User[]>([]);
   const [editUser, setEditUser] = useState<User | null>(null);
   const [showForm, setShowForm] = useState(false);
 
   const [page, setPage] = useState(1);
-  const limit = 10;
+  const limit = isMobile ? 5 : 10; // <-- Limit berbeda web/mobile
   const [total, setTotal] = useState(0);
   const [keyword, setKeyword] = useState('');
-
-  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const fetchUsers = async () => {
     const from = (page - 1) * limit;
@@ -94,7 +93,8 @@ const UserListPage = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, [page, keyword]);
+    // eslint-disable-next-line
+  }, [page, keyword, isMobile]); // <-- penting agar refetch saat device berubah
 
   const totalPages = Math.ceil(total / limit);
 
@@ -144,27 +144,44 @@ const UserListPage = () => {
             onDelete={handleDelete}
           />
 
+          {/* Pagination mobile, per 5 data */}
           {totalPages > 1 && (
-            <div className="text-center mt-4" style={{ fontSize: '0.85rem' }}>
+            <div className="d-flex justify-content-between align-items-center mt-4">
               <button
-                className="btn btn-outline-success btn-sm me-2"
+                className="btn btn-outline-success"
                 onClick={() => setPage(page - 1)}
                 disabled={page <= 1}
               >
-                ← Prev
+                ← Sebelumnya
               </button>
-              <span style={{ color: 'var(--color-dark)' }}>
-                Halaman {page} dari {totalPages}
-              </span>
               <button
-                className="btn btn-outline-success btn-sm ms-2"
+                className="btn btn-outline-success"
                 onClick={() => setPage(page + 1)}
                 disabled={page >= totalPages}
               >
-                Next →
+                Selanjutnya →
               </button>
             </div>
           )}
+
+          <button
+            onClick={() => {
+              setEditUser(null);
+              setShowForm(true);
+            }}
+            className="btn btn-success rounded-circle position-fixed"
+            style={{
+              bottom: '20px',
+              right: '20px',
+              width: '56px',
+              height: '56px',
+              fontSize: '24px',
+              zIndex: 1000,
+              boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            }}
+          >
+            <FiPlus />
+          </button>
         </>
       ) : (
         <>
@@ -221,28 +238,27 @@ const UserListPage = () => {
             ]}
             data={userList}
           />
-        </>
-      )}
 
-      {isMobile && (
-        <button
-          onClick={() => {
-            setEditUser(null);
-            setShowForm(true);
-          }}
-          className="btn btn-success rounded-circle position-fixed"
-          style={{
-            bottom: '20px',
-            right: '20px',
-            width: '56px',
-            height: '56px',
-            fontSize: '24px',
-            zIndex: 1000,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-          }}
-        >
-          <FiPlus />
-        </button>
+          {/* Pagination web, per 10 data */}
+          {totalPages > 1 && (
+            <div className="d-flex justify-content-between align-items-center mt-4">
+              <button
+                className="btn btn-outline-success"
+                onClick={() => setPage(page - 1)}
+                disabled={page <= 1}
+              >
+                ← Sebelumnya
+              </button>
+              <button
+                className="btn btn-outline-success"
+                onClick={() => setPage(page + 1)}
+                disabled={page >= totalPages}
+              >
+                Selanjutnya →
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
