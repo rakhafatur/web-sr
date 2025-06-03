@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../../../lib/supabaseClient';
 import AddPengawasModal from '../components/AddPengawasModal';
 import DataTable from '../../../components/DataTable';
-import ListToolbar from '../../../components/ListToolBar';
 import PengawasCardList from '../components/PengawasCardList';
 import { useMediaQuery } from 'react-responsive';
 import { FiPlus } from 'react-icons/fi';
@@ -18,16 +17,15 @@ type Pengawas = {
 };
 
 const PengawasListPage = () => {
+  const isMobile = useMediaQuery({ maxWidth: 768 });
   const [pengawasList, setPengawasList] = useState<Pengawas[]>([]);
-  const [showForm, setShowForm] = useState(false);
   const [editPengawas, setEditPengawas] = useState<Pengawas | null>(null);
+  const [showForm, setShowForm] = useState(false);
 
   const [page, setPage] = useState(1);
-  const limit = 10;
+  const limit = isMobile ? 5 : 10;
   const [total, setTotal] = useState(0);
   const [keyword, setKeyword] = useState('');
-
-  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const fetchPengawas = async () => {
     const from = (page - 1) * limit;
@@ -43,8 +41,7 @@ const PengawasListPage = () => {
     }
 
     const { data, count, error } = await query;
-
-    if (error) console.error('❌ Gagal ambil data pengawas:', error);
+    if (error) console.error('Gagal ambil data pengawas:', error);
     else {
       setPengawasList(data || []);
       setTotal(count || 0);
@@ -52,11 +49,9 @@ const PengawasListPage = () => {
   };
 
   const handleDelete = async (id: string) => {
-    const confirmDelete = window.confirm('❗ Yakin ingin hapus pengawas ini?');
-    if (!confirmDelete) return;
-
+    if (!window.confirm('Yakin ingin hapus pengawas ini?')) return;
     const { error } = await supabase.from('pengawas').delete().eq('id', id);
-    if (error) alert('❌ Gagal hapus pengawas: ' + error.message);
+    if (error) alert('Gagal hapus pengawas: ' + error.message);
     else fetchPengawas();
   };
 
@@ -67,12 +62,11 @@ const PengawasListPage = () => {
         .update(data)
         .eq('id', editPengawas.id);
 
-      if (error) alert('❌ Gagal update pengawas: ' + error.message);
+      if (error) alert('Gagal update pengawas: ' + error.message);
     } else {
       const { error } = await supabase.from('pengawas').insert([data]);
-      if (error) alert('❌ Gagal tambah pengawas: ' + error.message);
+      if (error) alert('Gagal tambah pengawas: ' + error.message);
     }
-
     setEditPengawas(null);
     setShowForm(false);
     fetchPengawas();
@@ -80,7 +74,8 @@ const PengawasListPage = () => {
 
   useEffect(() => {
     fetchPengawas();
-  }, [page, keyword]);
+    // eslint-disable-next-line
+  }, [page, keyword, isMobile]);
 
   const totalPages = Math.ceil(total / limit);
 
@@ -94,20 +89,19 @@ const PengawasListPage = () => {
         paddingBottom: isMobile ? '100px' : undefined,
       }}
     >
-      {!isMobile && (
-        <ListToolbar
-          keyword={keyword}
-          onKeywordChange={(val) => {
-            setPage(1);
-            setKeyword(val);
-          }}
-          onAddClick={() => {
-            setEditPengawas(null);
-            setShowForm(true);
-          }}
-          addLabel="➕ Tambah Pengawas"
-          buttonColor="btn-warning"
-        />
+      {isMobile && (
+        <div className="mb-3">
+          <input
+            type="text"
+            className="form-control bg-white text-dark border border-success"
+            placeholder="🔍 Cari pengawas..."
+            value={keyword}
+            onChange={(e) => {
+              setPage(1);
+              setKeyword(e.target.value);
+            }}
+          />
+        </div>
       )}
 
       <AddPengawasModal
@@ -132,17 +126,16 @@ const PengawasListPage = () => {
           />
 
           {totalPages > 1 && (
-            <div className="text-center mt-4" style={{ fontSize: '0.85rem' }}>
+            <div className="d-flex justify-content-between align-items-center mt-4">
               <button
-                className="btn btn-outline-success btn-sm me-2"
+                className="btn btn-outline-success"
                 onClick={() => setPage(page - 1)}
                 disabled={page <= 1}
               >
                 ← Sebelumnya
               </button>
-              <span>Halaman {page} dari {totalPages}</span>
               <button
-                className="btn btn-outline-success btn-sm ms-2"
+                className="btn btn-outline-success"
                 onClick={() => setPage(page + 1)}
                 disabled={page >= totalPages}
               >
@@ -151,13 +144,12 @@ const PengawasListPage = () => {
             </div>
           )}
 
-          {/* Tombol Tambah + bulat kanan bawah */}
           <button
             onClick={() => {
               setEditPengawas(null);
               setShowForm(true);
             }}
-            className="btn btn-warning rounded-circle position-fixed"
+            className="btn btn-success rounded-circle position-fixed"
             style={{
               bottom: '20px',
               right: '20px',
@@ -173,6 +165,29 @@ const PengawasListPage = () => {
         </>
       ) : (
         <>
+          <div className="d-flex justify-content-between align-items-stretch mb-3 gap-2">
+            <button
+              className="btn btn-success fw-bold"
+              onClick={() => {
+                setEditPengawas(null);
+                setShowForm(true);
+              }}
+            >
+              <FiPlus className="me-2" /> Tambah Pengawas
+            </button>
+            <input
+              type="text"
+              className="form-control bg-white text-dark border border-success"
+              placeholder="🔍 Cari pengawas..."
+              value={keyword}
+              onChange={(e) => {
+                setPage(1);
+                setKeyword(e.target.value);
+              }}
+              style={{ maxWidth: 300 }}
+            />
+          </div>
+
           <DataTable
             columns={[
               { key: 'nama_lengkap', label: 'Nama Lengkap' },
@@ -180,22 +195,22 @@ const PengawasListPage = () => {
               {
                 key: 'id',
                 label: 'Aksi',
-                render: (p) => (
+                render: (p: Pengawas) => (
                   <>
                     <button
-                      className="btn btn-sm btn-outline-warning me-2"
+                      className="btn btn-sm btn-outline-success me-2"
                       onClick={() => {
                         setEditPengawas(p);
                         setShowForm(true);
                       }}
                     >
-                      ✏️ Edit
+                      ✏️
                     </button>
                     <button
                       className="btn btn-sm btn-outline-danger"
                       onClick={() => handleDelete(p.id)}
                     >
-                      🗑️ Hapus
+                      🗑️
                     </button>
                   </>
                 ),
@@ -204,23 +219,24 @@ const PengawasListPage = () => {
             data={pengawasList}
           />
 
-          <div className="d-flex justify-content-between align-items-center mt-3">
-            <button
-              className="btn btn-secondary"
-              onClick={() => setPage(page - 1)}
-              disabled={page <= 1}
-            >
-              ← Prev
-            </button>
-            <span>Halaman {page} dari {totalPages}</span>
-            <button
-              className="btn btn-secondary"
-              onClick={() => setPage(page + 1)}
-              disabled={page >= totalPages}
-            >
-              Next →
-            </button>
-          </div>
+          {totalPages > 1 && (
+            <div className="d-flex justify-content-between align-items-center mt-4">
+              <button
+                className="btn btn-outline-success"
+                onClick={() => setPage(page - 1)}
+                disabled={page <= 1}
+              >
+                ← Sebelumnya
+              </button>
+              <button
+                className="btn btn-outline-success"
+                onClick={() => setPage(page + 1)}
+                disabled={page >= totalPages}
+              >
+                Selanjutnya →
+              </button>
+            </div>
+          )}
         </>
       )}
     </div>

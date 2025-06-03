@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import FormInput from '../../../components/FormInput';
+import { FiUser, FiPlus, FiEdit2 } from 'react-icons/fi';
+import { useMediaQuery } from 'react-responsive';
 
 type Pengawas = {
   nama_lengkap: string;
@@ -27,6 +29,8 @@ const AddPengawasModal = ({ show, onClose, onSubmit, pengawas }: Props) => {
     tanggal_bergabung: '',
   });
   const [readonly, setReadonly] = useState<boolean>(false);
+
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   useEffect(() => {
     if (!show) return;
@@ -75,8 +79,8 @@ const AddPengawasModal = ({ show, onClose, onSubmit, pengawas }: Props) => {
     <div
       className="modal d-block"
       style={{
-        backgroundColor: 'rgba(0,0,0,0.7)',
-        backdropFilter: 'blur(4px)',
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        backdropFilter: 'blur(3px)',
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
@@ -84,24 +88,36 @@ const AddPengawasModal = ({ show, onClose, onSubmit, pengawas }: Props) => {
         zIndex: 1050,
       }}
     >
-      <div className="modal-dialog modal-lg">
+      <div
+        className="modal-dialog"
+        style={{
+          width: isMobile ? '100vw' : 480,
+          maxWidth: isMobile ? '96vw' : 520,
+          margin: isMobile ? '0 auto' : undefined,
+          minWidth: isMobile ? 'unset' : 480,
+          alignSelf: 'center',
+        }}
+      >
         <div
-          className="modal-content text-light"
+          className="modal-content"
           style={{
-            background: 'linear-gradient(145deg, #1b0036, #0f001e)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            background: 'var(--color-white)',
+            border: '1px solid var(--color-green)',
             borderRadius: '1rem',
-            boxShadow: '0 0 20px rgba(137, 79, 255, 0.4)',
+            color: 'var(--color-dark)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.16)',
+            padding: isMobile ? '0.5rem' : undefined,
           }}
         >
-          <div className="modal-header border-0">
-            <h5 className="modal-title">
-              {pengawas ? '👤 Detail Pengawas' : '➕ Tambah Pengawas'}
+          <div className="modal-header border-0" style={{ padding: isMobile ? '1rem 1rem 0.5rem 1rem' : undefined }}>
+            <h5 className="modal-title fw-bold d-flex align-items-center gap-2">
+              {pengawas ? <FiUser /> : <FiPlus />}
+              {pengawas ? 'Detail Pengawas' : 'Tambah Pengawas'}
             </h5>
-            <button type="button" className="btn-close btn-close-white" onClick={onClose}></button>
+            <button type="button" className="btn-close" onClick={onClose}></button>
           </div>
 
-          <div className="modal-body">
+          <div className="modal-body" style={{ padding: isMobile ? '0.75rem 1rem' : undefined }}>
             <FormInput
               label="Nama Lengkap"
               name="nama_lengkap"
@@ -126,7 +142,7 @@ const AddPengawasModal = ({ show, onClose, onSubmit, pengawas }: Props) => {
             <FormInput
               label="Tanggal Lahir"
               name="tanggal_lahir"
-              value={form.tanggal_lahir && !readonly ? form.tanggal_lahir : ''}
+              value={form.tanggal_lahir || ''}
               onChange={handleChange}
               readOnly={readonly}
               type="date"
@@ -142,20 +158,20 @@ const AddPengawasModal = ({ show, onClose, onSubmit, pengawas }: Props) => {
             <FormInput
               label="Tanggal Bergabung"
               name="tanggal_bergabung"
-              value={form.tanggal_bergabung && !readonly ? form.tanggal_bergabung : ''}
+              value={form.tanggal_bergabung || ''}
               onChange={handleChange}
               readOnly={readonly}
               type="date"
             />
           </div>
 
-          <div className="modal-footer border-0">
+          <div className="modal-footer border-0" style={{ padding: isMobile ? '0.5rem 1rem 1rem 1rem' : undefined }}>
             {readonly ? (
-              <button className="btn btn-warning fw-bold" onClick={() => setReadonly(false)}>
-                ✏️ Edit Form
+              <button className="btn btn-success fw-bold d-flex align-items-center gap-2" onClick={() => setReadonly(false)}>
+                <FiEdit2 /> Edit Form
               </button>
             ) : (
-              <button className="btn btn-primary fw-bold" onClick={handleSubmit}>
+              <button className="btn btn-success fw-bold" onClick={handleSubmit}>
                 Simpan
               </button>
             )}
