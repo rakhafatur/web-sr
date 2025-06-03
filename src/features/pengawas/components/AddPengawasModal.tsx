@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import FormInput from '../../../components/FormInput';
 import { FiUser, FiPlus, FiEdit2 } from 'react-icons/fi';
 import { useMediaQuery } from 'react-responsive';
+import dayjs from 'dayjs';
 
 type Pengawas = {
   nama_lengkap: string;
@@ -69,7 +70,13 @@ const AddPengawasModal = ({ show, onClose, onSubmit, pengawas }: Props) => {
       return;
     }
 
-    onSubmit(form);
+    const cleanForm = {
+      ...form,
+      tanggal_lahir: form.tanggal_lahir ? form.tanggal_lahir : null,
+      tanggal_bergabung: form.tanggal_bergabung ? form.tanggal_bergabung : null,
+    };
+
+    onSubmit(cleanForm);
     onClose();
   };
 
@@ -142,10 +149,14 @@ const AddPengawasModal = ({ show, onClose, onSubmit, pengawas }: Props) => {
             <FormInput
               label="Tanggal Lahir"
               name="tanggal_lahir"
-              value={form.tanggal_lahir || ''}
+              value={
+                readonly
+                  ? (form.tanggal_lahir ? dayjs(form.tanggal_lahir).format('DD/MM/YYYY') : '')
+                  : (form.tanggal_lahir || '')
+              }
               onChange={handleChange}
               readOnly={readonly}
-              type="date"
+              type={readonly ? 'text' : 'date'}
             />
             <FormInput
               label="Alamat"
@@ -158,10 +169,14 @@ const AddPengawasModal = ({ show, onClose, onSubmit, pengawas }: Props) => {
             <FormInput
               label="Tanggal Bergabung"
               name="tanggal_bergabung"
-              value={form.tanggal_bergabung || ''}
+              value={
+                readonly
+                  ? (form.tanggal_bergabung ? dayjs(form.tanggal_bergabung).format('DD/MM/YYYY') : '')
+                  : (form.tanggal_bergabung || '')
+              }
               onChange={handleChange}
               readOnly={readonly}
-              type="date"
+              type={readonly ? 'text' : 'date'}
             />
           </div>
 
