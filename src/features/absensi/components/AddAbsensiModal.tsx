@@ -60,7 +60,7 @@ const AddAbsensiModal = ({ show, onClose, onSubmit, absensi }: Props) => {
 
   if (!show) return null;
 
-  return (
+  return ( 
     <div
       className="modal d-block"
       tabIndex={-1}
