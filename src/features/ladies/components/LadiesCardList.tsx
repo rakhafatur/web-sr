@@ -30,7 +30,7 @@ const LadiesCardList = ({ ladies, onEdit, onDelete }: Props) => {
           <div className="d-flex align-items-center mb-1" style={{ fontSize: '0.9rem' }}>
             <FiSmile className="me-2" /> {l.nama_ladies}
           </div>
-          <div className="fw-bold d-flex align-items-center mb-1">
+          <div className="d-flex align-items-center mb-1" style={{ fontSize: '0.9rem' }}>
             <FiUser className="me-2" /> {l.nama_lengkap}
           </div>
 
