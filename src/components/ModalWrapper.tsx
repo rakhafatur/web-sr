@@ -40,7 +40,12 @@ const ModalWrapper = ({ show, title, children, footer, onClose }: Props) => {
       <div style={baseStyle}>
         <div
           className="d-flex justify-content-between align-items-center p-4 border-bottom"
-          style={{ backgroundColor: 'var(--color-green-light)', position: 'sticky', top: 0, zIndex: 1 }}
+          style={{
+            backgroundColor: 'var(--color-green-light)',
+            position: 'sticky',
+            top: 0,
+            zIndex: 1,
+          }}
         >
           <h5 className="m-0 fw-bold">{title}</h5>
           <button className="btn-close" onClick={onClose}></button>
@@ -49,7 +54,11 @@ const ModalWrapper = ({ show, title, children, footer, onClose }: Props) => {
         {footer && (
           <div
             className="p-4 border-top d-flex justify-content-end gap-2"
-            style={{ backgroundColor: 'var(--color-green-light)', position: 'sticky', bottom: 0 }}
+            style={{
+              backgroundColor: 'var(--color-green-light)',
+              // Hapus position: sticky dan bottom!
+              position: 'static',
+            }}
           >
             {footer}
           </div>
