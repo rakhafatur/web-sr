@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import FormInput from '../../../components/FormInput';
+import { FiUser, FiPlus, FiEdit2 } from 'react-icons/fi';
+import ModalWrapper from '../../../components/ModalWrapper';
 
 type Lady = {
   id: string;
@@ -72,90 +74,81 @@ const AddLadiesModal = ({ show, onClose, onSubmit, lady }: Props) => {
 
   if (!show) return null;
 
-  return (
-    <div
-      className="modal d-block"
-      style={{
-        backgroundColor: 'rgba(0,0,0,0.7)',
-        backdropFilter: 'blur(4px)',
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1050,
-      }}
-    >
-      <div className="modal-dialog modal-lg">
-        <div
-          className="modal-content text-light"
-          style={{
-            background: 'linear-gradient(145deg, #1b0036, #0f001e)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: '1rem',
-            boxShadow: '0 0 20px rgba(137, 79, 255, 0.4)',
-          }}
-        >
-          <div className="modal-header border-0">
-            <h5 className="modal-title">{lady ? '💃 Detail Ladies' : '➕ Tambah Ladies'}</h5>
-            <button type="button" className="btn-close btn-close-white" onClick={onClose}></button>
-          </div>
+  const formContent = (
+    <>
+      <FormInput label="Nama Lengkap" name="nama_lengkap" value={form.nama_lengkap} onChange={handleChange} readOnly={readonly} />
+      <FormInput label="Nama Ladies" name="nama_ladies" value={form.nama_ladies} onChange={handleChange} readOnly={readonly} />
+      <FormInput label="PIN" name="pin" value={form.pin} onChange={handleChange} readOnly={readonly} />
+      <FormInput label="Nomor KTP" name="nomor_ktp" value={form.nomor_ktp} onChange={handleChange} readOnly={readonly} />
+      <FormInput label="Tanggal Bergabung" name="tanggal_bergabung" value={form.tanggal_bergabung} onChange={handleChange} readOnly={readonly} type="date" />
+      <FormInput label="Alamat" name="alamat" value={form.alamat} onChange={handleChange} readOnly={readonly} type="textarea" />
 
-          <div className="modal-body">
-            <FormInput label="Nama Lengkap" name="nama_lengkap" value={form.nama_lengkap} onChange={handleChange} readOnly={readonly} />
-            <FormInput label="Nama Ladies" name="nama_ladies" value={form.nama_ladies} onChange={handleChange} readOnly={readonly} />
-            <FormInput label="PIN" name="pin" value={form.pin} onChange={handleChange} readOnly={readonly} />
-            <FormInput label="Nomor KTP" name="nomor_ktp" value={form.nomor_ktp} onChange={handleChange} readOnly={readonly} />
-            <FormInput label="Tanggal Bergabung" name="tanggal_bergabung" value={form.tanggal_bergabung} onChange={handleChange} readOnly={readonly} type="date" />
-            <FormInput label="Alamat" name="alamat" value={form.alamat} onChange={handleChange} readOnly={readonly} type="textarea" />
-
-            <div className="mb-3">
-              <label className="form-label fw-semibold text-light">Nama Outlet</label>
-              {readonly ? (
+      <div className="mb-3">
+        <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>
+          Nama Outlet
+        </label>
+        {readonly ? (
+          <input
+            className="form-control bg-white text-dark border"
+            value={form.nama_outlet || '-'}
+            readOnly
+          />
+        ) : (
+          <div className="d-flex gap-3">
+            {['SA', 'Royal', 'MTR'].map((outlet) => (
+              <div key={outlet} className="form-check">
                 <input
-                  className="form-control bg-dark text-light border-secondary"
-                  value={form.nama_outlet || '-'}
-                  readOnly
+                  className="form-check-input"
+                  type="radio"
+                  name="nama_outlet"
+                  value={outlet}
+                  checked={form.nama_outlet === outlet}
+                  onChange={handleChange}
+                  id={`outlet-${outlet}`}
                 />
-              ) : (
-                <div className="d-flex gap-3">
-                  {['SA', 'Royal', 'MTR'].map((outlet) => (
-                    <div key={outlet} className="form-check">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="nama_outlet"
-                        value={outlet}
-                        checked={form.nama_outlet === outlet}
-                        onChange={handleChange}
-                        id={`outlet-${outlet}`}
-                      />
-                      <label className="form-check-label" htmlFor={`outlet-${outlet}`}>
-                        {outlet}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                <label className="form-check-label" htmlFor={`outlet-${outlet}`}>{outlet}</label>
+              </div>
+            ))}
           </div>
-
-          <div className="modal-footer border-0">
-            {readonly ? (
-              <button className="btn btn-warning fw-bold" onClick={() => setReadonly(false)}>
-                ✏️ Edit Form
-              </button>
-            ) : (
-              <button className="btn btn-primary fw-bold" onClick={handleSubmit}>
-                Simpan
-              </button>
-            )}
-            <button className="btn btn-secondary fw-bold" onClick={onClose}>
-              Tutup
-            </button>
-          </div>
-        </div>
+        )}
       </div>
-    </div>
+    </>
+  );
+
+  const footer = (
+    <>
+      {readonly ? (
+        <button className="btn btn-success fw-bold d-flex align-items-center gap-2" onClick={() => setReadonly(false)}>
+          <FiEdit2 /> Edit Form
+        </button>
+      ) : (
+        <button className="btn btn-success fw-bold" onClick={handleSubmit}>
+          Simpan
+        </button>
+      )}
+      <button className="btn btn-secondary fw-bold" onClick={onClose}>
+        Tutup
+      </button>
+    </>
+  );
+
+  return (
+    <ModalWrapper
+      show={show}
+      onClose={onClose}
+      title={lady ? (
+        <span className="d-flex align-items-center gap-2">
+          <FiUser /> Detail Ladies
+        </span>
+      ) : (
+        <span className="d-flex align-items-center gap-2">
+          <FiPlus /> Tambah Ladies
+        </span>
+      )}
+      footer={footer}
+    >
+      {formContent}
+    </ModalWrapper>
   );
 };
 

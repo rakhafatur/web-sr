@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
+import { FiPlus, FiEdit2, FiTrash2 } from 'react-icons/fi';
 import { supabase } from '../../../lib/supabaseClient';
 import DataTable from '../../../components/DataTable';
 import ListToolbar from '../../../components/ListToolBar';
@@ -127,10 +128,10 @@ const LadiesListPage = () => {
           )}
           <button
             onClick={() => { setEditLady(null); setShowForm(true); }}
-            className="btn btn-success rounded-circle position-fixed"
+            className="btn btn-success rounded-circle position-fixed d-flex align-items-center justify-content-center"
             style={{ bottom: '20px', right: '20px', width: '56px', height: '56px', fontSize: '24px', zIndex: 1000, boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}
           >
-            +
+            <FiPlus />
           </button>
         </>
       ) : (
@@ -145,7 +146,11 @@ const LadiesListPage = () => {
               setEditLady(null);
               setShowForm(true);
             }}
-            addLabel="➕ Tambah Ladies"
+            addLabel={
+              <span className="d-flex align-items-center">
+                <FiPlus className="me-2" /> Tambah Ladies
+              </span>
+            }
             buttonColor="btn-success"
           />
 
@@ -160,11 +165,11 @@ const LadiesListPage = () => {
                 label: 'Aksi',
                 render: (lady: Lady) => (
                   <>
-                    <button className="btn btn-sm btn-outline-warning me-2" onClick={() => { setEditLady(lady); setShowForm(true); }}>
-                      ✏️
+                    <button className="btn btn-sm btn-outline-success me-2 d-flex align-items-center" onClick={() => { setEditLady(lady); setShowForm(true); }}>
+                      <FiEdit2 />
                     </button>
-                    <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(lady.id)}>
-                      🗑️
+                    <button className="btn btn-sm btn-outline-danger d-flex align-items-center" onClick={() => handleDelete(lady.id)}>
+                      <FiTrash2 />
                     </button>
                   </>
                 ),
