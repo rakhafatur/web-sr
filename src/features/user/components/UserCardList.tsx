@@ -22,7 +22,7 @@ const UserCardList = ({ users, onEdit, onDelete }: Props) => {
       onDelete={onDelete}
       renderItem={(u) => (
         <>
-          <div className="fw-bold d-flex align-items-center mb-1">
+          <div className="d-flex align-items-center" style={{ fontSize: '0.9rem' }}>
             <FiUser className="me-2" /> {u.username}
           </div>
           <div className="d-flex align-items-center" style={{ fontSize: '0.9rem' }}>

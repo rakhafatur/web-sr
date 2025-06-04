@@ -27,23 +27,19 @@ const LadiesCardList = ({ ladies, onEdit, onDelete }: Props) => {
       onDelete={onDelete}
       renderItem={(l) => (
         <>
-          <div className="fw-bold d-flex align-items-center mb-1">
-            <FiUser className="me-2" /> {l.nama_lengkap}
-          </div>
           <div className="d-flex align-items-center mb-1" style={{ fontSize: '0.9rem' }}>
             <FiSmile className="me-2" /> {l.nama_ladies}
           </div>
+          <div className="fw-bold d-flex align-items-center mb-1">
+            <FiUser className="me-2" /> {l.nama_lengkap}
+          </div>
+
           <div className="d-flex align-items-center mb-1" style={{ fontSize: '0.9rem' }}>
             <FiMapPin className="me-2" /> {l.nama_outlet}
           </div>
           <div className="d-flex align-items-center mb-1" style={{ fontSize: '0.9rem' }}>
             <FiCreditCard className="me-2" /> PIN: {l.pin}
           </div>
-          {l.tanggal_bergabung && (
-            <div className="d-flex align-items-center mb-1" style={{ fontSize: '0.9rem' }}>
-              <FiCalendar className="me-2" /> Bergabung: {l.tanggal_bergabung}
-            </div>
-          )}
         </>
       )}
     />

@@ -26,30 +26,13 @@ const PengawasCardList = ({ pengawas, onEdit, onDelete }: Props) => {
       onDelete={onDelete}
       renderItem={(p) => (
         <>
-          <div className="fw-bold d-flex align-items-center mb-1">
-            <FiUser className="me-2" /> {p.nama_lengkap}
-          </div>
           {p.nama_panggilan && (
-            <div className="d-flex align-items-center mb-1" style={{ fontSize: '0.9rem' }}>
+            <div className="d-flex align-items-center mb-1">
               <FiSmile className="me-2" /> {p.nama_panggilan}
             </div>
           )}
-          <div style={{ fontSize: '0.9rem' }}>
-            {p.nomor_ktp && (
-              <div className="d-flex align-items-center mb-1">
-                <FiCreditCard className="me-2" /> {p.nomor_ktp}
-              </div>
-            )}
-            {p.tanggal_lahir && (
-              <div className="d-flex align-items-center mb-1">
-                <FiCalendar className="me-2" /> Lahir: {p.tanggal_lahir}
-              </div>
-            )}
-            {p.tanggal_bergabung && (
-              <div className="d-flex align-items-center">
-                <FiUserPlus className="me-2" /> Bergabung: {p.tanggal_bergabung}
-              </div>
-            )}
+          <div className="fw-bold d-flex align-items-center mb-1">
+            <FiUser className="me-2" /> {p.nama_lengkap}
           </div>
         </>
       )}
