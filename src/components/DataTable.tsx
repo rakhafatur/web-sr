@@ -36,7 +36,7 @@ function DataTable<T extends { id: string }>({
   return (
     <div style={{ overflowX: 'auto' }}>
       <table
-        className="sr-table"
+        className="sr-table shadow-sm"
         style={{
           minWidth: '600px',
           fontSize: '0.9rem',
@@ -44,6 +44,7 @@ function DataTable<T extends { id: string }>({
           borderCollapse: 'collapse',
           borderRadius: '0.5rem',
           overflow: 'hidden',
+          border: '1px solid var(--color-green-light)',
         }}
       >
         <thead>
