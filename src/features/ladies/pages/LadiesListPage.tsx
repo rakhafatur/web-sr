@@ -146,7 +146,7 @@ const LadiesListPage = () => {
               setShowForm(true);
             }}
             addLabel="➕ Tambah Ladies"
-            buttonColor="btn-warning"
+            buttonColor="btn-success"
           />
 
           <DataTable
