@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
+import { FiUser, FiPlus } from 'react-icons/fi';
+import EntityFormModal, { Field } from '../../../components/EntityFormModal';
 import FormInput from '../../../components/FormInput';
-import { FiUser, FiPlus, FiEdit2 } from 'react-icons/fi';
-import ModalWrapper from '../../../components/ModalWrapper';
 
 type Lady = {
   id: string;
@@ -22,75 +21,25 @@ type Props = {
 };
 
 const AddLadiesModal = ({ show, onClose, onSubmit, lady }: Props) => {
-  const [form, setForm] = useState<Omit<Lady, 'id'>>({
-    nama_lengkap: '',
-    nama_ladies: '',
-    nama_outlet: '',
-    pin: '',
-    nomor_ktp: '',
-    tanggal_bergabung: '',
-    alamat: '',
-  });
-
-  const [readonly, setReadonly] = useState(false);
-
-  useEffect(() => {
-    if (!show) return;
-
-    if (lady) {
-      setForm({
-        nama_lengkap: lady.nama_lengkap,
-        nama_ladies: lady.nama_ladies,
-        nama_outlet: lady.nama_outlet,
-        pin: lady.pin,
-        nomor_ktp: lady.nomor_ktp,
-        tanggal_bergabung: lady.tanggal_bergabung,
-        alamat: lady.alamat,
-      });
-      setReadonly(true);
-    } else {
-      setForm({
-        nama_lengkap: '',
-        nama_ladies: '',
-        nama_outlet: '',
-        pin: '',
-        nomor_ktp: '',
-        tanggal_bergabung: '',
-        alamat: '',
-      });
-      setReadonly(false);
-    }
-  }, [show, lady]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = () => {
-    onSubmit(form);
-    onClose();
-  };
-
-  if (!show) return null;
-
-  const formContent = (
-    <>
-      <FormInput label="Nama Lengkap" name="nama_lengkap" value={form.nama_lengkap} onChange={handleChange} readOnly={readonly} />
-      <FormInput label="Nama Ladies" name="nama_ladies" value={form.nama_ladies} onChange={handleChange} readOnly={readonly} />
-      <FormInput label="PIN" name="pin" value={form.pin} onChange={handleChange} readOnly={readonly} />
-      <FormInput label="Nomor KTP" name="nomor_ktp" value={form.nomor_ktp} onChange={handleChange} readOnly={readonly} />
-      <FormInput label="Tanggal Bergabung" name="tanggal_bergabung" value={form.tanggal_bergabung} onChange={handleChange} readOnly={readonly} type="date" />
-      <FormInput label="Alamat" name="alamat" value={form.alamat} onChange={handleChange} readOnly={readonly} type="textarea" />
-
-      <div className="mb-3">
-        <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>
-          Nama Outlet
-        </label>
-        {readonly ? (
+  const fields: Field[] = [
+    { name: 'nama_lengkap', label: 'Nama Lengkap' },
+    { name: 'nama_ladies', label: 'Nama Ladies' },
+    { name: 'pin', label: 'PIN' },
+    { name: 'nomor_ktp', label: 'Nomor KTP' },
+    {
+      name: 'tanggal_bergabung',
+      label: 'Tanggal Bergabung',
+      type: 'date',
+    },
+    { name: 'alamat', label: 'Alamat', type: 'textarea' },
+    {
+      name: 'nama_outlet',
+      label: 'Nama Outlet',
+      render: ({ value, onChange, readonly }) =>
+        readonly ? (
           <input
             className="form-control bg-white text-dark border"
-            value={form.nama_outlet || '-'}
+            value={value || '-'}
             readOnly
           />
         ) : (
@@ -102,53 +51,36 @@ const AddLadiesModal = ({ show, onClose, onSubmit, lady }: Props) => {
                   type="radio"
                   name="nama_outlet"
                   value={outlet}
-                  checked={form.nama_outlet === outlet}
-                  onChange={handleChange}
+                  checked={value === outlet}
+                  onChange={onChange}
                   id={`outlet-${outlet}`}
                 />
                 <label className="form-check-label" htmlFor={`outlet-${outlet}`}>{outlet}</label>
               </div>
             ))}
           </div>
-        )}
-      </div>
-    </>
-  );
-
-  const footer = (
-    <>
-      {readonly ? (
-        <button className="btn btn-success fw-bold d-flex align-items-center gap-2" onClick={() => setReadonly(false)}>
-          <FiEdit2 /> Edit Form
-        </button>
-      ) : (
-        <button className="btn btn-success fw-bold" onClick={handleSubmit}>
-          Simpan
-        </button>
-      )}
-      <button className="btn btn-secondary fw-bold" onClick={onClose}>
-        Tutup
-      </button>
-    </>
-  );
+        ),
+    },
+  ];
 
   return (
-    <ModalWrapper
+    <EntityFormModal
       show={show}
       onClose={onClose}
-      title={lady ? (
-        <span className="d-flex align-items-center gap-2">
-          <FiUser /> Detail Ladies
-        </span>
-      ) : (
+      onSubmit={onSubmit}
+      data={lady || undefined}
+      titleAdd={
         <span className="d-flex align-items-center gap-2">
           <FiPlus /> Tambah Ladies
         </span>
-      )}
-      footer={footer}
-    >
-      {formContent}
-    </ModalWrapper>
+      }
+      titleDetail={
+        <span className="d-flex align-items-center gap-2">
+          <FiUser /> Detail Ladies
+        </span>
+      }
+      fields={fields}
+    />
   );
 };
 
