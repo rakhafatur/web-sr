@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import FormInput from '../../../components/FormInput';
 import { FiUser, FiPlus, FiEdit2 } from 'react-icons/fi';
-import { useMediaQuery } from 'react-responsive';
+import ModalWrapper from '../../../components/ModalWrapper';
 import dayjs from 'dayjs';
 
 type Pengawas = {
@@ -31,7 +31,6 @@ const AddPengawasModal = ({ show, onClose, onSubmit, pengawas }: Props) => {
   });
   const [readonly, setReadonly] = useState<boolean>(false);
 
-  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   useEffect(() => {
     if (!show) return;
@@ -82,121 +81,98 @@ const AddPengawasModal = ({ show, onClose, onSubmit, pengawas }: Props) => {
 
   if (!show) return null;
 
+  const formContent = (
+    <>
+      <FormInput
+        label="Nama Lengkap"
+        name="nama_lengkap"
+        value={form.nama_lengkap || ''}
+        onChange={handleChange}
+        readOnly={readonly}
+      />
+      <FormInput
+        label="Nama Panggilan"
+        name="nama_panggilan"
+        value={form.nama_panggilan || ''}
+        onChange={handleChange}
+        readOnly={readonly}
+      />
+      <FormInput
+        label="Nomor KTP"
+        name="nomor_ktp"
+        value={form.nomor_ktp || ''}
+        onChange={handleChange}
+        readOnly={readonly}
+      />
+      <FormInput
+        label="Tanggal Lahir"
+        name="tanggal_lahir"
+        value={
+          readonly
+            ? (form.tanggal_lahir ? dayjs(form.tanggal_lahir).format('DD/MM/YYYY') : '')
+            : (form.tanggal_lahir || '')
+        }
+        onChange={handleChange}
+        readOnly={readonly}
+        type={readonly ? 'text' : 'date'}
+      />
+      <FormInput
+        label="Alamat"
+        name="alamat"
+        value={form.alamat || ''}
+        onChange={handleChange}
+        readOnly={readonly}
+        type="textarea"
+      />
+      <FormInput
+        label="Tanggal Bergabung"
+        name="tanggal_bergabung"
+        value={
+          readonly
+            ? (form.tanggal_bergabung ? dayjs(form.tanggal_bergabung).format('DD/MM/YYYY') : '')
+            : (form.tanggal_bergabung || '')
+        }
+        onChange={handleChange}
+        readOnly={readonly}
+        type={readonly ? 'text' : 'date'}
+      />
+    </>
+  );
+
+  const footer = (
+    <>
+      {readonly ? (
+        <button className="btn btn-success fw-bold d-flex align-items-center gap-2" onClick={() => setReadonly(false)}>
+          <FiEdit2 /> Edit Form
+        </button>
+      ) : (
+        <button className="btn btn-success fw-bold" onClick={handleSubmit}>
+          Simpan
+        </button>
+      )}
+      <button className="btn btn-secondary fw-bold" onClick={onClose}>
+        Tutup
+      </button>
+    </>
+  );
+
   return (
-    <div
-      className="modal d-block"
-      style={{
-        backgroundColor: 'rgba(0,0,0,0.6)',
-        backdropFilter: 'blur(3px)',
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1050,
-      }}
+    <ModalWrapper
+      show={show}
+      onClose={onClose}
+      title={pengawas ? (
+        <span className="d-flex align-items-center gap-2">
+          <FiUser /> Detail Pengawas
+        </span>
+      ) : (
+        <span className="d-flex align-items-center gap-2">
+          <FiPlus /> Tambah Pengawas
+        </span>
+      )}
+      footer={footer}
     >
-      <div
-        className="modal-dialog"
-        style={{
-          width: isMobile ? '100vw' : 480,
-          maxWidth: isMobile ? '96vw' : 520,
-          margin: isMobile ? '0 auto' : undefined,
-          minWidth: isMobile ? 'unset' : 480,
-          alignSelf: 'center',
-        }}
-      >
-        <div
-          className="modal-content"
-          style={{
-            background: 'var(--color-white)',
-            border: '1px solid var(--color-green)',
-            borderRadius: '1rem',
-            color: 'var(--color-dark)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.16)',
-            padding: isMobile ? '0.5rem' : undefined,
-          }}
-        >
-          <div className="modal-header border-0" style={{ padding: isMobile ? '1rem 1rem 0.5rem 1rem' : undefined }}>
-            <h5 className="modal-title fw-bold d-flex align-items-center gap-2">
-              {pengawas ? <FiUser /> : <FiPlus />}
-              {pengawas ? 'Detail Pengawas' : 'Tambah Pengawas'}
-            </h5>
-            <button type="button" className="btn-close" onClick={onClose}></button>
-          </div>
-
-          <div className="modal-body" style={{ padding: isMobile ? '0.75rem 1rem' : undefined }}>
-            <FormInput
-              label="Nama Lengkap"
-              name="nama_lengkap"
-              value={form.nama_lengkap || ''}
-              onChange={handleChange}
-              readOnly={readonly}
-            />
-            <FormInput
-              label="Nama Panggilan"
-              name="nama_panggilan"
-              value={form.nama_panggilan || ''}
-              onChange={handleChange}
-              readOnly={readonly}
-            />
-            <FormInput
-              label="Nomor KTP"
-              name="nomor_ktp"
-              value={form.nomor_ktp || ''}
-              onChange={handleChange}
-              readOnly={readonly}
-            />
-            <FormInput
-              label="Tanggal Lahir"
-              name="tanggal_lahir"
-              value={
-                readonly
-                  ? (form.tanggal_lahir ? dayjs(form.tanggal_lahir).format('DD/MM/YYYY') : '')
-                  : (form.tanggal_lahir || '')
-              }
-              onChange={handleChange}
-              readOnly={readonly}
-              type={readonly ? 'text' : 'date'}
-            />
-            <FormInput
-              label="Alamat"
-              name="alamat"
-              value={form.alamat || ''}
-              onChange={handleChange}
-              readOnly={readonly}
-              type="textarea"
-            />
-            <FormInput
-              label="Tanggal Bergabung"
-              name="tanggal_bergabung"
-              value={
-                readonly
-                  ? (form.tanggal_bergabung ? dayjs(form.tanggal_bergabung).format('DD/MM/YYYY') : '')
-                  : (form.tanggal_bergabung || '')
-              }
-              onChange={handleChange}
-              readOnly={readonly}
-              type={readonly ? 'text' : 'date'}
-            />
-          </div>
-
-          <div className="modal-footer border-0" style={{ padding: isMobile ? '0.5rem 1rem 1rem 1rem' : undefined }}>
-            {readonly ? (
-              <button className="btn btn-success fw-bold d-flex align-items-center gap-2" onClick={() => setReadonly(false)}>
-                <FiEdit2 /> Edit Form
-              </button>
-            ) : (
-              <button className="btn btn-success fw-bold" onClick={handleSubmit}>
-                Simpan
-              </button>
-            )}
-            <button className="btn btn-secondary fw-bold" onClick={onClose}>
-              Tutup
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+      {formContent}
+    </ModalWrapper>
   );
 };
 

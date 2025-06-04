@@ -22,11 +22,11 @@ const UserCardList = ({ users, onEdit, onDelete }: Props) => {
       onDelete={onDelete}
       renderItem={(u) => (
         <>
-          <div className="mb-2 d-flex align-items-center" style={{ color: 'var(--color-dark)' }}>
-            <FiUser className="me-2" /> <strong>Username:</strong>&nbsp;{u.username}
+          <div className="fw-bold d-flex align-items-center mb-1">
+            <FiUser className="me-2" /> {u.username}
           </div>
-          <div className="d-flex align-items-center" style={{ color: 'var(--color-dark)' }}>
-            <FiType className="me-2" /> <strong>Nama:</strong>&nbsp;{u.nama || '-'}
+          <div className="d-flex align-items-center" style={{ fontSize: '0.9rem' }}>
+            <FiType className="me-2" /> {u.nama || '-'}
           </div>
         </>
       )}

@@ -4,7 +4,7 @@ import AddPengawasModal from '../components/AddPengawasModal';
 import DataTable from '../../../components/DataTable';
 import PengawasCardList from '../components/PengawasCardList';
 import { useMediaQuery } from 'react-responsive';
-import { FiPlus } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2 } from 'react-icons/fi';
 
 type Pengawas = {
   id: string;
@@ -198,19 +198,19 @@ const PengawasListPage = () => {
                 render: (p: Pengawas) => (
                   <>
                     <button
-                      className="btn btn-sm btn-outline-success me-2"
+                      className="btn btn-sm btn-outline-success me-2 d-flex align-items-center"
                       onClick={() => {
                         setEditPengawas(p);
                         setShowForm(true);
                       }}
                     >
-                      ✏️
+                      <FiEdit2 />
                     </button>
                     <button
-                      className="btn btn-sm btn-outline-danger"
+                      className="btn btn-sm btn-outline-danger d-flex align-items-center"
                       onClick={() => handleDelete(p.id)}
                     >
-                      🗑️
+                      <FiTrash2 />
                     </button>
                   </>
                 ),

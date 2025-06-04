@@ -5,7 +5,7 @@ type Props = {
   placeholder?: string;
   onKeywordChange: (value: string) => void;
   onAddClick: () => void;
-  addLabel?: string;
+  addLabel?: React.ReactNode;
   buttonColor?: string; // contoh: 'btn-success', 'btn-outline-success', dsb
 };
 

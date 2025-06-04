@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 import DataTable from '../../../components/DataTable';
 import UserCardList from '../components/UserCardList';
 import { useMediaQuery } from 'react-responsive';
-import { FiPlus } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2 } from 'react-icons/fi';
 
 type User = {
   id: string;
@@ -218,19 +218,19 @@ const UserListPage = () => {
                 render: (u: User) => (
                   <>
                     <button
-                      className="btn btn-sm btn-outline-success me-2"
+                      className="btn btn-sm btn-outline-success me-2 d-flex align-items-center"
                       onClick={() => {
                         setEditUser(u);
                         setShowForm(true);
                       }}
                     >
-                      ✏️
+                      <FiEdit2 />
                     </button>
                     <button
-                      className="btn btn-sm btn-outline-danger"
+                      className="btn btn-sm btn-outline-danger d-flex align-items-center"
                       onClick={() => handleDelete(u.id)}
                     >
-                      🗑️
+                      <FiTrash2 />
                     </button>
                   </>
                 ),
