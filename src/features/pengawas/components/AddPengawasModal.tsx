@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
-import FormInput from '../../../components/FormInput';
-import { FiUser, FiPlus, FiEdit2 } from 'react-icons/fi';
-import ModalWrapper from '../../../components/ModalWrapper';
+import { FiUser, FiPlus } from 'react-icons/fi';
 import dayjs from 'dayjs';
+import EntityFormModal, { Field } from '../../../components/EntityFormModal';
+import FormInput from '../../../components/FormInput';
 
 type Pengawas = {
   nama_lengkap: string;
@@ -21,158 +20,86 @@ type Props = {
 };
 
 const AddPengawasModal = ({ show, onClose, onSubmit, pengawas }: Props) => {
-  const [form, setForm] = useState<Pengawas>({
-    nama_lengkap: '',
-    nama_panggilan: '',
-    nomor_ktp: '',
-    tanggal_lahir: '',
-    alamat: '',
-    tanggal_bergabung: '',
-  });
-  const [readonly, setReadonly] = useState<boolean>(false);
-
-
-  useEffect(() => {
-    if (!show) return;
-
-    if (pengawas) {
-      setForm({
-        nama_lengkap: pengawas.nama_lengkap,
-        nama_panggilan: pengawas.nama_panggilan,
-        nomor_ktp: pengawas.nomor_ktp,
-        tanggal_lahir: pengawas.tanggal_lahir,
-        alamat: pengawas.alamat,
-        tanggal_bergabung: pengawas.tanggal_bergabung,
-      });
-      setReadonly(true);
-    } else {
-      setForm({
-        nama_lengkap: '',
-        nama_panggilan: '',
-        nomor_ktp: '',
-        tanggal_lahir: '',
-        alamat: '',
-        tanggal_bergabung: '',
-      });
-      setReadonly(false);
-    }
-  }, [show, pengawas]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = () => {
-    if (!form.nama_lengkap) {
+  const handleSubmit = (data: Pengawas) => {
+    if (!data.nama_lengkap) {
       alert('Nama lengkap wajib diisi');
       return;
     }
 
     const cleanForm = {
-      ...form,
-      tanggal_lahir: form.tanggal_lahir ? form.tanggal_lahir : null,
-      tanggal_bergabung: form.tanggal_bergabung ? form.tanggal_bergabung : null,
+      ...data,
+      tanggal_lahir: data.tanggal_lahir || null,
+      tanggal_bergabung: data.tanggal_bergabung || null,
     };
 
     onSubmit(cleanForm);
-    onClose();
   };
 
-  if (!show) return null;
-
-  const formContent = (
-    <>
-      <FormInput
-        label="Nama Lengkap"
-        name="nama_lengkap"
-        value={form.nama_lengkap || ''}
-        onChange={handleChange}
-        readOnly={readonly}
-      />
-      <FormInput
-        label="Nama Panggilan"
-        name="nama_panggilan"
-        value={form.nama_panggilan || ''}
-        onChange={handleChange}
-        readOnly={readonly}
-      />
-      <FormInput
-        label="Nomor KTP"
-        name="nomor_ktp"
-        value={form.nomor_ktp || ''}
-        onChange={handleChange}
-        readOnly={readonly}
-      />
-      <FormInput
-        label="Tanggal Lahir"
-        name="tanggal_lahir"
-        value={
-          readonly
-            ? (form.tanggal_lahir ? dayjs(form.tanggal_lahir).format('DD/MM/YYYY') : '')
-            : (form.tanggal_lahir || '')
-        }
-        onChange={handleChange}
-        readOnly={readonly}
-        type={readonly ? 'text' : 'date'}
-      />
-      <FormInput
-        label="Alamat"
-        name="alamat"
-        value={form.alamat || ''}
-        onChange={handleChange}
-        readOnly={readonly}
-        type="textarea"
-      />
-      <FormInput
-        label="Tanggal Bergabung"
-        name="tanggal_bergabung"
-        value={
-          readonly
-            ? (form.tanggal_bergabung ? dayjs(form.tanggal_bergabung).format('DD/MM/YYYY') : '')
-            : (form.tanggal_bergabung || '')
-        }
-        onChange={handleChange}
-        readOnly={readonly}
-        type={readonly ? 'text' : 'date'}
-      />
-    </>
-  );
-
-  const footer = (
-    <>
-      {readonly ? (
-        <button className="btn btn-success fw-bold d-flex align-items-center gap-2" onClick={() => setReadonly(false)}>
-          <FiEdit2 /> Edit Form
-        </button>
-      ) : (
-        <button className="btn btn-success fw-bold" onClick={handleSubmit}>
-          Simpan
-        </button>
-      )}
-      <button className="btn btn-secondary fw-bold" onClick={onClose}>
-        Tutup
-      </button>
-    </>
-  );
+  const fields: Field[] = [
+    { name: 'nama_lengkap', label: 'Nama Lengkap' },
+    { name: 'nama_panggilan', label: 'Nama Panggilan' },
+    { name: 'nomor_ktp', label: 'Nomor KTP' },
+    {
+      name: 'tanggal_lahir',
+      label: 'Tanggal Lahir',
+      render: ({ value, onChange, readonly }) => (
+        <FormInput
+          label="Tanggal Lahir"
+          name="tanggal_lahir"
+          value={
+            readonly
+              ? value
+                ? dayjs(value).format('DD/MM/YYYY')
+                : ''
+              : value || ''
+          }
+          onChange={onChange}
+          readOnly={readonly}
+          type={readonly ? 'text' : 'date'}
+        />
+      ),
+    },
+    { name: 'alamat', label: 'Alamat', type: 'textarea' },
+    {
+      name: 'tanggal_bergabung',
+      label: 'Tanggal Bergabung',
+      render: ({ value, onChange, readonly }) => (
+        <FormInput
+          label="Tanggal Bergabung"
+          name="tanggal_bergabung"
+          value={
+            readonly
+              ? value
+                ? dayjs(value).format('DD/MM/YYYY')
+                : ''
+              : value || ''
+          }
+          onChange={onChange}
+          readOnly={readonly}
+          type={readonly ? 'text' : 'date'}
+        />
+      ),
+    },
+  ];
 
   return (
-    <ModalWrapper
+    <EntityFormModal
       show={show}
       onClose={onClose}
-      title={pengawas ? (
-        <span className="d-flex align-items-center gap-2">
-          <FiUser /> Detail Pengawas
-        </span>
-      ) : (
+      onSubmit={handleSubmit}
+      data={pengawas || undefined}
+      titleAdd={
         <span className="d-flex align-items-center gap-2">
           <FiPlus /> Tambah Pengawas
         </span>
-      )}
-      footer={footer}
-    >
-      {formContent}
-    </ModalWrapper>
+      }
+      titleDetail={
+        <span className="d-flex align-items-center gap-2">
+          <FiUser /> Detail Pengawas
+        </span>
+      }
+      fields={fields}
+    />
   );
 };
 
