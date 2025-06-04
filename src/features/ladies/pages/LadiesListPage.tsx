@@ -165,10 +165,19 @@ const LadiesListPage = () => {
                 label: 'Aksi',
                 render: (lady: Lady) => (
                   <>
-                    <button className="btn btn-sm btn-outline-success me-2 d-flex align-items-center" onClick={() => { setEditLady(lady); setShowForm(true); }}>
+                    <button
+                      className="btn btn-sm btn-soft-warning me-2 d-flex align-items-center"
+                      onClick={() => {
+                        setEditLady(lady);
+                        setShowForm(true);
+                      }}
+                    >
                       <FiEdit2 />
                     </button>
-                    <button className="btn btn-sm btn-outline-danger d-flex align-items-center" onClick={() => handleDelete(lady.id)}>
+                    <button
+                      className="btn btn-sm btn-soft-danger d-flex align-items-center"
+                      onClick={() => handleDelete(lady.id)}
+                    >
                       <FiTrash2 />
                     </button>
                   </>

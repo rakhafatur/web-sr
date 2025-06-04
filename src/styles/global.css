@@ -134,6 +134,29 @@ body {
   background-color: #3d4f39;
 }
 
+/* soft action buttons */
+.btn-soft-warning {
+  background-color: var(--color-warning);
+  color: var(--color-dark);
+  border-color: var(--color-warning-hover);
+}
+
+.btn-soft-warning:hover {
+  background-color: var(--color-warning-hover);
+  color: var(--color-dark);
+}
+
+.btn-soft-danger {
+  background-color: var(--color-danger);
+  color: var(--color-dark);
+  border-color: var(--color-danger-hover);
+}
+
+.btn-soft-danger:hover {
+  background-color: var(--color-danger-hover);
+  color: var(--color-dark);
+}
+
 /* ========= CARDS ========== */
 .card {
   background-color: var(--color-white);

@@ -16,8 +16,8 @@ const ModalWrapper = ({ show, title, children, footer, onClose }: Props) => {
   const baseStyle: React.CSSProperties = {
     backgroundColor: 'var(--color-white)',
     border: '1px solid var(--color-green)',
-    borderRadius: '1rem',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.16)',
+    borderRadius: '1.25rem',
+    boxShadow: '0 4px 24px rgba(0,0,0,0.09)',
     color: 'var(--color-dark)',
     width: isMobile ? '95vw' : 420,
     maxWidth: '95vw',
@@ -39,16 +39,16 @@ const ModalWrapper = ({ show, title, children, footer, onClose }: Props) => {
     >
       <div style={baseStyle}>
         <div
-          className="d-flex justify-content-between align-items-center p-3 border-bottom"
+          className="d-flex justify-content-between align-items-center p-4 border-bottom"
           style={{ backgroundColor: 'var(--color-green-light)', position: 'sticky', top: 0, zIndex: 1 }}
         >
           <h5 className="m-0 fw-bold">{title}</h5>
           <button className="btn-close" onClick={onClose}></button>
         </div>
-        <div className="flex-grow-1 overflow-auto p-3">{children}</div>
+        <div className="flex-grow-1 overflow-auto p-4">{children}</div>
         {footer && (
           <div
-            className="p-3 border-top d-flex justify-content-end gap-2"
+            className="p-4 border-top d-flex justify-content-end gap-2"
             style={{ backgroundColor: 'var(--color-green-light)', position: 'sticky', bottom: 0 }}
           >
             {footer}
