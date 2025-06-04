@@ -198,7 +198,7 @@ const PengawasListPage = () => {
                 render: (p: Pengawas) => (
                   <>
                     <button
-                      className="btn btn-sm btn-outline-success me-2 d-flex align-items-center"
+                      className="btn btn-sm btn-soft-warning me-2 d-flex align-items-center"
                       onClick={() => {
                         setEditPengawas(p);
                         setShowForm(true);
@@ -207,7 +207,7 @@ const PengawasListPage = () => {
                       <FiEdit2 />
                     </button>
                     <button
-                      className="btn btn-sm btn-outline-danger d-flex align-items-center"
+                      className="btn btn-sm btn-soft-danger d-flex align-items-center"
                       onClick={() => handleDelete(p.id)}
                     >
                       <FiTrash2 />

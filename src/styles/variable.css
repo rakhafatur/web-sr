@@ -11,4 +11,9 @@
   --font-base: 'Segoe UI', sans-serif;
   --radius: 0.75rem;
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+  --color-warning: #fff3cd;
+  --color-warning-hover: #ffe8a1;
+  --color-danger: #f8d7da;
+  --color-danger-hover: #f5c2c7;
 }
