@@ -123,9 +123,6 @@ const CardTableAbsensi = ({
         >
           <FiArrowLeft /> <span>Sebelumnya</span>
         </button>
-        <span style={{ color: 'var(--color-dark)' }}>
-          Halaman {data.length === 0 ? 0 : page + 1} dari {totalPages}
-        </span>
         <button
           className="btn btn-outline-success btn-sm d-flex align-items-center gap-1"
           onClick={() => page < totalPages - 1 && onPageChange(page + 1)}
