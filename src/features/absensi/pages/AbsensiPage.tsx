@@ -42,6 +42,9 @@ const AbsensiPage = () => {
   const [editAbsensi, setEditAbsensi] = useState<Absensi | null>(null);
   const [selectedTanggal, setSelectedTanggal] = useState<string | null>(null);
 
+  // TOTAL PAGE logic
+  const totalPages = Math.max(1, Math.ceil(rekapRiwayat.length / limit));
+
   useEffect(() => {
     const fetchLadies = async () => {
       const { data } = await supabase.from('ladies').select('*');
@@ -124,6 +127,7 @@ const AbsensiPage = () => {
       fetchRiwayat();
       fetchRekapRiwayat();
     }
+    // eslint-disable-next-line
   }, [selectedLadyId, bulan, tahun, page]);
 
   const handlePrevMonth = () => {
@@ -278,37 +282,60 @@ const AbsensiPage = () => {
           </div>
 
           {!isMobile ? (
-            <table className="table table-bordered text-center align-middle mt-2">
-              <thead style={{ backgroundColor: 'var(--color-green-light)', color: 'var(--color-dark)' }}>
-                <tr>
-                  <th>Tanggal</th>
-                  <th>Status</th>
-                  <th>Keterangan</th>
-                  <th>Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {riwayat.map((a, i) => (
-                  <tr key={i}>
-                    <td>{a.tanggal}</td>
-                    <td>
-                      <span className={`badge ${a.status === 'KERJA' ? 'bg-success' :
-                        a.status === 'MENS' ? 'bg-danger' :
-                          a.status === 'OFF' ? 'bg-secondary' :
-                            a.status === 'SAKIT' ? 'bg-warning text-dark' :
-                              'bg-light text-dark'}`}>
-                        {a.status}
-                      </span>
-                    </td>
-                    <td>{a.keterangan || '-'}</td>
-                    <td>
-                      <button className="btn btn-sm btn-outline-warning me-2" onClick={() => handleEdit(a)}>✏️</button>
-                      <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(a.tanggal)}>🗑️</button>
-                    </td>
+            <>
+              <table className="table table-bordered text-center align-middle mt-2">
+                <thead style={{ backgroundColor: 'var(--color-green-light)', color: 'var(--color-dark)' }}>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Status</th>
+                    <th>Keterangan</th>
+                    <th>Aksi</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {riwayat.map((a, i) => (
+                    <tr key={i}>
+                      <td>{a.tanggal}</td>
+                      <td>
+                        <span className={`badge ${a.status === 'KERJA' ? 'bg-success' :
+                          a.status === 'MENS' ? 'bg-danger' :
+                            a.status === 'OFF' ? 'bg-secondary' :
+                              a.status === 'SAKIT' ? 'bg-warning text-dark' :
+                                'bg-light text-dark'}`}>
+                          {a.status}
+                        </span>
+                      </td>
+                      <td>{a.keterangan || '-'}</td>
+                      <td>
+                        <button className="btn btn-sm btn-outline-warning me-2" onClick={() => handleEdit(a)}>✏️</button>
+                        <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(a.tanggal)}>🗑️</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {/* PAGINATION */}
+              <div className="d-flex justify-content-between align-items-center mt-4">
+                <button
+                  className="btn btn-outline-success"
+                  onClick={() => setPage(page - 1)}
+                  disabled={page <= 1}
+                >
+                  ← Sebelumnya
+                </button>
+                <span style={{ color: 'var(--color-dark)' }}>
+                  Halaman {page} dari {totalPages}
+                </span>
+                <button
+                  className="btn btn-outline-success"
+                  onClick={() => setPage(page + 1)}
+                  disabled={page >= totalPages}
+                >
+                  Selanjutnya →
+                </button>
+              </div>
+            </>
           ) : (
             <CardTableAbsensi
               data={riwayat}
