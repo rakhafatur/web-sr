@@ -38,7 +38,7 @@ const AbsensiPage = () => {
   const [bulan, setBulan] = useState(dayjs().month() + 1);
   const [tahun, setTahun] = useState(dayjs().year());
   const [page, setPage] = useState(1);
-  const limit = 10;
+  const limit = isMobile ? 5 : 10;
 
   const [showModal, setShowModal] = useState(false);
   const [editAbsensi, setEditAbsensi] = useState<Absensi | null>(null);
@@ -358,7 +358,6 @@ const AbsensiPage = () => {
               page={page - 1}
               rowsPerPage={limit}
               onPageChange={(p) => {
-                // p di CardTableAbsensi selalu >= 0
                 if (p >= 0 && p < totalPages) setPage(p + 1);
               }}
               onEdit={handleEdit}
