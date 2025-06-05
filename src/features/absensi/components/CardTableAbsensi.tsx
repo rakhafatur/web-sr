@@ -18,17 +18,26 @@ type Absensi = {
 
 type Props = {
   data: Absensi[];
-  page: number;
+  page: number; // zero-based
   rowsPerPage: number;
   onPageChange: (page: number) => void;
   onEdit?: (absen: Absensi) => void;
   onDelete?: (tanggal: string) => void;
 };
 
-const CardTableAbsensi = ({ data, page, rowsPerPage, onPageChange, onEdit, onDelete }: Props) => {
+const CardTableAbsensi = ({
+  data,
+  page,
+  rowsPerPage,
+  onPageChange,
+  onEdit,
+  onDelete,
+}: Props) => {
   const start = page * rowsPerPage;
   const end = start + rowsPerPage;
   const currentRows = data.slice(start, end);
+
+  const totalPages = Math.max(1, Math.ceil(data.length / rowsPerPage));
 
   const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
 
@@ -105,18 +114,22 @@ const CardTableAbsensi = ({ data, page, rowsPerPage, onPageChange, onEdit, onDel
         </div>
       ))}
 
+      {/* PAGINATION MOBILE */}
       <div className="d-flex justify-content-between align-items-center mt-2">
         <button
           className="btn btn-outline-success btn-sm d-flex align-items-center gap-1"
-          onClick={() => onPageChange(page - 1)}
+          onClick={() => page > 0 && onPageChange(page - 1)}
           disabled={page === 0}
         >
           <FiArrowLeft /> <span>Sebelumnya</span>
         </button>
+        <span style={{ color: 'var(--color-dark)' }}>
+          Halaman {data.length === 0 ? 0 : page + 1} dari {totalPages}
+        </span>
         <button
           className="btn btn-outline-success btn-sm d-flex align-items-center gap-1"
-          onClick={() => onPageChange(page + 1)}
-          disabled={end >= data.length}
+          onClick={() => page < totalPages - 1 && onPageChange(page + 1)}
+          disabled={page >= totalPages - 1}
         >
           <span>Selanjutnya</span> <FiArrowRight />
         </button>

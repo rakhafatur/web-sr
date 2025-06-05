@@ -319,7 +319,7 @@ const AbsensiPage = () => {
               <div className="d-flex justify-content-between align-items-center mt-4">
                 <button
                   className="btn btn-outline-success"
-                  onClick={() => setPage(page - 1)}
+                  onClick={() => page > 1 && setPage(page - 1)}
                   disabled={page <= 1}
                 >
                   ← Sebelumnya
@@ -329,7 +329,7 @@ const AbsensiPage = () => {
                 </span>
                 <button
                   className="btn btn-outline-success"
-                  onClick={() => setPage(page + 1)}
+                  onClick={() => page < totalPages && setPage(page + 1)}
                   disabled={page >= totalPages}
                 >
                   Selanjutnya →
@@ -338,10 +338,13 @@ const AbsensiPage = () => {
             </>
           ) : (
             <CardTableAbsensi
-              data={riwayat}
+              data={rekapRiwayat}
               page={page - 1}
               rowsPerPage={limit}
-              onPageChange={(p) => setPage(p + 1)}
+              onPageChange={(p) => {
+                // p di CardTableAbsensi selalu >= 0
+                if (p >= 0 && p < totalPages) setPage(p + 1);
+              }}
               onEdit={handleEdit}
               onDelete={handleDelete}
             />
