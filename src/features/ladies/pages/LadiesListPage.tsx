@@ -165,23 +165,13 @@ const LadiesListPage = () => {
                 label: 'Aksi',
                 render: (lady: Lady) => (
                   <div className="d-flex gap-2">
-                    {/* Edit */}
                     <button
-                      className="btn btn-sm d-flex align-items-center justify-content-center p-0"
+                      className="btn btn-sm btn-outline-warning d-flex align-items-center justify-content-center"
                       style={{
-                        background: "#fff",
-                        border: "1.5px solid #212121",
-                        color: "#212121",
-                        width: 28,
-                        height: 28,
-                        transition: "all 0.14s",
+                        width: 32,
+                        height: 32,
+                        padding: 0,
                         borderRadius: 6,
-                      }}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.background = "#f0f0f0";
-                      }}
-                      onMouseLeave={e => {
-                        e.currentTarget.style.background = "#fff";
                       }}
                       onClick={() => {
                         setEditLady(lady);
@@ -191,23 +181,13 @@ const LadiesListPage = () => {
                     >
                       <FiEdit2 size={16} />
                     </button>
-                    {/* Delete */}
                     <button
-                      className="btn btn-sm d-flex align-items-center justify-content-center p-0"
+                      className="btn btn-sm btn-outline-danger d-flex align-items-center justify-content-center"
                       style={{
-                        background: "#fff",
-                        border: "1.5px solid #212121",
-                        color: "#212121",
-                        width: 28,
-                        height: 28,
-                        transition: "all 0.14s",
+                        width: 32,
+                        height: 32,
+                        padding: 0,
                         borderRadius: 6,
-                      }}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.background = "#f0f0f0";
-                      }}
-                      onMouseLeave={e => {
-                        e.currentTarget.style.background = "#fff";
                       }}
                       onClick={() => handleDelete(lady.id)}
                       title="Hapus"

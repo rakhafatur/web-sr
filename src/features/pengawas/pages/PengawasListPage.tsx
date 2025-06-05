@@ -198,51 +198,21 @@ const PengawasListPage = () => {
                 render: (p: Pengawas) => (
                   <div className="d-flex gap-2">
                     <button
-                      className="btn btn-sm d-flex align-items-center justify-content-center p-0"
-                      style={{
-                        background: "#fff",
-                        border: "1.5px solid #212121",
-                        color: "#212121",
-                        width: 28,
-                        height: 28,
-                        transition: "all 0.14s",
-                        borderRadius: 6,
-                      }}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.background = "#f0f0f0";
-                      }}
-                      onMouseLeave={e => {
-                        e.currentTarget.style.background = "#fff";
-                      }}
+                      className="btn btn-sm btn-outline-warning me-2"
                       onClick={() => {
                         setEditPengawas(p);
                         setShowForm(true);
                       }}
                       title="Edit"
                     >
-                      <FiEdit2 size={16} />
+                      <FiEdit2 />
                     </button>
                     <button
-                      className="btn btn-sm d-flex align-items-center justify-content-center p-0"
-                      style={{
-                        background: "#fff",
-                        border: "1.5px solid #212121",
-                        color: "#212121",
-                        width: 28,
-                        height: 28,
-                        transition: "all 0.14s",
-                        borderRadius: 6,
-                      }}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.background = "#f0f0f0";
-                      }}
-                      onMouseLeave={e => {
-                        e.currentTarget.style.background = "#fff";
-                      }}
+                      className="btn btn-sm btn-outline-danger"
                       onClick={() => handleDelete(p.id)}
                       title="Hapus"
                     >
-                      <FiTrash2 size={16} />
+                      <FiTrash2 />
                     </button>
                   </div>
                 ),

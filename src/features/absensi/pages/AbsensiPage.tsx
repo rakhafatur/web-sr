@@ -4,6 +4,8 @@ import dayjs from 'dayjs';
 import AddAbsensiModal from '../components/AddAbsensiModal';
 import { useMediaQuery } from 'react-responsive';
 import CardTableAbsensi from '../components/CardTableAbsensi';
+import DataTable from '../../../components/DataTable'; // Tambahkan ini
+import { FiPlus, FiEdit2, FiTrash2 } from 'react-icons/fi';
 
 type Lady = {
   id: string;
@@ -178,6 +180,12 @@ const AbsensiPage = () => {
   const totalOFF = rekapRiwayat.filter((r) => r.status === 'OFF').length;
   const totalSAKIT = rekapRiwayat.filter((r) => r.status === 'SAKIT').length;
 
+  // MAPPING UNTUK DataTable (wajib ada id unik)
+  const riwayatWithId = riwayat.map((row, idx) => ({
+    ...row,
+    id: row.tanggal + '-' + idx,
+  }));
+
   return (
     <div className="container py-4" style={{ background: 'var(--color-bg)', minHeight: '100vh' }}>
       <h2 className="fw-bold fs-4 mb-4" style={{ color: 'var(--color-dark)' }}>
@@ -283,37 +291,45 @@ const AbsensiPage = () => {
 
           {!isMobile ? (
             <>
-              <table className="table table-bordered text-center align-middle mt-2">
-                <thead style={{ backgroundColor: 'var(--color-green-light)', color: 'var(--color-dark)' }}>
-                  <tr>
-                    <th>Tanggal</th>
-                    <th>Status</th>
-                    <th>Keterangan</th>
-                    <th>Aksi</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {riwayat.map((a, i) => (
-                    <tr key={i}>
-                      <td>{a.tanggal}</td>
-                      <td>
-                        <span className={`badge ${a.status === 'KERJA' ? 'bg-success' :
-                          a.status === 'MENS' ? 'bg-danger' :
-                            a.status === 'OFF' ? 'bg-secondary' :
-                              a.status === 'SAKIT' ? 'bg-warning text-dark' :
-                                'bg-light text-dark'}`}>
-                          {a.status}
-                        </span>
-                      </td>
-                      <td>{a.keterangan || '-'}</td>
-                      <td>
-                        <button className="btn btn-sm btn-outline-warning me-2" onClick={() => handleEdit(a)}>✏️</button>
-                        <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(a.tanggal)}>🗑️</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <DataTable
+                columns={[
+                  { key: 'tanggal', label: 'Tanggal' },
+                  {
+                    key: 'status',
+                    label: 'Status',
+                    render: (a) => (
+                      <span className={`badge ${a.status === 'KERJA'
+                        ? 'bg-success'
+                        : a.status === 'MENS'
+                          ? 'bg-danger'
+                          : a.status === 'OFF'
+                            ? 'bg-secondary'
+                            : a.status === 'SAKIT'
+                              ? 'bg-warning text-dark'
+                              : 'bg-light text-dark'
+                        }`}>
+                        {a.status}
+                      </span>
+                    ),
+                  },
+                  { key: 'keterangan', label: 'Keterangan', render: (a) => a.keterangan || '-' },
+                  {
+                    key: 'id', // <--- PENTING: harus pakai salah satu key data!
+                    label: 'Aksi',
+                    render: (a) => (
+                      <>
+                        <button className="btn btn-sm btn-outline-warning me-2" onClick={() => handleEdit(a)}>
+                          <FiEdit2 />
+                        </button>
+                        <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(a.tanggal)}>
+                          < FiTrash2 />
+                        </button>
+                      </>
+                    ),
+                  },
+                ]}
+                data={riwayatWithId}
+              />
 
               {/* PAGINATION */}
               <div className="d-flex justify-content-between align-items-center mt-4">
