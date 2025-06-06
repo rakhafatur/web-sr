@@ -157,7 +157,7 @@ const CardTableRiwayatTransaksi = ({
 
           <div className="d-flex align-items-center mb-1" style={{ color: 'var(--color-dark)' }}>
             <FiFileText className="me-2" />
-            <strong>Keterangan:</strong>&nbsp;
+            <strong>Ket:</strong>&nbsp;
             {row.tipe === 'voucher'
               ? `Voucher ${row.jumlah / 150000} x 150.000`
               : editId === row.id && editForm && setEditForm
