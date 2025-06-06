@@ -26,14 +26,19 @@ const AddTransaksiPage = () => {
   }, []);
 
   return (
-    <div className="container py-4" style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
+    <div
+      className="container py-4"
+      style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}
+    >
       <h2 className="fw-bold fs-4 mb-4" style={{ color: 'var(--color-dark)' }}>
         📄 Transaksi Ladies
       </h2>
 
       <div className="row mb-4">
         <div className="col-md-6">
-          <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>Pilih Ladies</label>
+          <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>
+            Pilih Ladies
+          </label>
           <select
             className="form-select"
             style={{
@@ -51,16 +56,23 @@ const AddTransaksiPage = () => {
               </option>
             ))}
           </select>
+
+          {/* 🚨 ALERT jika belum pilih ladies */}
+          {!selectedLadyId && (
+            <div
+              className="alert alert-warning text-dark bg-warning-subtle border-warning mt-2"
+              style={{ fontSize: '0.95rem' }}
+            >
+              ⚠️ Silakan pilih ladies terlebih dahulu.
+            </div>
+          )}
         </div>
       </div>
 
       {selectedLady && (
         <>
           {/* ✏️ FORM TAMBAH */}
-          <div className="p-3 mb-5 rounded" style={{
-            backgroundColor: 'var(--color-green-light)',
-            border: '1px solid var(--color-green)',
-          }}>
+          <div className="mb-5">
             <h5 className="mb-3" style={{ color: 'var(--color-dark)' }}>
               📌 Transaksi untuk {selectedLady.nama_ladies} ({selectedLady.nama_outlet})
             </h5>
@@ -71,10 +83,7 @@ const AddTransaksiPage = () => {
           </div>
 
           {/* 📜 RIWAYAT */}
-          <div className="p-3 rounded" style={{
-            backgroundColor: 'var(--color-green-light)',
-            border: '1px solid var(--color-green)',
-          }}>
+          <div className="mt-4">
             <h5 className="mb-3" style={{ color: 'var(--color-dark)' }}>
               📋 Riwayat transaksi untuk {selectedLady.nama_ladies} ({selectedLady.nama_outlet})
             </h5>

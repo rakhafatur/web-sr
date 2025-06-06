@@ -135,7 +135,7 @@ const TransaksiForm = ({ ladiesId, onSuccess }: Props) => {
               label="Jumlah (Rp)"
               name="jumlah"
               value={formatNumber(totalJumlah.toString())}
-              onChange={() => {}}
+              onChange={() => { }}
               type="text"
               readOnly
             />
@@ -164,7 +164,7 @@ const TransaksiForm = ({ ladiesId, onSuccess }: Props) => {
         </div>
       )}
 
-      <div className="text-end">
+      <div className="text-start">
         <button
           className="btn btn-success mt-2 px-4"
           style={{ backgroundColor: 'var(--color-green)', borderColor: 'var(--color-green)' }}

@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import {
-  FiCalendar, FiMoreVertical, FiEdit2, FiTrash2, FiFileText, FiArrowLeft, FiArrowRight, FiDollarSign, FiMinusCircle, FiPlusCircle
+  FiCalendar, FiMoreVertical, FiEdit2, FiTrash2, FiFileText,
+  FiArrowLeft, FiArrowRight, FiDollarSign, FiMinusCircle, FiPlusCircle, FiSave, FiArrowUp, FiArrowDown
 } from 'react-icons/fi';
+import { useMediaQuery } from 'react-responsive';
 
 type Transaksi = {
   id: string;
@@ -17,7 +19,6 @@ type Transaksi = {
 type Props = {
   data: Transaksi[];
   page: number; // zero-based
-  rowsPerPage: number;
   onPageChange: (page: number) => void;
   onEdit?: (row: Transaksi) => void;
   onDelete?: (row: Transaksi) => void;
@@ -30,7 +31,6 @@ type Props = {
 const CardTableRiwayatTransaksi = ({
   data,
   page,
-  rowsPerPage,
   onPageChange,
   onEdit,
   onDelete,
@@ -39,13 +39,23 @@ const CardTableRiwayatTransaksi = ({
   setEditForm,
   onSave,
 }: Props) => {
-  const start = page * rowsPerPage;
-  const end = start + rowsPerPage;
-  const currentRows = data.slice(start, end);
-
-  const totalPages = Math.max(1, Math.ceil(data.length / rowsPerPage));
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const rowsPerPage = isMobile ? 5 : 10;
 
   const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
+  // Sort data by tanggal
+  const sortedData = [...data].sort((a, b) => {
+    const dateA = dayjs(a.tanggal);
+    const dateB = dayjs(b.tanggal);
+    return sortOrder === 'asc' ? dateA.diff(dateB) : dateB.diff(dateA);
+  });
+
+  const start = page * rowsPerPage;
+  const end = start + rowsPerPage;
+  const currentRows = sortedData.slice(start, end);
+  const totalPages = Math.max(1, Math.ceil(sortedData.length / rowsPerPage));
 
   const tipeIcon = (tipe: string) => {
     if (tipe === 'voucher') return <FiPlusCircle className="me-2 text-success" />;
@@ -54,22 +64,39 @@ const CardTableRiwayatTransaksi = ({
     return <FiFileText className="me-2" />;
   };
 
+  const getBorderColor = (tipe: string) => {
+    return tipe === 'kasbon' ? 'var(--color-danger)' : 'var(--color-green)';
+  };
+
   return (
     <div className="d-flex flex-column gap-3">
+      {/* Sort control for mobile */}
+      {isMobile && (
+        <div className="d-flex justify-content-end mb-2">
+          <button
+            className="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2"
+            onClick={() =>
+              setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))
+            }
+          >
+            <span>Urutkan Tanggal</span>
+            {sortOrder === 'asc' ? <FiArrowUp /> : <FiArrowDown />}
+          </button>
+        </div>
+      )}
+
       {currentRows.map((row, i) => (
         <div
           key={row.id}
           className="position-relative rounded shadow-sm p-3"
           style={{
             backgroundColor: 'var(--color-white)',
-            border: '1px solid var(--color-green)',
+            border: `1px solid ${getBorderColor(row.tipe)}`,
+            fontSize: '0.95rem',
           }}
         >
-          {/* 3-dot menu */}
-          <div
-            className="position-absolute"
-            style={{ top: 10, right: 10, zIndex: 2 }}
-          >
+          {/* Menu titik tiga */}
+          <div className="position-absolute" style={{ top: 10, right: 10, zIndex: 2 }}>
             <button
               className="btn btn-sm btn-light border"
               onClick={() => setOpenMenuIndex(openMenuIndex === i ? null : i)}
@@ -89,7 +116,7 @@ const CardTableRiwayatTransaksi = ({
                       setOpenMenuIndex(null);
                     }}
                   >
-                    💾 Simpan
+                    <FiSave /> Simpan
                   </button>
                 ) : (
                   <button
@@ -115,20 +142,21 @@ const CardTableRiwayatTransaksi = ({
             )}
           </div>
 
-          {/* Info */}
-          <div className="d-flex align-items-center mb-2" style={{ color: 'var(--color-dark)' }}>
+          {/* Tanggal */}
+          <div className="d-flex align-items-center mb-2 text-muted">
             <FiCalendar className="me-2" />
-            <strong>Tanggal:</strong>&nbsp;{dayjs(row.tanggal).format('YYYY-MM-DD')}
+            {dayjs(row.tanggal).format('DD MMM YYYY')}
           </div>
 
-          <div className="d-flex align-items-center mb-1" style={{ color: 'var(--color-dark)' }}>
+          {/* Tipe */}
+          <div className="d-flex align-items-center mb-2 fw-medium text-dark">
             {tipeIcon(row.tipe)}
-            <strong>Tipe:</strong>&nbsp;{row.tipeLabel}
+            {row.tipeLabel}
           </div>
 
-          <div className="d-flex align-items-center mb-1" style={{ color: 'var(--color-dark)' }}>
-            <FiDollarSign className="me-2" />
-            <strong>Jumlah:</strong>&nbsp;
+          {/* Jumlah */}
+          <div className="d-flex align-items-center mb-2">
+            <FiDollarSign className="me-2 text-secondary" />
             {editId === row.id && editForm && setEditForm ? (
               <input
                 className="form-control"
@@ -137,45 +165,50 @@ const CardTableRiwayatTransaksi = ({
                   color: 'var(--color-dark)',
                   borderColor: 'var(--color-green)',
                   maxWidth: 120,
-                  display: 'inline-block'
                 }}
                 type="text"
                 value={editForm.jumlah}
-                onChange={e => setEditForm({ ...editForm, jumlah: e.target.value })}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, jumlah: e.target.value })
+                }
               />
             ) : (
-              `Rp${Number(row.jumlah).toLocaleString()}`
+              <span className="fw-semibold text-dark">
+                Rp{Number(row.jumlah).toLocaleString()}
+              </span>
             )}
           </div>
 
-          <div className="d-flex align-items-center mb-1" style={{ color: 'var(--color-dark)' }}>
-            <FiFileText className="me-2" />
-            <strong>Keterangan:</strong>&nbsp;
-            {row.tipe === 'voucher'
-              ? `Voucher ${row.jumlah / 150000} x 150.000`
-              : editId === row.id && editForm && setEditForm
-                ? (
+          {/* Keterangan */}
+          <div className="d-flex align-items-start">
+            <FiFileText className="me-2 text-secondary mt-1" />
+            <span className="text-muted">
+              {row.tipe === 'voucher'
+                ? `Voucher ${row.jumlah / 150000} x 150.000`
+                : editId === row.id && editForm && setEditForm ? (
                   <input
                     className="form-control"
                     style={{
                       backgroundColor: 'var(--color-white)',
                       color: 'var(--color-dark)',
                       borderColor: 'var(--color-green)',
-                      maxWidth: 180,
-                      display: 'inline-block'
+                      maxWidth: 200,
                     }}
                     type="text"
                     value={editForm.keterangan}
-                    onChange={e => setEditForm({ ...editForm, keterangan: e.target.value })}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, keterangan: e.target.value })
+                    }
                   />
-                )
-                : row.keterangan || '-'
-            }
+                ) : (
+                  row.keterangan || '-'
+                )}
+            </span>
           </div>
         </div>
       ))}
 
-      {/* PAGINATION MOBILE */}
+      {/* Pagination */}
       <div className="d-flex justify-content-between align-items-center mt-2">
         <button
           className="btn btn-outline-success btn-sm d-flex align-items-center gap-1"
