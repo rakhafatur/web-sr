@@ -442,15 +442,14 @@ const RiwayatTransaksi = ({ ladiesId, refresh }: Props) => {
               onClick={() => setPage(page - 1)}
               disabled={page <= 1}
             >
-              ← Prev
+              ← Sebelumnya
             </button>
-            <span style={{ color: 'var(--color-dark)' }}>Halaman {page} dari {totalPages}</span>
             <button
               className="btn btn-outline-success"
               onClick={() => setPage(page + 1)}
               disabled={page >= totalPages}
             >
-              Next →
+              Selanjutnya →
             </button>
           </div>
         </>

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import dayjs from 'dayjs';
 import {
   FiCalendar, FiMoreVertical, FiEdit2, FiTrash2, FiFileText,
-  FiArrowLeft, FiArrowRight, FiDollarSign, FiMinusCircle, FiPlusCircle, FiSave, FiArrowUp, FiArrowDown
+  FiArrowLeft, FiArrowRight, FiDollarSign, FiMinusCircle,
+  FiPlusCircle, FiSave, FiArrowUp, FiArrowDown
 } from 'react-icons/fi';
 import { useMediaQuery } from 'react-responsive';
 
@@ -18,7 +19,7 @@ type Transaksi = {
 
 type Props = {
   data: Transaksi[];
-  page: number; // zero-based
+  page: number;
   onPageChange: (page: number) => void;
   onEdit?: (row: Transaksi) => void;
   onDelete?: (row: Transaksi) => void;
@@ -45,7 +46,6 @@ const CardTableRiwayatTransaksi = ({
   const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
-  // Sort data by tanggal
   const sortedData = [...data].sort((a, b) => {
     const dateA = dayjs(a.tanggal);
     const dateB = dayjs(b.tanggal);
@@ -55,7 +55,7 @@ const CardTableRiwayatTransaksi = ({
   const start = page * rowsPerPage;
   const end = start + rowsPerPage;
   const currentRows = sortedData.slice(start, end);
-  const totalPages = Math.max(1, Math.ceil(sortedData.length / rowsPerPage));
+  const totalPages = Math.ceil(sortedData.length / rowsPerPage);
 
   const tipeIcon = (tipe: string) => {
     if (tipe === 'voucher') return <FiPlusCircle className="me-2 text-success" />;
@@ -70,16 +70,13 @@ const CardTableRiwayatTransaksi = ({
 
   return (
     <div className="d-flex flex-column gap-3">
-      {/* Sort control for mobile */}
       {isMobile && (
         <div className="d-flex justify-content-end mb-2">
           <button
             className="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2"
-            onClick={() =>
-              setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))
-            }
+            onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
           >
-            <span>Urutkan Tanggal</span>
+            <span>Urut Tanggal</span>
             {sortOrder === 'asc' ? <FiArrowUp /> : <FiArrowDown />}
           </button>
         </div>
@@ -95,7 +92,7 @@ const CardTableRiwayatTransaksi = ({
             fontSize: '0.95rem',
           }}
         >
-          {/* Menu titik tiga */}
+          {/* Titik tiga */}
           <div className="position-absolute" style={{ top: 10, right: 10, zIndex: 2 }}>
             <button
               className="btn btn-sm btn-light border"
@@ -145,13 +142,12 @@ const CardTableRiwayatTransaksi = ({
           {/* Tanggal */}
           <div className="d-flex align-items-center mb-2 text-muted">
             <FiCalendar className="me-2" />
-            {dayjs(row.tanggal).format('DD MMM YYYY')}
+            {dayjs(row.tanggal).format('YYYY-MM-DD')}
           </div>
 
           {/* Tipe */}
           <div className="d-flex align-items-center mb-2 fw-medium text-dark">
-            {tipeIcon(row.tipe)}
-            {row.tipeLabel}
+            {tipeIcon(row.tipe)} {row.tipeLabel}
           </div>
 
           {/* Jumlah */}
@@ -168,9 +164,7 @@ const CardTableRiwayatTransaksi = ({
                 }}
                 type="text"
                 value={editForm.jumlah}
-                onChange={(e) =>
-                  setEditForm({ ...editForm, jumlah: e.target.value })
-                }
+                onChange={(e) => setEditForm({ ...editForm, jumlah: e.target.value })}
               />
             ) : (
               <span className="fw-semibold text-dark">
@@ -182,7 +176,7 @@ const CardTableRiwayatTransaksi = ({
           {/* Keterangan */}
           <div className="d-flex align-items-start">
             <FiFileText className="me-2 text-secondary mt-1" />
-            <span className="text-muted">
+            <div className="text-muted" style={{ maxWidth: '90%' }}>
               {row.tipe === 'voucher'
                 ? `Voucher ${row.jumlah / 150000} x 150.000`
                 : editId === row.id && editForm && setEditForm ? (
@@ -203,12 +197,12 @@ const CardTableRiwayatTransaksi = ({
                 ) : (
                   row.keterangan || '-'
                 )}
-            </span>
+            </div>
           </div>
         </div>
       ))}
 
-      {/* Pagination */}
+      {/* Paging */}
       <div className="d-flex justify-content-between align-items-center mt-2">
         <button
           className="btn btn-outline-success btn-sm d-flex align-items-center gap-1"
