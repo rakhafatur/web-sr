@@ -28,7 +28,7 @@ const AddTransaksiPage = () => {
   return (
     <div className="container py-4" style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
       <h2 className="fw-bold fs-4 mb-4" style={{ color: 'var(--color-dark)' }}>
-        📄 Transaksi Voucher & Kasbon
+        📄 Transaksi Ladies
       </h2>
 
       <div className="row mb-4">

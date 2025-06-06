@@ -216,7 +216,7 @@ const BukuKuningPage = () => {
 
   return (
     <div className="container py-4">
-      <h2 className="text-dark fw-bold fs-4 mb-4">📒 Buku Kuning Bulanan</h2>
+      <h2 className="text-dark fw-bold fs-4 mb-4">📒 Buku Kuning Ladies</h2>
 
       <div className="row mb-3">
         <div className="col-12 col-md-4 mb-2">

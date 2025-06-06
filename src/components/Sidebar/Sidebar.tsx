@@ -4,11 +4,20 @@ import logo from '../../assets/logosr-green.png';
 import {
   FiHome, FiSettings, FiUsers, FiUserCheck, FiUser,
   FiCalendar, FiBook, FiPlus, FiDollarSign, FiBarChart2,
-  FiChevronsLeft, FiChevronsRight
+  FiChevronsLeft, FiChevronsRight, FiChevronDown, FiChevronUp, FiFolder
 } from 'react-icons/fi';
 
 import { SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from '../../constant';
 import './Sidebar.css';
+
+// --- Tipe Props ---
+type SidebarProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  isMobile: boolean;
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
+};
 
 function Sidebar({
   isOpen,
@@ -16,15 +25,10 @@ function Sidebar({
   isMobile,
   isCollapsed,
   onToggleCollapse,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  isMobile: boolean;
-  isCollapsed: boolean;
-  onToggleCollapse: () => void;
-}) {
+}: SidebarProps) {
   const location = useLocation();
   const [showParameter, setShowParameter] = useState(false);
+  const [showTransaksiLadies, setShowTransaksiLadies] = useState(false);
 
   useEffect(() => {
     if (isMobile) {
@@ -76,24 +80,87 @@ function Sidebar({
             </Link>
           </li>
 
+          {/* Parameter */}
           <li>
-            <div className="nav-link sidebar-link fw-bold" onClick={() => setShowParameter(p => !p)} style={{ cursor: 'pointer' }}>
-              <FiSettings className="sidebar-icon" /> {renderText('Parameter ▾')}
+            <div
+              className="nav-link sidebar-link fw-bold d-flex align-items-center justify-content-between"
+              onClick={() => setShowParameter((p) => !p)}
+              style={{ cursor: 'pointer' }}
+            >
+              <div>
+                <FiSettings className="sidebar-icon" /> {renderText('Parameter')}
+              </div>
+              {!isCollapsed && (
+                showParameter ? <FiChevronUp className="ms-auto" /> : <FiChevronDown className="ms-auto" />
+              )}
             </div>
             {!isCollapsed && showParameter && (
               <ul className="nav flex-column ms-3">
-                <li><Link to="/users" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/users') ? 'active' : ''}`}><FiUsers className="sidebar-icon" /> {renderText('Users')}</Link></li>
-                <li><Link to="/pengawas" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/pengawas') ? 'active' : ''}`}><FiUserCheck className="sidebar-icon" /> {renderText('Pengawas')}</Link></li>
-                <li><Link to="/ladies" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/ladies') ? 'active' : ''}`}><FiUser className="sidebar-icon" /> {renderText('Ladies')}</Link></li>
+                <li>
+                  <Link to="/users" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/users') ? 'active' : ''}`}>
+                    <FiUsers className="sidebar-icon" /> {renderText('Users')}
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/pengawas" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/pengawas') ? 'active' : ''}`}>
+                    <FiUserCheck className="sidebar-icon" /> {renderText('Pengawas')}
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/ladies" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/ladies') ? 'active' : ''}`}>
+                    <FiUser className="sidebar-icon" /> {renderText('Ladies')}
+                  </Link>
+                </li>
               </ul>
             )}
           </li>
 
-          <li><Link to="/absensi" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/absensi') ? 'active' : ''}`}><FiCalendar className="sidebar-icon" /> {renderText('Absensi')}</Link></li>
-          <li><Link to="/buku-kuning" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/buku-kuning') ? 'active' : ''}`}><FiBook className="sidebar-icon" /> {renderText('Buku Kuning')}</Link></li>
-          <li><Link to="/add-transaksi" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/add-transaksi') ? 'active' : ''}`}><FiPlus className="sidebar-icon" /> {renderText('Add Transaksi')}</Link></li>
-          <li><Link to="/rekap-voucher" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/rekap-voucher') ? 'active' : ''}`}><FiDollarSign className="sidebar-icon" /> {renderText('Rekap Voucher')}</Link></li>
-          <li><Link to="/performa-ladies" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/performa-ladies') ? 'active' : ''}`}><FiBarChart2 className="sidebar-icon" /> {renderText('Performa Ladies')}</Link></li>
+          {/* Transaksi Ladies */}
+          <li>
+            <div
+              className="nav-link sidebar-link fw-bold d-flex align-items-center justify-content-between"
+              onClick={() => setShowTransaksiLadies((p) => !p)}
+              style={{ cursor: 'pointer' }}
+            >
+              <div>
+                <FiFolder className="sidebar-icon" /> {renderText('Transaksi Ladies')}
+              </div>
+              {!isCollapsed && (
+                showTransaksiLadies ? <FiChevronUp className="ms-auto" /> : <FiChevronDown className="ms-auto" />
+              )}
+            </div>
+            {!isCollapsed && showTransaksiLadies && (
+              <ul className="nav flex-column ms-3">
+                <li>
+                  <Link to="/add-transaksi" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/add-transaksi') ? 'active' : ''}`}>
+                    <FiPlus className="sidebar-icon" /> {renderText('Add Transaksi')}
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/buku-kuning" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/buku-kuning') ? 'active' : ''}`}>
+                    <FiBook className="sidebar-icon" /> {renderText('Buku Kuning')}
+                  </Link>
+                </li>
+              </ul>
+            )}
+          </li>
+
+          {/* Sisa menu */}
+          <li>
+            <Link to="/absensi" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/absensi') ? 'active' : ''}`}>
+              <FiCalendar className="sidebar-icon" /> {renderText('Absensi')}
+            </Link>
+          </li>
+          <li>
+            <Link to="/rekap-voucher" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/rekap-voucher') ? 'active' : ''}`}>
+              <FiDollarSign className="sidebar-icon" /> {renderText('Rekap Voucher')}
+            </Link>
+          </li>
+          <li>
+            <Link to="/performa-ladies" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/performa-ladies') ? 'active' : ''}`}>
+              <FiBarChart2 className="sidebar-icon" /> {renderText('Performa Ladies')}
+            </Link>
+          </li>
         </ul>
       </div>
     </>
