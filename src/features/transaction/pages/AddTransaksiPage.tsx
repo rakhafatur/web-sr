@@ -74,7 +74,7 @@ const AddTransaksiPage = () => {
           {/* ✏️ FORM TAMBAH */}
           <div className="mb-5">
             <h5 className="mb-3" style={{ color: 'var(--color-dark)' }}>
-              📌 Transaksi untuk {selectedLady.nama_ladies} ({selectedLady.nama_outlet})
+              📌 Transaksi {selectedLady.nama_ladies} ({selectedLady.nama_outlet})
             </h5>
             <TransaksiForm
               ladiesId={selectedLadyId}
@@ -85,7 +85,7 @@ const AddTransaksiPage = () => {
           {/* 📜 RIWAYAT */}
           <div className="mt-4">
             <h5 className="mb-3" style={{ color: 'var(--color-dark)' }}>
-              📋 Riwayat transaksi untuk {selectedLady.nama_ladies} ({selectedLady.nama_outlet})
+              📋 Riwayat transaksi {selectedLady.nama_ladies} ({selectedLady.nama_outlet})
             </h5>
             <RiwayatTransaksi ladiesId={selectedLadyId} refresh={refresh} />
           </div>
