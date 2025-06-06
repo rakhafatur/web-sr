@@ -208,7 +208,7 @@ const RiwayatTransaksi = ({ ladiesId, refresh }: Props) => {
 
   const [data, setData] = useState<Transaksi[]>([]);
   const [page, setPage] = useState(1);
-  const limit = 10;
+  const limit = isMobile ? 5 : 10;
   const [total, setTotal] = useState(0);
   const [editId, setEditId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({ jumlah: '', keterangan: '' });
@@ -308,7 +308,8 @@ const RiwayatTransaksi = ({ ladiesId, refresh }: Props) => {
     fetchData();
   }, [ladiesId, page, refresh, filterTipe, searchText, sortKey, sortOrder]);
 
-  const paginatedData = data.slice((page - 1) * limit, page * limit);
+  const paginatedData = isMobile ? data : data.slice((page - 1) * limit, page * limit);
+
   const totalPages = Math.ceil(total / limit);
 
   return (

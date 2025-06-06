@@ -44,7 +44,7 @@ const CardTableRiwayatTransaksi = ({
   const rowsPerPage = isMobile ? 5 : 10;
 
   const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const sortedData = [...data].sort((a, b) => {
     const dateA = dayjs(a.tanggal);
@@ -65,7 +65,7 @@ const CardTableRiwayatTransaksi = ({
   };
 
   const getBorderColor = (tipe: string) => {
-    return tipe === 'kasbon' ? 'var(--color-danger)' : 'var(--color-green)';
+    return tipe === 'kasbon' ? '#dc3545' : '#3f9f4f'; // merah & hijau
   };
 
   return (
@@ -74,9 +74,9 @@ const CardTableRiwayatTransaksi = ({
         <div className="d-flex justify-content-end mb-2">
           <button
             className="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2"
-            onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+            onClick={() => setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'))}
           >
-            <span>Urut Tanggal</span>
+            <span>Urutkan Tanggal</span>
             {sortOrder === 'asc' ? <FiArrowUp /> : <FiArrowDown />}
           </button>
         </div>
@@ -176,7 +176,7 @@ const CardTableRiwayatTransaksi = ({
           {/* Keterangan */}
           <div className="d-flex align-items-start">
             <FiFileText className="me-2 text-secondary mt-1" />
-            <div className="text-muted" style={{ maxWidth: '90%' }}>
+            <div className="text-muted" style={{ maxWidth: '90%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {row.tipe === 'voucher'
                 ? `Voucher ${row.jumlah / 150000} x 150.000`
                 : editId === row.id && editForm && setEditForm ? (
@@ -202,7 +202,7 @@ const CardTableRiwayatTransaksi = ({
         </div>
       ))}
 
-      {/* Paging */}
+      {/* Pagination */}
       <div className="d-flex justify-content-between align-items-center mt-2">
         <button
           className="btn btn-outline-success btn-sm d-flex align-items-center gap-1"
