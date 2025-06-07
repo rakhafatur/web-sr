@@ -286,7 +286,7 @@ const AbsensiPage = () => {
 
           <div className="mb-4" style={{ color: 'var(--color-dark)' }}>
             <strong>Rekap Bulan Ini:</strong><br />
-            🟢 Kerja: {totalKERJA} | 🩸 Mens: {totalMENS} | ⚪ Off: {totalOFF} | 🤒 Sakit: {totalSAKIT}
+            Kerja: {totalKERJA} | Mens: {totalMENS} | Off: {totalOFF} | Sakit: {totalSAKIT}
           </div>
 
           {!isMobile ? (
