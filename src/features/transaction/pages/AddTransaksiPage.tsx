@@ -74,9 +74,11 @@ const AddTransaksiPage = () => {
         <>
           {/* ✏️ FORM TAMBAH */}
           <div className={isMobile ? 'mobile-outline-green mb-5' : 'mb-5'}>
-            <h5 className="mb-3" style={{ color: 'var(--color-dark)' }}>
-              📌 Transaksi {selectedLady.nama_ladies} ({selectedLady.nama_outlet})
-            </h5>
+            {!isMobile && (
+              <h5 className="mb-3" style={{ color: 'var(--color-dark)' }}>
+                📌 Transaksi {selectedLady.nama_ladies} ({selectedLady.nama_outlet})
+              </h5>
+            )}
             <TransaksiForm
               ladiesId={selectedLadyId}
               onSuccess={() => setRefresh((r) => r + 1)}
@@ -85,9 +87,11 @@ const AddTransaksiPage = () => {
 
           {/* 📜 RIWAYAT */}
           <div className={isMobile ? 'mobile-outline-green mt-4' : 'mt-4'}>
-            <h5 className="mb-3" style={{ color: 'var(--color-dark)' }}>
-              📋 Riwayat transaksi {selectedLady.nama_ladies} ({selectedLady.nama_outlet})
-            </h5>
+            {!isMobile && (
+              <h5 className="mb-3" style={{ color: 'var(--color-dark)' }}>
+                📋 Riwayat transaksi {selectedLady.nama_ladies} ({selectedLady.nama_outlet})
+              </h5>
+            )}
             <RiwayatTransaksi ladiesId={selectedLadyId} refresh={refresh} />
           </div>
         </>
