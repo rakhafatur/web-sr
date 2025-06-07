@@ -201,3 +201,12 @@ body {
   border-right: none !important;
 }
 
+@media (max-width: 768px) {
+  .mobile-outline-green {
+    border: 2px solid var(--color-green);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    background-color: #f9fff9;
+    margin-bottom: 1.5rem;
+  }
+}

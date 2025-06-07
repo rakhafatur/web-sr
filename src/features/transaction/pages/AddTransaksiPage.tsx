@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useMediaQuery } from 'react-responsive';
 import { supabase } from '../../../lib/supabaseClient';
 import TransaksiForm from '../components/TransaksiForm';
 import RiwayatTransaksi from '../components/RiwayatTransaksi';
@@ -15,6 +16,7 @@ const AddTransaksiPage = () => {
   const [selectedLadyId, setSelectedLadyId] = useState('');
   const [refresh, setRefresh] = useState<number>(0);
 
+  const isMobile = useMediaQuery({ maxWidth: 768 });
   const selectedLady = ladiesList.find((l) => l.id === selectedLadyId);
 
   useEffect(() => {
@@ -57,7 +59,6 @@ const AddTransaksiPage = () => {
             ))}
           </select>
 
-          {/* 🚨 ALERT jika belum pilih ladies */}
           {!selectedLadyId && (
             <div
               className="alert alert-warning text-dark bg-warning-subtle border-warning mt-2"
@@ -72,7 +73,7 @@ const AddTransaksiPage = () => {
       {selectedLady && (
         <>
           {/* ✏️ FORM TAMBAH */}
-          <div className="mb-5">
+          <div className={isMobile ? 'mobile-outline-green mb-5' : 'mb-5'}>
             <h5 className="mb-3" style={{ color: 'var(--color-dark)' }}>
               📌 Transaksi {selectedLady.nama_ladies} ({selectedLady.nama_outlet})
             </h5>
@@ -83,7 +84,7 @@ const AddTransaksiPage = () => {
           </div>
 
           {/* 📜 RIWAYAT */}
-          <div className="mt-4">
+          <div className={isMobile ? 'mobile-outline-green mt-4' : 'mt-4'}>
             <h5 className="mb-3" style={{ color: 'var(--color-dark)' }}>
               📋 Riwayat transaksi {selectedLady.nama_ladies} ({selectedLady.nama_outlet})
             </h5>
