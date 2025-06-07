@@ -84,7 +84,7 @@ const TransaksiForm = ({ ladiesId, onSuccess }: Props) => {
   return (
     <div>
       <div className="row">
-        <div className="col-md-6">
+        <div className="col-12 col-md-6">
           <label
             className="form-label fw-semibold"
             style={{ color: 'var(--color-dark)' }}
@@ -108,7 +108,7 @@ const TransaksiForm = ({ ladiesId, onSuccess }: Props) => {
             <option value="kasbon">Pengeluaran (Kasbon)</option>
           </select>
         </div>
-        <div className="col-md-6">
+        <div className="col-12 col-md-6">
           <FormInput
             label="Tanggal"
             name="tanggal"
@@ -121,7 +121,7 @@ const TransaksiForm = ({ ladiesId, onSuccess }: Props) => {
 
       {form.tipe === 'voucher' ? (
         <div className="row">
-          <div className="col-md-6">
+          <div className="col-12 col-md-6">
             <FormInput
               label="Jumlah Voucher"
               name="jumlah_voucher"
@@ -130,7 +130,7 @@ const TransaksiForm = ({ ladiesId, onSuccess }: Props) => {
               type="number"
             />
           </div>
-          <div className="col-md-6">
+          <div className="col-12 col-md-6">
             <FormInput
               label="Jumlah (Rp)"
               name="jumlah"
@@ -143,7 +143,7 @@ const TransaksiForm = ({ ladiesId, onSuccess }: Props) => {
         </div>
       ) : (
         <div className="row">
-          <div className="col-md-6">
+          <div className="col-12 col-md-6">
             <FormInput
               label="Keterangan"
               name="keterangan"
@@ -152,7 +152,7 @@ const TransaksiForm = ({ ladiesId, onSuccess }: Props) => {
               type="text"
             />
           </div>
-          <div className="col-md-6">
+          <div className="col-12 col-md-6">
             <FormInput
               label="Jumlah"
               name="jumlah"
