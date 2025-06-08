@@ -40,6 +40,10 @@ function Sidebar({
   const isActive = (path: string) => location.pathname === path;
   const renderText = (text: string) => isCollapsed ? null : <span className="ms-2">{text}</span>;
 
+  // Dynamic label for "Transaksi Ladies" & "Transaksi Pengawas"
+  const labelTransaksiLadies = isMobile ? 'Trans. Ladies' : 'Transaksi Ladies';
+  const labelTransaksiPengawas = isMobile ? 'Trans. Pengawas' : 'Transaksi Pengawas';
+
   return (
     <>
       {isOpen && isMobile && (
@@ -123,7 +127,7 @@ function Sidebar({
               style={{ cursor: 'pointer' }}
             >
               <div>
-                <FiFolder className="sidebar-icon" /> {renderText('Transaksi Ladies')}
+                <FiFolder className="sidebar-icon" /> {renderText(labelTransaksiLadies)}
               </div>
               {!isCollapsed && (
                 showTransaksiLadies ? <FiChevronUp className="ms-auto" /> : <FiChevronDown className="ms-auto" />
@@ -153,7 +157,7 @@ function Sidebar({
               style={{ cursor: 'pointer' }}
             >
               <div>
-                <FiFolder className="sidebar-icon" /> {renderText('Transaksi Pengawas')}
+                <FiFolder className="sidebar-icon" /> {renderText(labelTransaksiPengawas)}
               </div>
               {!isCollapsed && (
                 showTransaksiPengawas ? <FiChevronUp className="ms-auto" /> : <FiChevronDown className="ms-auto" />
