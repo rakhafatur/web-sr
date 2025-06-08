@@ -29,6 +29,18 @@ const LadiesListPage = () => {
   const [total, setTotal] = useState(0);
   const [keyword, setKeyword] = useState('');
 
+  // ⬇️ Tambahan: deteksi apakah sidebar sedang terbuka
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const backdrop = document.querySelector('.sidebar-backdrop');
+      setIsSidebarOpen(!!backdrop);
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, []);
+
   const fetchLadies = async () => {
     const from = (page - 1) * limit;
     const to = from + limit - 1;
@@ -126,13 +138,15 @@ const LadiesListPage = () => {
               </button>
             </div>
           )}
-          <button
-            onClick={() => { setEditLady(null); setShowForm(true); }}
-            className="btn btn-success rounded-circle position-fixed d-flex align-items-center justify-content-center"
-            style={{ bottom: '20px', right: '20px', width: '56px', height: '56px', fontSize: '24px', zIndex: 1000, boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}
-          >
-            <FiPlus />
-          </button>
+          {!isSidebarOpen && (
+            <button
+              onClick={() => { setEditLady(null); setShowForm(true); }}
+              className="btn btn-success rounded-circle position-fixed d-flex align-items-center justify-content-center"
+              style={{ bottom: '20px', right: '20px', width: '56px', height: '56px', fontSize: '24px', zIndex: 1000, boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}
+            >
+              <FiPlus />
+            </button>
+          )}
         </>
       ) : (
         <>
