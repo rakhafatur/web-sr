@@ -10,7 +10,6 @@ import {
 import { SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from '../../constant';
 import './Sidebar.css';
 
-// --- Tipe Props ---
 type SidebarProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -29,6 +28,7 @@ function Sidebar({
   const location = useLocation();
   const [showParameter, setShowParameter] = useState(false);
   const [showTransaksiLadies, setShowTransaksiLadies] = useState(false);
+  const [showTransaksiPengawas, setShowTransaksiPengawas] = useState(false);
 
   useEffect(() => {
     if (isMobile) {
@@ -145,7 +145,32 @@ function Sidebar({
             )}
           </li>
 
-          {/* Sisa menu */}
+          {/* Transaksi Pengawas */}
+          <li>
+            <div
+              className="nav-link sidebar-link fw-bold d-flex align-items-center justify-content-between"
+              onClick={() => setShowTransaksiPengawas((p) => !p)}
+              style={{ cursor: 'pointer' }}
+            >
+              <div>
+                <FiFolder className="sidebar-icon" /> {renderText('Transaksi Pengawas')}
+              </div>
+              {!isCollapsed && (
+                showTransaksiPengawas ? <FiChevronUp className="ms-auto" /> : <FiChevronDown className="ms-auto" />
+              )}
+            </div>
+            {!isCollapsed && showTransaksiPengawas && (
+              <ul className="nav flex-column ms-3">
+                <li>
+                  <Link to="/add-transaksi-pengawas" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/add-transaksi-pengawas') ? 'active' : ''}`}>
+                    <FiPlus className="sidebar-icon" /> {renderText('Add Transaksi')}
+                  </Link>
+                </li>
+              </ul>
+            )}
+          </li>
+
+          {/* Menu Lain */}
           <li>
             <Link to="/absensi" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/absensi') ? 'active' : ''}`}>
               <FiCalendar className="sidebar-icon" /> {renderText('Absensi')}
