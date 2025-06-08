@@ -20,9 +20,21 @@ const UserListPage = () => {
   const [showForm, setShowForm] = useState(false);
 
   const [page, setPage] = useState(1);
-  const limit = isMobile ? 5 : 10; // <-- Limit berbeda web/mobile
+  const limit = isMobile ? 5 : 10;
   const [total, setTotal] = useState(0);
   const [keyword, setKeyword] = useState('');
+
+  // ⬇️ Tambahan: deteksi apakah sidebar sedang terbuka
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const backdrop = document.querySelector('.sidebar-backdrop');
+      setIsSidebarOpen(!!backdrop);
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, []);
 
   const fetchUsers = async () => {
     const from = (page - 1) * limit;
@@ -94,7 +106,7 @@ const UserListPage = () => {
   useEffect(() => {
     fetchUsers();
     // eslint-disable-next-line
-  }, [page, keyword, isMobile]); // <-- penting agar refetch saat device berubah
+  }, [page, keyword, isMobile]);
 
   const totalPages = Math.ceil(total / limit);
 
@@ -144,7 +156,6 @@ const UserListPage = () => {
             onDelete={handleDelete}
           />
 
-          {/* Pagination mobile, per 5 data */}
           {totalPages > 1 && (
             <div className="d-flex justify-content-between align-items-center mt-4">
               <button
@@ -164,24 +175,27 @@ const UserListPage = () => {
             </div>
           )}
 
-          <button
-            onClick={() => {
-              setEditUser(null);
-              setShowForm(true);
-            }}
-            className="btn btn-success rounded-circle position-fixed"
-            style={{
-              bottom: '20px',
-              right: '20px',
-              width: '56px',
-              height: '56px',
-              fontSize: '24px',
-              zIndex: 1000,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-            }}
-          >
-            <FiPlus />
-          </button>
+          {/* ⬇️ Tombol Add tidak muncul jika sidebar terbuka */}
+          {!isSidebarOpen && (
+            <button
+              onClick={() => {
+                setEditUser(null);
+                setShowForm(true);
+              }}
+              className="btn btn-success rounded-circle position-fixed"
+              style={{
+                bottom: '20px',
+                right: '20px',
+                width: '56px',
+                height: '56px',
+                fontSize: '24px',
+                zIndex: 1000,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+              }}
+            >
+              <FiPlus />
+            </button>
+          )}
         </>
       ) : (
         <>
@@ -253,7 +267,6 @@ const UserListPage = () => {
             data={userList}
           />
 
-          {/* Pagination web, per 10 data */}
           {totalPages > 1 && (
             <div className="d-flex justify-content-between align-items-center mt-4">
               <button
