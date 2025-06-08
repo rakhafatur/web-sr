@@ -32,6 +32,21 @@ const FormInput = ({
       </label>
       {type === 'textarea' ? (
         <textarea {...commonProps} rows={3} />
+      ) : type === 'date' ? (
+        <input
+          type="date"
+          {...commonProps}
+          style={{
+            width: '100%',
+            padding: '0.5rem',
+            border: '1px solid var(--color-green)',
+            borderRadius: '0.375rem',
+            backgroundColor: 'var(--color-white)',
+            color: 'var(--color-dark)',
+            appearance: 'none', // ⬅️ penting untuk iOS/Safari agar layout normal
+            WebkitAppearance: 'none',
+          }}
+        />
       ) : (
         <input type={type} {...commonProps} />
       )}
