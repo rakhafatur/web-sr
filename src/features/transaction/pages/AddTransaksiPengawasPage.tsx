@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { supabase } from '../../../lib/supabaseClient';
-import TransaksiForm from '../components/TransaksiFormPengawas';
-import RiwayatTransaksi from '../components/RiwayatTransaksiPengawas';
+import TransaksiFormPengawas from '../components/TransaksiFormPengawas';
+import RiwayatTransaksiPengawas from '../components/RiwayatTransaksiPengawas';
 
 type Pengawas = {
   id: string;
@@ -78,10 +78,9 @@ const AddTransaksiPagePengawas = () => {
                 📌 Transaksi {selectedPengawas.nama_lengkap}
               </h5>
             )}
-            <TransaksiForm
+            <TransaksiFormPengawas
               pengawasId={selectedPengawasId}
               onSuccess={() => setRefresh((r) => r + 1)}
-              allowedTypes={['kasbon', 'pemasukan_lain']}
             />
           </div>
 
@@ -92,7 +91,7 @@ const AddTransaksiPagePengawas = () => {
                 📋 Riwayat transaksi {selectedPengawas.nama_lengkap}
               </h5>
             )}
-            <RiwayatTransaksi pengawasId={selectedPengawasId} refresh={refresh} />
+            <RiwayatTransaksiPengawas pengawasId={selectedPengawasId} refresh={refresh} />
           </div>
         </>
       )}

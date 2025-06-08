@@ -5,23 +5,15 @@ import FormInput from '../../../components/FormInput';
 type Props = {
   pengawasId: string;
   onSuccess?: () => void;
-  allowedTypes?: string[]; // ✅ Tambahkan prop allowedTypes
 };
 
-const TransaksiFormPengawas = ({ pengawasId, onSuccess, allowedTypes = ['kasbon', 'pemasukan_lain'] }: Props) => {
+const TransaksiFormPengawas = ({ pengawasId, onSuccess }: Props) => {
   const [form, setForm] = useState({
     tanggal: '',
     jumlah: '',
     keterangan: '',
-    tipe: allowedTypes[0] || 'kasbon', // ✅ Default tipe pertama dari allowedTypes
+    tipe: 'kasbon_pengawas', // default: kasbon_pengawas
   });
-
-  useEffect(() => {
-    // Jika allowedTypes berubah, pastikan form.tipe tetap valid
-    if (!allowedTypes.includes(form.tipe)) {
-      setForm((prev) => ({ ...prev, tipe: allowedTypes[0] || 'kasbon' }));
-    }
-  }, [allowedTypes]);
 
   const formatNumber = (value: string) => {
     const number = value.replace(/[^\d]/g, '');
@@ -50,7 +42,7 @@ const TransaksiFormPengawas = ({ pengawasId, onSuccess, allowedTypes = ['kasbon'
       return alert('🛑 Harap isi tanggal dan jumlah.');
     }
 
-    const table = form.tipe;
+    const table = form.tipe; // 'kasbon_pengawas' atau 'gaji_pengawas'
     const payload: any = {
       tanggal: form.tanggal,
       pengawas_id: pengawasId,
@@ -71,7 +63,7 @@ const TransaksiFormPengawas = ({ pengawasId, onSuccess, allowedTypes = ['kasbon'
         tanggal: '',
         jumlah: '',
         keterangan: '',
-        tipe: allowedTypes[0] || 'kasbon',
+        tipe: 'kasbon_pengawas',
       });
       onSuccess?.();
     }
@@ -99,15 +91,8 @@ const TransaksiFormPengawas = ({ pengawasId, onSuccess, allowedTypes = ['kasbon'
               marginBottom: '1rem',
             }}
           >
-            {allowedTypes.includes('pemasukan_lain') && (
-              <option value="pemasukan_lain">Pemasukan Lain</option>
-            )}
-            {allowedTypes.includes('kasbon') && (
-              <option value="kasbon">Pengeluaran (Kasbon)</option>
-            )}
-            {allowedTypes.includes('voucher') && (
-              <option value="voucher">Pemasukan (Voucher)</option>
-            )}
+            <option value="kasbon_pengawas">Pengeluaran (Kasbon Pengawas)</option>
+            <option value="gaji_pengawas">Pemasukan (Gaji Pengawas)</option>
           </select>
         </div>
 

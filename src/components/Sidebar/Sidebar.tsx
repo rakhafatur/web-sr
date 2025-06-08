@@ -40,7 +40,6 @@ function Sidebar({
   const isActive = (path: string) => location.pathname === path;
   const renderText = (text: string) => isCollapsed ? null : <span className="ms-2">{text}</span>;
 
-  // Dynamic label for "Transaksi Ladies" & "Transaksi Pengawas"
   const labelTransaksiLadies = isMobile ? 'Trans. Ladies' : 'Transaksi Ladies';
   const labelTransaksiPengawas = isMobile ? 'Trans. Pengawas' : 'Transaksi Pengawas';
 
@@ -168,6 +167,11 @@ function Sidebar({
                 <li>
                   <Link to="/add-transaksi-pengawas" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/add-transaksi-pengawas') ? 'active' : ''}`}>
                     <FiPlus className="sidebar-icon" /> {renderText('Add Transaksi')}
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/buku-kuning-pengawas" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/buku-kuning-pengawas') ? 'active' : ''}`}>
+                    <FiBook className="sidebar-icon" /> {renderText('Buku Kuning')}
                   </Link>
                 </li>
               </ul>

@@ -15,6 +15,7 @@ import AbsensiPage from './features/absensi/pages/AbsensiPage';
 import RekapVoucherPage from './features/transaction/pages/RekapVoucherPage';
 import PerformaLadiesPage from './features/transaction/pages/PerformaLadiesPage';
 import AddTransaksiPengawasPage from './features/transaction/pages/AddTransaksiPengawasPage';
+import BukuKuningPengawasPage from './features/transaction/pages/BukuKuningPengawasPage';
 
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -127,6 +128,16 @@ function App() {
                 <ProtectedRoute>
                   <MainLayout>
                     <AddTransaksiPengawasPage />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/buku-kuning-pengawas"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <BukuKuningPengawasPage />
                   </MainLayout>
                 </ProtectedRoute>
               }

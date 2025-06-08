@@ -34,23 +34,34 @@ const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
   const [sortKey, setSortKey] = useState<keyof Transaksi>('tanggal');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
+  // Pemetaan tipe dan tabel baru
   const getTableName = (tipe: string) => {
     switch (tipe) {
-      case 'kasbon': return 'kasbon';
-      case 'pemasukan_lain': return 'pemasukan_lain';
+      case 'kasbon_pengawas': return 'kasbon_pengawas';
+      case 'gaji_pengawas': return 'gaji_pengawas';
       default: return '';
     }
   };
 
   const fetchData = async () => {
-    const [kasbon, pemasukanLain] = await Promise.all([
-      supabase.from('kasbon').select('*').eq('pengawas_id', pengawasId),
-      supabase.from('pemasukan_lain').select('*').eq('pengawas_id', pengawasId),
+    const [kasbon, gaji] = await Promise.all([
+      supabase.from('kasbon_pengawas').select('*').eq('pengawas_id', pengawasId),
+      supabase.from('gaji_pengawas').select('*').eq('pengawas_id', pengawasId),
     ]);
 
     const combined = [
-      ...(pemasukanLain.data || []).map((p) => ({ ...p, tipe: 'pemasukan_lain', tipeLabel: 'Pemasukan Lain', priority: 1 })),
-      ...(kasbon.data || []).map((k) => ({ ...k, tipe: 'kasbon', tipeLabel: 'Pengeluaran (Kasbon)', priority: 2 })),
+      ...(gaji.data || []).map((p) => ({
+        ...p,
+        tipe: 'gaji_pengawas',
+        tipeLabel: 'Pemasukan (Gaji)',
+        priority: 1,
+      })),
+      ...(kasbon.data || []).map((k) => ({
+        ...k,
+        tipe: 'kasbon_pengawas',
+        tipeLabel: 'Pengeluaran (Kasbon)',
+        priority: 2,
+      })),
     ];
 
     const search = searchText.toLowerCase();
@@ -140,8 +151,8 @@ const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
               onChange={(e) => { setPage(1); setFilterTipe(e.target.value); }}
             >
               <option value="">Semua</option>
-              <option value="pemasukan_lain">Pemasukan Lain</option>
-              <option value="kasbon">Kasbon</option>
+              <option value="gaji_pengawas">Pemasukan (Gaji)</option>
+              <option value="kasbon_pengawas">Pengeluaran (Kasbon)</option>
             </select>
           </div>
           <input
