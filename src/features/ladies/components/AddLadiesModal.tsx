@@ -12,6 +12,7 @@ type Lady = {
   nomor_ktp: string;
   tanggal_bergabung: string;
   alamat: string;
+  status: string;
 };
 
 type Props = {
@@ -30,6 +31,7 @@ const AddLadiesModal = ({ show, onClose, onSubmit, lady }: Props) => {
     nomor_ktp: '',
     tanggal_bergabung: '',
     alamat: '',
+    status: 'active',
   });
 
   const [readonly, setReadonly] = useState(false);
@@ -46,6 +48,7 @@ const AddLadiesModal = ({ show, onClose, onSubmit, lady }: Props) => {
         nomor_ktp: lady.nomor_ktp,
         tanggal_bergabung: lady.tanggal_bergabung,
         alamat: lady.alamat,
+        status: lady.status,
       });
       setReadonly(true);
     } else {
@@ -57,12 +60,13 @@ const AddLadiesModal = ({ show, onClose, onSubmit, lady }: Props) => {
         nomor_ktp: '',
         tanggal_bergabung: '',
         alamat: '',
+        status: 'active',
       });
       setReadonly(false);
     }
   }, [show, lady]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
@@ -84,15 +88,9 @@ const AddLadiesModal = ({ show, onClose, onSubmit, lady }: Props) => {
       <FormInput label="Alamat" name="alamat" value={form.alamat} onChange={handleChange} readOnly={readonly} type="textarea" />
 
       <div className="mb-3">
-        <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>
-          Nama Outlet
-        </label>
+        <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>Nama Outlet</label>
         {readonly ? (
-          <input
-            className="form-control bg-white text-dark border"
-            value={form.nama_outlet || '-'}
-            readOnly
-          />
+          <input className="form-control bg-white text-dark border" value={form.nama_outlet || '-'} readOnly />
         ) : (
           <div className="d-flex gap-3">
             {['SA', 'Royal', 'MTR'].map((outlet) => (
@@ -112,6 +110,22 @@ const AddLadiesModal = ({ show, onClose, onSubmit, lady }: Props) => {
           </div>
         )}
       </div>
+
+      {!readonly && (
+        <div className="mb-3">
+          <label className="form-label fw-semibold" htmlFor="status">Status</label>
+          <select
+            className="form-select border"
+            name="status"
+            value={form.status}
+            onChange={handleChange}
+          >
+            <option value="active">Active</option>
+            <option value="resign">Resign</option>
+            <option value="not active">Not Active</option>
+          </select>
+        </div>
+      )}
     </>
   );
 
@@ -126,9 +140,7 @@ const AddLadiesModal = ({ show, onClose, onSubmit, lady }: Props) => {
           Simpan
         </button>
       )}
-      <button className="btn btn-secondary fw-bold" onClick={onClose}>
-        Tutup
-      </button>
+      <button className="btn btn-secondary fw-bold" onClick={onClose}>Tutup</button>
     </>
   );
 
@@ -137,13 +149,9 @@ const AddLadiesModal = ({ show, onClose, onSubmit, lady }: Props) => {
       show={show}
       onClose={onClose}
       title={lady ? (
-        <span className="d-flex align-items-center gap-2">
-          <FiUser /> Detail Ladies
-        </span>
+        <span className="d-flex align-items-center gap-2"><FiUser /> Detail Ladies</span>
       ) : (
-        <span className="d-flex align-items-center gap-2">
-          <FiPlus /> Tambah Ladies
-        </span>
+        <span className="d-flex align-items-center gap-2"><FiPlus /> Tambah Ladies</span>
       )}
       footer={footer}
     >

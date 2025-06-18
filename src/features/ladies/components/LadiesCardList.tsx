@@ -1,4 +1,4 @@
-import { FiUser, FiSmile, FiMapPin, FiCreditCard, FiCalendar } from 'react-icons/fi';
+import { FiUser, FiSmile, FiMapPin, FiCreditCard } from 'react-icons/fi';
 import DataCardList from '../../../components/DataCardList';
 
 export type Lady = {
@@ -10,6 +10,7 @@ export type Lady = {
   nomor_ktp: string;
   tanggal_bergabung: string;
   alamat: string;
+  status: string;
 };
 
 type Props = {
@@ -19,6 +20,19 @@ type Props = {
 };
 
 const LadiesCardList = ({ ladies, onEdit, onDelete }: Props) => {
+  const getStatusClass = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'badge bg-success bg-opacity-10 border border-success text-dark';
+      case 'resign':
+        return 'badge bg-danger bg-opacity-10 border border-danger text-dark';
+      case 'not active':
+        return 'badge bg-warning bg-opacity-10 border border-warning text-dark';
+      default:
+        return 'badge bg-light border border-secondary text-dark';
+    }
+  };
+
   return (
     <DataCardList
       items={ladies}
@@ -33,12 +47,14 @@ const LadiesCardList = ({ ladies, onEdit, onDelete }: Props) => {
           <div className="d-flex align-items-center mb-1" style={{ fontSize: '0.9rem' }}>
             <FiUser className="me-2" /> {l.nama_lengkap}
           </div>
-
           <div className="d-flex align-items-center mb-1" style={{ fontSize: '0.9rem' }}>
             <FiMapPin className="me-2" /> {l.nama_outlet}
           </div>
           <div className="d-flex align-items-center mb-1" style={{ fontSize: '0.9rem' }}>
             <FiCreditCard className="me-2" /> PIN: {l.pin}
+          </div>
+          <div className="mt-2">
+            <span className={getStatusClass(l.status)}>{l.status}</span>
           </div>
         </>
       )}

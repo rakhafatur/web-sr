@@ -16,6 +16,7 @@ export type Lady = {
   nomor_ktp: string;
   tanggal_bergabung: string;
   alamat: string;
+  status: string; // ✅ tambahkan field status
 };
 
 const LadiesListPage = () => {
@@ -29,7 +30,6 @@ const LadiesListPage = () => {
   const [total, setTotal] = useState(0);
   const [keyword, setKeyword] = useState('');
 
-  // ⬇️ Tambahan: deteksi apakah sidebar sedang terbuka
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -174,6 +174,37 @@ const LadiesListPage = () => {
               { key: 'nama_ladies', label: 'Nama Ladies' },
               { key: 'nama_outlet', label: 'Nama Outlet' },
               { key: 'pin', label: 'PIN' },
+              {
+                key: 'status',
+                label: 'Status',
+                render: (lady: Lady) => {
+                  let borderColor = '';
+                  let bgColor = '';
+                  switch (lady.status) {
+                    case 'active':
+                      borderColor = 'border-success';
+                      bgColor = 'bg-success bg-opacity-10';
+                      break;
+                    case 'resign':
+                      borderColor = 'border-danger';
+                      bgColor = 'bg-danger bg-opacity-10';
+                      break;
+                    case 'not active':
+                      borderColor = 'border-warning';
+                      bgColor = 'bg-warning bg-opacity-10';
+                      break;
+                    default:
+                      borderColor = 'border-secondary';
+                      bgColor = 'bg-light';
+                  }
+
+                  return (
+                    <span className={`badge ${bgColor} ${borderColor} text-dark border px-2 py-1`}>
+                      {lady.status}
+                    </span>
+                  );
+                },
+              },
               {
                 key: 'id',
                 label: 'Aksi',
