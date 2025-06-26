@@ -11,6 +11,7 @@
   justify-content: space-between;
   font-family: var(--font-base);
   box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
 }
 
 /* KIRI */
@@ -18,13 +19,7 @@
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--color-accent);
-}
-
-.hamburger {
-  background: none;
-  border: none;
-  color: var(--color-accent);
-  font-size: 1.6rem;
+  margin: 0;
 }
 
 /* KANAN */
@@ -38,6 +33,7 @@
   font-size: 0.9rem;
   color: var(--color-dark);
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .logout-btn {
@@ -45,15 +41,15 @@
   align-items: center;
   gap: 0.5rem;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--color-white);
   background-color: var(--color-accent);
   border: none;
-  padding: 0.5rem 1rem;
+  padding: 0.45rem 0.9rem;
   border-radius: var(--radius);
   transition: background-color 0.3s ease;
 }
 
 .logout-btn:hover {
-  background-color: #3d4f39; /* versi gelap dari olive */
+  background-color: #3d4f39;
 }

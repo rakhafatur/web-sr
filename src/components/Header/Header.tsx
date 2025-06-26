@@ -1,13 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { FiLogOut, FiMenu } from 'react-icons/fi';
+import { FiLogOut } from 'react-icons/fi';
 import './Header.css';
 
-type HeaderProps = {
-  onToggleSidebar: () => void;
-};
-
-function Header({ onToggleSidebar }: HeaderProps) {
+function Header() {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
 
@@ -18,13 +14,11 @@ function Header({ onToggleSidebar }: HeaderProps) {
 
   return (
     <div className="header">
-      <div className="header-left d-flex align-items-center gap-3">
-        <button onClick={onToggleSidebar} className="hamburger d-md-none">
-          <FiMenu />
-        </button>
+      <div className="header-left">
+        <h1 className="app-title">SR Agency</h1>
       </div>
 
-      <div className="header-right d-flex align-items-center gap-3">
+      <div className="header-right">
         {user?.nama && (
           <span className="user-greeting">Hi, {user.nama.split(' ')[0]}</span>
         )}

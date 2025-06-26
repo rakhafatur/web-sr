@@ -2,10 +2,9 @@ import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Sidebar from '../components/Sidebar/Sidebar';
 import Header from '../components/Header/Header';
-import BottomNavbarAdmin from '../components/Bottombar/BottomNavbarAdmin'; // ✅ Sesuai struktur folder kamu
+import BottomNavbarAdmin from '../components/Bottombar/BottomNavbarAdmin';
 
 import {
-  HEADER_HEIGHT,
   SIDEBAR_WIDTH,
   SIDEBAR_COLLAPSED_WIDTH,
 } from '../constant';
@@ -18,9 +17,9 @@ function MainLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const handleResize = () => {
-      const isNowMobile = window.innerWidth < 768;
-      setIsMobile(isNowMobile);
-      setSidebarOpen(!isNowMobile);
+      const nowMobile = window.innerWidth < 768;
+      setIsMobile(nowMobile);
+      setSidebarOpen(!nowMobile);
       setIsCollapsed(false);
     };
 
@@ -34,18 +33,18 @@ function MainLayout({ children }: { children: React.ReactNode }) {
   }, [location.pathname]);
 
   const isHomePage = location.pathname === '/';
-  const sidebarWidth = isCollapsed
-    ? SIDEBAR_COLLAPSED_WIDTH
-    : SIDEBAR_WIDTH;
+  const sidebarWidth = isCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH;
 
   return (
     <div
       className="layout-container"
       style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}
     >
-      <Header onToggleSidebar={() => setSidebarOpen(true)} />
+      {/* ✅ Header tampil di semua mode */}
+      <Header />
 
       <div className="d-flex" style={{ width: '100%' }}>
+        {/* ✅ Sidebar hanya untuk non-mobile */}
         {!isMobile && (
           <Sidebar
             isOpen={sidebarOpen}
@@ -56,6 +55,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
           />
         )}
 
+        {/* ✅ Main Content */}
         <div
           className="flex-grow-1 d-flex flex-column"
           style={{
@@ -72,14 +72,16 @@ function MainLayout({ children }: { children: React.ReactNode }) {
             className="main-content"
             style={{
               padding: isHomePage ? '0' : '2rem',
-              paddingBottom: isMobile ? '80px' : undefined, // biar nggak ketiban bottom bar
+              paddingBottom: isMobile ? '80px' : undefined, // untuk BottomNavbar
             }}
           >
             {children}
-            {isMobile && <BottomNavbarAdmin />}
           </main>
         </div>
       </div>
+
+      {/* ✅ BottomNavbar untuk mobile */}
+      {isMobile && <BottomNavbarAdmin />}
     </div>
   );
 }
