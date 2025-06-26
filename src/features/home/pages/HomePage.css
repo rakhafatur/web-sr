@@ -14,7 +14,7 @@
 .home-bg {
   position: absolute;
   inset: 0;
-  background-image: url('/assets/bg-home.jpg'); /* Ganti ke jpg hasil kompresi */
+  background-image: url('/assets/bg-home.png'); /* Ganti ke jpg hasil kompresi */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
