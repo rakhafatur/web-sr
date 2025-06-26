@@ -9,6 +9,15 @@ function HomePage() {
 
   return (
     <div className="home-wrapper">
+      {/* Animated Background */}
+      <motion.div
+        className="home-bg"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.2, ease: 'easeOut' }}
+      />
+
+      {/* Overlay Content */}
       <div className="home-overlay">
         <motion.h1
           className="home-title"

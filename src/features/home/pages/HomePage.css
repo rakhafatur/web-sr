@@ -1,22 +1,39 @@
-/* === DESKTOP === */
+/* === GLOBAL WRAPPER === */
 .home-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 3rem 1.5rem;
-  min-height: calc(100vh - 64px);
-  background-color: var(--color-bg);
-  width: 100%;
 }
 
+/* === ANIMATED BACKGROUND === */
+.home-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url('/assets/bg-home.jpg'); /* Ganti ke jpg hasil kompresi */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+}
+
+/* === OVERLAY KONTEN === */
 .home-overlay {
-  max-width: 700px;
-  width: 100%;
+  position: relative;
+  z-index: 1;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 2rem;
+  border-radius: 1.25rem;
+  max-width: 720px;
+  width: 90%;
+  color: white;
 }
 
-/* Menghindari teks kepotong atau “nyeret” */
+/* === TEKS === */
 .home-title,
 .home-subtitle {
   white-space: normal;
@@ -27,47 +44,27 @@
 .home-title {
   font-size: 2.5rem;
   font-weight: 700;
-  color: var(--color-accent);
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  color: white;
 }
 
 .home-subtitle {
   font-size: 1.25rem;
   line-height: 1.6;
-  color: var(--color-dark);
+  color: #e6e6e6;
 }
 
-/* === MOBILE === */
+/* === RESPONSIF MOBILE === */
 @media (max-width: 768px) {
-  .home-wrapper {
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 0;
-    width: 100vw;
-    height: 100vh;
-    background-image: url('/assets/bg-home.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    color: white;
-  }
-
   .home-overlay {
-    background-color: rgba(0, 0, 0, 0.4);
     padding: 1.5rem 1rem;
-    border-radius: 1rem;
-    color: white;
-    max-width: 90%;
   }
 
   .home-title {
-    font-size: 1.75rem;
-    color: white;
+    font-size: 2rem;
   }
 
   .home-subtitle {
     font-size: 1rem;
-    color: #f0f0f0;
   }
 }
