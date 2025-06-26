@@ -65,6 +65,7 @@ function Sidebar({
             src={logo}
             alt="SR Agency Logo"
             className={`sidebar-logo ${isCollapsed ? 'collapsed' : ''}`}
+            style={isMobile ? { maxWidth: 100, margin: '0 auto' } : {}}
           />
         </div>
 
