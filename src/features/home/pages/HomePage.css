@@ -1,4 +1,4 @@
-/* === DESKTOP (tanpa gambar) === */
+/* === DESKTOP === */
 .home-wrapper {
   display: flex;
   flex-direction: column;
@@ -14,7 +14,14 @@
 .home-overlay {
   max-width: 700px;
   width: 100%;
-  animation: fadeIn 0.6s ease;
+}
+
+/* Menghindari teks kepotong atau “nyeret” */
+.home-title,
+.home-subtitle {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
 }
 
 .home-title {
@@ -22,31 +29,15 @@
   font-weight: 700;
   color: var(--color-accent);
   margin-bottom: 0.75rem;
-  white-space: nowrap;
 }
 
 .home-subtitle {
   font-size: 1.25rem;
   line-height: 1.6;
   color: var(--color-dark);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-/* === ANIMASI === */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* === MOBILE (dengan gambar background) === */
+/* === MOBILE === */
 @media (max-width: 768px) {
   .home-wrapper {
     justify-content: center;
@@ -55,7 +46,7 @@
     padding: 0;
     width: 100vw;
     height: 100vh;
-    background-image: url('/assets/bg-home.png'); /* ✅ pastikan file ini ADA */
+    background-image: url('/assets/bg-home.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -68,9 +59,6 @@
     border-radius: 1rem;
     color: white;
     max-width: 90%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 
   .home-title {

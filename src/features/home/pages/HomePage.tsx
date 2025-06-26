@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
+import { motion } from 'framer-motion';
 import './HomePage.css';
 
 function HomePage() {
@@ -9,10 +10,22 @@ function HomePage() {
   return (
     <div className="home-wrapper">
       <div className="home-overlay">
-        <h1 className="home-title">SR Agency</h1>
-        <p className="home-subtitle">
+        <motion.h1
+          className="home-title"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+        >
+          SR Agency
+        </motion.h1>
+        <motion.p
+          className="home-subtitle"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.6, ease: 'easeOut' }}
+        >
           Hi, {firstName}! Work hard, party harder ✨
-        </p>
+        </motion.p>
       </div>
     </div>
   );
