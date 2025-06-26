@@ -23,8 +23,6 @@ const UserListPage = () => {
   const limit = isMobile ? 5 : 10;
   const [total, setTotal] = useState(0);
   const [keyword, setKeyword] = useState('');
-
-  // ⬇️ Tambahan: deteksi apakah sidebar sedang terbuka
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -175,23 +173,13 @@ const UserListPage = () => {
             </div>
           )}
 
-          {/* ⬇️ Tombol Add tidak muncul jika sidebar terbuka */}
           {!isSidebarOpen && (
             <button
               onClick={() => {
                 setEditUser(null);
                 setShowForm(true);
               }}
-              className="btn btn-success rounded-circle position-fixed"
-              style={{
-                bottom: '20px',
-                right: '20px',
-                width: '56px',
-                height: '56px',
-                fontSize: '24px',
-                zIndex: 1000,
-                boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-              }}
+              className="fab-button"
             >
               <FiPlus />
             </button>
