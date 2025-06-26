@@ -163,16 +163,7 @@ const PengawasListPage = () => {
                 setEditPengawas(null);
                 setShowForm(true);
               }}
-              className="btn btn-success rounded-circle position-fixed"
-              style={{
-                bottom: '20px',
-                right: '20px',
-                width: '56px',
-                height: '56px',
-                fontSize: '24px',
-                zIndex: 1000,
-                boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-              }}
+              className="fab-button"
             >
               <FiPlus />
             </button>
