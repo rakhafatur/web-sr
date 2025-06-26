@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Sidebar from '../components/Sidebar/Sidebar';
 import Header from '../components/Header/Header';
-import { useLocation } from 'react-router-dom';
+import BottomNavbarAdmin from '../components/Bottombar/BottomNavbarAdmin'; // ✅ Sesuai struktur folder kamu
+
 import {
   HEADER_HEIGHT,
   SIDEBAR_WIDTH,
@@ -41,17 +43,18 @@ function MainLayout({ children }: { children: React.ReactNode }) {
       className="layout-container"
       style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}
     >
-      {/* ✅ Tetap tampilkan Header, atau bisa kamu kondisikan isHomePage ? null : <Header /> */}
       <Header onToggleSidebar={() => setSidebarOpen(true)} />
 
       <div className="d-flex" style={{ width: '100%' }}>
-        <Sidebar
-          isOpen={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-          isMobile={isMobile}
-          isCollapsed={isCollapsed}
-          onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
-        />
+        {!isMobile && (
+          <Sidebar
+            isOpen={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
+            isMobile={false}
+            isCollapsed={isCollapsed}
+            onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
+          />
+        )}
 
         <div
           className="flex-grow-1 d-flex flex-column"
@@ -69,9 +72,11 @@ function MainLayout({ children }: { children: React.ReactNode }) {
             className="main-content"
             style={{
               padding: isHomePage ? '0' : '2rem',
+              paddingBottom: isMobile ? '80px' : undefined, // biar nggak ketiban bottom bar
             }}
           >
             {children}
+            {isMobile && <BottomNavbarAdmin />}
           </main>
         </div>
       </div>
