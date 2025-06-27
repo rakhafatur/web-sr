@@ -81,11 +81,12 @@
   background: #fff;
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
-  width: 100%;
+  width: 100vw;
   padding: 16px;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
   transform: translateY(100%);
   animation: slideUp 0.3s ease-out forwards;
+   z-index: 1001;
 }
 
 @keyframes slideUp {
