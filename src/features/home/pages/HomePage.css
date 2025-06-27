@@ -8,29 +8,46 @@
   align-items: center;
   justify-content: center;
   text-align: center;
+  background: var(--bg-color, #f5f5f5);
 }
 
-/* === ANIMATED BACKGROUND === */
-.home-bg {
-  position: absolute;
-  inset: 0;
-  background-image: url('/assets/bg-home.png'); /* Ganti ke jpg hasil kompresi */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  z-index: 0;
+/* === BACKGROUND MOBILE ONLY === */
+.home-bg-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .home-bg-mobile {
+    display: block;
+    position: absolute;
+    inset: 0;
+    background-image: url('/assets/bg-home.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 0;
+  }
 }
 
 /* === OVERLAY KONTEN === */
 .home-overlay {
   position: relative;
   z-index: 1;
-  background-color: rgba(0, 0, 0, 0.5);
   padding: 2rem;
   border-radius: 1.25rem;
   max-width: 720px;
   width: 90%;
   color: white;
+  background-color: rgba(0, 0, 0, 0.5); /* default background for desktop */
+}
+
+/* Mobile: Glass effect only */
+@media (max-width: 768px) {
+  .home-overlay {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    color: white;
+  }
 }
 
 /* === TEKS === */
