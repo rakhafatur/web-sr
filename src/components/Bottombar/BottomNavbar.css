@@ -55,7 +55,7 @@
 /* === MODAL BACKDROP === */
 .bottom-modal-backdrop {
   position: fixed;
-  bottom: 0;
+  bottom: 60px; /* ⬅️ Jangan tutupi navbar */
   left: 0;
   right: 0;
   top: 0;
@@ -91,6 +91,11 @@
   transform: translateY(100%);
   animation: slideUp 0.3s ease-out forwards;
   z-index: 1001;
+
+  /* ✅ fix scroll */
+  max-height: 70vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 @keyframes slideUp {
