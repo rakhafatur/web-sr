@@ -52,7 +52,7 @@
   border-radius: 50%;
 }
 
-/* Modal */
+/* === MODAL BACKDROP === */
 .bottom-modal-backdrop {
   position: fixed;
   bottom: 0;
@@ -60,11 +60,23 @@
   right: 0;
   top: 0;
   background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
   z-index: 1000;
   display: flex;
   align-items: flex-end;
+  animation: fadeInBackdrop 0.2s ease-out;
 }
 
+@keyframes fadeInBackdrop {
+  from {
+    background: rgba(0, 0, 0, 0);
+  }
+  to {
+    background: rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* === MODAL CONTENT === */
 .bottom-modal {
   background: #fff;
   border-top-left-radius: 16px;

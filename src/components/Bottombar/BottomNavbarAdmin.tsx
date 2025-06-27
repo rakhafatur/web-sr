@@ -17,6 +17,7 @@ function BottomNavbarAdmin() {
 
   return (
     <>
+      {/* Bottom Navbar */}
       <div className="bottom-navbar">
         <div className="nav-item" onClick={() => { navigate('/'); setActiveModal(null); }}>
           <FiHome className={`nav-icon ${isActive('/') ? 'active' : ''}`} />
@@ -39,6 +40,7 @@ function BottomNavbarAdmin() {
         </div>
       </div>
 
+      {/* Drawer Modal */}
       {activeModal && (
         <div className="bottom-modal-backdrop" onClick={() => setActiveModal(null)}>
           <div className="bottom-modal" onClick={(e) => e.stopPropagation()}>
