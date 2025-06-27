@@ -58,8 +58,7 @@ function BottomNavbarAdmin() {
 
   return (
     <>
-      {/* Bottom Navbar */}
-      <div className={`bottom-navbar ${activeModal ? 'hidden' : ''}`}>
+      <div className="bottom-navbar">
         <div className="nav-item" onClick={() => { navigate('/'); setActiveModal(null); }}>
           <FiHome className={`nav-icon ${isActive('/') ? 'active' : ''}`} />
           <span>Home</span>
@@ -81,7 +80,6 @@ function BottomNavbarAdmin() {
         </div>
       </div>
 
-      {/* Drawer Modal (in portal) */}
       {activeModal && ReactDOM.createPortal(renderModalContent(), document.body)}
     </>
   );
