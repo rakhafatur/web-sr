@@ -3,6 +3,7 @@ import { supabase } from '../../../lib/supabaseClient';
 import { useMediaQuery } from 'react-responsive';
 import DataTable from '../../../components/DataTable';
 import { FiCheck } from 'react-icons/fi';
+import UserApprovalCardList from '../components/UserApprovalCardList';
 
 type User = {
   id: string;
@@ -158,25 +159,29 @@ const UserApprovalPage = () => {
         />
       </div>
 
-      <DataTable
-        columns={[
-          { key: 'username', label: 'Username' },
-          { key: 'nama', label: 'Nama Lengkap' },
-          {
-            key: 'id',
-            label: 'Aksi',
-            render: (u: User) => (
-              <button
-                className="btn btn-sm btn-outline-success d-flex align-items-center gap-1"
-                onClick={() => handleApproveClick(u.id)}
-              >
-                <FiCheck /> Approve
-              </button>
-            ),
-          },
-        ]}
-        data={userList}
-      />
+      {isMobile ? (
+        <UserApprovalCardList users={userList} onApprove={handleApproveClick} />
+      ) : (
+        <DataTable
+          columns={[
+            { key: 'username', label: 'Username' },
+            { key: 'nama', label: 'Nama Lengkap' },
+            {
+              key: 'id',
+              label: 'Aksi',
+              render: (u: User) => (
+                <button
+                  className="btn btn-sm btn-outline-success d-flex align-items-center gap-1"
+                  onClick={() => handleApproveClick(u.id)}
+                >
+                  <FiCheck /> Approve
+                </button>
+              ),
+            },
+          ]}
+          data={userList}
+        />
+      )}
 
       {totalPages > 1 && (
         <div className="d-flex justify-content-between align-items-center mt-4">
