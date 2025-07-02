@@ -29,7 +29,7 @@ const UserApprovalCardList = ({ users, onApprove }: Props) => {
             className="btn btn-sm btn-outline-success w-100 d-flex align-items-center justify-content-center gap-2"
             onClick={() => onApprove(u.id)}
           >
-            <FiCheck /> Approve & Assign
+            <FiCheck /> Approve
           </button>
         </>
       )}

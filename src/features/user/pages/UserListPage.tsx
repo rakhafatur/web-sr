@@ -41,6 +41,7 @@ const UserListPage = () => {
     let query = supabase
       .from('users')
       .select('*', { count: 'exact' })
+      .eq('is_active', true) // ✅ hanya tampilkan user aktif
       .range(from, to);
 
     if (keyword.trim() !== '') {
