@@ -4,7 +4,8 @@ import logo from '../../assets/logosr-green.png';
 import {
   FiHome, FiSettings, FiUsers, FiUserCheck, FiUser,
   FiCalendar, FiBook, FiPlus, FiDollarSign, FiBarChart2,
-  FiChevronsLeft, FiChevronsRight, FiChevronDown, FiChevronUp, FiFolder
+  FiChevronsLeft, FiChevronsRight, FiChevronDown, FiChevronUp, FiFolder,
+  FiCheckSquare
 } from 'react-icons/fi';
 
 import { SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from '../../constant';
@@ -84,7 +85,7 @@ function Sidebar({
             </Link>
           </li>
 
-          {/* Parameter */}
+          {/* Parameter Section */}
           <li>
             <div
               className="nav-link sidebar-link fw-bold d-flex align-items-center justify-content-between"
@@ -103,6 +104,11 @@ function Sidebar({
                 <li>
                   <Link to="/users" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/users') ? 'active' : ''}`}>
                     <FiUsers className="sidebar-icon" /> {renderText('Users')}
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/user-approval" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/user-approval') ? 'active' : ''}`}>
+                    <FiCheckSquare className="sidebar-icon" /> {renderText('Approval User')}
                   </Link>
                 </li>
                 <li>

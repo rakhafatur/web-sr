@@ -1,11 +1,11 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Suspense } from 'react';
 
-
 import LoginPage from './features/auth/pages/LoginPage';
 import SignUpPage from './features/auth/pages/SignUpPage';
 import HomePage from './features/home/pages/HomePage';
 import UserListPage from './features/user/pages/UserListPage';
+import UserApprovalPage from './features/user/pages/UserApprovalPage'; // ✅ Tambahkan ini
 import PengawasListPage from './features/pengawas/pages/PengawasListPage';
 import LadiesListPage from './features/ladies/pages/LadiesListPage';
 import NotFoundPage from './features/core/pages/NotFoundPage';
@@ -27,11 +27,11 @@ function App() {
       <BrowserRouter>
         <Suspense fallback={<div>Loading halaman...</div>}>
           <Routes>
-            {/* Public routes: TIDAK dibungkus layout */}
+            {/* Public routes */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
 
-            {/* Protected pages: dibungkus MainLayout */}
+            {/* Protected routes */}
             <Route
               path="/"
               element={
@@ -48,6 +48,16 @@ function App() {
                 <ProtectedRoute>
                   <MainLayout>
                     <UserListPage />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/user-approval"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <UserApprovalPage />
                   </MainLayout>
                 </ProtectedRoute>
               }
@@ -142,6 +152,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             {/* 404 fallback */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>

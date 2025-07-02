@@ -1,3 +1,4 @@
+// AuthContext.tsx
 import {
   createContext,
   useContext,
@@ -13,9 +14,11 @@ import {
   clearUser as clearReduxUser,
 } from '../features/user/userSlice';
 
+type LoginResult = 'success' | 'inactive' | 'wrong_password' | 'not_found' | 'error';
+
 type AuthContextType = {
   user: any;
-  login: (username: string, password: string) => Promise<boolean>;
+  login: (username: string, password: string) => Promise<LoginResult>;
   logout: () => void;
 };
 
@@ -23,7 +26,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true); // ✅ Tambahan: tunggu sampai data dari localStorage dicek
+  const [isLoading, setIsLoading] = useState(true);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -31,8 +34,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
       setUser(parsedUser);
-
-      // ✅ Sinkronisasi ke Redux
       dispatch(
         setReduxUser({
           username: parsedUser.username,
@@ -41,30 +42,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         })
       );
     }
-    setIsLoading(false); // ✅ Selesai inisialisasi user
+    setIsLoading(false);
   }, [dispatch]);
 
-  const login = async (username: string, password: string) => {
+  const login = async (username: string, password: string): Promise<LoginResult> => {
     const { data: userData, error } = await supabase
       .from('users')
       .select('*')
       .eq('username', username)
       .single();
 
-    if (error || !userData) {
-      alert('❌ Username tidak ditemukan');
-      return false;
-    }
+    if (error || !userData) return 'not_found';
 
     const passwordMatch = await bcrypt.compare(password, userData.password);
-    if (!passwordMatch) {
-      alert('❌ Password salah');
-      return false;
-    }
+    if (!passwordMatch) return 'wrong_password';
+
+    if (!userData.is_active) return 'inactive';
 
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
-
     dispatch(
       setReduxUser({
         username: userData.username,
@@ -73,7 +69,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       })
     );
 
-    return true;
+    return 'success';
   };
 
   const logout = () => {

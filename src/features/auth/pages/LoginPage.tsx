@@ -17,9 +17,18 @@ function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (data: LoginFormData) => {
-    const success = await login(data.username, data.password);
-    if (success) {
+    const result = await login(data.username, data.password);
+
+    if (result === 'success') {
       navigate('/');
+    } else if (result === 'inactive') {
+      alert('⚠️ Akunmu belum aktif. Menunggu persetujuan admin.');
+    } else if (result === 'wrong_password') {
+      alert('❌ Password salah.');
+    } else if (result === 'not_found') {
+      alert('❌ Username tidak ditemukan.');
+    } else {
+      alert('❌ Terjadi kesalahan saat login.');
     }
   };
 
@@ -39,7 +48,6 @@ function LoginPage() {
         {/* Form kanan */}
         <div className="login-form-wrapper">
           <div className="login-card">
-            {/* Logo SR */}
             <div className="text-center mb-4">
               <img
                 src="../icons/sr-green-512.png"

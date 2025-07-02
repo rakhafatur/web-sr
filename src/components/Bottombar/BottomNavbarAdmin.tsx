@@ -47,6 +47,7 @@ function BottomNavbarAdmin() {
             <>
               <li className="drawer-section">Parameter</li>
               <li onClick={() => { navigate('/users'); setActiveModal(null); }}>Users</li>
+              <li onClick={() => { navigate('/user-approval'); setActiveModal(null); }}>Approval User</li> {/* ✅ Tambahan ini */}
               <li onClick={() => { navigate('/pengawas'); setActiveModal(null); }}>Pengawas</li>
               <li onClick={() => { navigate('/ladies'); setActiveModal(null); }}>Ladies</li>
             </>

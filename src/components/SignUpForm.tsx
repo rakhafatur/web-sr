@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import bcrypt from 'bcryptjs';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // ✅ Tambah useNavigate
 
 type FormData = {
   username: string;
@@ -23,6 +23,7 @@ function SignUpForm() {
     formState: { errors },
   } = useForm<FormData>();
 
+  const navigate = useNavigate(); // ✅ Inisialisasi navigate
   const [groups, setGroups] = useState<UserGroup[]>([]);
 
   useEffect(() => {
@@ -41,6 +42,7 @@ function SignUpForm() {
       password: hashedPassword,
       nama: data.nama,
       user_group_id: data.role,
+      is_active: false, // akun tidak aktif sampai di-approve admin
     });
 
     if (error) {
@@ -48,7 +50,8 @@ function SignUpForm() {
       return;
     }
 
-    alert('✅ Registrasi berhasil! Silakan login.');
+    alert('✅ Registrasi berhasil! Akunmu sedang menunggu persetujuan admin.');
+    navigate('/login'); // ✅ Redirect ke halaman login
   };
 
   return (
