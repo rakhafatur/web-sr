@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '../app/store';
+
 import Sidebar from '../components/Sidebar/Sidebar';
 import Header from '../components/Header/Header';
 import BottomNavbarAdmin from '../components/Bottombar/BottomNavbarAdmin';
+import BottomNavbarLadies from '../components/Bottombar/BottomNavbarLadies';
 
 import {
   SIDEBAR_WIDTH,
@@ -10,6 +14,9 @@ import {
 } from '../constant';
 
 function MainLayout({ children }: { children: React.ReactNode }) {
+  const user = useSelector((state: RootState) => state.user.currentUser) as any;
+  const isLadies = !!user?.ladies_id;
+
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -46,13 +53,21 @@ function MainLayout({ children }: { children: React.ReactNode }) {
       <div className="d-flex" style={{ width: '100%' }}>
         {/* ✅ Sidebar hanya untuk non-mobile */}
         {!isMobile && (
-          <Sidebar
-            isOpen={sidebarOpen}
-            onClose={() => setSidebarOpen(false)}
-            isMobile={false}
-            isCollapsed={isCollapsed}
-            onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
-          />
+          isLadies ? (
+            <div style={{ width: sidebarWidth, padding: '1rem', fontSize: '0.9rem', color: '#888' }}>
+              {/* 🔜 Sidebar khusus Ladies nanti di sini */}
+              <div style={{ fontWeight: 600 }}>SR Ladies</div>
+              <div style={{ marginTop: '0.5rem' }}>Sidebar khusus ladies belum tersedia</div>
+            </div>
+          ) : (
+            <Sidebar
+              isOpen={sidebarOpen}
+              onClose={() => setSidebarOpen(false)}
+              isMobile={false}
+              isCollapsed={isCollapsed}
+              onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
+            />
+          )
         )}
 
         {/* ✅ Main Content */}
@@ -81,7 +96,9 @@ function MainLayout({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* ✅ BottomNavbar untuk mobile */}
-      {isMobile && <BottomNavbarAdmin />}
+      {isMobile && (
+        isLadies ? <BottomNavbarLadies /> : <BottomNavbarAdmin />
+      )}
     </div>
   );
 }
