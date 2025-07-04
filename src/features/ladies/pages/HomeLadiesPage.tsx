@@ -3,8 +3,10 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
 import { supabase } from '../../../lib/supabaseClient';
 import dayjs from 'dayjs';
+import { motion } from 'framer-motion';
+import { FiCalendar, FiGift, FiTrendingDown } from 'react-icons/fi';
 import './HomeLadiesPage.css';
-import bgImage from '../../../assets/bg-green-1.png';
+import bgImage from '../../../assets/bg-home.png';
 
 type UserWithLadies = {
   id: string;
@@ -76,9 +78,9 @@ const HomeLadiesPage = () => {
       <div className="rekap-grid">
 
         {/* Kehadiran */}
-        <div className="rekap-box glass">
+        <motion.div className="rekap-box glass" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <div className="rekap-row">
-            <p className="rekap-label">Kehadiran</p>
+            <p className="rekap-label"><FiCalendar /> Kehadiran</p>
             <p className="rekap-label">{persenHadir}%</p>
           </div>
           <p className="rekap-value">{hariMasuk} / 18 Hari</p>
@@ -86,18 +88,19 @@ const HomeLadiesPage = () => {
             <div className="progress-fill" style={{ width: `${persenHadir}%` }} />
           </div>
           <p className="rekap-note">Kurang {Math.max(0, 18 - hariMasuk)} hari dari target</p>
-        </div>
+        </motion.div>
 
         {/* Voucher + Pengeluaran */}
         <div className="rekap-row-box">
-          <div className="rekap-box glass yellow-box">
-            <p className="rekap-label">Voucher</p>
+
+          <motion.div className="rekap-box glass yellow-box" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.5 }}>
+            <p className="rekap-label"><FiGift /> Voucher</p>
             <p className="rekap-value">{voucherPcs} pcs</p>
             <p className="rekap-subvalue">Rp {voucherNominal.toLocaleString('id-ID')}</p>
-          </div>
+          </motion.div>
 
-          <div className="rekap-box glass red-box">
-            <p className="rekap-label">Pengeluaran</p>
+          <motion.div className="rekap-box glass red-box" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.5 }}>
+            <p className="rekap-label"><FiTrendingDown /> Pengeluaran</p>
             <p className="rekap-value text-red">Rp {pengeluaran.toLocaleString('id-ID')}</p>
             {isOver ? (
               <>
@@ -113,7 +116,7 @@ const HomeLadiesPage = () => {
                 )}
               </>
             )}
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>
