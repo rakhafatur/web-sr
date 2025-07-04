@@ -24,14 +24,13 @@
     left: 0;
     width: 100%;
     height: 100vh;
-    background-image: url('/assets/bg-home.png');
+    background-image: url('/assets/bg-home.png'); /* ✅ Gambar dari public */
     background-size: cover;
     background-position: center top;
     background-repeat: no-repeat;
     z-index: 0;
   }
 
-  /* ✅ overlay hijau transparan di atas gambar */
   .home-bg-mobile::after {
     content: '';
     position: absolute;
@@ -67,7 +66,6 @@
   color: #e6e6e6;
 }
 
-/* === RESPONSIF MOBILE === */
 @media (max-width: 768px) {
   .home-overlay {
     background: rgba(255, 255, 255, 0.12);
