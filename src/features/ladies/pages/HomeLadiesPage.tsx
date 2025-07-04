@@ -76,9 +76,13 @@ const HomeLadiesPage = () => {
           </div>
 
           <div className="rekap-box">
-            <p className="rekap-label">Voucher Didapat</p>
-            <p className="rekap-value">{voucherPcs} pcs</p>
-            <p className="rekap-subvalue">Rp {voucherNominal.toLocaleString('id-ID')}</p>
+            <div className="rekap-row">
+              <p className="rekap-label">Voucher Didapat</p>
+              <p className="rekap-value">{voucherPcs} pcs</p>
+            </div>
+            <p className="rekap-nominal text-green">
+              Rp {voucherNominal.toLocaleString('id-ID')}
+            </p>
           </div>
 
           <div className="rekap-box">
