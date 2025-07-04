@@ -8,9 +8,9 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
+  background-color: #f5fdf7;
+  color: #222;
   font-family: 'Segoe UI', sans-serif;
-  background-color: #f0fdf4;
-  color: #f0fdf4;
 }
 
 .home-background-image {
@@ -22,89 +22,83 @@
   object-fit: cover;
   object-position: center;
   z-index: 0;
-  filter: brightness(0.9) saturate(1.2);
+  filter: brightness(0.75) saturate(1.05);
   pointer-events: none;
 }
 
 .rekap-grid {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
   width: 100%;
   max-width: 720px;
   z-index: 2;
 }
 
 .rekap-box {
-  border-radius: 1.25rem;
-  padding: 1.75rem;
+  border-radius: 1rem;
+  padding: 1.5rem;
   text-align: left;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.2s ease;
 }
 
 .rekap-box:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
 }
 
 .glass {
   background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(18px) saturate(180%);
-  -webkit-backdrop-filter: blur(18px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-}
-
-.yellow-box {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-}
-
-.red-box {
-  background: linear-gradient(135deg, rgba(255, 0, 0, 0.1), rgba(255, 255, 255, 0.05));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
 .rekap-label {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: #ffffff;
+  color: #333;
   margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .rekap-value {
-  font-size: 1.9rem;
+  font-size: 1.8rem;
   font-weight: 700;
-  color: #ffffff;
+  color: #111;
 }
 
 .rekap-subvalue {
   font-size: 1rem;
   font-weight: 500;
-  color: #e0e0e0;
+  color: #444;
   margin-top: 0.25rem;
 }
 
 .rekap-note {
   font-size: 0.85rem;
-  color: #d1fae5;
+  color: #666;
   margin-top: 0.5rem;
 }
 
 .rekap-subnote {
   font-size: 0.75rem;
-  color: #a7f3d0;
+  color: #555;
   margin-top: 0.25rem;
 }
 
 .text-red {
-  color: #fecaca;
+  color: #d32f2f;
 }
 
 .text-green {
-  color: #bbf7d0;
+  color: #15803d;
 }
 
 .progress-bar {
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: #e0e0e0;
   border-radius: 10px;
   height: 8px;
   width: 100%;
@@ -113,7 +107,7 @@
 }
 
 .progress-fill {
-  background-color: #4ade80;
+  background-color: #15803d;
   height: 100%;
   width: 0;
   transition: width 0.3s ease;
@@ -122,12 +116,12 @@
 
 .rekap-row-box {
   display: flex;
-  flex-wrap: wrap;
   gap: 1rem;
+  width: 100%;
 }
 
 .rekap-row-box .rekap-box {
-  flex: 1 1 48%;
+  flex: 1;
 }
 
 .rekap-row {
