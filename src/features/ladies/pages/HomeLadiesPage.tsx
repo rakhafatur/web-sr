@@ -77,8 +77,7 @@ const HomeLadiesPage = () => {
 
           <div className="rekap-box">
             <div className="rekap-row">
-              <p className="rekap-label">Voucher Didapat</p>
-              <p className="rekap-value">{voucherPcs} pcs</p>
+              <p className="rekap-label">Voucher Didapat {voucherPcs} pcs</p>
             </div>
             <p className="rekap-nominal text-green">
               Rp {voucherNominal.toLocaleString('id-ID')}
