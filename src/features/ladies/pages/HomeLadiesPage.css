@@ -4,13 +4,8 @@
   min-height: 100vh;
   overflow: hidden;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
-  background-color: #f5fdf7;
-  color: #222;
-  font-family: 'Segoe UI', sans-serif;
 }
 
 .home-background-image {
@@ -22,136 +17,56 @@
   object-fit: cover;
   object-position: center;
   z-index: 0;
-  filter: brightness(0.75) saturate(1.05);
+  filter: brightness(0.9) saturate(1.05);
   pointer-events: none;
 }
 
-.rekap-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  width: 100%;
-  max-width: 720px;
+.home-overlay {
+  position: relative;
   z-index: 2;
-}
-
-.rekap-box {
-  border-radius: 1rem;
-  padding: 1.5rem;
-  text-align: left;
-  transition: transform 0.2s ease;
-}
-
-.rekap-box:hover {
-  transform: translateY(-2px);
-}
-
-.glass {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-}
-
-.rekap-label {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 0.25rem;
+  padding: 1.5rem 1rem;
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
 }
 
-.rekap-value {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #111;
+.card {
+  min-width: 240px;
+  flex-shrink: 0;
+  scroll-snap-align: center;
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  color: white;
+  text-align: left;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.rekap-subvalue {
+.card-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-label {
   font-size: 1rem;
-  font-weight: 500;
-  color: #444;
-  margin-top: 0.25rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
 }
 
-.rekap-note {
-  font-size: 0.85rem;
-  color: #666;
-  margin-top: 0.5rem;
+.card-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
 }
 
-.rekap-subnote {
-  font-size: 0.75rem;
-  color: #555;
-  margin-top: 0.25rem;
+.card-note {
+  font-size: 0.9rem;
+  color: #e2e2e2;
 }
 
 .text-red {
-  color: #d32f2f;
-}
-
-.text-green {
-  color: #15803d;
-}
-
-.progress-bar {
-  background-color: #e0e0e0;
-  border-radius: 10px;
-  height: 8px;
-  width: 100%;
-  overflow: hidden;
-  margin-top: 0.5rem;
-}
-
-.progress-fill {
-  background-color: #15803d;
-  height: 100%;
-  width: 0;
-  transition: width 0.3s ease;
-  border-radius: 10px;
-}
-
-.rekap-row-box {
-  display: flex;
-  gap: 1rem;
-  width: 100%;
-}
-
-.rekap-row-box .rekap-box {
-  flex: 1;
-}
-
-.rekap-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-@media (max-width: 768px) {
-  .home-wrapper {
-    padding: 1.25rem 1rem;
-  }
-
-  .rekap-grid {
-    gap: 1rem;
-  }
-
-  .rekap-box {
-    padding: 1.25rem;
-  }
-
-  .rekap-value {
-    font-size: 1.5rem;
-  }
-
-  .rekap-row-box {
-    flex-direction: column;
-  }
-
-  .rekap-row-box .rekap-box {
-    flex: 1 1 100%;
-  }
+  color: #ff8888;
 }
