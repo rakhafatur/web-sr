@@ -12,7 +12,7 @@ type LoginFormData = {
 
 function LoginPage() {
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>();
-  const { login } = useAuth();
+  const { login, user } = useAuth(); // ✅ gunakan 'user' bukan 'currentUser'
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -20,7 +20,12 @@ function LoginPage() {
     const result = await login(data.username, data.password);
 
     if (result === 'success') {
-      navigate('/');
+      // ✅ arahkan ladies ke /ladies/home
+      if (user?.ladies_id) {
+        navigate('/ladies/home');
+      } else {
+        navigate('/');
+      }
     } else if (result === 'inactive') {
       alert('⚠️ Akunmu belum aktif. Menunggu persetujuan admin.');
     } else if (result === 'wrong_password') {
