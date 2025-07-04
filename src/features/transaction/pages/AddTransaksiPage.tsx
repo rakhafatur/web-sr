@@ -9,6 +9,7 @@ type Lady = {
   nama_ladies: string;
   nama_outlet: string;
   pin: string;
+  status: string;
 };
 
 const AddTransaksiPage = () => {
@@ -21,9 +22,18 @@ const AddTransaksiPage = () => {
 
   useEffect(() => {
     const fetchLadies = async () => {
-      const { data } = await supabase.from('ladies').select('*');
-      setLadiesList(data || []);
+      const { data, error } = await supabase
+        .from('ladies')
+        .select('id, nama_ladies, nama_outlet, pin, status')
+        .eq('status', 'active');
+
+      if (error) {
+        console.error('Gagal mengambil data ladies:', error.message);
+      } else {
+        setLadiesList(data || []);
+      }
     };
+
     fetchLadies();
   }, []);
 

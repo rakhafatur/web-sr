@@ -1,0 +1,22 @@
+.home-bg-mobile {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, var(--color-green), #eaffea);
+  z-index: 0;
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 40px;
+}
+
+.home-wrapper {
+  position: relative;
+  min-height: 100vh;
+  background-color: #f9f9f9;
+}
+
+.home-overlay {
+  position: relative;
+  z-index: 10;
+}

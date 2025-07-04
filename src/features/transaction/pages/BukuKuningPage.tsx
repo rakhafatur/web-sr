@@ -14,6 +14,7 @@ type Lady = {
   nama_ladies: string;
   nama_outlet: string;
   pin: string;
+  status: string;
 };
 
 type Row = {
@@ -52,8 +53,16 @@ const BukuKuningPage = () => {
 
   useEffect(() => {
     const fetchLadies = async () => {
-      const { data } = await supabase.from('ladies').select('*');
-      setLadiesList(data || []);
+      const { data, error } = await supabase
+        .from('ladies')
+        .select('id, nama_ladies, nama_outlet, pin, status')
+        .eq('status', 'active'); // hanya ambil yang aktif
+
+      if (error) {
+        console.error('Gagal mengambil ladies:', error.message);
+      } else {
+        setLadiesList(data || []);
+      }
     };
     fetchLadies();
   }, []);
@@ -247,32 +256,19 @@ const BukuKuningPage = () => {
       </div>
 
       {selectedLadyId && rows.length > 0 && (
-        <div
-          className="d-flex gap-2 mb-3 justify-content-start flex-wrap"
-          style={{ alignItems: 'center' }}
-        >
-          <button
-            className="btn btn-sm btn-success fw-semibold d-flex align-items-center justify-content-center gap-2"
+        <div className="d-flex gap-2 mb-3 justify-content-start flex-wrap" style={{ alignItems: 'center' }}>
+          <button className="btn btn-sm btn-success fw-semibold d-flex align-items-center justify-content-center gap-2"
             onClick={handleTutupBuku}
             title={isSmallMobile ? 'Tutup Buku' : ''}
-            style={{
-              minWidth: isSmallMobile ? 44 : 'auto',
-              height: 36,
-              padding: isSmallMobile ? '0.4rem' : '0.4rem 0.75rem',
-            }}
+            style={{ minWidth: isSmallMobile ? 44 : 'auto', height: 36, padding: isSmallMobile ? '0.4rem' : '0.4rem 0.75rem' }}
           >
             <FiBook size={16} />
             {isSmallMobile ? null : 'Tutup Buku'}
           </button>
-          <button
-            className="btn btn-sm btn-outline-success fw-semibold d-flex align-items-center justify-content-center gap-2"
+          <button className="btn btn-sm btn-outline-success fw-semibold d-flex align-items-center justify-content-center gap-2"
             onClick={handleExportPDF}
             title={isSmallMobile ? 'Cetak PDF' : ''}
-            style={{
-              minWidth: isSmallMobile ? 44 : 'auto',
-              height: 36,
-              padding: isSmallMobile ? '0.4rem' : '0.4rem 0.75rem',
-            }}
+            style={{ minWidth: isSmallMobile ? 44 : 'auto', height: 36, padding: isSmallMobile ? '0.4rem' : '0.4rem 0.75rem' }}
           >
             <FiPrinter size={16} />
             {isSmallMobile ? null : 'Cetak'}
@@ -298,21 +294,9 @@ const BukuKuningPage = () => {
                   { key: 'tanggal', label: 'Tanggal' },
                   { key: 'keterangan', label: 'Keterangan' },
                   { key: 'voucher', label: 'Voucher' },
-                  {
-                    key: 'pemasukan',
-                    label: 'Pemasukan',
-                    render: (row) => formatRupiah(row.pemasukan),
-                  },
-                  {
-                    key: 'pengeluaran',
-                    label: 'Pengeluaran',
-                    render: (row) => formatRupiah(row.pengeluaran),
-                  },
-                  {
-                    key: 'saldo',
-                    label: 'Saldo',
-                    render: (row) => formatRupiah(row.saldo),
-                  },
+                  { key: 'pemasukan', label: 'Pemasukan', render: (row) => formatRupiah(row.pemasukan) },
+                  { key: 'pengeluaran', label: 'Pengeluaran', render: (row) => formatRupiah(row.pengeluaran) },
+                  { key: 'saldo', label: 'Saldo', render: (row) => formatRupiah(row.saldo) },
                 ]}
                 data={rows.map((row, i) => ({ id: `${i}`, ...row }))}
               />
