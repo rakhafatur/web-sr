@@ -97,8 +97,7 @@ const HomeLadiesPage = () => {
             <FiGift className="rekap-icon" />
             <span className="rekap-label">Voucher</span>
           </div>
-          <p className="rekap-value">{voucherPcs} pcs</p>
-          <p className="rekap-subvalue">Rp {voucherNominal.toLocaleString('id-ID')}</p>
+          <p className="rekap-value">Rp {voucherNominal.toLocaleString('id-ID')}</p>
           <p className="rekap-note">
             {voucherNominal >= 1500000
               ? '✅ Target voucher tercapai!'
@@ -116,7 +115,6 @@ const HomeLadiesPage = () => {
           {isOver ? (
             <>
               <p className="rekap-note text-red">⚠️ Melebihi batas wajar {persentase}%</p>
-              <p className="rekap-subnote">📌 Wajar = Rp {batasWajar.toLocaleString('id-ID')}</p>
             </>
           ) : (
             <p className="rekap-note text-green">
