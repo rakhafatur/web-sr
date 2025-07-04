@@ -1,3 +1,17 @@
+/* === WRAPPER UTAMA === */
+.home-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f9f9f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  overflow: hidden;
+}
+
+/* === BACKGROUND HIJAU UNTUK MOBILE === */
 .home-bg-mobile {
   position: absolute;
   top: 0;
@@ -10,13 +24,44 @@
   border-bottom-right-radius: 40px;
 }
 
-.home-wrapper {
-  position: relative;
-  min-height: 100vh;
-  background-color: #f9f9f9;
-}
-
+/* === KONTEN OVERLAY === */
 .home-overlay {
   position: relative;
   z-index: 10;
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  max-width: 720px;
+  width: 100%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* === TEKS === */
+.home-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--color-dark);
+  margin-bottom: 0.5rem;
+}
+
+.home-subtitle {
+  font-size: 1.2rem;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* === MOBILE RESPONSIVE === */
+@media (max-width: 768px) {
+  .home-wrapper {
+    padding: 1.5rem 1rem;
+  }
+
+  .home-title {
+    font-size: 1.75rem;
+  }
+
+  .home-subtitle {
+    font-size: 1rem;
+  }
 }

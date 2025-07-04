@@ -77,8 +77,8 @@ function MainLayout({ children }: { children: React.ReactNode }) {
             marginLeft: isHomePage
               ? 0
               : !isMobile && sidebarOpen
-              ? sidebarWidth
-              : 0,
+                ? sidebarWidth
+                : 0,
             transition: 'margin 0.3s ease',
             width: '100%',
           }}
@@ -86,8 +86,10 @@ function MainLayout({ children }: { children: React.ReactNode }) {
           <main
             className="main-content"
             style={{
+              flex: 1, // ✅ tambahkan agar konten mengisi ruang vertikal
+              minHeight: '100vh', // ✅ pastikan tinggi minimum layar penuh
               padding: isHomePage ? '0' : '2rem',
-              paddingBottom: isMobile ? '80px' : undefined, // untuk BottomNavbar
+              paddingBottom: isMobile ? '80px' : undefined,
             }}
           >
             {children}
