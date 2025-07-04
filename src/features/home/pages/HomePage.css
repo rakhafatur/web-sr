@@ -3,13 +3,12 @@
   position: relative;
   width: 100%;
   min-height: 100vh;
-  overflow: hidden;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  background: var(--bg-color, #f5f5f5);
-  padding: 2rem 1rem 100px;
+  overflow: hidden;
+  background-color: var(--bg-color, #f5f5f5);
 }
 
 /* === BACKGROUND MOBILE ONLY === */
@@ -21,7 +20,10 @@
   .home-bg-mobile {
     display: block;
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh; /* ✅ agar full background */
     background-image: url('/assets/bg-home.png');
     background-size: cover;
     background-position: center;
@@ -40,6 +42,7 @@
   width: 90%;
   color: white;
   background-color: rgba(0, 0, 0, 0.5);
+  text-align: center;
 }
 
 /* Mobile: Glass effect only */
@@ -51,28 +54,23 @@
   }
 }
 
-/* === TEKS === */
-.home-title,
-.home-subtitle {
-  white-space: normal;
-  overflow: visible;
-  text-overflow: unset;
-}
-
 .home-title {
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  color: white;
 }
 
 .home-subtitle {
   font-size: 1.25rem;
-  line-height: 1.6;
   color: #e6e6e6;
 }
 
+/* Responsif */
 @media (max-width: 768px) {
+  .home-overlay {
+    padding: 1.5rem 1rem;
+  }
+
   .home-title {
     font-size: 2rem;
   }
