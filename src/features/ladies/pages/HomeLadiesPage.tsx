@@ -5,6 +5,7 @@ import { supabase } from '../../../lib/supabaseClient';
 import { motion } from 'framer-motion';
 import dayjs from 'dayjs';
 import './HomeLadiesPage.css';
+import bgImage from '../../../../assets/bg-home.png'; // ✅ path fix
 
 type UserWithLadies = {
   id: string;
@@ -59,10 +60,10 @@ const HomeLadiesPage = () => {
   };
 
   return (
-    <div className="home-wrapper p-4 space-y-4 text-sm">
-      <div className="home-bg-mobile" />
+    <div className="home-wrapper">
+      <img src={bgImage} alt="bg" className="home-background-image" />
 
-      <div className="home-overlay space-y-6 relative z-10">
+      <div className="home-overlay">
         <motion.h1
           className="text-xl font-bold text-center text-white"
           initial={{ opacity: 0, y: -10 }}

@@ -1,49 +1,44 @@
-/* === WRAPPER UTAMA === */
 .home-wrapper {
   position: relative;
   width: 100%;
   min-height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #f9f9f9;
   padding: 2rem;
-  overflow: hidden;
 }
 
-/* === BACKGROUND HIJAU UNTUK MOBILE === */
-.home-bg-mobile {
-  display: none;
+/* ✅ gambar sebagai latar belakang responsive */
+.home-background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  filter: brightness(0.9) saturate(1.1);
+  pointer-events: none;
 }
 
-@media (max-width: 768px) {
-  .home-bg-mobile {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh; /* ✅ agar tidak hanya 200px */
-    background: linear-gradient(135deg, var(--color-green), #eaffea);
-    z-index: 0;
-  }
-}
-
-/* === KONTEN OVERLAY === */
 .home-overlay {
   position: relative;
-  z-index: 10;
-  background: white;
+  z-index: 2;
   padding: 2rem;
   border-radius: 1rem;
   max-width: 720px;
   width: 100%;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: white;
   text-align: center;
 }
 
-/* === Responsif === */
+/* Mobile optimization */
 @media (max-width: 768px) {
   .home-wrapper {
     padding: 1.5rem 1rem;
@@ -51,7 +46,6 @@
 
   .home-overlay {
     background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
     color: white;
   }
 }
