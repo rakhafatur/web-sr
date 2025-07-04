@@ -99,9 +99,7 @@ const HomeLadiesPage = () => {
           </div>
           <p className="rekap-value">Rp {voucherNominal.toLocaleString('id-ID')}</p>
           <p className="rekap-note">
-            {voucherNominal >= 1500000
-              ? '✅ Target voucher tercapai!'
-              : `Menuju Rp ${(1500000 - voucherNominal).toLocaleString('id-ID')}`}
+            {voucherPcs} pcs
           </p>
         </motion.div>
 
