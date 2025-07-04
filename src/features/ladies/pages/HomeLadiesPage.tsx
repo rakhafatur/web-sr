@@ -107,7 +107,7 @@ const HomeLadiesPage = () => {
             ) : (
               <p className="rekap-note text-green">
                 ✅ Masih aman. Keuangan terkendali!
-              </p>
+              </p> 
             )}
           </div>
 
