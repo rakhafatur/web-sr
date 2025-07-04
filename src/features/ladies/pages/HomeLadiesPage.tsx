@@ -5,7 +5,6 @@ import { supabase } from '../../../lib/supabaseClient';
 import dayjs from 'dayjs';
 import './HomeLadiesPage.css';
 import bgImage from '../../../assets/bg-home.png';
-import { FiCalendar, FiGift, FiTrendingDown } from 'react-icons/fi';
 
 type UserWithLadies = {
   id: string;
@@ -68,38 +67,52 @@ const HomeLadiesPage = () => {
   const biayaTetap = 500000 + 185000 + 250000;
   const batasWajar = Math.max(0, voucherNominal - biayaTetap);
   const isOver = batasWajar > 0 && pengeluaran > batasWajar;
+  const persentase = isOver ? Math.round(((pengeluaran - batasWajar) / batasWajar) * 100) : 0;
   const persenHadir = Math.round((hariMasuk / 18) * 100);
 
   return (
     <div className="home-wrapper">
-      <img src={bgImage} alt="background" className="home-background-image" />
+      <img src={bgImage} alt="bg" className="home-background-image" />
+      <div className="carousel-wrapper">
+        <div className="carousel-content">
+          {/* Card Kehadiran */}
+          <div className="rekap-box glass">
+            <p className="rekap-label">Kehadiran</p>
+            <p className="rekap-value">{hariMasuk} / 18 Hari</p>
+            <div className="progress-bar">
+              <div className="progress-fill" style={{ width: `${persenHadir}%` }} />
+            </div>
+            <p className="rekap-note">
+              {hariMasuk >= 18
+                ? '✅ Target kehadiran tercapai!'
+                : `Kurang ${18 - hariMasuk} hari dari target`}
+            </p>
+          </div>
 
-      <div className="home-overlay scroll-horizontal">
-        <div className="card">
-          <div className="card-icon"><FiCalendar /></div>
-          <p className="card-label">Kehadiran</p>
-          <p className="card-value">{hariMasuk} / 18 Hari</p>
-          <p className="card-note">{Math.max(0, 18 - hariMasuk)} hari lagi</p>
-        </div>
+          {/* Card Voucher */}
+          <div className="rekap-box glass yellow-box">
+            <p className="rekap-label">Voucher</p>
+            <p className="rekap-value">{voucherPcs} pcs</p>
+            <p className="rekap-subvalue">Rp {voucherNominal.toLocaleString('id-ID')}</p>
+          </div>
 
-        <div className="card">
-          <div className="card-icon"><FiGift /></div>
-          <p className="card-label">Voucher</p>
-          <p className="card-value">{voucherPcs} pcs</p>
-          <p className="card-note">Rp {voucherNominal.toLocaleString('id-ID')}</p>
-        </div>
-
-        <div className="card">
-          <div className="card-icon"><FiTrendingDown /></div>
-          <p className="card-label">Pengeluaran</p>
-          <p className="card-value text-red">Rp {pengeluaran.toLocaleString('id-ID')}</p>
-          <p className="card-note">
-            {isOver
-              ? '⚠️ Melebihi batas wajar'
-              : batasWajar > 0
-              ? '✅ Masih aman'
-              : '🔄 Belum ada voucher'}
-          </p>
+          {/* Card Pengeluaran */}
+          <div className="rekap-box glass red-box">
+            <p className="rekap-label">Pengeluaran</p>
+            <p className="rekap-value text-red">Rp {pengeluaran.toLocaleString('id-ID')}</p>
+            {isOver ? (
+              <>
+                <p className="rekap-note text-red">⚠️ Melebihi batas wajar {persentase}%</p>
+                <p className="rekap-subnote">📌 Wajar = Rp {batasWajar.toLocaleString('id-ID')}</p>
+              </>
+            ) : (
+              <p className="rekap-note text-green">
+                {batasWajar > 0
+                  ? '✅ Masih aman. Keuangan terkendali!'
+                  : '🔄 Belum ada voucher, tetap semangat!'}
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>

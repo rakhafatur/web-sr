@@ -6,6 +6,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 2rem 0;
+  background-color: #f5fdf7;
+  font-family: 'Segoe UI', sans-serif;
 }
 
 .home-background-image {
@@ -17,56 +20,110 @@
   object-fit: cover;
   object-position: center;
   z-index: 0;
-  filter: brightness(0.9) saturate(1.05);
+  filter: brightness(0.85) saturate(1.05);
   pointer-events: none;
 }
 
-.home-overlay {
-  position: relative;
+.carousel-wrapper {
   z-index: 2;
-  padding: 1.5rem 1rem;
-  display: flex;
-  gap: 1rem;
+  width: 100%;
+  max-width: 720px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
 }
 
-.card {
-  min-width: 240px;
-  flex-shrink: 0;
+.carousel-content {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  width: max-content;
+}
+
+.rekap-box {
   scroll-snap-align: center;
-  background-color: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
+  min-width: 85vw;
+  max-width: 90vw;
+  flex-shrink: 0;
   border-radius: 1rem;
-  padding: 1.25rem;
-  color: white;
+  padding: 1.5rem;
   text-align: left;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
 }
 
-.card-icon {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+.rekap-box:hover {
+  transform: translateY(-2px);
 }
 
-.card-label {
-  font-size: 1rem;
+.glass {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.yellow-box {
+  background-color: rgba(255, 249, 219, 0.8);
+}
+
+.red-box {
+  background-color: rgba(255, 236, 236, 0.8);
+}
+
+.rekap-label {
+  font-size: 0.95rem;
   font-weight: 600;
+  color: #333;
   margin-bottom: 0.25rem;
 }
 
-.card-value {
-  font-size: 1.6rem;
+.rekap-value {
+  font-size: 1.8rem;
   font-weight: 700;
-  margin-bottom: 0.5rem;
+  color: #111;
 }
 
-.card-note {
-  font-size: 0.9rem;
-  color: #e2e2e2;
+.rekap-subvalue {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #444;
+  margin-top: 0.25rem;
+}
+
+.rekap-note {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+.rekap-subnote {
+  font-size: 0.75rem;
+  color: #555;
+  margin-top: 0.25rem;
 }
 
 .text-red {
-  color: #ff8888;
+  color: #d32f2f;
+}
+
+.text-green {
+  color: #15803d;
+}
+
+.progress-bar {
+  background-color: #ddd;
+  border-radius: 10px;
+  height: 8px;
+  width: 100%;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.progress-fill {
+  background-color: #15803d;
+  height: 100%;
+  width: 0;
+  transition: width 0.3s ease;
+  border-radius: 10px;
 }
