@@ -14,7 +14,8 @@ function BottomNavbarLadies() {
   const navigate = useNavigate();
   const [activeModal, setActiveModal] = useState<'menu' | null>(null);
 
-  const isActive = (path: string) => location.pathname === path;
+  // ✅ Menggunakan prefix match
+  const isActive = (path: string) => location.pathname.startsWith(path);
 
   const renderModalContent = () => (
     <div className="bottom-modal-backdrop" onClick={() => setActiveModal(null)}>

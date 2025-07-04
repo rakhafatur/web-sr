@@ -5,7 +5,7 @@ import LoginPage from './features/auth/pages/LoginPage';
 import SignUpPage from './features/auth/pages/SignUpPage';
 import HomePage from './features/home/pages/HomePage';
 import UserListPage from './features/user/pages/UserListPage';
-import UserApprovalPage from './features/user/pages/UserApprovalPage'; // ✅ Tambahkan ini
+import UserApprovalPage from './features/user/pages/UserApprovalPage';
 import PengawasListPage from './features/pengawas/pages/PengawasListPage';
 import LadiesListPage from './features/ladies/pages/LadiesListPage';
 import NotFoundPage from './features/core/pages/NotFoundPage';
@@ -16,6 +16,8 @@ import RekapVoucherPage from './features/transaction/pages/RekapVoucherPage';
 import PerformaLadiesPage from './features/transaction/pages/PerformaLadiesPage';
 import AddTransaksiPengawasPage from './features/transaction/pages/AddTransaksiPengawasPage';
 import BukuKuningPengawasPage from './features/transaction/pages/BukuKuningPengawasPage';
+
+import HomeLadiesPage from './features/ladies/pages/HomeLadiesPage'; // ✅ LADIES route
 
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -31,7 +33,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
 
-            {/* Protected routes */}
+            {/* Protected routes for admin/general users */}
             <Route
               path="/"
               element={
@@ -148,6 +150,18 @@ function App() {
                 <ProtectedRoute>
                   <MainLayout>
                     <BukuKuningPengawasPage />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+
+            {/* ✅ LADIES route */}
+            <Route
+              path="/ladies/home"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <HomeLadiesPage />
                   </MainLayout>
                 </ProtectedRoute>
               }
