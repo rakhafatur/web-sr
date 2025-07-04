@@ -2,10 +2,9 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
 import { supabase } from '../../../lib/supabaseClient';
-import { motion } from 'framer-motion';
 import dayjs from 'dayjs';
 import './HomeLadiesPage.css';
-import bgImage from '../../../assets/bg-home.png'; // ✅ FIXED: ini path yang benar
+import bgImage from '../../../assets/bg-home.png';
 
 type UserWithLadies = {
   id: string;
@@ -64,41 +63,23 @@ const HomeLadiesPage = () => {
       <img src={bgImage} alt="bg" className="home-background-image" />
 
       <div className="home-overlay">
-        <motion.h1
-          className="text-xl font-bold text-center text-white"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          Halo, {user?.nama_ladies?.split(' ')[0] || 'Ladies'} 👋
-        </motion.h1>
-
-        <motion.p
-          className="text-sm text-center text-white"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          Work hard, party harder ✨
-        </motion.p>
-
-        <div className="space-y-4 pt-4">
-          <div className="bg-white rounded-xl shadow p-4">
-            <p className="font-medium">Hari Masuk Bulan Ini</p>
-            <p className="text-2xl font-bold">{hariMasuk}</p>
-            <p className="text-xs text-gray-500">
-              Kurang {Math.max(0, 18 - hariMasuk)} hari dari target 18 hari
+        <div className="rekap-grid">
+          <div className="rekap-box">
+            <p className="rekap-label">Hari Masuk Bulan Ini</p>
+            <p className="rekap-value">{hariMasuk}</p>
+            <p className="rekap-note">
+              Kurang {Math.max(0, 18 - hariMasuk)} hari dari target
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow p-4">
-            <p className="font-medium">Voucher Didapat</p>
-            <p className="text-2xl font-bold">{voucherPcs} pcs</p>
+          <div className="rekap-box">
+            <p className="rekap-label">Voucher Didapat</p>
+            <p className="rekap-value">{voucherPcs} pcs</p>
           </div>
 
-          <div className="bg-white rounded-xl shadow p-4">
-            <p className="font-medium">Pengeluaran Bulan Ini</p>
-            <p className="text-2xl font-bold text-red-500">
+          <div className="rekap-box">
+            <p className="rekap-label">Pengeluaran Bulan Ini</p>
+            <p className="rekap-value text-red">
               Rp {pengeluaran.toLocaleString('id-ID')}
             </p>
           </div>

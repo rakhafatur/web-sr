@@ -10,7 +10,6 @@
   padding: 2rem;
 }
 
-/* ✅ gambar latar responsive */
 .home-background-image {
   position: absolute;
   top: 0;
@@ -27,24 +26,58 @@
 .home-overlay {
   position: relative;
   z-index: 2;
-  padding: 2rem;
-  border-radius: 1rem;
-  max-width: 720px;
   width: 100%;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: white;
-  text-align: center;
+  max-width: 720px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+/* Rekap */
+.rekap-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rekap-box {
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  text-align: left;
+}
+
+.rekap-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.rekap-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.rekap-note {
+  font-size: 0.75rem;
+  color: #555;
+  margin-top: 0.25rem;
+}
+
+.text-red {
+  color: #dc2626;
 }
 
 @media (max-width: 768px) {
   .home-wrapper {
-    padding: 1.5rem 1rem;
+    padding: 1.25rem 1rem;
   }
 
-  .home-overlay {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
+  .rekap-value {
+    font-size: 1.5rem;
   }
 }
