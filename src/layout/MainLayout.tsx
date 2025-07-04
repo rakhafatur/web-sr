@@ -39,7 +39,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  const isHomePage = location.pathname === '/';
+  const isHomePage = location.pathname === '/' || location.pathname === '/ladies/home';
   const sidebarWidth = isCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH;
 
   return (
@@ -47,15 +47,12 @@ function MainLayout({ children }: { children: React.ReactNode }) {
       className="layout-container"
       style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}
     >
-      {/* ✅ Header tampil di semua mode */}
       <Header />
 
       <div className="d-flex" style={{ width: '100%' }}>
-        {/* ✅ Sidebar hanya untuk non-mobile */}
         {!isMobile && (
           isLadies ? (
-            <div style={{ width: sidebarWidth, padding: '1rem', fontSize: '0.9rem', color: '#888' }}>
-              {/* 🔜 Sidebar khusus Ladies nanti di sini */}
+            <div style={{ width: sidebarWidth, padding: '1rem' }}>
               <div style={{ fontWeight: 600 }}>SR Ladies</div>
               <div style={{ marginTop: '0.5rem' }}>Sidebar khusus ladies belum tersedia</div>
             </div>
@@ -70,15 +67,10 @@ function MainLayout({ children }: { children: React.ReactNode }) {
           )
         )}
 
-        {/* ✅ Main Content */}
         <div
           className="flex-grow-1 d-flex flex-column"
           style={{
-            marginLeft: isHomePage
-              ? 0
-              : !isMobile && sidebarOpen
-                ? sidebarWidth
-                : 0,
+            marginLeft: isHomePage ? 0 : !isMobile && sidebarOpen ? sidebarWidth : 0,
             transition: 'margin 0.3s ease',
             width: '100%',
           }}
@@ -86,8 +78,8 @@ function MainLayout({ children }: { children: React.ReactNode }) {
           <main
             className="main-content"
             style={{
-              flex: 1, // ✅ tambahkan agar konten mengisi ruang vertikal
-              minHeight: '100vh', // ✅ pastikan tinggi minimum layar penuh
+              flex: 1,
+              minHeight: '100vh',
               padding: isHomePage ? '0' : '2rem',
               paddingBottom: isMobile ? '80px' : undefined,
             }}
@@ -97,10 +89,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      {/* ✅ BottomNavbar untuk mobile */}
-      {isMobile && (
-        isLadies ? <BottomNavbarLadies /> : <BottomNavbarAdmin />
-      )}
+      {isMobile && (isLadies ? <BottomNavbarLadies /> : <BottomNavbarAdmin />)}
     </div>
   );
 }
