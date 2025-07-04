@@ -9,7 +9,6 @@
   justify-content: center;
 }
 
-/* ✅ Gambar responsive, proporsional penuh tanpa potong */
 .home-background-image {
   position: absolute;
   top: 0;
@@ -19,11 +18,11 @@
   object-fit: cover;
   object-position: center;
   z-index: 0;
-  filter: brightness(0.9) saturate(1.1);
+  filter: brightness(0.9) saturate(1.05);
   pointer-events: none;
 }
 
-/* Overlay konten tetap di atas gambar */
+/* === OVERLAY === */
 .home-overlay {
   position: relative;
   z-index: 2;
@@ -32,7 +31,7 @@
   max-width: 720px;
   width: 90%;
   text-align: center;
-  background: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   color: white;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -42,6 +41,7 @@
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
+  color: white;
 }
 
 .home-subtitle {
@@ -52,6 +52,7 @@
 @media (max-width: 768px) {
   .home-overlay {
     padding: 1.5rem 1rem;
+    background-color: rgba(0, 0, 0, 0.35);
   }
 
   .home-title {
