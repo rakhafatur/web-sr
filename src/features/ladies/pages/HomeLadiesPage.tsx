@@ -5,6 +5,8 @@ import { supabase } from '../../../lib/supabaseClient';
 import dayjs from 'dayjs';
 import './HomeLadiesPage.css';
 import bgImage from '../../../assets/bg-home.png';
+import { FiCalendar, FiGift, FiTrendingDown } from 'react-icons/fi';
+import { motion } from 'framer-motion';
 
 type UserWithLadies = {
   id: string;
@@ -75,8 +77,11 @@ const HomeLadiesPage = () => {
       <img src={bgImage} alt="bg" className="home-background-image" />
       <div className="card-grid-wrapper">
         {/* Card Kehadiran */}
-        <div className="rekap-box glass">
-          <p className="rekap-label">Kehadiran</p>
+        <motion.div className="rekap-box glass" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }}>
+          <div className="rekap-header">
+            <FiCalendar className="rekap-icon" />
+            <p className="rekap-label">Kehadiran</p>
+          </div>
           <p className="rekap-value">{hariMasuk} / 18 Hari</p>
           <div className="progress-bar">
             <div className="progress-fill" style={{ width: `${persenHadir}%` }} />
@@ -86,11 +91,14 @@ const HomeLadiesPage = () => {
               ? '✅ Target kehadiran tercapai!'
               : `Kurang ${18 - hariMasuk} hari dari target`}
           </p>
-        </div>
+        </motion.div>
 
         {/* Card Voucher */}
-        <div className="rekap-box glass">
-          <p className="rekap-label">Voucher</p>
+        <motion.div className="rekap-box glass" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+          <div className="rekap-header">
+            <FiGift className="rekap-icon" />
+            <p className="rekap-label">Voucher</p>
+          </div>
           <p className="rekap-value">{voucherPcs} pcs</p>
           <p className="rekap-subvalue">Rp {voucherNominal.toLocaleString('id-ID')}</p>
           <p className="rekap-note">
@@ -98,11 +106,14 @@ const HomeLadiesPage = () => {
               ? '✅ Target voucher tercapai!'
               : `Menuju Rp ${(1500000 - voucherNominal).toLocaleString('id-ID')}`}
           </p>
-        </div>
+        </motion.div>
 
         {/* Card Pengeluaran */}
-        <div className="rekap-box glass">
-          <p className="rekap-label">Pengeluaran</p>
+        <motion.div className="rekap-box glass" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+          <div className="rekap-header">
+            <FiTrendingDown className="rekap-icon" />
+            <p className="rekap-label">Pengeluaran</p>
+          </div>
           <p className="rekap-value text-red">Rp {pengeluaran.toLocaleString('id-ID')}</p>
           {isOver ? (
             <>
@@ -116,7 +127,7 @@ const HomeLadiesPage = () => {
                 : '🔄 Belum ada voucher, tetap semangat!'}
             </p>
           )}
-        </div>
+        </motion.div>
       </div>
     </div>
   );

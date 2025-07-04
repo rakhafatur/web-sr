@@ -12,29 +12,40 @@
 .rekap-box {
   flex: 1 1 280px;
   max-width: 300px;
-  border-radius: 1rem;
+  border-radius: 1.25rem;
   padding: 1.5rem;
   text-align: left;
-  transition: transform 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .rekap-box:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
 }
 
 .glass {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+.rekap-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.rekap-icon {
+  font-size: 1.3rem;
+  color: #2e7d32;
 }
 
 .rekap-label {
   font-size: 0.95rem;
   font-weight: 600;
   color: #333;
-  margin-bottom: 0.25rem;
 }
 
 .rekap-value {
