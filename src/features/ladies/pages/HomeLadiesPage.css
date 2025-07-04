@@ -39,7 +39,6 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* Rekap Grid */
 .rekap-grid {
   display: flex;
   flex-direction: column;
@@ -72,12 +71,6 @@
   color: #111;
 }
 
-.rekap-note {
-  font-size: 0.85rem;
-  color: #666;
-  margin-top: 0.25rem;
-}
-
 .rekap-subvalue {
   font-size: 1rem;
   font-weight: 500;
@@ -85,10 +78,24 @@
   margin-top: 0.25rem;
 }
 
+.rekap-note {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
 .rekap-subnote {
   font-size: 0.75rem;
   color: #555;
   margin-top: 0.25rem;
+}
+
+.text-red {
+  color: #d32f2f;
+}
+
+.text-green {
+  color: #15803d;
 }
 
 .progress-bar {
@@ -116,12 +123,14 @@
   background-color: #ffecec;
 }
 
-.text-red {
-  color: #d32f2f;
+.rekap-row-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
-.text-green {
-  color: #15803d;
+.rekap-row-box .rekap-box {
+  flex: 1 1 48%;
 }
 
 @media (max-width: 768px) {
@@ -138,6 +147,14 @@
   }
 
   .rekap-value {
-    font-size: 1.5rem; 
+    font-size: 1.5rem;
+  }
+
+  .rekap-row-box {
+    flex-direction: column;
+  }
+
+  .rekap-row-box .rekap-box {
+    flex: 1 1 100%;
   }
 }

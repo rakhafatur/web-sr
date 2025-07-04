@@ -66,9 +66,8 @@ const HomeLadiesPage = () => {
 
   const biayaTetap = 500000 + 185000 + 250000;
   const batasWajar = Math.max(0, voucherNominal - biayaTetap);
-  const overLimit = pengeluaran - batasWajar;
-  const isOver = overLimit > 0;
-  const persentase = isOver ? Math.round((overLimit / batasWajar) * 100) : 0;
+  const isOver = batasWajar > 0 && pengeluaran > batasWajar;
+  const persentase = isOver ? Math.round(((pengeluaran - batasWajar) / batasWajar) * 100) : 0;
 
   return (
     <div className="home-wrapper">
@@ -86,29 +85,32 @@ const HomeLadiesPage = () => {
             <p className="rekap-note">Kurang {Math.max(0, 18 - hariMasuk)} hari dari target</p>
           </div>
 
-          {/* Voucher */}
-          <div className="rekap-box yellow-box">
-            <p className="rekap-label">Voucher</p>
-            <p className="rekap-value">{voucherPcs} pcs</p>
-            <p className="rekap-subvalue">Rp {voucherNominal.toLocaleString('id-ID')}</p>
-          </div>
+          {/* Voucher + Pengeluaran */}
+          <div className="rekap-row-box">
+            <div className="rekap-box yellow-box">
+              <p className="rekap-label">Voucher</p>
+              <p className="rekap-value">{voucherPcs} pcs</p>
+              <p className="rekap-subvalue">Rp {voucherNominal.toLocaleString('id-ID')}</p>
+            </div>
 
-          {/* Pengeluaran */}
-          <div className="rekap-box red-box">
-            <p className="rekap-label">Pengeluaran</p>
-            <p className="rekap-value text-red">Rp {pengeluaran.toLocaleString('id-ID')}</p>
-            {isOver ? (
-              <>
-                <p className="rekap-note text-red">
-                  ⚠️ Melebihi batas wajar {persentase}%
-                </p>
-                <p className="rekap-subnote">📌 Wajar = Rp {batasWajar.toLocaleString('id-ID')}</p>
-              </>
-            ) : (
-              <p className="rekap-note text-green">
-                ✅ Masih aman. Keuangan terkendali!
-              </p> 
-            )}
+            <div className="rekap-box red-box">
+              <p className="rekap-label">Pengeluaran</p>
+              <p className="rekap-value text-red">Rp {pengeluaran.toLocaleString('id-ID')}</p>
+              {isOver ? (
+                <>
+                  <p className="rekap-note text-red">⚠️ Melebihi batas wajar {persentase}%</p>
+                  <p className="rekap-subnote">📌 Wajar = Rp {batasWajar.toLocaleString('id-ID')}</p>
+                </>
+              ) : (
+                <>
+                  {batasWajar > 0 ? (
+                    <p className="rekap-note text-green">✅ Masih aman. Keuangan terkendali!</p>
+                  ) : (
+                    <p className="rekap-note text-green">🔄 Belum ada voucher, tetap semangat!</p>
+                  )}
+                </>
+              )}
+            </div>
           </div>
 
         </div>
