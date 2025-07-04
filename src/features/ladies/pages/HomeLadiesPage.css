@@ -73,16 +73,47 @@
 }
 
 .rekap-note {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: #666;
   margin-top: 0.25rem;
 }
 
-.rekap-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.25rem;
+.rekap-subvalue {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #444;
+  margin-top: 0.25rem;
+}
+
+.rekap-subnote {
+  font-size: 0.75rem;
+  color: #555;
+  margin-top: 0.25rem;
+}
+
+.progress-bar {
+  background-color: #ddd;
+  border-radius: 10px;
+  height: 8px;
+  width: 100%;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.progress-fill {
+  background-color: #15803d;
+  height: 100%;
+  width: 0;
+  transition: width 0.3s ease;
+  border-radius: 10px;
+}
+
+.yellow-box {
+  background-color: #fff9db;
+}
+
+.red-box {
+  background-color: #ffecec;
 }
 
 .text-red {

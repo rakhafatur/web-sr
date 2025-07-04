@@ -55,41 +55,62 @@ const HomeLadiesPage = () => {
       .lte('tanggal', tanggalAkhir);
 
     const voucherCount = vouchers?.length || 0;
+    const totalVoucherNominal = voucherCount * 150000;
+    const totalKasbon = kasbon?.reduce((sum, k) => sum + k.jumlah, 0) || 0;
+
     setHariMasuk(absensi?.length || 0);
     setVoucherPcs(voucherCount);
-    setVoucherNominal(voucherCount * 150000);
-    setPengeluaran(kasbon?.reduce((sum, k) => sum + k.jumlah, 0) || 0);
+    setVoucherNominal(totalVoucherNominal);
+    setPengeluaran(totalKasbon);
   };
+
+  const biayaTetap = 500000 + 185000 + 250000;
+  const batasWajar = Math.max(0, voucherNominal - biayaTetap);
+  const overLimit = pengeluaran - batasWajar;
+  const isOver = overLimit > 0;
+  const persentase = isOver ? Math.round((overLimit / batasWajar) * 100) : 0;
 
   return (
     <div className="home-wrapper">
       <img src={bgImage} alt="bg" className="home-background-image" />
-
       <div className="home-overlay">
         <div className="rekap-grid">
-          <div className="rekap-box">
-            <p className="rekap-label">Hari Masuk Bulan Ini</p>
-            <p className="rekap-value">{hariMasuk}</p>
-            <p className="rekap-note">
-              Kurang {Math.max(0, 18 - hariMasuk)} hari dari target
-            </p>
-          </div>
 
+          {/* Kehadiran */}
           <div className="rekap-box">
-            <div className="rekap-row">
-              <p className="rekap-label">Voucher Didapat {voucherPcs} pcs</p>
+            <p className="rekap-label">Kehadiran</p>
+            <p className="rekap-value">{hariMasuk} / 18 Hari</p>
+            <div className="progress-bar">
+              <div className="progress-fill" style={{ width: `${(hariMasuk / 18) * 100}%` }} />
             </div>
-            <p className="rekap-value text-green">
-              Rp {voucherNominal.toLocaleString('id-ID')}
-            </p>
+            <p className="rekap-note">Kurang {Math.max(0, 18 - hariMasuk)} hari dari target</p>
           </div>
 
-          <div className="rekap-box">
-            <p className="rekap-label">Pengeluaran Bulan Ini</p>
-            <p className="rekap-value text-red">
-              Rp {pengeluaran.toLocaleString('id-ID')}
-            </p>
+          {/* Voucher */}
+          <div className="rekap-box yellow-box">
+            <p className="rekap-label">Voucher</p>
+            <p className="rekap-value">{voucherPcs} pcs</p>
+            <p className="rekap-subvalue">Rp {voucherNominal.toLocaleString('id-ID')}</p>
           </div>
+
+          {/* Pengeluaran */}
+          <div className="rekap-box red-box">
+            <p className="rekap-label">Pengeluaran</p>
+            <p className="rekap-value text-red">Rp {pengeluaran.toLocaleString('id-ID')}</p>
+            {isOver ? (
+              <>
+                <p className="rekap-note text-red">
+                  ⚠️ Melebihi batas wajar {persentase}%
+                </p>
+                <p className="rekap-subnote">📌 Wajar = Rp {batasWajar.toLocaleString('id-ID')}</p>
+              </>
+            ) : (
+              <p className="rekap-note text-green">
+                ✅ Masih aman. Keuangan terkendali!
+              </p>
+            )}
+          </div>
+
         </div>
       </div>
     </div>
