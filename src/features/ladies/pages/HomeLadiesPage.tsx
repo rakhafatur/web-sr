@@ -4,7 +4,7 @@ import { RootState } from '../../../app/store';
 import { supabase } from '../../../lib/supabaseClient';
 import dayjs from 'dayjs';
 import './HomeLadiesPage.css';
-import bgImage from '../../../assets/bg-home.png';
+import bgImage from '../../../assets/bg-green-1.png';
 
 type UserWithLadies = {
   id: string;
