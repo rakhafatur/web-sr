@@ -19,6 +19,7 @@ const HomeLadiesPage = () => {
   const [hariMasuk, setHariMasuk] = useState(0);
   const [voucherPcs, setVoucherPcs] = useState(0);
   const [pengeluaran, setPengeluaran] = useState(0);
+  const [voucherNominal, setVoucherNominal] = useState(0);
 
   const bulanIni = dayjs().format('MM');
   const tahunIni = dayjs().format('YYYY');
@@ -53,8 +54,10 @@ const HomeLadiesPage = () => {
       .gte('tanggal', tanggalAwal)
       .lte('tanggal', tanggalAkhir);
 
+    const voucherCount = vouchers?.length || 0;
     setHariMasuk(absensi?.length || 0);
-    setVoucherPcs(vouchers?.length || 0);
+    setVoucherPcs(voucherCount);
+    setVoucherNominal(voucherCount * 150000);
     setPengeluaran(kasbon?.reduce((sum, k) => sum + k.jumlah, 0) || 0);
   };
 
@@ -75,6 +78,7 @@ const HomeLadiesPage = () => {
           <div className="rekap-box">
             <p className="rekap-label">Voucher Didapat</p>
             <p className="rekap-value">{voucherPcs} pcs</p>
+            <p className="rekap-subvalue">Rp {voucherNominal.toLocaleString('id-ID')}</p>
           </div>
 
           <div className="rekap-box">

@@ -8,6 +8,9 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
+  background-color: #f5fdf7;
+  color: #222;
+  font-family: 'Segoe UI', sans-serif;
 }
 
 .home-background-image {
@@ -19,7 +22,7 @@
   object-fit: cover;
   object-position: center;
   z-index: 0;
-  filter: brightness(0.9) saturate(1.1);
+  filter: brightness(0.8) saturate(1.1);
   pointer-events: none;
 }
 
@@ -28,48 +31,62 @@
   z-index: 2;
   width: 100%;
   max-width: 720px;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 1rem;
-  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 1.25rem;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* Rekap */
+/* Rekap Grid */
 .rekap-grid {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .rekap-box {
-  background: rgba(255, 255, 255, 0.85);
-  border-radius: 0.75rem;
-  padding: 1.25rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   text-align: left;
+  transition: transform 0.2s ease;
+}
+
+.rekap-box:hover {
+  transform: translateY(-2px);
 }
 
 .rekap-label {
   font-size: 0.95rem;
   font-weight: 600;
+  color: #333;
   margin-bottom: 0.5rem;
 }
 
 .rekap-value {
-  font-size: 1.75rem;
+  font-size: 1.8rem;
   font-weight: 700;
   color: #111;
+  margin-bottom: 0.25rem;
+}
+
+.rekap-subvalue {
+  font-size: 1rem;
+  color: #006c4e;
+  font-weight: 600;
 }
 
 .rekap-note {
-  font-size: 0.75rem;
-  color: #555;
+  font-size: 0.8rem;
+  color: #666;
   margin-top: 0.25rem;
 }
 
 .text-red {
-  color: #dc2626;
+  color: #d32f2f;
 }
 
 @media (max-width: 768px) {
@@ -77,7 +94,19 @@
     padding: 1.25rem 1rem;
   }
 
+  .rekap-grid {
+    gap: 1rem;
+  }
+
+  .rekap-box {
+    padding: 1.25rem;
+  }
+
   .rekap-value {
     font-size: 1.5rem;
+  }
+
+  .rekap-subvalue {
+    font-size: 0.9rem;
   }
 }
