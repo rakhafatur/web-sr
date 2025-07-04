@@ -12,7 +12,7 @@ type LoginFormData = {
 
 function LoginPage() {
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>();
-  const { login, user } = useAuth(); // ✅ gunakan 'user' bukan 'currentUser'
+  const { login } = useAuth(); // tidak ambil user dari context, ambil dari localStorage
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -20,8 +20,9 @@ function LoginPage() {
     const result = await login(data.username, data.password);
 
     if (result === 'success') {
-      // ✅ arahkan ladies ke /ladies/home
-      if (user?.ladies_id) {
+      const localUser = JSON.parse(localStorage.getItem('user') || '{}');
+
+      if (localUser.ladies_id) {
         navigate('/ladies/home');
       } else {
         navigate('/');
