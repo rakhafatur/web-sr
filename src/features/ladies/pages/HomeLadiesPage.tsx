@@ -5,7 +5,7 @@ import { supabase } from '../../../lib/supabaseClient';
 import { motion } from 'framer-motion';
 import dayjs from 'dayjs';
 import './HomeLadiesPage.css';
-import bgImage from '../../../../assets/bg-home.png'; // ✅ path fix
+import bgImage from '../../../assets/bg-home.png'; // ✅ FIXED: ini path yang benar
 
 type UserWithLadies = {
   id: string;

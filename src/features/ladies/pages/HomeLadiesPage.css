@@ -10,7 +10,7 @@
   padding: 2rem;
 }
 
-/* ✅ gambar sebagai latar belakang responsive */
+/* ✅ gambar latar responsive */
 .home-background-image {
   position: absolute;
   top: 0;
@@ -38,7 +38,6 @@
   text-align: center;
 }
 
-/* Mobile optimization */
 @media (max-width: 768px) {
   .home-wrapper {
     padding: 1.5rem 1rem;
