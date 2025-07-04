@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
 import { motion } from 'framer-motion';
 import './HomePage.css';
+import bgImage from '../../../assets/bg-home.png'; // ✅ Pasti jalan karena import langsung
 
 function HomePage() {
   const user = useSelector((state: RootState) => state.user.currentUser);
@@ -9,10 +10,12 @@ function HomePage() {
 
   return (
     <div className="home-wrapper">
-      {/* Background hanya untuk mobile */}
-      <div className="home-bg-mobile" />
+      {/* ✅ Background image langsung dari import */}
+      <div
+        className="home-bg-mobile"
+        style={{ backgroundImage: `url(${bgImage})` }}
+      />
 
-      {/* Overlay Content */}
       <div className="home-overlay">
         <motion.h1
           className="home-title"
