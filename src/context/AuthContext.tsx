@@ -1,4 +1,3 @@
-// AuthContext.tsx
 import {
   createContext,
   useContext,
@@ -39,6 +38,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           username: parsedUser.username,
           nama: parsedUser.nama,
           user_group_id: parsedUser.user_group_id,
+          ladies_id: parsedUser.ladies_id,
+          nama_ladies: parsedUser.nama_ladies,
         })
       );
     }
@@ -49,7 +50,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { data: userData, error } = await supabase
       .from('users')
       .select('*')
-      .eq('username', username)
+      .eq('username', username.trim())
       .single();
 
     if (error || !userData) return 'not_found';
@@ -59,6 +60,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     if (!userData.is_active) return 'inactive';
 
+    // Simpan ke local state + Redux + localStorage
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
     dispatch(
@@ -66,6 +68,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         username: userData.username,
         nama: userData.nama,
         user_group_id: userData.user_group_id,
+        ladies_id: userData.ladies_id,
+        nama_ladies: userData.nama_ladies,
       })
     );
 
