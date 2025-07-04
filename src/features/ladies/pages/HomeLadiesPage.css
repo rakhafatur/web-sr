@@ -85,12 +85,6 @@
   margin-bottom: 0.25rem;
 }
 
-.rekap-nominal {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-top: 0.25rem;
-}
-
 .text-red {
   color: #d32f2f;
 }
@@ -114,9 +108,5 @@
 
   .rekap-value {
     font-size: 1.5rem;
-  }
-
-  .rekap-nominal {
-    font-size: 1rem;
   }
 }
