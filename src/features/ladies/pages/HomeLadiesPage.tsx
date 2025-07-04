@@ -86,7 +86,7 @@ const HomeLadiesPage = () => {
           <div className="progress-bar">
             <div className="progress-fill" style={{ width: `${persenHadir}%` }} />
           </div>
-          <p className="rekap-note">
+          <p className="rekap-note text-green">
             {hariMasuk >= 18 ? '✅ Target kehadiran tercapai!' : `Kurang ${18 - hariMasuk} hari dari target`}
           </p>
         </motion.div>
@@ -98,7 +98,7 @@ const HomeLadiesPage = () => {
             <span className="rekap-label">Voucher</span>
           </div>
           <p className="rekap-value">Rp {voucherNominal.toLocaleString('id-ID')}</p>
-          <p className="rekap-note">
+          <p className="rekap-note text-green">
             {voucherPcs} pcs
           </p>
         </motion.div>
