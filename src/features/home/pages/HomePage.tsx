@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
 import { motion } from 'framer-motion';
 import './HomePage.css';
-import bgImage from '../../../assets/bg-home.png'; // ✅ path benar
+import bgImage from '../../../assets/bg-home.png';
 
 function HomePage() {
   const user = useSelector((state: RootState) => state.user.currentUser);
@@ -10,8 +10,8 @@ function HomePage() {
 
   return (
     <div className="home-wrapper">
-      {/* ✅ Gunakan <img> agar responsive di semua device */}
-      <img src={bgImage} alt="background" className="home-background-image" />
+      {/* ✅ Background hanya ditampilkan di mobile */}
+      <img src={bgImage} alt="background" className="home-bg-mobile" />
 
       <div className="home-overlay">
         <motion.h1
