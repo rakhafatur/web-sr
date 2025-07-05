@@ -41,13 +41,13 @@ const HomeLadiesPage = () => {
       .from('absensi')
       .select('id')
       .eq('ladies_id', ladiesId)
-      .eq('keterangan', 'kerja') // ✅ hanya ambil yang keterangan 'kerja'
+      .ilike('status', 'kerja')
       .gte('tanggal', tanggalAwal)
       .lte('tanggal', tanggalAkhir);
 
     const { data: vouchers } = await supabase
       .from('vouchers')
-      .select('id')
+      .select('jumlah_voucher')
       .eq('ladies_id', ladiesId)
       .gte('tanggal', tanggalAwal)
       .lte('tanggal', tanggalAkhir);
@@ -59,12 +59,12 @@ const HomeLadiesPage = () => {
       .gte('tanggal', tanggalAwal)
       .lte('tanggal', tanggalAkhir);
 
-    const voucherCount = vouchers?.length || 0;
-    const totalVoucherNominal = voucherCount * 150000;
+    const totalVoucherPcs = vouchers?.reduce((sum, v) => sum + (v.jumlah_voucher || 0), 0) || 0;
+    const totalVoucherNominal = totalVoucherPcs * 150000;
     const totalKasbon = kasbon?.reduce((sum, k) => sum + k.jumlah, 0) || 0;
 
     setHariMasuk(absensi?.length || 0);
-    setVoucherPcs(voucherCount);
+    setVoucherPcs(totalVoucherPcs);
     setVoucherNominal(totalVoucherNominal);
     setPengeluaran(totalKasbon);
   };
@@ -89,7 +89,7 @@ const HomeLadiesPage = () => {
 
   return (
     <div className="home-wrapper">
-      <img src={bgImage} alt="bg" className="home-background-image" />
+      <img src={bgImage} alt="bg" className="home-background-image mobile-only" />
 
       <div className="summary-grid">
         <div className="summary-card" onClick={() => handleToggle('absen')}>

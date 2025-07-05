@@ -8,7 +8,6 @@ import './Header.css';
 function Header() {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
-  const [groupName, setGroupName] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -24,16 +23,17 @@ function Header() {
         .single();
 
       if (!group) return;
-      setGroupName(group.group_name);
 
-      if (group.group_name === 'ladies') {
+      const groupName = group.group_name.toLowerCase();
+
+      if (groupName === 'ladies') {
         const { data } = await supabase
           .from('ladies')
           .select('nama_ladies')
           .eq('id', user.ladies_id)
           .single();
         setDisplayName(data?.nama_ladies || user.nama || 'User');
-      } else if (group.group_name === 'pengawas') {
+      } else if (groupName === 'pengawas') {
         const { data } = await supabase
           .from('pengawas')
           .select('nama_panggilan')

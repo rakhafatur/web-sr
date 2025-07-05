@@ -35,11 +35,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(parsedUser);
       dispatch(
         setReduxUser({
+          id: parsedUser.id,
           username: parsedUser.username,
           nama: parsedUser.nama,
           user_group_id: parsedUser.user_group_id,
           ladies_id: parsedUser.ladies_id,
-          nama_ladies: parsedUser.nama_ladies,
+          pengawas_id: parsedUser.pengawas_id,
         })
       );
     }
@@ -49,7 +50,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (username: string, password: string): Promise<LoginResult> => {
     const { data: userData, error } = await supabase
       .from('users')
-      .select('*')
+      .select('id, username, nama, password, is_active, user_group_id, ladies_id, pengawas_id')
       .eq('username', username.trim())
       .single();
 
@@ -65,11 +66,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('user', JSON.stringify(userData));
     dispatch(
       setReduxUser({
+        id: userData.id,
         username: userData.username,
         nama: userData.nama,
         user_group_id: userData.user_group_id,
         ladies_id: userData.ladies_id,
-        nama_ladies: userData.nama_ladies,
+        pengawas_id: userData.pengawas_id,
       })
     );
 
