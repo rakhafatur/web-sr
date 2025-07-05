@@ -14,7 +14,6 @@
   backdrop-filter: blur(12px);
 }
 
-/* KIRI */
 .header-left .app-title {
   font-size: 1.1rem;
   font-weight: 700;
@@ -22,34 +21,63 @@
   margin: 0;
 }
 
-/* KANAN */
 .header-right {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
 }
 
-.user-greeting {
+.avatar-section {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+}
+
+.avatar-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #ccc;
+}
+
+.dropdown-icon {
+  font-size: 1rem;
+  color: var(--color-accent);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  padding: 0.75rem;
+  min-width: 160px;
+  z-index: 100;
+}
+
+.dropdown-name {
+  margin: 0 0 0.5rem 0;
   font-size: 0.9rem;
+  font-weight: 600;
   color: var(--color-dark);
-  font-weight: 500;
-  white-space: nowrap;
 }
 
-.logout-btn {
+.dropdown-logout {
+  background: none;
+  border: none;
+  color: var(--color-accent);
+  font-size: 0.85rem;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-weight: 600;
-  font-size: 0.85rem;
-  color: var(--color-white);
-  background-color: var(--color-accent);
-  border: none;
-  padding: 0.45rem 0.9rem;
-  border-radius: var(--radius);
-  transition: background-color 0.3s ease;
+  cursor: pointer;
 }
 
-.logout-btn:hover {
-  background-color: #3d4f39;
+.dropdown-logout:hover {
+  color: #3d4f39;
 }
