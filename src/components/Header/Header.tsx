@@ -17,17 +17,15 @@ function Header() {
     const fetchDisplayName = async () => {
       if (!user) return;
 
-      // Ambil group_name dari relasi user_group
-      const { data: group, error: groupErr } = await supabase
+      const { data: group } = await supabase
         .from('user_group')
         .select('group_name')
         .eq('id', user.user_group_id)
         .single();
 
-      if (groupErr || !group) return;
+      if (!group) return;
       setGroupName(group.group_name);
 
-      // Ambil nama dari tabel sesuai grup
       if (group.group_name === 'ladies') {
         const { data } = await supabase
           .from('ladies')
@@ -65,9 +63,7 @@ function Header() {
     navigate('/login');
   };
 
-  const getInitial = () => {
-    return displayName?.charAt(0)?.toUpperCase() || '?';
-  };
+  const getInitial = () => displayName?.charAt(0)?.toUpperCase() || '?';
 
   return (
     <div className="header">
@@ -76,17 +72,25 @@ function Header() {
       </div>
 
       <div className="header-right" ref={dropdownRef}>
-        {displayName && <span className="user-greeting">Hi, {displayName}</span>}
+        <span className="user-greeting">Hi, {displayName}</span>
 
-        <div className="avatar-wrapper" onClick={() => setMenuOpen((prev) => !prev)}>
+        <div
+          className="avatar-wrapper"
+          onClick={(e) => {
+            e.stopPropagation();
+            setMenuOpen((prev) => !prev);
+          }}
+        >
           <div className="avatar-circle">{getInitial()}</div>
-          {menuOpen && (
-            <div className="dropdown-menu">
-              <button onClick={handleLogout} className="dropdown-item">
-                <FiLogOut /> Logout
-              </button>
-            </div>
-          )}
+
+          <div
+            className="dropdown-menu"
+            style={{ display: menuOpen ? 'block' : 'none' }}
+          >
+            <button onClick={handleLogout} className="dropdown-item">
+              <FiLogOut /> Logout
+            </button>
+          </div>
         </div>
       </div>
     </div>
