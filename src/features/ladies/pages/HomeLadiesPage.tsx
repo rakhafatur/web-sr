@@ -41,6 +41,7 @@ const HomeLadiesPage = () => {
       .from('absensi')
       .select('id')
       .eq('ladies_id', ladiesId)
+      .eq('keterangan', 'kerja') // ✅ hanya ambil yang keterangan 'kerja'
       .gte('tanggal', tanggalAwal)
       .lte('tanggal', tanggalAkhir);
 
