@@ -1,93 +1,78 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FiLogOut } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabaseClient';
-import { FiChevronDown, FiLogOut } from 'react-icons/fi';
 import './Header.css';
 
 function Header() {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
-  const [displayName, setDisplayName] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!user) return;
-
-      if (user.ladies_id) {
-        const { data } = await supabase
-          .from('ladies')
-          .select('nama_ladies, foto')
-          .eq('id', user.ladies_id)
-          .single();
-        if (data) {
-          setDisplayName(data.nama_ladies.split(' ')[0]);
-          setAvatarUrl(data.foto || '');
-        }
-      } else if (user.pengawas_id) {
-        const { data } = await supabase
-          .from('pengawas')
-          .select('nama_panggilan, foto')
-          .eq('id', user.pengawas_id)
-          .single();
-        if (data) {
-          setDisplayName(data.nama_panggilan.split(' ')[0]);
-          setAvatarUrl(data.foto || '');
-        }
-      } else {
-        setDisplayName(user.nama?.split(' ')[0] || '');
-        setAvatarUrl(user.foto || '');
-      }
-    };
-
-    fetchData();
-  }, [user]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setShowDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const [displayName, setDisplayName] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
+  const toggleDropdown = () => {
+    setShowDropdown(!showDropdown);
+  };
+
+  useEffect(() => {
+    const fetchNama = async () => {
+      if (!user) return;
+
+      if (user.ladies_id) {
+        const { data } = await supabase
+          .from('ladies')
+          .select('nama_ladies, avatar_url')
+          .eq('id', user.ladies_id)
+          .single();
+        setDisplayName(data?.nama_ladies ?? user.username);
+        setAvatarUrl(data?.avatar_url ?? null);
+      } else if (user.pengawas_id) {
+        const { data } = await supabase
+          .from('pengawas')
+          .select('nama_panggilan, avatar_url')
+          .eq('id', user.pengawas_id)
+          .single();
+        setDisplayName(data?.nama_panggilan ?? user.username);
+        setAvatarUrl(data?.avatar_url ?? null);
+      } else {
+        // admin atau user biasa
+        setDisplayName(user.nama ?? user.username);
+        setAvatarUrl(user.avatar_url ?? null);
+      }
+    };
+
+    fetchNama();
+  }, [user]);
+
   return (
     <div className="header">
       <div className="header-left">
-        <h1 className="app-title">SR Agency</h1>
+        <h1 className="app-title">SR AGENT</h1>
       </div>
 
-      <div className="header-right" ref={dropdownRef}>
-        <div className="avatar-section" onClick={() => setShowDropdown(!showDropdown)}>
+      <div className="header-right">
+        <div className="avatar-container" onClick={toggleDropdown}>
           <img
             src={avatarUrl || '/default-avatar.png'}
-            alt="avatar"
+            alt="Avatar"
             className="avatar-img"
           />
-          <FiChevronDown className="dropdown-icon" />
+          {showDropdown && (
+            <div className="dropdown-menu" onClick={(e) => e.stopPropagation()}>
+              <p className="dropdown-name">Hi, {displayName?.split(' ')[0]}!</p>
+              <button onClick={handleLogout} className="dropdown-logout">
+                <FiLogOut /> Logout
+              </button>
+            </div>
+          )}
         </div>
-
-        {showDropdown && (
-          <div className="dropdown-menu">
-            <p className="dropdown-name">Hi, {displayName}!</p>
-            <button className="dropdown-logout" onClick={handleLogout}>
-              <FiLogOut /> Logout
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
