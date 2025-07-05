@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react'; // ✅ PATCH
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
 import { supabase } from '../../../lib/supabaseClient';
@@ -23,6 +23,8 @@ const HomeLadiesPage = () => {
   const [pengeluaran, setPengeluaran] = useState(0);
   const [voucherNominal, setVoucherNominal] = useState(0);
   const [openCard, setOpenCard] = useState<'absen' | 'voucher' | 'pengeluaran' | null>(null);
+
+  const cardRef = useRef(openCard); // ✅ PATCH
 
   const bulanIni = dayjs().format('MM');
   const tahunIni = dayjs().format('YYYY');
@@ -67,19 +69,25 @@ const HomeLadiesPage = () => {
     setPengeluaran(totalKasbon);
   };
 
+  // ✅ PATCH: Stabilkan handleToggle dan simpan state
+  const handleToggle = (type: 'absen' | 'voucher' | 'pengeluaran') => {
+    const newValue = openCard === type ? null : type;
+    cardRef.current = newValue;
+    setOpenCard(newValue);
+  };
+
+  // ✅ PATCH: Jaga agar openCard tidak auto-reset tanpa disengaja
+  useEffect(() => {
+    if (openCard !== cardRef.current) {
+      setOpenCard(cardRef.current ?? null);
+    }
+  }, [openCard]);
+
   const biayaTetap = 500000 + 185000 + 250000;
   const batasWajar = Math.max(0, voucherNominal - biayaTetap);
   const isOver = batasWajar > 0 && pengeluaran > batasWajar;
   const persentase = isOver ? Math.round(((pengeluaran - batasWajar) / batasWajar) * 100) : 0;
   const persenHadir = Math.round((hariMasuk / 18) * 100);
-
-  const handleToggle = (type: 'absen' | 'voucher' | 'pengeluaran') => {
-    if (openCard === type) {
-      setOpenCard(null);
-    } else {
-      setOpenCard(type);
-    }
-  };
 
   return (
     <div className="home-wrapper">
