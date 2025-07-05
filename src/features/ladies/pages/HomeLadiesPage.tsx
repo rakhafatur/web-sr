@@ -22,13 +22,8 @@ const HomeLadiesPage = () => {
   const [voucherPcs, setVoucherPcs] = useState(0);
   const [pengeluaran, setPengeluaran] = useState(0);
   const [voucherNominal, setVoucherNominal] = useState(0);
-  const [openCard, _setOpenCard] = useState<'absen' | 'voucher' | 'pengeluaran' | null>(null);
-  const openCardRef = useRef(openCard);
-
-  const setOpenCard = (val: typeof openCard) => {
-    openCardRef.current = val;
-    _setOpenCard(val);
-  };
+  const [openCard, setOpenCard] = useState<'absen' | 'voucher' | 'pengeluaran' | null>(null);
+  const cardRef = useRef(openCard);
 
   const bulanIni = dayjs().format('MM');
   const tahunIni = dayjs().format('YYYY');
@@ -37,12 +32,6 @@ const HomeLadiesPage = () => {
     if (!user?.ladies_id) return;
     fetchData(user.ladies_id);
   }, [user]);
-
-  useEffect(() => {
-    if (openCard !== openCardRef.current) {
-      _setOpenCard(openCardRef.current ?? null);
-    }
-  }, [openCard]);
 
   const fetchData = async (ladiesId: string) => {
     const tanggalAwal = `${tahunIni}-${bulanIni}-01`;
@@ -79,19 +68,23 @@ const HomeLadiesPage = () => {
     setPengeluaran(totalKasbon);
   };
 
+  const handleToggle = (type: 'absen' | 'voucher' | 'pengeluaran') => {
+    const newValue = openCard === type ? null : type;
+    cardRef.current = newValue;
+    setOpenCard(newValue);
+  };
+
+  useEffect(() => {
+    if (openCard !== cardRef.current) {
+      setOpenCard(cardRef.current ?? null);
+    }
+  }, [openCard]);
+
   const biayaTetap = 500000 + 185000 + 250000;
   const batasWajar = Math.max(0, voucherNominal - biayaTetap);
   const isOver = batasWajar > 0 && pengeluaran > batasWajar;
   const persentase = isOver ? Math.round(((pengeluaran - batasWajar) / batasWajar) * 100) : 0;
   const persenHadir = Math.round((hariMasuk / 18) * 100);
-
-  const handleToggle = (type: 'absen' | 'voucher' | 'pengeluaran') => {
-    if (openCard === type) {
-      setOpenCard(null);
-    } else {
-      setOpenCard(type);
-    }
-  };
 
   return (
     <div className="home-wrapper">
@@ -115,76 +108,74 @@ const HomeLadiesPage = () => {
         </div>
       </div>
 
-      <div className="detail-card-container">
-        <AnimatePresence mode="wait">
-          {openCard === 'absen' && (
-            <motion.div
-              key="absen"
-              className="rekap-box glass"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="rekap-header">
-                <FiCalendar className="rekap-icon" />
-                <span className="rekap-label">Kehadiran</span>
-              </div>
-              <p className="rekap-value">{hariMasuk} / 18 Hari</p>
-              <div className="progress-bar">
-                <div className="progress-fill" style={{ width: `${persenHadir}%` }} />
-              </div>
+      <AnimatePresence mode="wait">
+        {openCard === 'absen' && (
+          <motion.div
+            key="absen"
+            className="rekap-box glass"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="rekap-header">
+              <FiCalendar className="rekap-icon" />
+              <span className="rekap-label">Kehadiran</span>
+            </div>
+            <p className="rekap-value">{hariMasuk} / 18 Hari</p>
+            <div className="progress-bar">
+              <div className="progress-fill" style={{ width: `${persenHadir}%` }} />
+            </div>
+            <p className="rekap-note text-green">
+              {hariMasuk >= 18 ? '✅ Target kehadiran tercapai!' : `Kurang ${18 - hariMasuk} hari dari target`}
+            </p>
+          </motion.div>
+        )}
+
+        {openCard === 'voucher' && (
+          <motion.div
+            key="voucher"
+            className="rekap-box glass"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="rekap-header">
+              <FiGift className="rekap-icon" />
+              <span className="rekap-label">Voucher</span>
+            </div>
+            <p className="rekap-value">Rp {voucherNominal.toLocaleString('id-ID')}</p>
+            <p className="rekap-note text-green">{voucherPcs} pcs</p>
+          </motion.div>
+        )}
+
+        {openCard === 'pengeluaran' && (
+          <motion.div
+            key="pengeluaran"
+            className="rekap-box glass"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="rekap-header">
+              <FiTrendingDown className="rekap-icon" />
+              <span className="rekap-label">Pengeluaran</span>
+            </div>
+            <p className="rekap-value text-red">Rp {pengeluaran.toLocaleString('id-ID')}</p>
+            {isOver ? (
+              <p className="rekap-note text-red">⚠️ Melebihi batas wajar {persentase}%</p>
+            ) : (
               <p className="rekap-note text-green">
-                {hariMasuk >= 18 ? '✅ Target kehadiran tercapai!' : `Kurang ${18 - hariMasuk} hari dari target`}
+                {batasWajar > 0
+                  ? '✅ Masih aman. Keuangan terkendali!'
+                  : '🔄 Belum ada voucher, tetap semangat!'}
               </p>
-            </motion.div>
-          )}
-
-          {openCard === 'voucher' && (
-            <motion.div
-              key="voucher"
-              className="rekap-box glass"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="rekap-header">
-                <FiGift className="rekap-icon" />
-                <span className="rekap-label">Voucher</span>
-              </div>
-              <p className="rekap-value">Rp {voucherNominal.toLocaleString('id-ID')}</p>
-              <p className="rekap-note text-green">{voucherPcs} pcs</p>
-            </motion.div>
-          )}
-
-          {openCard === 'pengeluaran' && (
-            <motion.div
-              key="pengeluaran"
-              className="rekap-box glass"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="rekap-header">
-                <FiTrendingDown className="rekap-icon" />
-                <span className="rekap-label">Pengeluaran</span>
-              </div>
-              <p className="rekap-value text-red">Rp {pengeluaran.toLocaleString('id-ID')}</p>
-              {isOver ? (
-                <p className="rekap-note text-red">⚠️ Melebihi batas wajar {persentase}%</p>
-              ) : (
-                <p className="rekap-note text-green">
-                  {batasWajar > 0
-                    ? '✅ Masih aman. Keuangan terkendali!'
-                    : '🔄 Belum ada voucher, tetap semangat!'}
-                </p>
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
