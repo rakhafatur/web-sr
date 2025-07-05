@@ -5,7 +5,7 @@ import { supabase } from '../../../lib/supabaseClient';
 import dayjs from 'dayjs';
 import './HomeLadiesPage.css';
 import { FiCalendar, FiGift, FiTrendingDown } from 'react-icons/fi';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import bgImage from '../../../assets/bg-home.png';
 
 type UserWithLadies = {
@@ -22,6 +22,7 @@ const HomeLadiesPage = () => {
   const [voucherPcs, setVoucherPcs] = useState(0);
   const [pengeluaran, setPengeluaran] = useState(0);
   const [voucherNominal, setVoucherNominal] = useState(0);
+  const [openCard, setOpenCard] = useState<'absen' | 'voucher' | 'pengeluaran' | null>(null);
 
   const bulanIni = dayjs().format('MM');
   const tahunIni = dayjs().format('YYYY');
@@ -75,54 +76,87 @@ const HomeLadiesPage = () => {
   return (
     <div className="home-wrapper">
       <img src={bgImage} alt="bg" className="home-background-image" />
-      <div className="card-grid-wrapper">
-        {/* Kehadiran */}
-        <motion.div className="rekap-box glass" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }}>
-          <div className="rekap-header">
-            <FiCalendar className="rekap-icon" />
-            <span className="rekap-label">Kehadiran</span>
-          </div>
-          <p className="rekap-value">{hariMasuk} / 18 Hari</p>
-          <div className="progress-bar">
-            <div className="progress-fill" style={{ width: `${persenHadir}%` }} />
-          </div>
-          <p className="rekap-note text-green">
-            {hariMasuk >= 18 ? '✅ Target kehadiran tercapai!' : `Kurang ${18 - hariMasuk} hari dari target`}
-          </p>
-        </motion.div>
-
-        {/* Voucher */}
-        <motion.div className="rekap-box glass" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <div className="rekap-header">
-            <FiGift className="rekap-icon" />
-            <span className="rekap-label">Voucher</span>
-          </div>
-          <p className="rekap-value">Rp {voucherNominal.toLocaleString('id-ID')}</p>
-          <p className="rekap-note text-green">
-            {voucherPcs} pcs
-          </p>
-        </motion.div>
-
-        {/* Pengeluaran */}
-        <motion.div className="rekap-box glass" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <div className="rekap-header">
-            <FiTrendingDown className="rekap-icon" />
-            <span className="rekap-label">Pengeluaran</span>
-          </div>
-          <p className="rekap-value text-red">Rp {pengeluaran.toLocaleString('id-ID')}</p>
-          {isOver ? (
-            <>
-              <p className="rekap-note text-red">⚠️ Melebihi batas wajar {persentase}%</p>
-            </>
-          ) : (
-            <p className="rekap-note text-green">
-              {batasWajar > 0
-                ? '✅ Masih aman. Keuangan terkendali!'
-                : '🔄 Belum ada voucher, tetap semangat!'}
-            </p>
-          )}
-        </motion.div>
+      
+      <div className="summary-grid">
+        <div className="summary-card" onClick={() => setOpenCard(openCard === 'absen' ? null : 'absen')}>
+          <FiCalendar className="icon" />
+          <div className="value">{hariMasuk} / 18</div>
+          <div className="label">Kehadiran</div>
+        </div>
+        <div className="summary-card" onClick={() => setOpenCard(openCard === 'voucher' ? null : 'voucher')}>
+          <FiGift className="icon" />
+          <div className="value">{voucherPcs} pcs</div>
+          <div className="label">Voucher</div>
+        </div>
+        <div className="summary-card" onClick={() => setOpenCard(openCard === 'pengeluaran' ? null : 'pengeluaran')}>
+          <FiTrendingDown className="icon" />
+          <div className="value">Rp {pengeluaran.toLocaleString('id-ID')}</div>
+          <div className="label">Pengeluaran</div>
+        </div>
       </div>
+
+      <AnimatePresence>
+        {openCard === 'absen' && (
+          <motion.div 
+            className="rekap-box glass"
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            exit={{ opacity: 0, y: 20 }}
+          >
+            <div className="rekap-header">
+              <FiCalendar className="rekap-icon" />
+              <span className="rekap-label">Kehadiran</span>
+            </div>
+            <p className="rekap-value">{hariMasuk} / 18 Hari</p>
+            <div className="progress-bar">
+              <div className="progress-fill" style={{ width: `${persenHadir}%` }} />
+            </div>
+            <p className="rekap-note text-green">
+              {hariMasuk >= 18 ? '✅ Target kehadiran tercapai!' : `Kurang ${18 - hariMasuk} hari dari target`}
+            </p>
+          </motion.div>
+        )}
+
+        {openCard === 'voucher' && (
+          <motion.div 
+            className="rekap-box glass"
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            exit={{ opacity: 0, y: 20 }}
+          >
+            <div className="rekap-header">
+              <FiGift className="rekap-icon" />
+              <span className="rekap-label">Voucher</span>
+            </div>
+            <p className="rekap-value">Rp {voucherNominal.toLocaleString('id-ID')}</p>
+            <p className="rekap-note text-green">{voucherPcs} pcs</p>
+          </motion.div>
+        )}
+
+        {openCard === 'pengeluaran' && (
+          <motion.div 
+            className="rekap-box glass"
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            exit={{ opacity: 0, y: 20 }}
+          >
+            <div className="rekap-header">
+              <FiTrendingDown className="rekap-icon" />
+              <span className="rekap-label">Pengeluaran</span>
+            </div>
+            <p className="rekap-value text-red">Rp {pengeluaran.toLocaleString('id-ID')}</p>
+            {isOver ? (
+              <p className="rekap-note text-red">⚠️ Melebihi batas wajar {persentase}%</p>
+            ) : (
+              <p className="rekap-note text-green">
+                {batasWajar > 0
+                  ? '✅ Masih aman. Keuangan terkendali!'
+                  : '🔄 Belum ada voucher, tetap semangat!'}
+              </p>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
