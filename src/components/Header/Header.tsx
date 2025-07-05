@@ -1,61 +1,40 @@
-import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiLogOut } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
-import { supabase } from '../../lib/supabaseClient';
+import { useEffect, useState } from 'react';
+import { FiLogOut } from 'react-icons/fi';
 import './Header.css';
 
 function Header() {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [displayName, setDisplayName] = useState<string>('');
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [displayName, setDisplayName] = useState('');
+  const [initials, setInitials] = useState('');
+
+  useEffect(() => {
+    if (!user) return;
+
+    // Role-based name handling
+    if (user.role === 'ladies' && user.nama_ladies) {
+      setDisplayName(user.nama_ladies);
+      setInitials(user.nama_ladies[0]?.toUpperCase() || '');
+    } else if (user.role === 'pengawas' && user.nama_panggilan) {
+      setDisplayName(user.nama_panggilan);
+      setInitials(user.nama_panggilan[0]?.toUpperCase() || '');
+    } else if (user.nama) {
+      setDisplayName(user.nama);
+      setInitials(user.nama[0]?.toUpperCase() || '');
+    }
+  }, [user]);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
-  useEffect(() => {
-    const fetchUserDisplayName = async () => {
-      if (!user) return;
-
-      if (user.ladies_id) {
-        const { data } = await supabase
-          .from('ladies')
-          .select('nama_ladies, avatar_url')
-          .eq('id', user.ladies_id)
-          .single();
-        setDisplayName(data?.nama_ladies || user.username);
-        setAvatarUrl(data?.avatar_url || null);
-      } else if (user.pengawas_id) {
-        const { data } = await supabase
-          .from('pengawas')
-          .select('nama_panggilan, avatar_url')
-          .eq('id', user.pengawas_id)
-          .single();
-        setDisplayName(data?.nama_panggilan || user.username);
-        setAvatarUrl(data?.avatar_url || null);
-      } else {
-        setDisplayName(user.nama || user.username);
-        setAvatarUrl(user.avatar_url || null);
-      }
-    };
-
-    fetchUserDisplayName();
-  }, [user]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const toggleDropdown = () => {
+    setShowDropdown((prev) => !prev);
+  };
 
   return (
     <div className="header">
@@ -63,23 +42,24 @@ function Header() {
         <h1 className="app-title">SR Agency</h1>
       </div>
 
-      <div className="header-right" ref={dropdownRef}>
-        <div className="avatar-wrapper" onClick={() => setDropdownOpen(!dropdownOpen)}>
-          <img
-            src={avatarUrl || '/default-avatar.png'}
-            alt="avatar"
-            className="avatar-img"
-          />
-        </div>
+      <div className="header-right">
+        {displayName && <span className="user-greeting">Hi, {displayName.split(' ')[0]}</span>}
 
-        {dropdownOpen && (
-          <div className="dropdown-menu">
-            <div className="dropdown-name">Hi, {displayName?.split(' ')[0]}!</div>
-            <button onClick={handleLogout} className="dropdown-logout">
-              <FiLogOut /> Logout
-            </button>
-          </div>
-        )}
+        <div className="avatar-wrapper" onClick={toggleDropdown}>
+          {user?.avatar ? (
+            <img src={user.avatar} alt="avatar" className="avatar-img" />
+          ) : (
+            <div className="avatar-fallback">{initials}</div>
+          )}
+
+          {showDropdown && (
+            <div className="dropdown-menu" onClick={(e) => e.stopPropagation()}>
+              <button className="dropdown-item" onClick={handleLogout}>
+                <FiLogOut /> Logout
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
