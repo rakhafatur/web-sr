@@ -73,35 +73,45 @@ const HomeLadiesPage = () => {
   const persentase = isOver ? Math.round(((pengeluaran - batasWajar) / batasWajar) * 100) : 0;
   const persenHadir = Math.round((hariMasuk / 18) * 100);
 
+  const handleToggle = (type: 'absen' | 'voucher' | 'pengeluaran') => {
+    if (openCard === type) {
+      setOpenCard(null);
+    } else {
+      setOpenCard(type);
+    }
+  };
+
   return (
     <div className="home-wrapper">
       <img src={bgImage} alt="bg" className="home-background-image" />
-      
+
       <div className="summary-grid">
-        <div className="summary-card" onClick={() => setOpenCard(openCard === 'absen' ? null : 'absen')}>
+        <div className="summary-card" onClick={() => handleToggle('absen')}>
           <FiCalendar className="icon" />
           <div className="value">{hariMasuk} / 18</div>
           <div className="label">Kehadiran</div>
         </div>
-        <div className="summary-card" onClick={() => setOpenCard(openCard === 'voucher' ? null : 'voucher')}>
+        <div className="summary-card" onClick={() => handleToggle('voucher')}>
           <FiGift className="icon" />
           <div className="value">{voucherPcs} pcs</div>
           <div className="label">Voucher</div>
         </div>
-        <div className="summary-card" onClick={() => setOpenCard(openCard === 'pengeluaran' ? null : 'pengeluaran')}>
+        <div className="summary-card" onClick={() => handleToggle('pengeluaran')}>
           <FiTrendingDown className="icon" />
           <div className="value">Rp {pengeluaran.toLocaleString('id-ID')}</div>
           <div className="label">Pengeluaran</div>
         </div>
       </div>
 
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {openCard === 'absen' && (
-          <motion.div 
+          <motion.div
+            key="absen"
             className="rekap-box glass"
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3 }}
           >
             <div className="rekap-header">
               <FiCalendar className="rekap-icon" />
@@ -118,11 +128,13 @@ const HomeLadiesPage = () => {
         )}
 
         {openCard === 'voucher' && (
-          <motion.div 
+          <motion.div
+            key="voucher"
             className="rekap-box glass"
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3 }}
           >
             <div className="rekap-header">
               <FiGift className="rekap-icon" />
@@ -134,11 +146,13 @@ const HomeLadiesPage = () => {
         )}
 
         {openCard === 'pengeluaran' && (
-          <motion.div 
+          <motion.div
+            key="pengeluaran"
             className="rekap-box glass"
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3 }}
           >
             <div className="rekap-header">
               <FiTrendingDown className="rekap-icon" />
