@@ -19,35 +19,45 @@ const VoucherListPage = () => {
   const tahunIni = dayjs().format('YYYY');
 
   useEffect(() => {
-    const ladiesId = '27d47f35-accb-4ee1-aee3-58f54c61f830'; // ✅ hardcode dari SQL kamu
-    fetchVouchers(ladiesId);
+    const fetchData = async () => {
+      // ✅ Ambil user dari Supabase Auth
+      const { data: authUser, error: authError } = await supabase.auth.getUser();
+      if (authError || !authUser?.user?.id) return;
+
+      const userId = authUser.user.id;
+
+      // ✅ Ambil ladies_id dari tabel users
+      const { data: userDetail, error: detailError } = await supabase
+        .from('users')
+        .select('ladies_id')
+        .eq('id', userId)
+        .single();
+
+      const ladiesId = userDetail?.ladies_id;
+      if (!ladiesId) return;
+
+      // ✅ Lanjut ambil data voucher
+      const tanggalAwal = `${tahunIni}-${bulanIni}-01`;
+      const tanggalAkhir = dayjs().endOf('month').format('YYYY-MM-DD');
+
+      const { data, error } = await supabase
+        .from('vouchers')
+        .select('id, tanggal, jumlah_voucher, keterangan')
+        .eq('ladies_id', ladiesId)
+        .gte('tanggal', tanggalAwal)
+        .lte('tanggal', tanggalAkhir)
+        .order('tanggal', { ascending: false });
+
+      if (!error && data) {
+        setVouchers(data);
+        const pcs = data.reduce((sum, v) => sum + (parseFloat(v.jumlah_voucher?.toString() || '0')), 0);
+        setTotalPcs(pcs);
+        setTotalRp(pcs * 150000);
+      }
+    };
+
+    fetchData();
   }, []);
-
-  const fetchVouchers = async (ladiesId: string) => {
-    const tanggalAwal = `${tahunIni}-${bulanIni}-01`;
-    const tanggalAkhir = dayjs().endOf('month').format('YYYY-MM-DD');
-
-    const { data, error } = await supabase
-      .from('vouchers')
-      .select('id, tanggal, jumlah_voucher, keterangan')
-      .eq('ladies_id', ladiesId)
-      .gte('tanggal', tanggalAwal)
-      .lte('tanggal', tanggalAkhir)
-      .order('tanggal', { ascending: false });
-
-    console.log('DATA VOUCHER:', data); // 🔍 Log buat bukti tampil
-
-    if (!error && data) {
-      setVouchers(data);
-      const pcs = data.reduce((sum, v) => {
-        const raw = v['jumlah_voucher'] ?? 0;
-        const val = parseFloat(raw?.toString() || '0');
-        return sum + val;
-      }, 0);
-      setTotalPcs(pcs);
-      setTotalRp(pcs * 150000);
-    }
-  };
 
   return (
     <main className="voucher-page">
