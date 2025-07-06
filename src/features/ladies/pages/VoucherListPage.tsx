@@ -49,9 +49,9 @@ const VoucherListPage = () => {
         if (!error && data) {
             setVouchers(data);
             const pcs = data.reduce((sum, v) => {
-                const keys = Object.keys(v);
-                const jumlah = keys.includes('jumlah_voucher') ? Number((v as any).jumlah_voucher) : 0;
-                return sum + (jumlah || 0);
+                const raw = v.jumlah_voucher;
+                const val = raw === null || raw === undefined ? 0 : parseFloat(raw.toString());
+                return sum + val;
             }, 0);
             setTotalPcs(pcs);
             setTotalRp(pcs * 150000);
