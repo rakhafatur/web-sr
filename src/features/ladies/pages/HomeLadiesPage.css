@@ -1,3 +1,46 @@
+.home-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f9fafb;
+  overflow-x: hidden;
+}
+
+/* BACKGROUND IMAGE KHUSUS MOBILE */
+.home-background-image {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .home-background-image.mobile-only {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 0;
+    filter: brightness(0.9) saturate(1.05);
+    pointer-events: none;
+  }
+}
+
+.content-container {
+  z-index: 2;
+  width: 100%;
+  max-width: 960px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* CARD SUMMARY ATAS */
 .summary-grid {
   z-index: 2;
   width: 100%;
@@ -44,11 +87,12 @@
   color: #444;
 }
 
+/* CARD DETAIL BAWAH */
 .rekap-wrapper {
   width: 100%;
   display: flex;
   justify-content: center;
-  margin-top: 1.5rem; 
+  margin-top: 1.5rem;
 }
 
 .rekap-box {
@@ -58,8 +102,8 @@
   margin-left: auto;
   margin-right: auto;
   display: block;
-  background: rgba(255, 255, 255, 0.7); /* transparansi yang sama */
-  backdrop-filter: blur(6px);           /* tambahkan efek blur */
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(6px);
   border-radius: 16px;
   padding: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
@@ -95,14 +139,6 @@
   margin-top: 6px;
 }
 
-.text-green {
-  color: #15803d;
-}
-
-.text-red {
-  color: #dc2626;
-}
-
 .progress-bar {
   width: 100%;
   height: 8px;
@@ -118,25 +154,39 @@
   transition: width 0.3s ease;
 }
 
-.mobile-only {
-  display: none;
+/* === ONLY DETAIL PENGELUARAN: MERAH === */
+.rekap-box.pengeluaran .rekap-icon,
+.rekap-box.pengeluaran .rekap-value,
+.rekap-box.pengeluaran .rekap-note {
+  color: #dc2626;
 }
 
-@media (max-width: 768px) {
-  .mobile-only {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 0;
-    filter: brightness(0.9) saturate(1.05);
-    pointer-events: none;
-  }
+.rekap-box.pengeluaran .progress-fill {
+  background: #dc2626;
 }
 
+/* === OPSIONAL: REKAP TYPE LAIN (bisa dikembangkan lagi jika butuh) */
+.rekap-box.absen .rekap-icon,
+.rekap-box.absen .rekap-value,
+.rekap-box.absen .rekap-note {
+  color: #15803d;
+}
+
+.rekap-box.absen .progress-fill {
+  background: #16a34a;
+}
+
+.rekap-box.voucher .rekap-icon,
+.rekap-box.voucher .rekap-value,
+.rekap-box.voucher .rekap-note {
+  color: #7c3aed;
+}
+
+.rekap-box.voucher .progress-fill {
+  background: #7c3aed;
+}
+
+/* === RESPONSIF === */
 @media (min-width: 769px) {
   .summary-card {
     background: #e6f4ea;
@@ -152,13 +202,4 @@
     background: #d4f1e0;
     box-shadow: 0 4px 12px rgba(22, 101, 52, 0.12);
   }
-}
-
-.content-container {
-  z-index: 2;
-  width: 100%;
-  max-width: 960px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
