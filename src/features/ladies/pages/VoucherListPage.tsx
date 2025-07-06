@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../app/store';
 import { supabase } from '../../../lib/supabaseClient';
 import dayjs from 'dayjs';
 import './VoucherListPage.css';
@@ -8,21 +6,11 @@ import './VoucherListPage.css';
 type Voucher = {
   id: string;
   tanggal: string;
-  jumlah_voucher?: number | null;
-  jumlah?: number | null;
-  keterangan?: string | null;
-};
-
-type UserWithLadies = {
-  id: string;
-  username: string;
-  nama: string;
-  ladies_id: string;
-  nama_ladies?: string;
+  jumlah_voucher: number;
+  keterangan?: string;
 };
 
 const VoucherListPage = () => {
-  const user = useSelector((state: RootState) => state.user.currentUser) as UserWithLadies;
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
   const [totalPcs, setTotalPcs] = useState(0);
   const [totalRp, setTotalRp] = useState(0);
@@ -31,9 +19,9 @@ const VoucherListPage = () => {
   const tahunIni = dayjs().format('YYYY');
 
   useEffect(() => {
-    if (!user?.ladies_id) return;
-    fetchVouchers(user.ladies_id);
-  }, [user]);
+    const ladiesId = '27d47f35-accb-4ee1-aee3-58f54c61f830'; // ✅ hardcode dari SQL kamu
+    fetchVouchers(ladiesId);
+  }, []);
 
   const fetchVouchers = async (ladiesId: string) => {
     const tanggalAwal = `${tahunIni}-${bulanIni}-01`;
@@ -41,19 +29,20 @@ const VoucherListPage = () => {
 
     const { data, error } = await supabase
       .from('vouchers')
-      .select('id, tanggal, jumlah_voucher, jumlah, keterangan')
+      .select('id, tanggal, jumlah_voucher, keterangan')
       .eq('ladies_id', ladiesId)
       .gte('tanggal', tanggalAwal)
       .lte('tanggal', tanggalAkhir)
       .order('tanggal', { ascending: false });
 
-    console.log({ ladiesId, tanggalAwal, tanggalAkhir, data, error });
+    console.log('DATA VOUCHER:', data); // 🔍 Log buat bukti tampil
 
     if (!error && data) {
       setVouchers(data);
       const pcs = data.reduce((sum, v) => {
-        const val = parseFloat((v.jumlah_voucher ?? v.jumlah ?? 0).toString());
-        return sum + (isNaN(val) ? 0 : val);
+        const raw = v['jumlah_voucher'] ?? 0;
+        const val = parseFloat(raw?.toString() || '0');
+        return sum + val;
       }, 0);
       setTotalPcs(pcs);
       setTotalRp(pcs * 150000);
@@ -73,10 +62,8 @@ const VoucherListPage = () => {
             <article key={v.id} className="voucher-card">
               <div className="voucher-date">{dayjs(v.tanggal).format('DD MMM YYYY')}</div>
               <div className="voucher-detail">
-                <span className="pcs">{v.jumlah_voucher ?? v.jumlah ?? 0} pcs</span>
-                <span className="nominal">
-                  Rp {((v.jumlah_voucher ?? v.jumlah ?? 0) * 150000).toLocaleString('id-ID')}
-                </span>
+                <span className="pcs">{v.jumlah_voucher} pcs</span>
+                <span className="nominal">Rp {(v.jumlah_voucher * 150000).toLocaleString('id-ID')}</span>
               </div>
               {v.keterangan && <div className="voucher-note">{v.keterangan}</div>}
             </article>
