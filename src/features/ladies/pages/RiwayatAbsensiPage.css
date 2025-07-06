@@ -1,8 +1,13 @@
+body {
+  background-color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
 .absensi-wrapper {
   padding: 1rem;
-  background-color: #ffffff;
   min-height: 100vh;
-  font-family: 'Inter', sans-serif;
 }
 
 .absensi-title {
@@ -13,11 +18,13 @@
   margin-bottom: 1.2rem;
 }
 
-/* Kalender - hapus border dan background */
+/* Kalender dibungkus kotak tersendiri */
 .react-calendar {
-  border: none;
-  background: transparent;
-  box-shadow: none;
+  border-radius: 12px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  padding: 0.5rem;
   margin-bottom: 1.2rem;
 }
 
@@ -34,14 +41,14 @@
   z-index: 1;
 }
 
-/* Hindari warna biru default saat aktif */
+/* Hindari warna biru default */
 .react-calendar__tile--active {
   background: transparent !important;
   color: #1f2937 !important;
   font-weight: bold;
 }
 
-/* Highlight status */
+/* Highlight status per tanggal */
 .highlight-kerja::before,
 .highlight-mens::before,
 .highlight-off::before,
@@ -76,7 +83,6 @@
 
 /* Rekap Box */
 .rekap-box {
-  margin-top: 1rem;
   background: white;
   border-radius: 12px;
   padding: 1rem 1.2rem;
@@ -110,21 +116,10 @@
   display: inline-block;
 }
 
-.green {
-  background: #16a34a;
-}
-
-.red {
-  background: #dc2626;
-}
-
-.gray {
-  background: #9ca3af;
-}
-
-.yellow {
-  background: #facc15;
-}
+.green { background: #16a34a; }
+.red { background: #dc2626; }
+.gray { background: #9ca3af; }
+.yellow { background: #facc15; }
 
 /* Responsif */
 @media (max-width: 480px) {
