@@ -12,41 +12,30 @@ type Voucher = {
   keterangan?: string;
 };
 
-type User = {
+type UserWithLadies = {
   id: string;
   username: string;
   nama: string;
+  ladies_id: string;
+  nama_ladies?: string;
 };
 
 const VoucherListPage = () => {
-  const user = useSelector((state: RootState) => state.user.currentUser) as User;
+  const user = useSelector((state: RootState) => state.user.currentUser) as UserWithLadies;
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
   const [totalPcs, setTotalPcs] = useState(0);
   const [totalRp, setTotalRp] = useState(0);
 
-  const bulanIni = dayjs().format('MM');
-  const tahunIni = dayjs().format('YYYY');
-
   useEffect(() => {
-    if (!user?.id) return;
-    fetchVouchers(user.id);
+    if (!user?.ladies_id) return;
+    fetchVouchers(user.ladies_id);
   }, [user]);
 
-  const fetchVouchers = async (userId: string) => {
-    const { data: profile, error: profileError } = await supabase
-      .from('ladies')
-      .select('id')
-      .eq('user_id', userId)
-      .single();
-
-    if (profileError || !profile) {
-      console.error('Gagal ambil ladies_id', profileError);
-      return;
-    }
-
-    const ladiesId = profile.id;
-    const tanggalAwal = `${tahunIni}-${bulanIni}-01`;
+  const fetchVouchers = async (ladiesId: string) => {
+    const tanggalAwal = dayjs().startOf('month').format('YYYY-MM-DD');
     const tanggalAkhir = dayjs().endOf('month').format('YYYY-MM-DD');
+
+    console.log('📌 Filter:', { ladiesId, tanggalAwal, tanggalAkhir });
 
     const { data, error } = await supabase
       .from('vouchers')
@@ -56,12 +45,11 @@ const VoucherListPage = () => {
       .lte('tanggal', tanggalAkhir)
       .order('tanggal', { ascending: false });
 
+    console.log('📦 VOUCHER DATA:', data);
+
     if (!error && data) {
       setVouchers(data);
-      const pcs = data.reduce((sum, v) => {
-        const val = parseFloat((v.jumlah_voucher || 0).toString());
-        return sum + val;
-      }, 0);
+      const pcs = data.reduce((sum, v) => sum + Number(v.jumlah_voucher ?? 0), 0);
       setTotalPcs(pcs);
       setTotalRp(pcs * 150000);
     }
