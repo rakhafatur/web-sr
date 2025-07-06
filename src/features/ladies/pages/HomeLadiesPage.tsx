@@ -85,6 +85,7 @@ const HomeLadiesPage = () => {
     <div className="home-wrapper">
       <img src={bgImage} alt="bg" className="home-background-image mobile-only" />
 
+      {/* ✅ Grup Card dan Rekap di satu kontainer */}
       <div className="content-container">
         <div className="summary-grid">
           <div className="summary-card" onClick={() => handleToggle('absen')}>
@@ -109,7 +110,7 @@ const HomeLadiesPage = () => {
             {openCard === 'absen' && (
               <motion.div
                 key="absen"
-                className="rekap-box glass absen"
+                className="rekap-box glass"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
@@ -123,18 +124,16 @@ const HomeLadiesPage = () => {
                 <div className="progress-bar">
                   <div className="progress-fill" style={{ width: `${persenHadir}%` }} />
                 </div>
-                <p className="rekap-note">{
-                  hariMasuk >= 18
-                    ? '✅ Target kehadiran tercapai!'
-                    : `Kurang ${18 - hariMasuk} hari dari target`
-                }</p>
+                <p className="rekap-note text-green">
+                  {hariMasuk >= 18 ? '✅ Target kehadiran tercapai!' : `Kurang ${18 - hariMasuk} hari dari target`}
+                </p>
               </motion.div>
             )}
 
             {openCard === 'voucher' && (
               <motion.div
                 key="voucher"
-                className="rekap-box glass voucher"
+                className="rekap-box glass"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
@@ -145,14 +144,14 @@ const HomeLadiesPage = () => {
                   <span className="rekap-label">Voucher</span>
                 </div>
                 <p className="rekap-value">Rp {voucherNominal.toLocaleString('id-ID')}</p>
-                <p className="rekap-note">{voucherPcs} pcs</p>
+                <p className="rekap-note text-green">{voucherPcs} pcs</p>
               </motion.div>
             )}
 
             {openCard === 'pengeluaran' && (
               <motion.div
                 key="pengeluaran"
-                className="rekap-box glass pengeluaran"
+                className="rekap-box glass"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
@@ -162,13 +161,15 @@ const HomeLadiesPage = () => {
                   <FiTrendingDown className="rekap-icon" />
                   <span className="rekap-label">Pengeluaran</span>
                 </div>
-                <p className="rekap-value">Rp {pengeluaran.toLocaleString('id-ID')}</p>
-                {voucherPcs === 0 ? (
-                  <p className="rekap-note">🔄 Belum ada voucher, tetap semangat!</p>
-                ) : isOver ? (
-                  <p className="rekap-note">⚠️ Melebihi batas wajar {persentase}%</p>
+                <p className="rekap-value text-red">Rp {pengeluaran.toLocaleString('id-ID')}</p>
+                {isOver ? (
+                  <p className="rekap-note text-red">⚠️ Melebihi batas wajar {persentase}%</p>
                 ) : (
-                  <p className="rekap-note">ℹ️ Voucher belum cukup menutup biaya tetap</p>
+                  <p className="rekap-note text-green">
+                    {batasWajar > 0
+                      ? '✅ Masih aman. Keuangan terkendali!'
+                      : '🔄 Belum ada voucher, tetap semangat!'}
+                  </p>
                 )}
               </motion.div>
             )}
