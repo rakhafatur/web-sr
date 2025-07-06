@@ -1,6 +1,6 @@
 .absensi-wrapper {
   padding: 1rem;
-  background-color: #ffffff; /* Bersihkan dari hijau norak */
+  background-color: #ffffff;
   min-height: 100vh;
   font-family: 'Inter', sans-serif;
 }
@@ -13,47 +13,14 @@
   margin-bottom: 1.2rem;
 }
 
-/* Rekap Box */
-.rekap-box {
-  margin-top: 1.5rem;
-  background: white;
-  border-radius: 12px;
-  padding: 1rem 1.2rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+/* Kalender - hapus border dan background */
+.react-calendar {
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  margin-bottom: 1.2rem;
 }
 
-.rekap-box p {
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-  color: #14532d;
-}
-
-.rekap-items {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.rekap-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.95rem;
-}
-
-.dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 999px;
-  display: inline-block;
-}
-
-.green { background: #16a34a; }
-.red { background: #dc2626; }
-.gray { background: #9ca3af; }
-.yellow { background: #facc15; }
-
-/* Kalender */
 .react-calendar__tile {
   position: relative;
   font-weight: 500;
@@ -67,14 +34,14 @@
   z-index: 1;
 }
 
-/* Hindari warna biru default */
+/* Hindari warna biru default saat aktif */
 .react-calendar__tile--active {
   background: transparent !important;
   color: #1f2937 !important;
   font-weight: bold;
 }
 
-/* Lingkaran kecil & halus */
+/* Highlight status */
 .highlight-kerja::before,
 .highlight-mens::before,
 .highlight-off::before,
@@ -105,6 +72,58 @@
 
 .highlight-sakit::before {
   border-color: #facc15;
+}
+
+/* Rekap Box */
+.rekap-box {
+  margin-top: 1rem;
+  background: white;
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+}
+
+.rekap-box p {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #14532d;
+}
+
+.rekap-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rekap-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.green {
+  background: #16a34a;
+}
+
+.red {
+  background: #dc2626;
+}
+
+.gray {
+  background: #9ca3af;
+}
+
+.yellow {
+  background: #facc15;
 }
 
 /* Responsif */
