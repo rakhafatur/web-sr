@@ -54,12 +54,12 @@ const RiwayatAbsensiPage = () => {
     fetchAbsensi();
   }, [currentDate]);
 
-  const getTileContent = ({ date, view }: any) => {
-    if (view !== 'month') return null;
+  const getTileClass = ({ date, view }: any) => {
+    if (view !== 'month') return '';
     const key = dayjs(date).format('YYYY-MM-DD');
     const status = absensi[key];
-    if (!status) return null;
-    return <div className={`dot-calendar ${status.toLowerCase()}`} />;
+    if (!status) return '';
+    return `highlight-${status.toLowerCase()}`;
   };
 
   const getSummary = () => {
@@ -81,7 +81,7 @@ const RiwayatAbsensiPage = () => {
         onActiveStartDateChange={({ activeStartDate }) =>
           setCurrentDate(activeStartDate || new Date())
         }
-        tileContent={getTileContent}
+        tileClassName={getTileClass}
       />
 
       <div className="rekap-box">
@@ -90,7 +90,7 @@ const RiwayatAbsensiPage = () => {
           <div className="rekap-item"><span className="dot green" /> Kerja: {summary.KERJA} hari</div>
           <div className="rekap-item"><span className="dot red" /> Mens: {summary.MENS} hari</div>
           <div className="rekap-item"><span className="dot gray" /> Off: {summary.OFF} hari</div>
-          <div className="dot yellow" /> Sakit: {summary.SAKIT} hari
+          <div className="rekap-item"><span className="dot yellow" /> Sakit: {summary.SAKIT} hari</div>
         </div>
       </div>
     </div>

@@ -53,36 +53,36 @@
 .gray { background: #9ca3af; }
 .yellow { background: #facc15; }
 
-/* Kalender - dot di bawah angka */
+/* Kalender - highlight border lingkaran tanggal */
 .react-calendar__tile {
   position: relative;
-  padding-bottom: 24px !important;
+  font-weight: 500;
+  color: #1f2937;
+  padding: 0.6rem 0.4rem;
 }
 
-.dot-calendar {
-  width: 8px;
-  height: 8px;
+.highlight-kerja {
+  border: 2px solid #16a34a !important;
   border-radius: 50%;
-  position: absolute;
-  bottom: 6px;
-  left: 50%;
-  transform: translateX(-50%);
+  color: #16a34a;
 }
 
-.dot-calendar.kerja {
-  background-color: #16a34a;
+.highlight-mens {
+  border: 2px solid #dc2626 !important;
+  border-radius: 50%;
+  color: #dc2626;
 }
 
-.dot-calendar.mens {
-  background-color: #dc2626;
+.highlight-off {
+  border: 2px solid #9ca3af !important;
+  border-radius: 50%;
+  color: #6b7280;
 }
 
-.dot-calendar.off {
-  background-color: #9ca3af;
-}
-
-.dot-calendar.sakit {
-  background-color: #facc15;
+.highlight-sakit {
+  border: 2px solid #facc15 !important;
+  border-radius: 50%;
+  color: #d97706;
 }
 
 /* Responsif */
