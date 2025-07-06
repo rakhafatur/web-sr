@@ -1,6 +1,6 @@
 .absensi-wrapper {
   padding: 1rem;
-  background-color: #f0fdf4;
+  background-color: #ffffff; /* Bersihkan dari hijau norak */
   min-height: 100vh;
   font-family: 'Inter', sans-serif;
 }
@@ -53,7 +53,7 @@
 .gray { background: #9ca3af; }
 .yellow { background: #facc15; }
 
-/* Kalender - highlight border lingkaran tanggal */
+/* Kalender */
 .react-calendar__tile {
   position: relative;
   font-weight: 500;
@@ -61,28 +61,50 @@
   padding: 0.6rem 0.4rem;
 }
 
-.highlight-kerja {
-  border: 2px solid #16a34a !important;
-  border-radius: 50%;
-  color: #16a34a;
+/* Tanggal tetap di atas lingkaran */
+.react-calendar__tile abbr {
+  position: relative;
+  z-index: 1;
 }
 
-.highlight-mens {
-  border: 2px solid #dc2626 !important;
-  border-radius: 50%;
-  color: #dc2626;
+/* Hindari warna biru default */
+.react-calendar__tile--active {
+  background: transparent !important;
+  color: #1f2937 !important;
+  font-weight: bold;
 }
 
-.highlight-off {
-  border: 2px solid #9ca3af !important;
+/* Lingkaran kecil & halus */
+.highlight-kerja::before,
+.highlight-mens::before,
+.highlight-off::before,
+.highlight-sakit::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
-  color: #6b7280;
+  border: 2px solid;
+  z-index: 0;
 }
 
-.highlight-sakit {
-  border: 2px solid #facc15 !important;
-  border-radius: 50%;
-  color: #d97706;
+.highlight-kerja::before {
+  border-color: #16a34a;
+}
+
+.highlight-mens::before {
+  border-color: #dc2626;
+}
+
+.highlight-off::before {
+  border-color: #9ca3af;
+}
+
+.highlight-sakit::before {
+  border-color: #facc15;
 }
 
 /* Responsif */
