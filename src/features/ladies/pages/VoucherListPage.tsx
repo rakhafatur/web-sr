@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../app/store';
 import { supabase } from '../../../lib/supabaseClient';
 import dayjs from 'dayjs';
 import './VoucherListPage.css';
@@ -10,7 +12,14 @@ type Voucher = {
   keterangan?: string;
 };
 
+type User = {
+  id: string;
+  username: string;
+  nama: string;
+};
+
 const VoucherListPage = () => {
+  const user = useSelector((state: RootState) => state.user.currentUser) as User;
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
   const [totalPcs, setTotalPcs] = useState(0);
   const [totalRp, setTotalRp] = useState(0);
@@ -19,45 +28,44 @@ const VoucherListPage = () => {
   const tahunIni = dayjs().format('YYYY');
 
   useEffect(() => {
-    const fetchData = async () => {
-      // ✅ Ambil user dari Supabase Auth
-      const { data: authUser, error: authError } = await supabase.auth.getUser();
-      if (authError || !authUser?.user?.id) return;
+    if (!user?.id) return;
+    fetchVouchers(user.id);
+  }, [user]);
 
-      const userId = authUser.user.id;
+  const fetchVouchers = async (userId: string) => {
+    const { data: profile, error: profileError } = await supabase
+      .from('ladies')
+      .select('id')
+      .eq('user_id', userId)
+      .single();
 
-      // ✅ Ambil ladies_id dari tabel users
-      const { data: userDetail, error: detailError } = await supabase
-        .from('users')
-        .select('ladies_id')
-        .eq('id', userId)
-        .single();
+    if (profileError || !profile) {
+      console.error('Gagal ambil ladies_id', profileError);
+      return;
+    }
 
-      const ladiesId = userDetail?.ladies_id;
-      if (!ladiesId) return;
+    const ladiesId = profile.id;
+    const tanggalAwal = `${tahunIni}-${bulanIni}-01`;
+    const tanggalAkhir = dayjs().endOf('month').format('YYYY-MM-DD');
 
-      // ✅ Lanjut ambil data voucher
-      const tanggalAwal = `${tahunIni}-${bulanIni}-01`;
-      const tanggalAkhir = dayjs().endOf('month').format('YYYY-MM-DD');
+    const { data, error } = await supabase
+      .from('vouchers')
+      .select('id, tanggal, jumlah_voucher, keterangan')
+      .eq('ladies_id', ladiesId)
+      .gte('tanggal', tanggalAwal)
+      .lte('tanggal', tanggalAkhir)
+      .order('tanggal', { ascending: false });
 
-      const { data, error } = await supabase
-        .from('vouchers')
-        .select('id, tanggal, jumlah_voucher, keterangan')
-        .eq('ladies_id', ladiesId)
-        .gte('tanggal', tanggalAwal)
-        .lte('tanggal', tanggalAkhir)
-        .order('tanggal', { ascending: false });
-
-      if (!error && data) {
-        setVouchers(data);
-        const pcs = data.reduce((sum, v) => sum + (parseFloat(v.jumlah_voucher?.toString() || '0')), 0);
-        setTotalPcs(pcs);
-        setTotalRp(pcs * 150000);
-      }
-    };
-
-    fetchData();
-  }, []);
+    if (!error && data) {
+      setVouchers(data);
+      const pcs = data.reduce((sum, v) => {
+        const val = parseFloat((v.jumlah_voucher || 0).toString());
+        return sum + val;
+      }, 0);
+      setTotalPcs(pcs);
+      setTotalRp(pcs * 150000);
+    }
+  };
 
   return (
     <main className="voucher-page">
