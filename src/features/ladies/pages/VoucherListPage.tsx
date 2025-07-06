@@ -48,32 +48,36 @@ const VoucherListPage = () => {
 
     if (!error && data) {
       setVouchers(data);
-      const pcs = data.reduce((sum, v) => sum + (v.jumlah_voucher || 0), 0);
+      const pcs = data.reduce((sum, v) => sum + (Number(v.jumlah_voucher) || 0), 0);
       setTotalPcs(pcs);
       setTotalRp(pcs * 150000);
     }
   };
 
   return (
-    <div className="voucher-page">
+    <main className="voucher-page">
       <h2 className="voucher-title">Voucher Bulan Ini</h2>
-      <div className="voucher-summary">
-        <p>Total: <strong>{totalPcs} pcs</strong> = <strong>Rp {totalRp.toLocaleString('id-ID')}</strong></p>
-      </div>
-      <div className="voucher-list">
-        {vouchers.map((v) => (
-          <div key={v.id} className="voucher-card">
-            <div className="voucher-date">{dayjs(v.tanggal).format('DD MMM YYYY')}</div>
-            <div className="voucher-detail">
-              <span className="pcs">{v.jumlah_voucher} pcs</span>
-              <span className="nominal">Rp {(v.jumlah_voucher * 150000).toLocaleString('id-ID')}</span>
-            </div>
-            {v.keterangan && <div className="voucher-note">{v.keterangan}</div>}
-          </div>
-        ))}
-        {vouchers.length === 0 && <p className="voucher-empty">Belum ada voucher di bulan ini.</p>}
-      </div>
-    </div>
+      <p className="voucher-summary">
+        <strong>{totalPcs} pcs</strong> = <strong>Rp {totalRp.toLocaleString('id-ID')}</strong>
+      </p>
+
+      {vouchers.length > 0 ? (
+        <section className="voucher-list">
+          {vouchers.map((v) => (
+            <article key={v.id} className="voucher-card">
+              <div className="voucher-date">{dayjs(v.tanggal).format('DD MMM YYYY')}</div>
+              <div className="voucher-detail">
+                <span className="pcs">{v.jumlah_voucher} pcs</span>
+                <span className="nominal">Rp {(v.jumlah_voucher * 150000).toLocaleString('id-ID')}</span>
+              </div>
+              {v.keterangan && <div className="voucher-note">{v.keterangan}</div>}
+            </article>
+          ))}
+        </section>
+      ) : (
+        <p className="voucher-empty">Belum ada voucher di bulan ini.</p>
+      )}
+    </main>
   );
 };
 
