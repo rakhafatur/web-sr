@@ -8,7 +8,7 @@ import './VoucherListPage.css';
 type Voucher = {
   id: string;
   tanggal: string;
-  jumlah_voucher: number | string | null;
+  jumlah_voucher?: number | null;
   keterangan?: string;
 };
 
@@ -26,8 +26,8 @@ const VoucherListPage = () => {
   const [totalPcs, setTotalPcs] = useState(0);
   const [totalRp, setTotalRp] = useState(0);
 
-  const bulanIni = dayjs().format('MM');
-  const tahunIni = dayjs().format('YYYY');
+  const tanggalAwal = dayjs().startOf('month').format('YYYY-MM-DD');
+  const tanggalAkhir = dayjs().endOf('month').format('YYYY-MM-DD');
 
   useEffect(() => {
     if (!user?.ladies_id) return;
@@ -35,9 +35,6 @@ const VoucherListPage = () => {
   }, [user]);
 
   const fetchVouchers = async (ladiesId: string) => {
-    const tanggalAwal = `${tahunIni}-${bulanIni}-01`;
-    const tanggalAkhir = dayjs().endOf('month').format('YYYY-MM-DD');
-
     const { data, error } = await supabase
       .from('vouchers')
       .select('id, tanggal, jumlah_voucher, keterangan')
@@ -48,12 +45,10 @@ const VoucherListPage = () => {
 
     if (!error && data) {
       setVouchers(data);
-
       const pcs = data.reduce((sum, v) => {
-        const val = parseFloat(v.jumlah_voucher?.toString() || '0');
+        const val = parseFloat((v.jumlah_voucher ?? 0).toString());
         return sum + val;
       }, 0);
-
       setTotalPcs(pcs);
       setTotalRp(pcs * 150000);
     }
@@ -73,7 +68,7 @@ const VoucherListPage = () => {
               <div className="voucher-date">{dayjs(v.tanggal).format('DD MMM YYYY')}</div>
               <div className="voucher-detail">
                 <span className="pcs">{v.jumlah_voucher} pcs</span>
-                <span className="nominal">Rp {(parseFloat(v.jumlah_voucher?.toString() || '0') * 150000).toLocaleString('id-ID')}</span>
+                <span className="nominal">Rp {(Number(v.jumlah_voucher || 0) * 150000).toLocaleString('id-ID')}</span>
               </div>
               {v.keterangan && <div className="voucher-note">{v.keterangan}</div>}
             </article>
