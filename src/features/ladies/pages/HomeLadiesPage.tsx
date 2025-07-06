@@ -165,10 +165,10 @@ const HomeLadiesPage = () => {
                 {isOver ? (
                   <p className="rekap-note text-red">⚠️ Melebihi batas wajar {persentase}%</p>
                 ) : (
-                  <p className="rekap-note text-green">
-                    {batasWajar > 0
-                      ? '✅ Masih aman. Keuangan terkendali!'
-                      : '🔄 Belum ada voucher, tetap semangat!'}
+                  <p className={`rekap-note ${voucherNominal === 0 ? 'text-red' : 'text-green'}`}>
+                    {voucherNominal === 0
+                      ? '🔄 Belum ada voucher, tetap semangat!'
+                      : '✅ Masih aman. Keuangan terkendali!'}
                   </p>
                 )}
               </motion.div>
