@@ -75,12 +75,6 @@ const HomeLadiesPage = () => {
     setOpenCard(newValue);
   };
 
-  useEffect(() => {
-    if (openCard !== cardRef.current) {
-      setOpenCard(cardRef.current ?? null);
-    }
-  }, [openCard]);
-
   const biayaTetap = 500000 + 185000 + 250000;
   const batasWajar = Math.max(0, voucherNominal - biayaTetap);
   const isOver = batasWajar > 0 && pengeluaran > batasWajar;
@@ -109,6 +103,7 @@ const HomeLadiesPage = () => {
         </div>
       </div>
 
+      {/* ✅ rekap box di bawah semua card */}
       <AnimatePresence mode="wait">
         {openCard === 'absen' && (
           <motion.div

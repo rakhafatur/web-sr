@@ -18,6 +18,7 @@ import AddTransaksiPengawasPage from './features/transaction/pages/AddTransaksiP
 import BukuKuningPengawasPage from './features/transaction/pages/BukuKuningPengawasPage';
 
 import HomeLadiesPage from './features/ladies/pages/HomeLadiesPage'; // ✅ LADIES route
+import RiwayatAbsensiPage from './features/ladies/pages/RiwayatAbsensiPage';
 
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -162,6 +163,16 @@ function App() {
                 <ProtectedRoute>
                   <MainLayout>
                     <HomeLadiesPage />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ladies/absensi"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <RiwayatAbsensiPage />
                   </MainLayout>
                 </ProtectedRoute>
               }

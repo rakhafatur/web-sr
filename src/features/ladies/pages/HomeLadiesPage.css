@@ -9,6 +9,7 @@
   flex-wrap: wrap;
 }
 
+/* Kartu utama (absen, voucher, pengeluaran) */
 .summary-card {
   flex: 0 0 calc(33.333% - 12px);
   max-width: calc(33.333% - 12px);
@@ -46,13 +47,15 @@
 
 /* === REKAP BOX === */
 .rekap-box {
+  margin-top: 16px;
+  width: 90%;
+  max-width: 380px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
   background: rgba(255, 255, 255, 0.9);
   border-radius: 16px;
   padding: 16px;
-  margin-top: 12px;
-  width: 90%;
-  max-width: 380px;
-  text-align: center;
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   z-index: 3;
   position: relative;
@@ -129,6 +132,7 @@
   }
 }
 
+/* Warna untuk card di desktop */
 @media (min-width: 769px) {
   .summary-card {
     background: #e6f4ea; /* hijau soft lebih tua */
