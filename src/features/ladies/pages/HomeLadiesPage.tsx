@@ -103,7 +103,6 @@ const HomeLadiesPage = () => {
         </div>
       </div>
 
-      {/* ✅ Rekap muncul di bawah 3 kartu */}
       <div className="rekap-wrapper">
         <AnimatePresence mode="wait">
           {openCard === 'absen' && (
