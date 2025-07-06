@@ -8,9 +8,9 @@ import './VoucherListPage.css';
 type Voucher = {
   id: string;
   tanggal: string;
-  jumlah_voucher: number | null;
+  jumlah_voucher?: number | null;
   jumlah?: number | null;
-  keterangan?: string;
+  keterangan?: string | null;
 };
 
 type UserWithLadies = {
@@ -47,12 +47,13 @@ const VoucherListPage = () => {
       .lte('tanggal', tanggalAkhir)
       .order('tanggal', { ascending: false });
 
+    console.log({ ladiesId, tanggalAwal, tanggalAkhir, data, error });
+
     if (!error && data) {
       setVouchers(data);
       const pcs = data.reduce((sum, v) => {
-        const raw = v.jumlah_voucher ?? v.jumlah ?? 0;
-        const val = parseFloat(raw?.toString() || '0');
-        return sum + val;
+        const val = parseFloat((v.jumlah_voucher ?? v.jumlah ?? 0).toString());
+        return sum + (isNaN(val) ? 0 : val);
       }, 0);
       setTotalPcs(pcs);
       setTotalRp(pcs * 150000);
