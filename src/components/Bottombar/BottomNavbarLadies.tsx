@@ -14,7 +14,6 @@ function BottomNavbarLadies() {
   const navigate = useNavigate();
   const [activeModal, setActiveModal] = useState<'menu' | null>(null);
 
-  // ✅ Menggunakan prefix match
   const isActive = (path: string) => location.pathname.startsWith(path);
 
   const renderModalContent = () => (
@@ -25,6 +24,7 @@ function BottomNavbarLadies() {
           <li onClick={() => { navigate('/ladies/profile'); setActiveModal(null); }}>Profil</li>
           <li onClick={() => { navigate('/ladies/absensi'); setActiveModal(null); }}>Absensi</li>
           <li onClick={() => { navigate('/ladies/transaksi'); setActiveModal(null); }}>Riwayat Transaksi</li>
+          <li onClick={() => { navigate('/ladies/voucher'); setActiveModal(null); }}>Voucher</li> {/* ✅ Tambahan */}
         </ul>
       </div>
     </div>

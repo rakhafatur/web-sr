@@ -19,6 +19,7 @@ import BukuKuningPengawasPage from './features/transaction/pages/BukuKuningPenga
 
 import HomeLadiesPage from './features/ladies/pages/HomeLadiesPage'; // ✅ LADIES route
 import RiwayatAbsensiPage from './features/ladies/pages/RiwayatAbsensiPage';
+import VoucherListPage from './features/ladies/pages/VoucherListPage'; // ✅ Tambahan
 
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -173,6 +174,16 @@ function App() {
                 <ProtectedRoute>
                   <MainLayout>
                     <RiwayatAbsensiPage />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ladies/voucher"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <VoucherListPage />
                   </MainLayout>
                 </ProtectedRoute>
               }
