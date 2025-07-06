@@ -8,7 +8,7 @@ import './VoucherListPage.css';
 type Voucher = {
   id: string;
   tanggal: string;
-  jumlah_voucher: number | string | null; // ✅ handle all types
+  jumlah_voucher: number | string | null;
   keterangan?: string;
 };
 
@@ -49,10 +49,9 @@ const VoucherListPage = () => {
     if (!error && data) {
       setVouchers(data);
 
-      // ✅ konversi robust
       const pcs = data.reduce((sum, v) => {
-        const val = parseFloat((v.jumlah_voucher ?? '0').toString());
-        return sum + (isNaN(val) ? 0 : val);
+        const val = parseFloat(v.jumlah_voucher?.toString() || '0');
+        return sum + val;
       }, 0);
 
       setTotalPcs(pcs);
@@ -69,19 +68,16 @@ const VoucherListPage = () => {
 
       {vouchers.length > 0 ? (
         <section className="voucher-list">
-          {vouchers.map((v) => {
-            const pcs = parseFloat((v.jumlah_voucher ?? '0').toString());
-            return (
-              <article key={v.id} className="voucher-card">
-                <div className="voucher-date">{dayjs(v.tanggal).format('DD MMM YYYY')}</div>
-                <div className="voucher-detail">
-                  <span className="pcs">{pcs} pcs</span>
-                  <span className="nominal">Rp {(pcs * 150000).toLocaleString('id-ID')}</span>
-                </div>
-                {v.keterangan && <div className="voucher-note">{v.keterangan}</div>}
-              </article>
-            );
-          })}
+          {vouchers.map((v) => (
+            <article key={v.id} className="voucher-card">
+              <div className="voucher-date">{dayjs(v.tanggal).format('DD MMM YYYY')}</div>
+              <div className="voucher-detail">
+                <span className="pcs">{v.jumlah_voucher} pcs</span>
+                <span className="nominal">Rp {(parseFloat(v.jumlah_voucher?.toString() || '0') * 150000).toLocaleString('id-ID')}</span>
+              </div>
+              {v.keterangan && <div className="voucher-note">{v.keterangan}</div>}
+            </article>
+          ))}
         </section>
       ) : (
         <p className="voucher-empty">Belum ada voucher di bulan ini.</p>
