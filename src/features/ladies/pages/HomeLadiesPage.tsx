@@ -162,14 +162,12 @@ const HomeLadiesPage = () => {
                   <span className="rekap-label">Pengeluaran</span>
                 </div>
                 <p className="rekap-value text-red">Rp {pengeluaran.toLocaleString('id-ID')}</p>
-                {isOver ? (
-                  <p className="rekap-note text-red">⚠️ Melebihi batas wajar {persentase}%</p>
+                {voucherNominal === 0 ? (
+                  <p className="rekap-note text-red">🔄 Belum ada voucher, tetap semangat!</p>
+                ) : pengeluaran > voucherNominal - biayaTetap ? (
+                  <p className="rekap-note text-red">⚠️ Melebihi batas wajar</p>
                 ) : (
-                  <p className={`rekap-note ${voucherNominal === 0 ? 'text-red' : 'text-green'}`}>
-                    {voucherNominal === 0
-                      ? '🔄 Belum ada voucher, tetap semangat!'
-                      : '✅ Masih aman. Keuangan terkendali!'}
-                  </p>
+                  <p className="rekap-note text-green">✅ Masih aman. Keuangan terkendali!</p>
                 )}
               </motion.div>
             )}

@@ -58,8 +58,8 @@
   margin-left: auto;
   margin-right: auto;
   display: block;
-  background: rgba(255, 255, 255, 0.7); /* transparansi yang sama */
-  backdrop-filter: blur(6px);           /* tambahkan efek blur */
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(6px);
   border-radius: 16px;
   padding: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
@@ -96,11 +96,11 @@
 }
 
 .text-green {
-  color: #15803d;
+  color: #15803d !important;
 }
 
 .text-red {
-  color: #dc2626;
+  color: #dc2626 !important;
 }
 
 .progress-bar {
