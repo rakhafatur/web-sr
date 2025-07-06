@@ -100,7 +100,7 @@ const HomeLadiesPage = () => {
           </div>
           <div className="summary-card" onClick={() => handleToggle('pengeluaran')}>
             <FiTrendingDown className="icon" />
-            <div className="value">Rp {pengeluaran.toLocaleString('id-ID')}</div>
+            <div className="value">{pengeluaran.toLocaleString('id-ID')}</div>
             <div className="label">Pengeluaran</div>
           </div>
         </div>
