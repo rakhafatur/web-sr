@@ -30,6 +30,7 @@
   }
 }
 
+/* === Overlay untuk WEB (default) === */
 .home-overlay {
   position: relative;
   z-index: 2;
@@ -38,36 +39,43 @@
   max-width: 720px;
   width: 90%;
   text-align: center;
-  background-color: rgba(22, 101, 52, 0.15); /* hijau SR kalem transparan */
+  background-color: #e6f4ea; /* hijau soft */
   color: #14532d; /* hijau SR tua */
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(22, 101, 52, 0.25);
+  border: 1px solid #6ee7b7;
+  box-shadow: 0 4px 12px rgba(22, 101, 52, 0.08);
 }
 
+/* === Teks judul dan subtitle WEB === */
 .home-title {
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  color: #14532d; /* hijau SR tua */
+  color: #14532d;
 }
 
 .home-subtitle {
   font-size: 1.25rem;
-  color: #1e3a1d; /* lebih gelap sedikit agar kontras */
+  color: #1e3a1d;
 }
 
+/* === Override untuk MOBILE === */
 @media (max-width: 768px) {
   .home-overlay {
+    background-color: rgba(255, 255, 255, 0.75); /* putih transparan */
+    color: #1e293b;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     padding: 1.5rem 1rem;
-    background-color: rgba(22, 101, 52, 0.25); /* transparansi lebih tinggi di mobile */
   }
 
   .home-title {
     font-size: 2rem;
+    color: #0f172a;
   }
 
   .home-subtitle {
     font-size: 1rem;
+    color: #334155;
   }
 }
