@@ -12,23 +12,41 @@ import './BottomNavbarLadies.css';
 function BottomNavbarLadies() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [activeModal, setActiveModal] = useState<'menu' | null>(null);
+  const [activeModal, setActiveModal] = useState<'menu' | 'transaksi' | null>(null); // ✅ tambah opsi transaksi
 
   const isActive = (path: string) => location.pathname.startsWith(path);
 
-  const renderModalContent = () => (
-    <div className="bottom-modal-backdrop" onClick={() => setActiveModal(null)}>
-      <div className="bottom-modal" onClick={(e) => e.stopPropagation()}>
-        <h6 className="modal-title">Menu</h6>
-        <ul>
-          <li onClick={() => { navigate('/ladies/profile'); setActiveModal(null); }}>Profil</li>
-          <li onClick={() => { navigate('/ladies/absensi'); setActiveModal(null); }}>Absensi</li>
-          <li onClick={() => { navigate('/ladies/transaksi'); setActiveModal(null); }}>Riwayat Transaksi</li>
-          <li onClick={() => { navigate('/ladies/voucher'); setActiveModal(null); }}>Voucher</li> {/* ✅ Tambahan */}
-        </ul>
-      </div>
-    </div>
-  );
+  const renderModalContent = () => {
+    if (activeModal === 'transaksi') {
+      return (
+        <div className="bottom-modal-backdrop" onClick={() => setActiveModal(null)}>
+          <div className="bottom-modal" onClick={(e) => e.stopPropagation()}>
+            <h6 className="modal-title">Transaksi</h6>
+            <ul>
+              <li onClick={() => { navigate('/ladies/transaksi'); setActiveModal(null); }}>Riwayat Transaksi</li>
+              <li onClick={() => { navigate('/ladies/voucher'); setActiveModal(null); }}>Voucher</li>
+            </ul>
+          </div>
+        </div>
+      );
+    }
+
+    if (activeModal === 'menu') {
+      return (
+        <div className="bottom-modal-backdrop" onClick={() => setActiveModal(null)}>
+          <div className="bottom-modal" onClick={(e) => e.stopPropagation()}>
+            <h6 className="modal-title">Menu</h6>
+            <ul>
+              <li onClick={() => { navigate('/ladies/profile'); setActiveModal(null); }}>Profil</li>
+              <li onClick={() => { navigate('/ladies/absensi'); setActiveModal(null); }}>Absensi</li>
+            </ul>
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  };
 
   return (
     <>
@@ -38,8 +56,8 @@ function BottomNavbarLadies() {
           <span>Home</span>
         </div>
 
-        <div className="nav-item" onClick={() => { navigate('/ladies/transaksi'); setActiveModal(null); }}>
-          <FiDollarSign className={`nav-icon ${isActive('/ladies/transaksi') ? 'active' : ''}`} />
+        <div className="nav-item" onClick={() => setActiveModal('transaksi')}>
+          <FiDollarSign className={`nav-icon ${activeModal === 'transaksi' ? 'active' : ''}`} />
           <span>Transaksi</span>
         </div>
 
@@ -50,7 +68,7 @@ function BottomNavbarLadies() {
 
         <div className="nav-item" onClick={() => setActiveModal('menu')}>
           <FiUser className={`nav-icon ${activeModal === 'menu' ? 'active' : ''}`} />
-          <span>Profil</span>
+          <span>Menu</span>
         </div>
       </div>
 
