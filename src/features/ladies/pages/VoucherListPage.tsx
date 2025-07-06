@@ -26,17 +26,18 @@ const VoucherListPage = () => {
   const [totalPcs, setTotalPcs] = useState(0);
   const [totalRp, setTotalRp] = useState(0);
 
+  const bulanIni = dayjs().format('MM');
+  const tahunIni = dayjs().format('YYYY');
+
+  const tanggalAwal = `${tahunIni}-${bulanIni}-01`;
+  const tanggalAkhir = dayjs().endOf('month').format('YYYY-MM-DD');
+
   useEffect(() => {
     if (!user?.ladies_id) return;
     fetchVouchers(user.ladies_id);
   }, [user]);
 
   const fetchVouchers = async (ladiesId: string) => {
-    const tanggalAwal = dayjs().startOf('month').format('YYYY-MM-DD');
-    const tanggalAkhir = dayjs().endOf('month').format('YYYY-MM-DD');
-
-    console.log('📌 Filter:', { ladiesId, tanggalAwal, tanggalAkhir });
-
     const { data, error } = await supabase
       .from('vouchers')
       .select('id, tanggal, jumlah_voucher, keterangan')
@@ -45,11 +46,12 @@ const VoucherListPage = () => {
       .lte('tanggal', tanggalAkhir)
       .order('tanggal', { ascending: false });
 
-    console.log('📦 VOUCHER DATA:', data);
-
     if (!error && data) {
       setVouchers(data);
-      const pcs = data.reduce((sum, v) => sum + Number(v.jumlah_voucher ?? 0), 0);
+      const pcs = data.reduce((sum, v) => {
+        const val = parseFloat(v.jumlah_voucher?.toString() || '0');
+        return sum + val;
+      }, 0);
       setTotalPcs(pcs);
       setTotalRp(pcs * 150000);
     }
@@ -61,6 +63,14 @@ const VoucherListPage = () => {
       <p className="voucher-summary">
         <strong>{totalPcs} pcs</strong> = <strong>Rp {totalRp.toLocaleString('id-ID')}</strong>
       </p>
+
+      {/* === 👇 DEBUG INFO TAMPAK DI HP === */}
+      <div style={{ fontSize: '0.75rem', color: 'gray', margin: '1rem 0' }}>
+        <p><strong>Debug Info:</strong></p>
+        <p><strong>ladies_id:</strong> {user?.ladies_id}</p>
+        <p><strong>tanggal:</strong> {tanggalAwal} → {tanggalAkhir}</p>
+        <p><strong>data:</strong> {JSON.stringify(vouchers)}</p>
+      </div>
 
       {vouchers.length > 0 ? (
         <section className="voucher-list">
