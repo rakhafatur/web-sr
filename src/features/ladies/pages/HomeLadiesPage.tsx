@@ -144,7 +144,7 @@ const HomeLadiesPage = () => {
                   <span className="rekap-label">Voucher</span>
                 </div>
                 <p className="rekap-value">Rp {voucherNominal.toLocaleString('id-ID')}</p>
-                <p className="rekap-note text-green">{voucherPcs} pcs</p>
+                <p className="rekap-note text-green">Voucher didapat bulan ini {voucherPcs} pcs</p>
               </motion.div>
             )}
 
