@@ -13,7 +13,6 @@ type AbsensiData = {
   [tanggal: string]: AbsensiStatus;
 };
 
-// ✅ Tambahkan tipe khusus untuk user ladies
 type UserWithLadies = {
   id: string;
   username: string;
@@ -55,17 +54,17 @@ const RiwayatAbsensiPage = () => {
     fetchAbsensi();
   }, [currentDate]);
 
-  const getTileClass = ({ date, view }: any) => {
-    if (view !== 'month') return '';
+  const getTileContent = ({ date, view }: any) => {
+    if (view !== 'month') return null;
     const key = dayjs(date).format('YYYY-MM-DD');
     const status = absensi[key];
-    if (!status) return '';
-    return `status-${status.toLowerCase()}`;
+    if (!status) return null;
+    return <div className={`dot-calendar ${status.toLowerCase()}`} />;
   };
 
   const getSummary = () => {
     const summary = { KERJA: 0, MENS: 0, OFF: 0, SAKIT: 0 };
-    Object.entries(absensi).forEach(([_, status]) => {
+    Object.values(absensi).forEach((status) => {
       summary[status]++;
     });
     return summary;
@@ -82,17 +81,17 @@ const RiwayatAbsensiPage = () => {
         onActiveStartDateChange={({ activeStartDate }) =>
           setCurrentDate(activeStartDate || new Date())
         }
-        tileClassName={getTileClass}
+        tileContent={getTileContent}
       />
 
       <div className="rekap-box">
         <p>Rekap Bulan {dayjs(currentDate).format('MMMM YYYY')}</p>
-        <ul>
-          <li><span className="dot green" /> Kerja: {summary.KERJA} hari</li>
-          <li><span className="dot red" /> Mens: {summary.MENS} hari</li>
-          <li><span className="dot gray" /> Off: {summary.OFF} hari</li>
-          <li><span className="dot yellow" /> Sakit: {summary.SAKIT} hari</li>
-        </ul>
+        <div className="rekap-items">
+          <div className="rekap-item"><span className="dot green" /> Kerja: {summary.KERJA} hari</div>
+          <div className="rekap-item"><span className="dot red" /> Mens: {summary.MENS} hari</div>
+          <div className="rekap-item"><span className="dot gray" /> Off: {summary.OFF} hari</div>
+          <div className="dot yellow" /> Sakit: {summary.SAKIT} hari
+        </div>
       </div>
     </div>
   );
