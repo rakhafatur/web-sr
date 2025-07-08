@@ -28,7 +28,7 @@ const VoucherListPage = () => {
 
   // Ganti bulan via input month
   const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value; // ex: "2025-07"
+    const value = e.target.value;
     let newDate = dayjs(`${value}-01`);
     if (!newDate.isValid()) {
       newDate = dayjs().startOf('month');
@@ -75,25 +75,28 @@ const VoucherListPage = () => {
     setTotalRp(pcs * 150000);
   };
 
-  // Judul bulan
-  const bulanLabel = selectedMonth.format('MMMM YYYY');
   const isNextDisabled = selectedMonth.isSame(dayjs().startOf('month'), 'month');
 
   return (
     <div className="voucher-page">
-      {/* Navigasi bulan */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
-        <button onClick={prevMonth}>&lt;</button>
+      {/* Navigasi bulan - bar hijau */}
+      <div className="voucher-monthbar">
+        <button onClick={prevMonth} className="voucher-monthbar-btn">&lt;</button>
         <input
           type="month"
           value={selectedMonth.format('YYYY-MM')}
           onChange={handleMonthChange}
           max={dayjs().format('YYYY-MM')}
-          style={{ margin: '0 10px', fontWeight: 600, fontSize: '1rem', borderRadius: 8, border: '1px solid #ccc', padding: '2px 10px' }}
+          className="voucher-monthbar-input"
         />
-        <button onClick={nextMonth} disabled={isNextDisabled} style={{ color: isNextDisabled ? '#ccc' : undefined }}>&gt;</button>
+        <button
+          onClick={nextMonth}
+          disabled={isNextDisabled}
+          className="voucher-monthbar-btn"
+          style={{ color: isNextDisabled ? '#ccc' : undefined }}
+        >&gt;</button>
       </div>
-      <div style={{ textAlign: 'center', fontWeight: 600, color: '#14532d', marginBottom: 12 }}>{bulanLabel}</div>
+
       <p className="voucher-total">{totalPcs} pcs = Rp {totalRp.toLocaleString('id-ID')}</p>
       {vouchers.length === 0 ? (
         <p className="voucher-empty">Belum ada voucher di bulan ini.</p>

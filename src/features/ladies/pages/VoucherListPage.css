@@ -5,14 +5,6 @@
   min-height: 100vh;
 }
 
-.voucher-title {
-  font-size: 1.4rem;
-  font-weight: bold;
-  color: #14532d;
-  text-align: center;
-  margin-bottom: 0.5rem;
-}
-
 .voucher-total {
   text-align: center;
   font-weight: 600;
@@ -45,57 +37,51 @@
   margin-top: 0.3rem;
 }
 
-/* --- Tambahan modern navigasi & picker --- */
-.voucher-navbar {
-  margin-bottom: 8px;
-}
-.voucher-nav-btn {
-  background: none;
-  border: none;
-  font-size: 22px;
-  color: #14532d;
-  padding: 4px 8px;
-  border-radius: 50%;
-  transition: background 0.15s;
-}
-.voucher-nav-btn:active {
-  background: #e4e4e7;
-}
-.voucher-nav-btn[disabled] {
-  color: #d1d5db;
-  cursor: not-allowed;
-}
-.voucher-month-label {
-  margin: 0 8px;
-  font-weight: 600;
+/* === NAVIGASI BULAN HIJAU === */
+.voucher-monthbar {
   display: flex;
   align-items: center;
+  justify-content: center;
+  background: #14532d;
+  padding: 10px 0;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  gap: 10px;
+}
+
+.voucher-monthbar-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 2px 14px;
+  border-radius: 7px;
   cursor: pointer;
-  user-select: none;
-  gap: 6px;
-  color: #14532d;
-  background: #f1f5f9;
-  border-radius: 8px;
-  padding: 2px 10px;
+  transition: background 0.12s;
+}
+.voucher-monthbar-btn:active {
+  background: #195d37;
+}
+.voucher-monthbar-btn:disabled {
+  color: #d1d5db;
+  background: none;
+  cursor: not-allowed;
+}
+
+.voucher-monthbar-input {
+  background: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 5px 12px;
   font-size: 1rem;
-  transition: background 0.15s;
-}
-.voucher-month-label:active {
-  background: #e2e8f0;
-}
-.voucher-month-picker {
-  font-size: 16px;
-  border-radius: 8px;
-  border: 1px solid #cbd5e1;
-  padding: 4px 12px;
+  font-weight: 600;
+  min-width: 105px;
   outline: none;
+  color: #14532d;
+  text-align: center;
+  transition: box-shadow 0.12s;
 }
-.voucher-cancel-btn {
-  margin-left: 10px;
-  padding: 4px 12px;
-  border-radius: 8px;
-  background: #eee;
-  border: 1px solid #ccc;
-  cursor: pointer;
-  font-size: 1rem;
+.voucher-monthbar-input:focus {
+  box-shadow: 0 0 0 2px #a7f3d0;
 }
