@@ -21,7 +21,7 @@ type UserWithLadies = {
 
 const VoucherListPage = () => {
   const user = useSelector((state: RootState) => state.user.currentUser) as UserWithLadies;
-  const [vouchers, setVouchers] = useState<any[]>([]);
+  const [vouchers, setVouchers] = useState<Voucher[]>([]);
   const [totalPcs, setTotalPcs] = useState(0);
   const [totalRp, setTotalRp] = useState(0);
 
@@ -38,12 +38,10 @@ const VoucherListPage = () => {
   const fetchVoucher = async (ladiesId: string) => {
     const { data, error } = await supabase
       .from('vouchers')
-      .select('*')
+      .select('id, tanggal, jumlah_voucher, keterangan')
       .eq('ladies_id', ladiesId)
       .gte('tanggal', bulanIniAwal.format('YYYY-MM-DD'))
       .lte('tanggal', bulanIniAkhir.format('YYYY-MM-DD'));
-
-    console.log('voucher data supabase:', data, error);
 
     if (error || !data) {
       setVouchers([]);
@@ -53,11 +51,7 @@ const VoucherListPage = () => {
     }
 
     setVouchers(data);
-    // Coba deteksi jumlah_voucher otomatis
-    let pcs = 0;
-    if (Array.isArray(data)) {
-      pcs = data.reduce((sum, v) => sum + (v.jumlah_voucher || 0), 0);
-    }
+    const pcs = data.reduce((sum, v) => sum + (v.jumlah_voucher || 0), 0);
     setTotalPcs(pcs);
     setTotalRp(pcs * 150000);
   };
@@ -65,30 +59,19 @@ const VoucherListPage = () => {
   return (
     <div className="voucher-page">
       <h2 className="voucher-title">Voucher Bulan Ini</h2>
-      <p className="voucher-total">{totalPcs} pcs = Rp {totalRp.toLocaleString('id-ID')}</p>
-
-      <div className="voucher-debug" style={{ background: '#eee', color: '#222', padding: 8, borderRadius: 8 }}>
-        <p><strong>Debug Info:</strong></p>
-        <p><code>ladies_id:</code> {user?.ladies_id}</p>
-        <p><code>tanggal:</code> {bulanIniAwal.format('YYYY-MM-DD')} → {bulanIniAkhir.format('YYYY-MM-DD')}</p>
-        <p><code>Raw vouchers:</code></p>
-        <pre style={{ fontSize: 12, background: '#fff', color: '#000', borderRadius: 6, padding: 8, overflowX: 'auto' }}>
-          {JSON.stringify(vouchers, null, 2)}
-        </pre>
-      </div>
+      <p className="voucher-total">
+        {totalPcs} pcs = Rp {totalRp.toLocaleString('id-ID')}
+      </p>
 
       {vouchers.length === 0 ? (
         <p className="voucher-empty">Belum ada voucher di bulan ini.</p>
       ) : (
         <ul className="voucher-list">
-          {vouchers.map((v: any) => (
+          {vouchers.map((v) => (
             <li key={v.id} className="voucher-item">
               <p>
-                <strong>{v.tanggal ? dayjs(v.tanggal).format('DD MMM YYYY') : '-'}</strong> — {v.jumlah_voucher ?? '??'} pcs
+                <strong>{dayjs(v.tanggal).format('DD MMM YYYY')}</strong> — {v.jumlah_voucher} pcs
               </p>
-              <div style={{ fontSize: 12 }}>
-                <b>Raw:</b> {JSON.stringify(v)}
-              </div>
               {v.keterangan && <p className="voucher-ket">{v.keterangan}</p>}
             </li>
           ))}
