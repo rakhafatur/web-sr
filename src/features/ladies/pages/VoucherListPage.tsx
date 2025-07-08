@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
 import { supabase } from '../../../lib/supabaseClient';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { FiChevronLeft, FiChevronRight, FiCalendar } from 'react-icons/fi';
 import './VoucherListPage.css';
 
@@ -22,19 +22,21 @@ type UserWithLadies = {
 
 const VoucherListPage = () => {
   const user = useSelector((state: RootState) => state.user.currentUser) as UserWithLadies;
-  const [selectedMonth, setSelectedMonth] = useState(dayjs().startOf('month'));
+  const [selectedMonth, setSelectedMonth] = useState<Dayjs>(dayjs().startOf('month'));
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
   const [totalPcs, setTotalPcs] = useState(0);
   const [totalRp, setTotalRp] = useState(0);
   const [loading, setLoading] = useState(false);
   const [showMonthPicker, setShowMonthPicker] = useState(false);
 
-  // Untuk picker bulan manual (mobile friendly)
+  // Handler pilih bulan via picker
   const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value; // format: "YYYY-MM"
-    console.log('PICKER CHANGE', value);
+    const value = e.target.value; // contoh "2025-07"
+    // Harus selalu di-convert ke tanggal 1, biar dayjs valid di semua browser!
+    const newDate = dayjs(`${value}-01`);
+    console.log("Set selectedMonth:", `${value}-01`, "=>", newDate.format(), "Valid?", newDate.isValid());
     setShowMonthPicker(false);
-    setSelectedMonth(dayjs(value + '-01'));
+    setSelectedMonth(newDate);
   };
 
   useEffect(() => {
@@ -46,13 +48,18 @@ const VoucherListPage = () => {
 
   const fetchVoucher = async (ladiesId: string) => {
     setLoading(true);
-    const bulanAwal = selectedMonth.startOf('month');
-    const bulanAkhir = selectedMonth.endOf('month');
+    let bulanAwal = selectedMonth && selectedMonth.isValid()
+      ? selectedMonth.startOf('month')
+      : dayjs().startOf('month');
+    let bulanAkhir = selectedMonth && selectedMonth.isValid()
+      ? selectedMonth.endOf('month')
+      : dayjs().endOf('month');
     console.log('FETCH VOUCHER', {
       ladiesId,
       selectedMonth: selectedMonth.format('YYYY-MM'),
       bulanAwal: bulanAwal.format('YYYY-MM-DD'),
-      bulanAkhir: bulanAkhir.format('YYYY-MM-DD')
+      bulanAkhir: bulanAkhir.format('YYYY-MM-DD'),
+      isValid: selectedMonth.isValid()
     });
 
     const { data, error } = await supabase
