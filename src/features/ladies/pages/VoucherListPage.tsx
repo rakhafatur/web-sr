@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
 import { supabase } from '../../../lib/supabaseClient';
-import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
-import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import dayjs from 'dayjs';
 import './VoucherListPage.css';
 
@@ -34,13 +32,16 @@ const VoucherListPage = () => {
     if (user?.ladies_id) {
       fetchVoucher(user.ladies_id);
     }
+    // eslint-disable-next-line
   }, [user]);
 
   const fetchVoucher = async (ladiesId: string) => {
     const { data, error } = await supabase
       .from('vouchers')
       .select('id, tanggal, jumlah_voucher, keterangan')
-      .eq('ladies_id', ladiesId);
+      .eq('ladies_id', ladiesId)
+      .gte('tanggal', bulanIniAwal.format('YYYY-MM-DD'))
+      .lte('tanggal', bulanIniAkhir.format('YYYY-MM-DD'));
 
     if (error || !data) {
       console.error('Gagal ambil data voucher:', error);
@@ -50,13 +51,8 @@ const VoucherListPage = () => {
       return;
     }
 
-    const filtered = data.filter((v) => {
-      const tgl = dayjs(v.tanggal);
-      return tgl.isSameOrAfter(bulanIniAwal) && tgl.isSameOrBefore(bulanIniAkhir);
-    });
-
-    setVouchers(filtered);
-    const pcs = filtered.reduce((sum, v) => sum + (v.jumlah_voucher || 0), 0);
+    setVouchers(data);
+    const pcs = data.reduce((sum, v) => sum + (v.jumlah_voucher || 0), 0);
     setTotalPcs(pcs);
     setTotalRp(pcs * 150000);
   };
