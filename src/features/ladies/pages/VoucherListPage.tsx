@@ -31,8 +31,10 @@ const VoucherListPage = () => {
 
   // Untuk picker bulan manual (mobile friendly)
   const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value; // format: "YYYY-MM"
+    console.log('PICKER CHANGE', value);
     setShowMonthPicker(false);
-    setSelectedMonth(dayjs(e.target.value).startOf('month'));
+    setSelectedMonth(dayjs(value + '-01'));
   };
 
   useEffect(() => {
@@ -46,6 +48,12 @@ const VoucherListPage = () => {
     setLoading(true);
     const bulanAwal = selectedMonth.startOf('month');
     const bulanAkhir = selectedMonth.endOf('month');
+    console.log('FETCH VOUCHER', {
+      ladiesId,
+      selectedMonth: selectedMonth.format('YYYY-MM'),
+      bulanAwal: bulanAwal.format('YYYY-MM-DD'),
+      bulanAkhir: bulanAkhir.format('YYYY-MM-DD')
+    });
 
     const { data, error } = await supabase
       .from('vouchers')
@@ -53,6 +61,8 @@ const VoucherListPage = () => {
       .eq('ladies_id', ladiesId)
       .gte('tanggal', bulanAwal.format('YYYY-MM-DD'))
       .lte('tanggal', bulanAkhir.format('YYYY-MM-DD'));
+
+    console.log('SUPABASE RESULT', { data, error });
 
     if (error || !data) {
       setVouchers([]);
@@ -69,11 +79,8 @@ const VoucherListPage = () => {
     setLoading(false);
   };
 
-  // Navigasi Bulan
   const prevMonth = () => setSelectedMonth(selectedMonth.subtract(1, 'month'));
   const nextMonth = () => setSelectedMonth(selectedMonth.add(1, 'month'));
-
-  // Label judul bulan
   const bulanLabel = selectedMonth.format('MMMM YYYY');
   const isNextDisabled = selectedMonth.isSame(dayjs().startOf('month'), 'month');
 
@@ -121,6 +128,25 @@ const VoucherListPage = () => {
         </div>
       )}
 
+      {/* DEBUG INFO */}
+      <div
+        style={{
+          fontSize: 13,
+          background: '#f4f4f4',
+          padding: 8,
+          borderRadius: 8,
+          margin: '8px 0 12px 0',
+          color: '#222',
+          wordBreak: 'break-all'
+        }}
+      >
+        <b>DEBUG:</b>
+        <div>ladies_id: <code>{user?.ladies_id}</code></div>
+        <div>selectedMonth: <code>{selectedMonth.format('YYYY-MM')}</code></div>
+        <div>Range: <code>{selectedMonth.startOf('month').format('YYYY-MM-DD')} s/d {selectedMonth.endOf('month').format('YYYY-MM-DD')}</code></div>
+        <div>Raw vouchers: <pre style={{fontSize:11,margin:0}}>{JSON.stringify(vouchers, null, 2)}</pre></div>
+      </div>
+
       <p className="voucher-total" style={{ marginTop: 0 }}>
         {loading ? '...' : `${totalPcs} pcs = Rp ${totalRp.toLocaleString('id-ID')}`}
       </p>
@@ -136,6 +162,7 @@ const VoucherListPage = () => {
               <p>
                 <strong>{dayjs(v.tanggal).format('DD MMM YYYY')}</strong> — {v.jumlah_voucher} pcs
               </p>
+              <div style={{fontSize:11,color:'#888'}}>Raw: {JSON.stringify(v)}</div>
               {v.keterangan && <p className="voucher-ket">{v.keterangan}</p>}
             </li>
           ))}
