@@ -22,6 +22,7 @@ import RiwayatAbsensiPage from './features/ladies/pages/RiwayatAbsensiPage';
 import VoucherListPage from './features/ladies/pages/VoucherListPage';
 import KasbonListPage from './features/ladies/pages/KasbonListPage';
 import PeraturanPage from './features/ladies/pages/PeraturanPage';
+import ProfilePage from './features/ladies/pages/ProfilePage';
 
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -206,6 +207,16 @@ function App() {
                 <ProtectedRoute>
                   <MainLayout>
                     <PeraturanPage />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ladies/profile"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <ProfilePage />
                   </MainLayout>
                 </ProtectedRoute>
               }
