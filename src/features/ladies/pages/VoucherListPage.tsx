@@ -4,6 +4,7 @@ import { RootState } from '../../../app/store';
 import { supabase } from '../../../lib/supabaseClient';
 import dayjs from 'dayjs';
 import './VoucherListPage.css';
+import logo from '../../../assets/logosr-green.png'; // ← tambahkan logo loading
 
 type Voucher = {
   id: string;
@@ -27,6 +28,7 @@ const VoucherListPage = () => {
   const [totalPcs, setTotalPcs] = useState(0);
   const [totalRp, setTotalRp] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const itemsPerPage = 10;
 
   const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,6 +60,7 @@ const VoucherListPage = () => {
   }, [user, selectedMonth]);
 
   const fetchVoucher = async (ladiesId: string) => {
+    setLoading(true);
     const bulanAwal = selectedMonth.startOf('month');
     const bulanAkhir = selectedMonth.endOf('month');
 
@@ -72,6 +75,7 @@ const VoucherListPage = () => {
       setVouchers([]);
       setTotalPcs(0);
       setTotalRp(0);
+      setLoading(false);
       return;
     }
 
@@ -80,6 +84,7 @@ const VoucherListPage = () => {
     setTotalPcs(pcs);
     setTotalRp(pcs * 150000);
     setCurrentPage(1);
+    setLoading(false);
   };
 
   const isNextDisabled = selectedMonth.isSame(dayjs().startOf('month'), 'month');
@@ -88,6 +93,17 @@ const VoucherListPage = () => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  if (loading) {
+    return (
+      <div className="voucher-page loading-state">
+        <div className="loading-content">
+          <img src={logo} alt="Memuat..." className="loading-logo" />
+          <p>Memuat data voucher...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="voucher-page">
