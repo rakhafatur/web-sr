@@ -37,7 +37,7 @@ function BottomNavbarLadies() {
           <div className="bottom-modal" onClick={(e) => e.stopPropagation()}>
             <h6 className="modal-title">Menu</h6>
             <ul>
-              <li onClick={() => { navigate('/ladies/profile'); setActiveModal(null); }}>Profil</li>
+              <li onClick={() => { navigate('/ladies/profile'); setActiveModal(null); }}>Profile</li>
               <li onClick={() => { navigate('/ladies/peraturan'); setActiveModal(null); }}>Peraturan</li>
             </ul>
           </div>
