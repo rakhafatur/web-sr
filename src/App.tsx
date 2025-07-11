@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 import LoginPage from './features/auth/pages/LoginPage';
 import SignUpPage from './features/auth/pages/SignUpPage';
@@ -27,8 +27,22 @@ import ProfilePage from './features/ladies/pages/ProfilePage';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from './layout/MainLayout';
+import SplashScreen from './components/Common/SplashScreen';
 
 function App() {
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 1500); // durasi splash
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (showSplash) {
+  return <SplashScreen onFinish={() => setShowSplash(false)} />;
+}
+
   return (
     <AuthProvider>
       <BrowserRouter>
@@ -38,189 +52,27 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
 
-            {/* Protected routes for admin/general users */}
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <HomePage />
-                  </MainLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/users"
-              element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <UserListPage />
-                  </MainLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/user-approval"
-              element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <UserApprovalPage />
-                  </MainLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/pengawas"
-              element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <PengawasListPage />
-                  </MainLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/ladies"
-              element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <LadiesListPage />
-                  </MainLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/buku-kuning"
-              element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <BukuKuningPage />
-                  </MainLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/add-transaksi"
-              element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <AddTransaksiPage />
-                  </MainLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/absensi"
-              element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <AbsensiPage />
-                  </MainLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/rekap-voucher"
-              element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <RekapVoucherPage />
-                  </MainLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/performa-ladies"
-              element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <PerformaLadiesPage />
-                  </MainLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/add-transaksi-pengawas"
-              element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <AddTransaksiPengawasPage />
-                  </MainLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/buku-kuning-pengawas"
-              element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <BukuKuningPengawasPage />
-                  </MainLayout>
-                </ProtectedRoute>
-              }
-            />
+            {/* Protected routes */}
+            <Route path="/" element={<ProtectedRoute><MainLayout><HomePage /></MainLayout></ProtectedRoute>} />
+            <Route path="/users" element={<ProtectedRoute><MainLayout><UserListPage /></MainLayout></ProtectedRoute>} />
+            <Route path="/user-approval" element={<ProtectedRoute><MainLayout><UserApprovalPage /></MainLayout></ProtectedRoute>} />
+            <Route path="/pengawas" element={<ProtectedRoute><MainLayout><PengawasListPage /></MainLayout></ProtectedRoute>} />
+            <Route path="/ladies" element={<ProtectedRoute><MainLayout><LadiesListPage /></MainLayout></ProtectedRoute>} />
+            <Route path="/buku-kuning" element={<ProtectedRoute><MainLayout><BukuKuningPage /></MainLayout></ProtectedRoute>} />
+            <Route path="/add-transaksi" element={<ProtectedRoute><MainLayout><AddTransaksiPage /></MainLayout></ProtectedRoute>} />
+            <Route path="/absensi" element={<ProtectedRoute><MainLayout><AbsensiPage /></MainLayout></ProtectedRoute>} />
+            <Route path="/rekap-voucher" element={<ProtectedRoute><MainLayout><RekapVoucherPage /></MainLayout></ProtectedRoute>} />
+            <Route path="/performa-ladies" element={<ProtectedRoute><MainLayout><PerformaLadiesPage /></MainLayout></ProtectedRoute>} />
+            <Route path="/add-transaksi-pengawas" element={<ProtectedRoute><MainLayout><AddTransaksiPengawasPage /></MainLayout></ProtectedRoute>} />
+            <Route path="/buku-kuning-pengawas" element={<ProtectedRoute><MainLayout><BukuKuningPengawasPage /></MainLayout></ProtectedRoute>} />
 
-            {/* ✅ LADIES route */}
-            <Route
-              path="/ladies/home"
-              element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <HomeLadiesPage />
-                  </MainLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/ladies/absensi"
-              element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <RiwayatAbsensiPage />
-                  </MainLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/ladies/voucher"
-              element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <VoucherListPage />
-                  </MainLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/ladies/kasbon"
-              element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <KasbonListPage />
-                  </MainLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/ladies/peraturan"
-              element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <PeraturanPage />
-                  </MainLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/ladies/profile"
-              element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    <ProfilePage />
-                  </MainLayout>
-                </ProtectedRoute>
-              }
-            />
+            {/* Ladies-specific */}
+            <Route path="/ladies/home" element={<ProtectedRoute><MainLayout><HomeLadiesPage /></MainLayout></ProtectedRoute>} />
+            <Route path="/ladies/absensi" element={<ProtectedRoute><MainLayout><RiwayatAbsensiPage /></MainLayout></ProtectedRoute>} />
+            <Route path="/ladies/voucher" element={<ProtectedRoute><MainLayout><VoucherListPage /></MainLayout></ProtectedRoute>} />
+            <Route path="/ladies/kasbon" element={<ProtectedRoute><MainLayout><KasbonListPage /></MainLayout></ProtectedRoute>} />
+            <Route path="/ladies/peraturan" element={<ProtectedRoute><MainLayout><PeraturanPage /></MainLayout></ProtectedRoute>} />
+            <Route path="/ladies/profile" element={<ProtectedRoute><MainLayout><ProfilePage /></MainLayout></ProtectedRoute>} />
 
             {/* 404 fallback */}
             <Route path="*" element={<NotFoundPage />} />
