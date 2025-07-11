@@ -1,14 +1,14 @@
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
+import { supabase } from '../../../lib/supabaseClient';
 import './ProfilePage.css';
 import {
-  FiUser,
-  FiSmartphone,
-  FiCalendar,
+  FiUserCheck,
   FiMapPin,
-  FiCreditCard,
   FiKey,
-  FiUserCheck
+  FiSmartphone,
+  FiUser
 } from 'react-icons/fi';
 
 type UserWithLadies = {
@@ -16,18 +16,36 @@ type UserWithLadies = {
   username: string;
   nama: string;
   ladies_id: string;
-  nama_ladies?: string;
-  nama_lengkap?: string;
-  nama_outlet?: string;
-  nomor_ktp?: string;
-  tanggal_bergabung?: string;
-  alamat?: string;
-  pin?: string;
-  status?: string;
+};
+
+type LadiesData = {
+  nama_ladies: string;
+  nama_outlet: string;
+  pin: string;
+  status: string;
 };
 
 const ProfilePage = () => {
   const user = useSelector((state: RootState) => state.user.currentUser) as UserWithLadies;
+  const [ladies, setLadies] = useState<LadiesData | null>(null);
+
+  useEffect(() => {
+    const fetchLadies = async () => {
+      if (!user?.ladies_id) return;
+
+      const { data, error } = await supabase
+        .from('ladies')
+        .select('nama_ladies, nama_outlet, pin, status')
+        .eq('id', user.ladies_id)
+        .single();
+
+      if (!error) {
+        setLadies(data);
+      }
+    };
+
+    fetchLadies();
+  }, [user?.ladies_id]);
 
   return (
     <div className="profile-page">
@@ -35,34 +53,19 @@ const ProfilePage = () => {
 
       <div className="profile-card">
         <div className="profile-row">
-          <FiUser className="profile-icon" />
-          <span>Nama Lengkap:</span>
-          <strong>{user.nama_lengkap || '-'}</strong>
-        </div>
-        <div className="profile-row">
           <FiUserCheck className="profile-icon" />
           <span>Nama Ladies:</span>
-          <strong>{user.nama_ladies || '-'}</strong>
+          <strong>{ladies?.nama_ladies || '-'}</strong>
         </div>
         <div className="profile-row">
           <FiMapPin className="profile-icon" />
           <span>Outlet:</span>
-          <strong>{user.nama_outlet || '-'}</strong>
-        </div>
-        <div className="profile-row">
-          <FiCreditCard className="profile-icon" />
-          <span>No. KTP:</span>
-          <strong>{user.nomor_ktp || '-'}</strong>
-        </div>
-        <div className="profile-row">
-          <FiCalendar className="profile-icon" />
-          <span>Tanggal Bergabung:</span>
-          <strong>{user.tanggal_bergabung || '-'}</strong>
+          <strong>{ladies?.nama_outlet || '-'}</strong>
         </div>
         <div className="profile-row">
           <FiKey className="profile-icon" />
           <span>PIN:</span>
-          <strong>{user.pin ? `****${user.pin.slice(-2)}` : '-'}</strong>
+          <strong>{ladies?.pin ? `****${ladies.pin.slice(-2)}` : '-'}</strong>
         </div>
         <div className="profile-row">
           <FiSmartphone className="profile-icon" />
@@ -72,7 +75,7 @@ const ProfilePage = () => {
         <div className="profile-row">
           <FiUser className="profile-icon" />
           <span>Status:</span>
-          <strong className={`status-badge ${user.status}`}>{user.status || '-'}</strong>
+          <strong className={`status-badge ${ladies?.status}`}>{ladies?.status || '-'}</strong>
         </div>
       </div>
     </div>
