@@ -49,7 +49,6 @@ const ProfilePage = () => {
 
   return (
     <div className="profile-page">
-      <h2 className="profile-title">👩‍💼 Profil Saya</h2>
 
       <div className="profile-card">
         <div className="profile-row">
@@ -65,7 +64,7 @@ const ProfilePage = () => {
         <div className="profile-row">
           <FiKey className="profile-icon" />
           <span>PIN:</span>
-          <strong>{ladies?.pin ? `****${ladies.pin.slice(-2)}` : '-'}</strong>
+          <strong>{ladies?.pin || '-'}</strong>
         </div>
         <div className="profile-row">
           <FiSmartphone className="profile-icon" />
