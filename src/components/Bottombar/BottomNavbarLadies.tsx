@@ -12,7 +12,7 @@ import './BottomNavbarLadies.css';
 function BottomNavbarLadies() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [activeModal, setActiveModal] = useState<'menu' | 'transaksi' | null>(null); // ✅ tambah opsi transaksi
+  const [activeModal, setActiveModal] = useState<'menu' | 'transaksi' | null>(null);
 
   const isActive = (path: string) => location.pathname.startsWith(path);
 
@@ -23,8 +23,8 @@ function BottomNavbarLadies() {
           <div className="bottom-modal" onClick={(e) => e.stopPropagation()}>
             <h6 className="modal-title">Transaksi</h6>
             <ul>
-              <li onClick={() => { navigate('/ladies/transaksi'); setActiveModal(null); }}>Riwayat Transaksi</li>
               <li onClick={() => { navigate('/ladies/voucher'); setActiveModal(null); }}>Voucher</li>
+              <li onClick={() => { navigate('/ladies/kasbon'); setActiveModal(null); }}>Kasbon</li>
             </ul>
           </div>
         </div>

@@ -17,9 +17,10 @@ import PerformaLadiesPage from './features/transaction/pages/PerformaLadiesPage'
 import AddTransaksiPengawasPage from './features/transaction/pages/AddTransaksiPengawasPage';
 import BukuKuningPengawasPage from './features/transaction/pages/BukuKuningPengawasPage';
 
-import HomeLadiesPage from './features/ladies/pages/HomeLadiesPage'; // ✅ LADIES route
+import HomeLadiesPage from './features/ladies/pages/HomeLadiesPage';
 import RiwayatAbsensiPage from './features/ladies/pages/RiwayatAbsensiPage';
-import VoucherListPage from './features/ladies/pages/VoucherListPage'; // ✅ Tambahan
+import VoucherListPage from './features/ladies/pages/VoucherListPage';
+import KasbonListPage from './features/ladies/pages/KasbonListPage';
 
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -188,7 +189,16 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
+            <Route
+              path="/ladies/kasbon"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <KasbonListPage />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
             {/* 404 fallback */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
