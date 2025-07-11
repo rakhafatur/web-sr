@@ -1,52 +1,70 @@
 .voucher-page {
   padding: 1.5rem;
   font-family: 'Inter', sans-serif;
-  background: #fff;
+  background: #ffffff;
   min-height: 100vh;
 }
 
-.voucher-total {
+/* Impact section */
+.voucher-impact {
   text-align: center;
+  background: #ecfdf5;
+  border: 1px solid #d1fae5;
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.5rem;
+}
+.voucher-impact h2 {
+  font-size: 1.1rem;
   font-weight: 600;
-  margin-bottom: 1.2rem;
+  margin-bottom: 0.4rem;
   color: #14532d;
 }
+.voucher-impact h2 span {
+  color: #047857;
+}
+.voucher-impact p {
+  font-size: 0.95rem;
+  color: #065f46;
+}
 
+/* Empty state */
 .voucher-empty {
   text-align: center;
   font-style: italic;
   color: #888;
 }
 
+/* Voucher list */
 .voucher-list {
   list-style: none;
   padding: 0;
 }
-
 .voucher-item {
   padding: 0.8rem 1rem;
   background: #f0fdf4;
   border: 1px solid #ccebd6;
   border-radius: 10px;
   margin-bottom: 0.75rem;
+  transition: transform 0.2s ease;
 }
-
+.voucher-item:hover {
+  transform: scale(1.01);
+}
 .voucher-ket {
   font-size: 0.85rem;
   color: #555;
   margin-top: 0.3rem;
 }
 
-/* === Navigasi bulan minimalis === */
+/* Navigasi bulan */
 .voucher-monthbar {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  margin-bottom: 18px;
+  margin-bottom: 1.4rem;
 }
-
-/* Tombol panah tanpa blok */
 .nav-btn {
   background: none;
   border: none;
@@ -64,7 +82,6 @@
   color: #ccc;
   cursor: not-allowed;
 }
-
 .voucher-monthbar-input {
   background: #fff;
   border: 1px solid #ccc;
@@ -72,7 +89,7 @@
   padding: 5px 12px;
   font-size: 1rem;
   font-weight: 600;
-  min-width: 105px;
+  min-width: 110px;
   outline: none;
   color: #14532d;
   text-align: center;
@@ -82,7 +99,7 @@
   box-shadow: 0 0 0 2px #a7f3d0;
 }
 
-/* === Pagination === */
+/* Pagination */
 .voucher-pagination {
   display: flex;
   justify-content: center;

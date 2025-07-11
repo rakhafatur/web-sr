@@ -17,6 +17,7 @@ type UserWithLadies = {
   username: string;
   nama: string;
   ladies_id: string;
+  nama_ladies?: string;
 };
 
 const VoucherListPage = () => {
@@ -25,7 +26,6 @@ const VoucherListPage = () => {
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
   const [totalPcs, setTotalPcs] = useState(0);
   const [totalRp, setTotalRp] = useState(0);
-
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -55,7 +55,6 @@ const VoucherListPage = () => {
     if (user?.ladies_id) {
       fetchVoucher(user.ladies_id);
     }
-    // eslint-disable-next-line
   }, [user, selectedMonth]);
 
   const fetchVoucher = async (ladiesId: string) => {
@@ -92,7 +91,6 @@ const VoucherListPage = () => {
 
   return (
     <div className="voucher-page">
-      {/* Navigasi bulan */}
       <div className="voucher-monthbar">
         <button onClick={prevMonth} className="nav-btn" aria-label="Bulan sebelumnya">←</button>
         <input
@@ -110,10 +108,15 @@ const VoucherListPage = () => {
         >→</button>
       </div>
 
-      <p className="voucher-total">{totalPcs} pcs = Rp {totalRp.toLocaleString('id-ID')}</p>
+      <div className="voucher-impact">
+        <h2>
+          🎉 Kamu sudah kumpulkan <span>{totalPcs} voucher</span>
+        </h2>
+        <p>Total yang akan kamu terima: <strong>Rp {totalRp.toLocaleString('id-ID')}</strong></p>
+      </div>
 
       {vouchers.length === 0 ? (
-        <p className="voucher-empty">Belum ada voucher di bulan ini.</p>
+        <p className="voucher-empty">Belum ada voucher di bulan ini. Semangat ya!</p>
       ) : (
         <>
           <ul className="voucher-list">
