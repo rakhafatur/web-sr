@@ -7,7 +7,7 @@ import './HomeLadiesPage.css';
 import { FiCalendar, FiGift, FiTrendingDown } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import bgImage from '../../../assets/bg-home.png';
-import logo from '../../../assets/logosr-green.png'; // ✅ Logo hijau ditambahkan
+import logo from '../../../assets/logosr-green.png';
 
 type UserWithLadies = {
   id: string;
@@ -24,7 +24,7 @@ const HomeLadiesPage = () => {
   const [pengeluaran, setPengeluaran] = useState(0);
   const [voucherNominal, setVoucherNominal] = useState(0);
   const [openCard, setOpenCard] = useState<'absen' | 'voucher' | 'pengeluaran' | null>(null);
-  const [loading, setLoading] = useState(true); // ✅ State loading
+  const [loading, setLoading] = useState(true);
   const cardRef = useRef(openCard);
 
   const bulanIni = dayjs().format('MM');
@@ -69,7 +69,7 @@ const HomeLadiesPage = () => {
     setVoucherPcs(totalVoucherPcs);
     setVoucherNominal(totalVoucherNominal);
     setPengeluaran(totalKasbon);
-    setLoading(false); // ✅ Selesai loading
+    setLoading(false);
   };
 
   const handleToggle = (type: 'absen' | 'voucher' | 'pengeluaran') => {
@@ -81,14 +81,15 @@ const HomeLadiesPage = () => {
   const biayaTetap = 500000 + 185000 + 250000;
   const batasWajar = Math.max(0, voucherNominal - biayaTetap);
   const isOver = batasWajar > 0 && pengeluaran > batasWajar;
+  const persentase = isOver ? Math.round(((pengeluaran - batasWajar) / batasWajar) * 100) : 0;
   const persenHadir = Math.round((hariMasuk / 18) * 100);
 
   if (loading) {
     return (
       <div className="home-wrapper loading-state">
         <div className="loading-content">
-          <img src={logo} alt="SR Agency" className="loading-logo" />
-          <p className="loading-text">Memuat data...</p>
+          <img src={logo} alt="Loading..." className="loading-logo" />
+          <p>Memuat data...</p>
         </div>
       </div>
     );
@@ -97,8 +98,85 @@ const HomeLadiesPage = () => {
   return (
     <div className="home-wrapper">
       <img src={bgImage} alt="bg" className="home-background-image mobile-only" />
-      {/* semua elemen asli tetap */}
-      ...
+      <div className="content-container">
+        <div className="summary-grid">
+          <div className="summary-card" onClick={() => handleToggle('absen')}>
+            <FiCalendar className="icon" />
+            <div className="value">{hariMasuk} / 18</div>
+            <div className="label">Kehadiran</div>
+          </div>
+          <div className="summary-card" onClick={() => handleToggle('voucher')}>
+            <FiGift className="icon" />
+            <div className="value">{voucherPcs} pcs</div>
+            <div className="label">Voucher</div>
+          </div>
+          <div className="summary-card" onClick={() => handleToggle('pengeluaran')}>
+            <FiTrendingDown className="icon" />
+            <div className="value">{pengeluaran.toLocaleString('id-ID')}</div>
+            <div className="label">Pengeluaran</div>
+          </div>
+        </div>
+
+        <div className="rekap-wrapper">
+          <AnimatePresence mode="wait">
+            {openCard === 'absen' && (
+              <motion.div key="absen" className="rekap-box glass"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.3 }}>
+                <div className="rekap-header">
+                  <FiCalendar className="rekap-icon" />
+                  <span className="rekap-label">Kehadiran</span>
+                </div>
+                <p className="rekap-value">{hariMasuk} / 18 Hari</p>
+                <div className="progress-bar">
+                  <div className="progress-fill" style={{ width: `${persenHadir}%` }} />
+                </div>
+                <p className="rekap-note text-green">
+                  {hariMasuk >= 18 ? '✅ Target kehadiran tercapai!' : `Kurang ${18 - hariMasuk} hari dari target`}
+                </p>
+              </motion.div>
+            )}
+
+            {openCard === 'voucher' && (
+              <motion.div key="voucher" className="rekap-box glass"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.3 }}>
+                <div className="rekap-header">
+                  <FiGift className="rekap-icon" />
+                  <span className="rekap-label">Voucher</span>
+                </div>
+                <p className="rekap-value">Rp {voucherNominal.toLocaleString('id-ID')}</p>
+                <p className="rekap-note text-green">Voucher didapat bulan ini {voucherPcs} pcs</p>
+              </motion.div>
+            )}
+
+            {openCard === 'pengeluaran' && (
+              <motion.div key="pengeluaran" className="rekap-box glass"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.3 }}>
+                <div className="rekap-header">
+                  <FiTrendingDown className="rekap-icon" />
+                  <span className="rekap-label">Pengeluaran</span>
+                </div>
+                <p className="rekap-value text-red">Rp {pengeluaran.toLocaleString('id-ID')}</p>
+                {voucherNominal === 0 ? (
+                  <p className="rekap-note text-red">🔄 Belum ada voucher, tetap semangat!</p>
+                ) : pengeluaran > voucherNominal - biayaTetap ? (
+                  <p className="rekap-note text-red">⚠️ Melebihi batas wajar</p>
+                ) : (
+                  <p className="rekap-note text-green">✅ Masih aman. Keuangan terkendali!</p>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
     </div>
   );
 };
