@@ -21,6 +21,7 @@ import HomeLadiesPage from './features/ladies/pages/HomeLadiesPage';
 import RiwayatAbsensiPage from './features/ladies/pages/RiwayatAbsensiPage';
 import VoucherListPage from './features/ladies/pages/VoucherListPage';
 import KasbonListPage from './features/ladies/pages/KasbonListPage';
+import PeraturanPage from './features/ladies/pages/PeraturanPage';
 
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -199,6 +200,17 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/ladies/peraturan"
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <PeraturanPage />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            />
+
             {/* 404 fallback */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>

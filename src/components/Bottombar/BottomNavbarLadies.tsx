@@ -38,7 +38,7 @@ function BottomNavbarLadies() {
             <h6 className="modal-title">Menu</h6>
             <ul>
               <li onClick={() => { navigate('/ladies/profile'); setActiveModal(null); }}>Profil</li>
-              <li onClick={() => { navigate('/ladies/absensi'); setActiveModal(null); }}>Absensi</li>
+              <li onClick={() => { navigate('/ladies/peraturan'); setActiveModal(null); }}>Peraturan</li>
             </ul>
           </div>
         </div>
