@@ -111,19 +111,26 @@
 
 .loading-state {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 90vh;
+  flex-direction: column;
+}
+
+.loading-content {
+  display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background-color: #fff;
 }
 
 .loading-logo {
-  width: 160px;
+  width: 120px;
   margin-bottom: 1rem;
+  opacity: 0.85;
 }
 
-.loading-content p {
-  font-size: 1rem;
-  color: #14532d;
+.loading-text {
+  font-size: 1.1rem;
+  color: #166534;
+  font-weight: 600;
 }
