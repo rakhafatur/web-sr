@@ -23,18 +23,18 @@ const ruleSections: RuleSection[] = [
     ],
   },
   {
-    title: 'Kasbon',
-    rules: [
-      'Jumlah kasbon disesuaikan dengan total voucher yang diterima setiap bulan.',
-      'Permintaan kasbon dapat diajukan melalui pesan pribadi (personal chat).',
-    ],
-  },
-  {
     title: 'Voucher',
     rules: [
         'Voucher direkap secara harian.',
         'Pembayaran voucher dilakukan secara mingguan atau bulanan, sesuai kesepakatan.',
         'Apabila jumlah kasbon melebihi total voucher yang diperoleh, maka voucher akan otomatis digunakan untuk mengurangi kasbon.',
+    ],
+  },
+  {
+    title: 'Kasbon',
+    rules: [
+      'Jumlah kasbon disesuaikan dengan total voucher yang diterima setiap bulan.',
+      'Permintaan kasbon dapat diajukan melalui pesan pribadi (personal chat).',
     ],
   },
 ];
