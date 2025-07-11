@@ -11,31 +11,30 @@ const ruleSections: RuleSection[] = [
   {
     title: 'Umum',
     rules: [
-      'Wajib absen setiap hari hadir.',
-      'Jam kerja dimulai pukul 19:00 WIB.',
-      'Tidak boleh menerima tamu pribadi saat jam kerja.',
+      'Wajib kerja minimal 18 hari dalam sebulan.',
+    ],
+  },
+  {
+    title: 'Absen',
+    rules: [
+      'Wajib melakukan absensi setiap hari melalui polling yang dibagikan di grup WhatsApp.',
+      'Pengisian polling absensi paling lambat pukul 15.00, kecuali jika sedang piket.',
+      'Permohonan izin off harus disampaikan kepada pengawas sebelum jam absen berakhir.',
     ],
   },
   {
     title: 'Kasbon',
     rules: [
-      'Kasbon maksimal Rp 1.000.000 per minggu.',
-      'Kasbon hanya diberikan kepada ladies aktif.',
-      'Permintaan kasbon harus melalui pengawas.',
-    ],
-  },
-  {
-    title: 'Penampilan',
-    rules: [
-      'Makeup rapi dan sesuai standar outlet.',
-      'Berpakaian sesuai dress code yang ditentukan.',
+      'Jumlah kasbon disesuaikan dengan total voucher yang diterima setiap bulan.',
+      'Permintaan kasbon dapat diajukan melalui pesan pribadi (personal chat).',
     ],
   },
   {
     title: 'Voucher',
     rules: [
-      'Voucher dihitung berdasarkan kehadiran dan performa.',
-      'Voucher dibayarkan mingguan atau bulanan sesuai kesepakatan.',
+        'Voucher direkap secara harian.',
+        'Pembayaran voucher dilakukan secara mingguan atau bulanan, sesuai kesepakatan.',
+        'Apabila jumlah kasbon melebihi total voucher yang diperoleh, maka voucher akan otomatis digunakan untuk mengurangi kasbon.',
     ],
   },
 ];
@@ -49,7 +48,6 @@ const PeraturanPage = () => {
 
   return (
     <div className="peraturan-page">
-      <h2 className="peraturan-title">📖 Peraturan SR Agency</h2>
 
       <div className="rule-list">
         {ruleSections.map((section, index) => (
