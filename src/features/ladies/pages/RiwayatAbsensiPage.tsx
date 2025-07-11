@@ -74,7 +74,6 @@ const RiwayatAbsensiPage = () => {
 
   return (
     <div className="absensi-wrapper">
-      <h2 className="absensi-title">Riwayat Absensi</h2>
 
       <Calendar
         value={currentDate}
