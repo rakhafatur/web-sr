@@ -26,7 +26,9 @@ const VoucherListPage = () => {
   const [totalPcs, setTotalPcs] = useState(0);
   const [totalRp, setTotalRp] = useState(0);
 
-  // Ganti bulan via input month
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     let newDate = dayjs(`${value}-01`);
@@ -34,14 +36,19 @@ const VoucherListPage = () => {
       newDate = dayjs().startOf('month');
     }
     setSelectedMonth(newDate);
+    setCurrentPage(1);
   };
 
-  // Tombol navigasi bulan
-  const prevMonth = () => setSelectedMonth(selectedMonth.subtract(1, 'month'));
+  const prevMonth = () => {
+    setSelectedMonth(selectedMonth.subtract(1, 'month'));
+    setCurrentPage(1);
+  };
+
   const nextMonth = () => {
     const next = selectedMonth.add(1, 'month');
     if (next.isAfter(dayjs(), 'month')) return;
     setSelectedMonth(next);
+    setCurrentPage(1);
   };
 
   useEffect(() => {
@@ -73,13 +80,19 @@ const VoucherListPage = () => {
     const pcs = data.reduce((sum, v) => sum + (v.jumlah_voucher || 0), 0);
     setTotalPcs(pcs);
     setTotalRp(pcs * 150000);
+    setCurrentPage(1);
   };
 
   const isNextDisabled = selectedMonth.isSame(dayjs().startOf('month'), 'month');
+  const totalPages = Math.ceil(vouchers.length / itemsPerPage);
+  const paginatedVouchers = vouchers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="voucher-page">
-      {/* Navigasi bulan - bar hijau */}
+      {/* Navigasi bulan */}
       <div className="voucher-monthbar">
         <button onClick={prevMonth} className="voucher-monthbar-btn">&lt;</button>
         <input
@@ -93,24 +106,36 @@ const VoucherListPage = () => {
           onClick={nextMonth}
           disabled={isNextDisabled}
           className="voucher-monthbar-btn"
-          style={{ color: isNextDisabled ? '#ccc' : undefined }}
         >&gt;</button>
       </div>
 
       <p className="voucher-total">{totalPcs} pcs = Rp {totalRp.toLocaleString('id-ID')}</p>
+
       {vouchers.length === 0 ? (
         <p className="voucher-empty">Belum ada voucher di bulan ini.</p>
       ) : (
-        <ul className="voucher-list">
-          {vouchers.map((v) => (
-            <li key={v.id} className="voucher-item">
-              <p>
-                <strong>{v.tanggal ? dayjs(v.tanggal).format('DD MMM YYYY') : '-'}</strong> — {v.jumlah_voucher ?? '??'} pcs
-              </p>
-              {v.keterangan && <p className="voucher-ket">{v.keterangan}</p>}
-            </li>
-          ))}
-        </ul>
+        <>
+          <ul className="voucher-list">
+            {paginatedVouchers.map((v) => (
+              <li key={v.id} className="voucher-item">
+                <p>
+                  <strong>{v.tanggal ? dayjs(v.tanggal).format('DD MMM YYYY') : '-'}</strong> — {v.jumlah_voucher ?? '??'} pcs
+                </p>
+                {v.keterangan && <p className="voucher-ket">{v.keterangan}</p>}
+              </li>
+            ))}
+          </ul>
+
+          <div className="voucher-pagination">
+            <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1}>
+              ← Sebelumnya
+            </button>
+            <span>{currentPage} / {totalPages}</span>
+            <button onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}>
+              Selanjutnya →
+            </button>
+          </div>
+        </>
       )}
     </div>
   );
