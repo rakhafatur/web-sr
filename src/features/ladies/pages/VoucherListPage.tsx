@@ -94,7 +94,7 @@ const VoucherListPage = () => {
     <div className="voucher-page">
       {/* Navigasi bulan */}
       <div className="voucher-monthbar">
-        <button onClick={prevMonth} className="voucher-monthbar-btn">&lt;</button>
+        <button onClick={prevMonth} className="nav-btn" aria-label="Bulan sebelumnya">←</button>
         <input
           type="month"
           value={selectedMonth.format('YYYY-MM')}
@@ -105,8 +105,9 @@ const VoucherListPage = () => {
         <button
           onClick={nextMonth}
           disabled={isNextDisabled}
-          className="voucher-monthbar-btn"
-        >&gt;</button>
+          className="nav-btn"
+          aria-label="Bulan berikutnya"
+        >→</button>
       </div>
 
       <p className="voucher-total">{totalPcs} pcs = Rp {totalRp.toLocaleString('id-ID')}</p>
@@ -127,13 +128,9 @@ const VoucherListPage = () => {
           </ul>
 
           <div className="voucher-pagination">
-            <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1}>
-              ← Sebelumnya
-            </button>
+            <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className="nav-btn">←</button>
             <span>{currentPage} / {totalPages}</span>
-            <button onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}>
-              Selanjutnya →
-            </button>
+            <button onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} className="nav-btn">→</button>
           </div>
         </>
       )}

@@ -37,7 +37,7 @@
   margin-top: 0.3rem;
 }
 
-/* === NAVIGASI BULAN SEDERHANA === */
+/* === Navigasi bulan minimalis === */
 .voucher-monthbar {
   display: flex;
   align-items: center;
@@ -46,20 +46,22 @@
   margin-bottom: 18px;
 }
 
-.voucher-monthbar-btn {
-  background: #14532d;
+/* Tombol panah tanpa blok */
+.nav-btn {
+  background: none;
   border: none;
-  color: #fff;
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   font-weight: bold;
-  padding: 5px 14px;
-  border-radius: 7px;
+  color: #333;
   cursor: pointer;
-  transition: background 0.12s;
+  padding: 4px 10px;
+  transition: color 0.15s;
 }
-.voucher-monthbar-btn:disabled {
-  background: #ccc;
-  color: #fff;
+.nav-btn:hover {
+  color: #14532d;
+}
+.nav-btn:disabled {
+  color: #ccc;
   cursor: not-allowed;
 }
 
@@ -80,25 +82,12 @@
   box-shadow: 0 0 0 2px #a7f3d0;
 }
 
-/* === PAGINATION === */
+/* === Pagination === */
 .voucher-pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   margin-top: 1rem;
-}
-
-.voucher-pagination button {
-  background: #14532d;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.95rem;
-}
-.voucher-pagination button:disabled {
-  background: #ccc;
-  cursor: not-allowed;
+  font-weight: 500;
 }
