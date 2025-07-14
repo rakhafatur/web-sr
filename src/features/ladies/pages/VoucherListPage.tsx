@@ -128,7 +128,8 @@ const VoucherListPage = () => {
         <h2>
           🎉 Kamu sudah kumpulkan <span>{totalPcs} voucher</span>
         </h2>
-        <p>Total yang akan kamu terima: <strong>Rp {totalRp.toLocaleString('id-ID')}</strong></p>
+        <p>Total yang akan kamu terima: </p>
+        <p><strong>Rp {totalRp.toLocaleString('id-ID')}</strong></p>
       </div>
 
       {vouchers.length === 0 ? (

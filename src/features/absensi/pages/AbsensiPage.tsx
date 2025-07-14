@@ -49,7 +49,10 @@ const AbsensiPage = () => {
 
   useEffect(() => {
     const fetchLadies = async () => {
-      const { data } = await supabase.from('ladies').select('*');
+      const { data } = await supabase
+        .from('ladies')
+        .select('*')
+        .eq('status', 'active');
       setLadies(data || []);
     };
     fetchLadies();
