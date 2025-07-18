@@ -20,7 +20,7 @@ function HomePageMobile() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.6, ease: 'easeOut' }}
         >
-          Hi, {firstName}!
+          SR Agent!
         </motion.h1>
 
         <motion.p
@@ -29,23 +29,8 @@ function HomePageMobile() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.6, ease: 'easeOut' }}
         >
-          Work hard, party harder ✨<br />
-          Kelola absensi, voucher, dan performa langsung dari dashboard SR Agency.
+          Work hard, party harder ✨
         </motion.p>
-
-        <motion.div
-          className="home-actions"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
-        >
-          <p className="home-action-label">Hari ini mau cek apa dulu?</p>
-          <div className="home-pills">
-            <span className="pill" onClick={() => navigate('/add-transaksi')}>🎟️ Transaksi Ladies</span>
-            <span className="pill" onClick={() => navigate('/absensi')}>📅 Absensi</span>
-            <span className="pill" onClick={() => navigate('/rekap-voucher')}>📊 Rekap Voucher</span>
-          </div>
-        </motion.div>
       </div>
     </div>
   );
