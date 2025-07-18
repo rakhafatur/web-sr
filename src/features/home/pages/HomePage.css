@@ -1,3 +1,4 @@
+/* === DEFAULT WRAPPER === */
 .home-wrapper {
   position: relative;
   width: 100%;
@@ -6,17 +7,18 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background-color: #f9fafb; /* fallback for web */
+  background: linear-gradient(to bottom right, #f0fdf4, #ffffff);
 }
 
-/* === Background hanya di mobile === */
+/* === SEMBUNYIKAN BG DI DESKTOP === */
 .home-bg-mobile {
-  display: none;
+  display: none !important;
 }
 
+/* === MOBILE ONLY === */
 @media (max-width: 768px) {
   .home-bg-mobile {
-    display: block;
+    display: block !important;
     position: absolute;
     top: 0;
     left: 0;
@@ -28,54 +30,114 @@
     filter: brightness(0.9) saturate(1.05);
     pointer-events: none;
   }
-}
 
-/* === Overlay untuk WEB (default) === */
-.home-overlay {
-  position: relative;
-  z-index: 2;
-  padding: 2rem;
-  border-radius: 1.25rem;
-  max-width: 720px;
-  width: 90%;
-  text-align: center;
-  background-color: #e6f4ea; /* hijau soft */
-  color: #14532d; /* hijau SR tua */
-  border: 1px solid #6ee7b7;
-  box-shadow: 0 4px 12px rgba(22, 101, 52, 0.08);
-}
-
-/* === Teks judul dan subtitle WEB === */
-.home-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: #14532d;
-}
-
-.home-subtitle {
-  font-size: 1.25rem;
-  color: #1e3a1d;
-}
-
-/* === Override untuk MOBILE === */
-@media (max-width: 768px) {
   .home-overlay {
-    background-color: rgba(255, 255, 255, 0.75); /* putih transparan */
+    position: relative;
+    z-index: 2;
+    padding: 1.5rem 1rem;
+    border-radius: 1.25rem;
+    max-width: 720px;
+    width: 90%;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.75);
     color: #1e293b;
     backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(0, 0, 0, 0.1);
-    padding: 1.5rem 1rem;
   }
 
   .home-title {
     font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
     color: #0f172a;
   }
 
   .home-subtitle {
     font-size: 1rem;
     color: #334155;
+  }
+}
+
+/* === DESKTOP ONLY === */
+@media (min-width: 769px) {
+  .home-content {
+    width: 100%;
+    max-width: 1280px;
+    padding: 4rem 2rem;
+    z-index: 2;
+    position: relative;
+  }
+
+  .home-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #ffffffcc;
+    backdrop-filter: blur(8px);
+    border: 1px solid #e0f2e9;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+    border-radius: 1.5rem;
+    padding: 3rem;
+  }
+
+  .home-text {
+    flex: 1;
+    padding-right: 2rem;
+  }
+
+  .home-image {
+    flex: 1;
+    text-align: right;
+  }
+
+  .home-image img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .home-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #14532d;
+  }
+
+  .home-subtitle {
+    font-size: 1.25rem;
+    color: #1e3a1d;
+  }
+
+  .home-actions {
+    margin-top: 2rem;
+    text-align: left;
+  }
+
+  .home-action-label {
+    font-size: 1rem;
+    color: #1e3a1d;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+  }
+
+  .home-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .pill {
+    background-color: #e6f4ea;
+    color: #14532d;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    border: 1px solid #a7f3d0;
+  }
+
+  .pill:hover {
+    background-color: #d1fae5;
   }
 }
