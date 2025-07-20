@@ -8,6 +8,7 @@ type Pengawas = {
   id: string;
   nama_lengkap: string;
   nama_panggilan: string | null;
+  status: string; // ✅ penting untuk validasi status
 };
 
 const AddTransaksiPagePengawas = () => {
@@ -20,8 +21,13 @@ const AddTransaksiPagePengawas = () => {
 
   useEffect(() => {
     const fetchPengawas = async () => {
-      const { data } = await supabase.from('pengawas').select('*');
-      setPengawasList(data || []);
+      const { data, error } = await supabase
+        .from('pengawas')
+        .select('id, nama_lengkap, nama_panggilan, status')
+        .eq('status', 'active'); // ✅ hanya pengawas aktif
+
+      if (error) console.error('Gagal mengambil data pengawas:', error);
+      else setPengawasList(data || []);
     };
     fetchPengawas();
   }, []);
