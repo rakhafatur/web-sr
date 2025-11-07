@@ -5,7 +5,7 @@ import {
   FiHome, FiSettings, FiUsers, FiUserCheck, FiUser,
   FiCalendar, FiBook, FiPlus, FiDollarSign, FiBarChart2,
   FiChevronsLeft, FiChevronsRight, FiChevronDown, FiChevronUp, FiFolder,
-  FiCheckSquare
+  FiCheckSquare,FiMessageSquare
 } from 'react-icons/fi';
 
 import { SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from '../../constant';
@@ -199,6 +199,11 @@ function Sidebar({
           <li>
             <Link to="/performa-ladies" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/performa-ladies') ? 'active' : ''}`}>
               <FiBarChart2 className="sidebar-icon" /> {renderText('Performa Ladies')}
+            </Link>
+          </li>
+          <li>
+            <Link to="/smart-chat" onClick={isMobile ? onClose : undefined} className={`nav-link sidebar-link ${isActive('/smart-chat') ? 'active' : ''}`}>
+              <FiMessageSquare className="sidebar-icon" /> {renderText('Smart Chat')}
             </Link>
           </li>
         </ul>

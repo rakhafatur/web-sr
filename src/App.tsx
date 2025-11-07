@@ -28,6 +28,7 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from './layout/MainLayout';
 import SplashScreen from './components/Common/SplashScreen';
+import SmartChatPage from './features/smartchat/SmartChatPage';
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -65,6 +66,7 @@ function App() {
             <Route path="/performa-ladies" element={<ProtectedRoute><MainLayout><PerformaLadiesPage /></MainLayout></ProtectedRoute>} />
             <Route path="/add-transaksi-pengawas" element={<ProtectedRoute><MainLayout><AddTransaksiPengawasPage /></MainLayout></ProtectedRoute>} />
             <Route path="/buku-kuning-pengawas" element={<ProtectedRoute><MainLayout><BukuKuningPengawasPage /></MainLayout></ProtectedRoute>} />
+            <Route path="/smart-chat" element={<ProtectedRoute><MainLayout><SmartChatPage /></MainLayout></ProtectedRoute>} />
 
             {/* Ladies-specific */}
             <Route path="/ladies/home" element={<ProtectedRoute><MainLayout><HomeLadiesPage /></MainLayout></ProtectedRoute>} />
