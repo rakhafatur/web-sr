@@ -11,7 +11,6 @@ const SmartChatPage: React.FC = () => {
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // Fungsi ambil jumlah voucher bulan ini
   const getJumlahVoucherBulanIni = async (): Promise<string> => {
     const startOfMonth = dayjs().startOf('month').format('YYYY-MM-DD');
     const endOfMonth = dayjs().endOf('month').format('YYYY-MM-DD');
@@ -32,13 +31,12 @@ const SmartChatPage: React.FC = () => {
     const totalKeseluruhan = totalVoucher * 225000;
 
     return `📊 Rincian Voucher Bulan Ini:
-- Total voucher (pcs): ${totalVoucher.toFixed(0)}
-- Total Ladies: Rp${totalLadies.toLocaleString('id-ID')}
-- Total Keuntungan: Rp${totalKeuntungan.toLocaleString('id-ID')}
-- Total Keseluruhan: Rp${totalKeseluruhan.toLocaleString('id-ID')}`;
+Total voucher (pcs): ${totalVoucher.toFixed(0)}
+Total Ladies: Rp${totalLadies.toLocaleString('id-ID')}
+Total Keuntungan: Rp${totalKeuntungan.toLocaleString('id-ID')}
+Total Keseluruhan: Rp${totalKeseluruhan.toLocaleString('id-ID')}`;
   };
 
-  // Ladies dengan voucher terbanyak & paling sedikit
   const getLadiesVoucherStatBulanIni = async (): Promise<string> => {
     const startOfMonth = dayjs().startOf('month').format('YYYY-MM-DD');
     const endOfMonth = dayjs().endOf('month').format('YYYY-MM-DD');
@@ -71,13 +69,12 @@ const SmartChatPage: React.FC = () => {
     const minLadies = ladiesData.filter(l => totals[l.id] === minVal);
 
     const formatList = (arr: typeof maxLadies, totalsMap: Record<string, number>) =>
-      arr.map(l => `- ${l.nama_ladies} (${l.nama_outlet}): ${totalsMap[l.id].toFixed(0)} pcs`).join('\n');
+      arr.map(l => `${l.nama_ladies} (${l.nama_outlet}): ${totalsMap[l.id].toFixed(0)} pcs`).join('\n');
 
     return `🏆 Ladies dengan voucher terbanyak bulan ini:\n${formatList(maxLadies, totals)}
-\n🎖️ Ladies dengan voucher paling sedikit bulan ini:\n${formatList(minLadies, totals)}`;
+🎖️ Ladies dengan voucher paling sedikit bulan ini:\n${formatList(minLadies, totals)}`;
   };
 
-  // Ladies dengan absen terbanyak & paling sedikit
   const getLadiesAbsenStatBulanIni = async (): Promise<string> => {
     const startOfMonth = dayjs().startOf('month').format('YYYY-MM-DD');
     const endOfMonth = dayjs().endOf('month').format('YYYY-MM-DD');
@@ -110,10 +107,10 @@ const SmartChatPage: React.FC = () => {
     const minLadies = ladiesData.filter(l => totals[l.id] === minVal);
 
     const formatList = (arr: typeof maxLadies, totalsMap: Record<string, number>) =>
-      arr.map(l => `- ${l.nama_ladies} (${l.nama_outlet}): ${totalsMap[l.id]} hari`).join('\n');
+      arr.map(l => `${l.nama_ladies} (${l.nama_outlet}): ${totalsMap[l.id]} hari`).join('\n');
 
     return `🏆 Ladies dengan absen terbanyak bulan ini:\n${formatList(maxLadies, totals)}
-\n🎖️ Ladies dengan absen paling sedikit bulan ini:\n${formatList(minLadies, totals)}`;
+🎖️ Ladies dengan absen paling sedikit bulan ini:\n${formatList(minLadies, totals)}`;
   };
 
   const questions = [
