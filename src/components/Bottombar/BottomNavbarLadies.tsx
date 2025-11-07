@@ -39,6 +39,7 @@ function BottomNavbarLadies() {
             <ul>
               <li onClick={() => { navigate('/ladies/profile'); setActiveModal(null); }}>Profile</li>
               <li onClick={() => { navigate('/ladies/peraturan'); setActiveModal(null); }}>Peraturan</li>
+              <li onClick={() => { navigate('/ladies/smart-chat-ladies'); setActiveModal(null); }}>Chat SR</li>
             </ul>
           </div>
         </div>
