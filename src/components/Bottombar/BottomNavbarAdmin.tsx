@@ -50,6 +50,7 @@ function BottomNavbarAdmin() {
               <li onClick={() => { navigate('/user-approval'); setActiveModal(null); }}>Approval User</li> {/* ✅ Tambahan ini */}
               <li onClick={() => { navigate('/pengawas'); setActiveModal(null); }}>Pengawas</li>
               <li onClick={() => { navigate('/ladies'); setActiveModal(null); }}>Ladies</li>
+              <li onClick={() => { navigate('/smart-chat'); setActiveModal(null); }}>Ladies</li>
             </>
           )}
         </ul>
