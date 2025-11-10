@@ -203,7 +203,7 @@ Total Keseluruhan: Rp${totalKeseluruhan.toLocaleString("id-ID")}`;
   };
 
   return (
-    <div className="flex flex-col h-screen p-2 sm:p-4 bg-gray-50 text-gray-900">
+    <div className="flex flex-col h-screen p-3 sm:p-4 bg-[#F8FAF9] text-gray-900">
       <div
         className="flex-1 overflow-y-auto mb-3 px-1 sm:px-3"
         ref={chatContainerRef}
@@ -212,9 +212,9 @@ Total Keseluruhan: Rp${totalKeseluruhan.toLocaleString("id-ID")}`;
         {messages.map((msg, idx) => (
           <div
             key={idx}
-            className={`my-1 ${
-              msg.sender === "ai" ? "self-start" : "self-end"
-            } max-w-[90%] sm:max-w-[70%]`}
+            className={`my-2 flex ${
+              msg.sender === "ai" ? "justify-start" : "justify-end"
+            }`}
           >
             <SmartChatBox
               sender={msg.sender as "ai" | "user"}
@@ -230,23 +230,24 @@ Total Keseluruhan: Rp${totalKeseluruhan.toLocaleString("id-ID")}`;
           value={selectedQuestion}
           onChange={(e) => handlePickQuestion(e.target.value)}
           className="w-full border border-green-600 rounded-xl px-3 py-2 text-sm 
-          bg-white text-gray-900 focus:outline-none focus:ring-1 focus:ring-green-500
-          appearance-none overflow-hidden whitespace-normal text-ellipsis 
-          max-w-full truncate hover:bg-green-50 active:bg-green-100 
-          focus:bg-green-50 sm:text-base"
+          bg-white text-green-700 focus:outline-none focus:ring-2 focus:ring-green-500
+          appearance-none overflow-hidden whitespace-normal
+          hover:bg-green-50 active:bg-green-100 sm:text-base"
           style={{
             wordWrap: "break-word",
             whiteSpace: "normal",
+            WebkitAppearance: "none",
+            MozAppearance: "none",
           }}
         >
-          <option value="" disabled>
+          <option value="" disabled className="text-gray-400">
             Pilih pertanyaan...
           </option>
           {questions.map((q) => (
             <option
               key={q.label}
               value={q.label}
-              className="text-gray-900 hover:bg-green-100 active:bg-green-200"
+              className="text-green-700 bg-white hover:bg-green-100"
             >
               {q.label}
             </option>

@@ -8,8 +8,17 @@ interface SmartChatBoxProps {
 const SmartChatBox: React.FC<SmartChatBoxProps> = ({ sender, message }) => {
   return (
     <div
-      className={`px-3 py-2 rounded-lg break-words ${sender === "ai" ? "bg-gray-200 text-gray-900" : "bg-green-500 text-white"}`}
-      style={{ whiteSpace: "pre-wrap" }} // <-- Ini biar \n muncul
+      className={`px-4 py-2 rounded-2xl text-sm sm:text-base break-words shadow-sm transition-all duration-200
+        ${
+          sender === "ai"
+            ? "bg-[#E6F4EA] text-green-800 self-start"
+            : "bg-green-500 text-white self-end"
+        }`}
+      style={{
+        whiteSpace: "pre-wrap",
+        wordBreak: "break-word",
+        maxWidth: "100%",
+      }}
     >
       {message}
     </div>
