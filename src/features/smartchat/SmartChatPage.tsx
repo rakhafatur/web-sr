@@ -11,6 +11,7 @@ const SmartChatPage: React.FC = () => {
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
 
+  // === FUNGSI JUMLAH VOUCHER BULAN INI ===
   const getJumlahVoucherBulanIni = async (): Promise<string> => {
     const startOfMonth = dayjs().startOf('month').format('YYYY-MM-DD');
     const endOfMonth = dayjs().endOf('month').format('YYYY-MM-DD');
@@ -37,6 +38,42 @@ Total Keuntungan: Rp${totalKeuntungan.toLocaleString('id-ID')}
 Total Keseluruhan: Rp${totalKeseluruhan.toLocaleString('id-ID')}`;
   };
 
+  // === FUNGSI JUMLAH VOUCHER MINGGU INI (SELASA - SENIN) ===
+  const getJumlahVoucherMingguIni = async (): Promise<string> => {
+    const today = dayjs();
+    const weekday = today.day(); // 0 = Minggu, 1 = Senin, 2 = Selasa, ..., 6 = Sabtu
+
+    // Tentukan hari Selasa terakhir sebagai awal minggu
+    const startOfWeek = weekday >= 2
+      ? today.day(2)
+      : today.subtract(1, 'week').day(2);
+
+    // Akhir minggu = Senin setelah Selasa tsb (hari ke-1 minggu berikutnya)
+    const endOfWeek = startOfWeek.add(6, 'day');
+
+    const { data, error } = await supabase
+      .from('vouchers')
+      .select('jumlah')
+      .gte('tanggal', startOfWeek.format('YYYY-MM-DD'))
+      .lte('tanggal', endOfWeek.format('YYYY-MM-DD'))
+      .not('ladies_id', 'is', null);
+
+    if (error) return '❌ Gagal ambil data voucher minggu ini';
+
+    const totalNominal = data?.reduce((sum, v: any) => sum + Number(v.jumlah), 0) || 0;
+    const totalVoucher = totalNominal / 150000;
+    const totalLadies = totalNominal;
+    const totalKeuntungan = totalVoucher * 75000;
+    const totalKeseluruhan = totalVoucher * 225000;
+
+    return `📅 Rincian Voucher Minggu Ini (${startOfWeek.format('DD MMM')} - ${endOfWeek.format('DD MMM')}):
+Total voucher (pcs): ${totalVoucher.toFixed(0)}
+Total Ladies: Rp${totalLadies.toLocaleString('id-ID')}
+Total Keuntungan: Rp${totalKeuntungan.toLocaleString('id-ID')}
+Total Keseluruhan: Rp${totalKeseluruhan.toLocaleString('id-ID')}`;
+  };
+
+  // === FUNGSI STATISTIK VOUCHER BULAN INI ===
   const getLadiesVoucherStatBulanIni = async (): Promise<string> => {
     const startOfMonth = dayjs().startOf('month').format('YYYY-MM-DD');
     const endOfMonth = dayjs().endOf('month').format('YYYY-MM-DD');
@@ -75,6 +112,7 @@ Total Keseluruhan: Rp${totalKeseluruhan.toLocaleString('id-ID')}`;
 🎖️ Ladies dengan voucher paling sedikit bulan ini:\n${formatList(minLadies, totals)}`;
   };
 
+  // === FUNGSI STATISTIK ABSEN BULAN INI ===
   const getLadiesAbsenStatBulanIni = async (): Promise<string> => {
     const startOfMonth = dayjs().startOf('month').format('YYYY-MM-DD');
     const endOfMonth = dayjs().endOf('month').format('YYYY-MM-DD');
@@ -113,16 +151,20 @@ Total Keseluruhan: Rp${totalKeseluruhan.toLocaleString('id-ID')}`;
 🎖️ Ladies dengan absen paling sedikit bulan ini:\n${formatList(minLadies, totals)}`;
   };
 
+  // === DAFTAR PERTANYAAN ===
   const questions = [
+    { label: "Berapa jumlah voucher minggu ini?", answer: getJumlahVoucherMingguIni },
     { label: "Berapa jumlah voucher bulan ini?", answer: getJumlahVoucherBulanIni },
     { label: "Siapa ladies dengan voucher terbanyak & paling sedikit bulan ini?", answer: getLadiesVoucherStatBulanIni },
     { label: "Siapa ladies dengan absen terbanyak & paling sedikit bulan ini?", answer: getLadiesAbsenStatBulanIni },
   ];
 
+  // === SCROLL OTOMATIS ===
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // === HANDLE PILIH PERTANYAAN ===
   const handlePickQuestion = async (label: string) => {
     const question = questions.find(q => q.label === label);
     if (!question) return;
