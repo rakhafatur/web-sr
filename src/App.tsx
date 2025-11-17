@@ -16,6 +16,9 @@ import RekapVoucherPage from './features/transaction/pages/RekapVoucherPage';
 import PerformaLadiesPage from './features/transaction/pages/PerformaLadiesPage';
 import AddTransaksiPengawasPage from './features/transaction/pages/AddTransaksiPengawasPage';
 import BukuKuningPengawasPage from './features/transaction/pages/BukuKuningPengawasPage';
+import SmartChatPage from './features/smartchat/SmartChatPage';
+import SmartChatLadiesPage from './features/smartchat/SmartChatLadiesPage';
+import AgentPage from './features/agent/pages/AgentListPage';
 
 import HomeLadiesPage from './features/ladies/pages/HomeLadiesPage';
 import RiwayatAbsensiPage from './features/ladies/pages/RiwayatAbsensiPage';
@@ -28,8 +31,7 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from './layout/MainLayout';
 import SplashScreen from './components/Common/SplashScreen';
-import SmartChatPage from './features/smartchat/SmartChatPage';
-import SmartChatLadiesPage from './features/smartchat/SmartChatLadiesPage';
+
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -69,7 +71,7 @@ function App() {
             <Route path="/buku-kuning-pengawas" element={<ProtectedRoute><MainLayout><BukuKuningPengawasPage /></MainLayout></ProtectedRoute>} />
             <Route path="/smart-chat" element={<ProtectedRoute><MainLayout><SmartChatPage /></MainLayout></ProtectedRoute>} />
             <Route path="/smart-chat-ladies" element={<ProtectedRoute><MainLayout><SmartChatLadiesPage /></MainLayout></ProtectedRoute>} />
-
+            <Route path="/agent" element={<ProtectedRoute><MainLayout><AgentPage /></MainLayout></ProtectedRoute>} />
             {/* Ladies-specific */}
             <Route path="/ladies/home" element={<ProtectedRoute><MainLayout><HomeLadiesPage /></MainLayout></ProtectedRoute>} />
             <Route path="/ladies/absensi" element={<ProtectedRoute><MainLayout><RiwayatAbsensiPage /></MainLayout></ProtectedRoute>} />

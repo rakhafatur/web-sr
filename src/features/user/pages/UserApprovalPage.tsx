@@ -17,7 +17,10 @@ type AssignItem = {
   nama_panggilan?: string;
   nama_outlet?: string;
   pin?: string;
+  nama_agent?: string;
 };
+
+type AssignType = 'ladies' | 'pengawas' | 'agent';
 
 const UserApprovalPage = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -28,7 +31,7 @@ const UserApprovalPage = () => {
   const [successMessage, setSuccessMessage] = useState('');
 
   const [assignModal, setAssignModal] = useState<{ id: string; show: boolean }>({ id: '', show: false });
-  const [assignType, setAssignType] = useState<'ladies' | 'pengawas' | null>(null);
+  const [assignType, setAssignType] = useState<AssignType | null>(null);
   const [assignList, setAssignList] = useState<AssignItem[]>([]);
   const [selectedAssignId, setSelectedAssignId] = useState<string>('');
 
@@ -49,15 +52,13 @@ const UserApprovalPage = () => {
     }
 
     const { data, count, error } = await query;
-    if (error) {
-      console.error('❌ Gagal ambil data user:', error);
-    } else {
+    if (!error) {
       setUserList(data || []);
       setTotal(count || 0);
     }
   };
 
-  const fetchAssignList = async (type: 'ladies' | 'pengawas') => {
+  const fetchAssignList = async (type: AssignType) => {
     try {
       if (type === 'ladies') {
         const { data, error } = await supabase
@@ -67,11 +68,21 @@ const UserApprovalPage = () => {
 
         if (error) throw error;
         setAssignList(data || []);
-      } else {
+
+      } else if (type === 'pengawas') {
         const { data, error } = await supabase
           .from('pengawas')
           .select('id, nama_panggilan')
           .order('nama_panggilan', { ascending: true });
+
+        if (error) throw error;
+        setAssignList(data || []);
+
+      } else if (type === 'agent') {
+        const { data, error } = await supabase
+          .from('agent')
+          .select('id, nama_agent')
+          .order('nama_agent', { ascending: true });
 
         if (error) throw error;
         setAssignList(data || []);
@@ -115,7 +126,6 @@ const UserApprovalPage = () => {
 
   useEffect(() => {
     fetchUsers();
-    // eslint-disable-next-line
   }, [page, keyword]);
 
   useEffect(() => {
@@ -221,7 +231,7 @@ const UserApprovalPage = () => {
                     className="form-select"
                     value={assignType || ''}
                     onChange={(e) => {
-                      const tipe = e.target.value as 'ladies' | 'pengawas';
+                      const tipe = e.target.value as AssignType;
                       setAssignType(tipe);
                       setSelectedAssignId('');
                     }}
@@ -229,6 +239,7 @@ const UserApprovalPage = () => {
                     <option value="">-- Pilih Tipe --</option>
                     <option value="ladies">Ladies</option>
                     <option value="pengawas">Pengawas</option>
+                    <option value="agent">Agent</option>
                   </select>
                 </div>
 
@@ -245,7 +256,9 @@ const UserApprovalPage = () => {
                         <option key={item.id} value={item.id}>
                           {assignType === 'ladies'
                             ? `${item.nama_ladies} - ${item.nama_outlet} - ${item.pin}`
-                            : `${item.nama_panggilan}`}
+                            : assignType === 'pengawas'
+                            ? `${item.nama_panggilan}`
+                            : `${item.nama_agent}`}
                         </option>
                       ))}
                     </select>

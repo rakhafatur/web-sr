@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import FormInput from '../../../components/FormInput';
 import { FiUser, FiPlus, FiEdit2 } from 'react-icons/fi';
 import ModalWrapper from '../../../components/ModalWrapper';
+import { supabase } from '../../../lib/supabaseClient';
 
 type Lady = {
   id: string;
@@ -13,6 +14,7 @@ type Lady = {
   tanggal_bergabung: string;
   alamat: string;
   status: string;
+  agent_id: string | null;
 };
 
 type Props = {
@@ -32,10 +34,25 @@ const AddLadiesModal = ({ show, onClose, onSubmit, lady }: Props) => {
     tanggal_bergabung: '',
     alamat: '',
     status: 'active',
+    agent_id: null,
   });
 
   const [readonly, setReadonly] = useState(false);
+  const [agents, setAgents] = useState<{ id: string; nama_agent: string }[]>([]);
 
+  // Load agents saat modal dibuka
+  useEffect(() => {
+    if (!show) return;
+
+    const loadAgents = async () => {
+      const { data } = await supabase.from("agent").select("id, nama_agent");
+      setAgents(data || []);
+    };
+
+    loadAgents();
+  }, [show]);
+
+  // Load data ladies jika mode edit/detail
   useEffect(() => {
     if (!show) return;
 
@@ -49,6 +66,7 @@ const AddLadiesModal = ({ show, onClose, onSubmit, lady }: Props) => {
         tanggal_bergabung: lady.tanggal_bergabung,
         alamat: lady.alamat,
         status: lady.status,
+        agent_id: lady.agent_id,
       });
       setReadonly(true);
     } else {
@@ -61,6 +79,7 @@ const AddLadiesModal = ({ show, onClose, onSubmit, lady }: Props) => {
         tanggal_bergabung: '',
         alamat: '',
         status: 'active',
+        agent_id: null,
       });
       setReadonly(false);
     }
@@ -87,6 +106,7 @@ const AddLadiesModal = ({ show, onClose, onSubmit, lady }: Props) => {
       <FormInput label="Tanggal Bergabung" name="tanggal_bergabung" value={form.tanggal_bergabung} onChange={handleChange} readOnly={readonly} type="date" />
       <FormInput label="Alamat" name="alamat" value={form.alamat} onChange={handleChange} readOnly={readonly} type="textarea" />
 
+      {/* Dropdown Outlet */}
       <div className="mb-3">
         <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>Nama Outlet</label>
         {readonly ? (
@@ -111,6 +131,32 @@ const AddLadiesModal = ({ show, onClose, onSubmit, lady }: Props) => {
         )}
       </div>
 
+      {/* Dropdown Agent */}
+      <div className="mb-3">
+        <label className="form-label fw-semibold">Agent</label>
+
+        {readonly ? (
+          <input
+            className="form-control bg-white text-dark border"
+            value={agents.find(a => a.id === form.agent_id)?.nama_agent || '-'}
+            readOnly
+          />
+        ) : (
+          <select
+            className="form-select border"
+            name="agent_id"
+            value={form.agent_id || ''}
+            onChange={handleChange}
+          >
+            <option value="">-- Pilih Agent --</option>
+            {agents.map((a) => (
+              <option key={a.id} value={a.id}>{a.nama_agent}</option>
+            ))}
+          </select>
+        )}
+      </div>
+
+      {/* Status */}
       {!readonly && (
         <div className="mb-3">
           <label className="form-label fw-semibold" htmlFor="status">Status</label>

@@ -11,6 +11,8 @@ export type Lady = {
   tanggal_bergabung: string;
   alamat: string;
   status: string;
+  agent_id: string | null;
+  nama_agent?: string | null;
 };
 
 type Props = {

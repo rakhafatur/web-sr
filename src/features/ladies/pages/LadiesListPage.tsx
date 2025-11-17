@@ -16,7 +16,8 @@ export type Lady = {
   nomor_ktp: string;
   tanggal_bergabung: string;
   alamat: string;
-  status: string; // ✅ tambahkan field status
+  status: string;
+  agent_id: string | null;
 };
 
 const LadiesListPage = () => {
