@@ -40,9 +40,13 @@ const PerformaLadiesPage = () => {
   const [mode, setMode] = useState<'aktivitas' | 'pendapatan'>('aktivitas');
 
   const fetchLadies = async () => {
-    const { data, error } = await supabase.from('ladies').select('id, nama_ladies, nama_outlet');
-    if (!error && data) setLadiesList(data);
-  };
+  const { data, error } = await supabase
+    .from('ladies')
+    .select('id, nama_ladies, nama_outlet')
+    .eq('status', 'active'); // ⬅️ tambahin ini
+
+  if (!error && data) setLadiesList(data);
+};
 
   const fetchSummary = async () => {
     const startDate = dayjs(`${tahun}-${bulan}-01`).startOf('month');
