@@ -354,7 +354,7 @@ const BukuKuningPage = () => {
       doc.setFontSize(22);
 
       doc.text(
-        'BUKU KUNING',
+        'LAPORAN TRANSAKSI',
         42,
         18
       );
