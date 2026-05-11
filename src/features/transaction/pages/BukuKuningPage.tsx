@@ -676,7 +676,7 @@ const BukuKuningPage = () => {
       autoTable(doc, {
         startY: 38,
 
-        theme: 'plain',
+        theme: 'grid',
 
         head: [[
           'Tanggal',
@@ -701,9 +701,11 @@ const BukuKuningPage = () => {
         ]),
 
         styles: {
-          fontSize: 10,
-          cellPadding: 4,
+          fontSize: 9,
+          cellPadding: 3,
           textColor: 40,
+          lineColor: [220, 220, 220], // warna border
+          lineWidth: 0.2, // tebal border tipis biar elegan
           valign: 'middle',
         },
 
@@ -711,6 +713,8 @@ const BukuKuningPage = () => {
           fillColor: [22, 163, 74],
           textColor: 255,
           fontStyle: 'bold',
+          lineWidth: 0.2,
+          lineColor: [220, 220, 220],
         },
 
         alternateRowStyles: {
@@ -723,34 +727,34 @@ const BukuKuningPage = () => {
         },
 
         columnStyles: {
-  0: {
-    cellWidth: 24,
-  },
+          0: {
+            cellWidth: 26,
+          },
 
-  1: {
-    cellWidth: 42,
-  },
+          1: {
+            cellWidth: 46,
+          },
 
-  2: {
-    cellWidth: 22,
-    halign: 'center',
-  },
+          2: {
+            cellWidth: 24,
+            halign: 'center',
+          },
 
-  3: {
-    cellWidth: 30,
-    halign: 'right',
-  },
+          3: {
+            cellWidth: 28,
+            halign: 'right',
+          },
 
-  4: {
-    cellWidth: 34,
-    halign: 'right',
-  },
+          4: {
+            cellWidth: 28,
+            halign: 'right',
+          },
 
-  5: {
-    cellWidth: 30,
-    halign: 'right',
-  },
-},
+          5: {
+            cellWidth: 32,
+            halign: 'right',
+          },
+        },
 
         didDrawPage: () => {
           doc.setDrawColor(220);
