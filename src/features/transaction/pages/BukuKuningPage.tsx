@@ -723,34 +723,35 @@ const BukuKuningPage = () => {
         },
 
         columnStyles: {
-          0: {
-            cellWidth: 26,
-          },
+  0: {
+    cellWidth: 24,
+  },
 
-          1: {
-            cellWidth: 46,
-          },
+  1: {
+    cellWidth: 42,
+  },
 
-          2: {
-            cellWidth: 24,
-            halign: 'center',
-          },
+  2: {
+    cellWidth: 22,
+    halign: 'center',
+  },
 
-          3: {
-            cellWidth: 28,
-            halign: 'right',
-          },
+  3: {
+    cellWidth: 30,
+    halign: 'right',
+  },
 
-          4: {
-            cellWidth: 28,
-            halign: 'right',
-          },
+  4: {
+    cellWidth: 34,
+    halign: 'right',
+  },
 
-          5: {
-            cellWidth: 32,
-            halign: 'right',
-          },
-        },
+  5: {
+    cellWidth: 30,
+    halign: 'right',
+  },
+},
+
         didDrawPage: () => {
           doc.setDrawColor(220);
 
