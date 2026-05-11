@@ -276,14 +276,22 @@ const BukuKuningPage = () => {
       0
     );
 
-    const totalPemasukan = rows.reduce(
-      (sum, r) =>
-        sum +
-        (typeof r.pemasukan === 'number'
-          ? r.pemasukan
-          : 0),
-      0
-    );
+    const totalPemasukanVoucher =
+      rows
+        .filter(
+          (r) =>
+            r.keterangan ===
+            'Voucher'
+        )
+        .reduce(
+          (sum, r) =>
+            sum +
+            (typeof r.pemasukan ===
+              'number'
+              ? r.pemasukan
+              : 0),
+          0
+        );
 
     const totalPengeluaran = rows.reduce(
       (sum, r) =>
@@ -498,25 +506,28 @@ const BukuKuningPage = () => {
 
       const cards = [
         {
-          title: 'Voucher',
+          title: 'Total Voucher',
           value: `${totalVoucher}`,
         },
+
         {
-          title: 'Pemasukan',
+          title: 'Voucher Rp',
           value: formatRupiah(
-            totalPemasukan
+            totalPemasukanVoucher
           ),
         },
+
+        {
+          title: 'Pemasukan Lain',
+          value: formatRupiah(
+            totalPemasukanLain
+          ),
+        },
+
         {
           title: 'Kasbon',
           value: formatRupiah(
             totalPengeluaran
-          ),
-        },
-        {
-          title: 'Saldo Akhir',
-          value: formatRupiah(
-            saldoAkhir
           ),
         },
       ];
@@ -713,34 +724,33 @@ const BukuKuningPage = () => {
 
         columnStyles: {
           0: {
-            cellWidth: 28,
+            cellWidth: 26,
           },
 
           1: {
-            cellWidth: 48,
+            cellWidth: 46,
           },
 
           2: {
-            cellWidth: 20,
+            cellWidth: 24,
             halign: 'center',
           },
 
           3: {
-            cellWidth: 30,
+            cellWidth: 28,
             halign: 'right',
           },
 
           4: {
-            cellWidth: 30,
+            cellWidth: 28,
             halign: 'right',
           },
 
           5: {
-            cellWidth: 30,
+            cellWidth: 32,
             halign: 'right',
           },
         },
-
         didDrawPage: () => {
           doc.setDrawColor(220);
 
