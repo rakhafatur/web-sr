@@ -106,7 +106,7 @@ const BukuKuningPage = () => {
 
       const saldoAwal = rekap?.saldo_akhir ?? 0;
 
-      const [vouchers, kasbon, pemasukan] = await Promise.all([
+      const [vouchers, kasbon, pemasukan, dokter] = await Promise.all([
         supabase
           .from('vouchers')
           .select('tanggal, jumlah')
@@ -123,6 +123,13 @@ const BukuKuningPage = () => {
 
         supabase
           .from('pemasukan_lain')
+          .select('tanggal, jumlah, keterangan')
+          .eq('ladies_id', selectedLadyId)
+          .gte('tanggal', from)
+          .lte('tanggal', to),
+
+        supabase
+          .from('dokter')
           .select('tanggal, jumlah, keterangan')
           .eq('ladies_id', selectedLadyId)
           .gte('tanggal', from)
@@ -160,6 +167,17 @@ const BukuKuningPage = () => {
           voucher: '',
           pemasukan: '',
           pengeluaran: Number(k.jumlah),
+          saldo: 0,
+        });
+      });
+
+      (dokter?.data || []).forEach((d) => {
+        transaksi.push({
+          tanggal: d.tanggal,
+          keterangan: `Dokter - ${d.keterangan || ''}`,
+          voucher: '',
+          pemasukan: '',
+          pengeluaran: Number(d.jumlah),
           saldo: 0,
         });
       });
@@ -293,14 +311,32 @@ const BukuKuningPage = () => {
           0
         );
 
-    const totalPengeluaran = rows.reduce(
-      (sum, r) =>
-        sum +
-        (typeof r.pengeluaran === 'number'
-          ? r.pengeluaran
-          : 0),
-      0
-    );
+    const totalPengeluaran = rows
+      .filter(
+        (r) =>
+          !r.keterangan?.startsWith('Dokter -')
+      )
+      .reduce(
+        (sum, r) =>
+          sum +
+          (typeof r.pengeluaran === 'number'
+            ? r.pengeluaran
+            : 0),
+        0
+      );
+
+    const totalDokter = rows
+      .filter((r) =>
+        r.keterangan?.startsWith('Dokter -')
+      )
+      .reduce(
+        (sum, r) =>
+          sum +
+          (typeof r.pengeluaran === 'number'
+            ? r.pengeluaran
+            : 0),
+        0
+      );
 
     const totalPemasukanLain = rows
       .filter((r) => r.keterangan !== 'Voucher')
@@ -501,101 +537,101 @@ const BukuKuningPage = () => {
       );
 
       // =====================================
-      // SUMMARY CARDS
+      // SUMMARY TABLE
       // =====================================
 
-      const cards = [
-        {
-          title: 'Total Voucher',
-          value: `${totalVoucher}`,
+      autoTable(doc, {
+        startY: 112,
+
+        theme: 'grid',
+
+        head: [['Ringkasan', 'Nominal']],
+
+        body: [
+          [
+            'Total Voucher',
+            `${totalVoucher}`,
+          ],
+
+          [
+            'Voucher Rp',
+            formatRupiah(
+              totalPemasukanVoucher
+            ),
+          ],
+
+          [
+            'Pemasukan Lain',
+            formatRupiah(
+              totalPemasukanLain
+            ),
+          ],
+
+          [
+            'Kasbon',
+            formatRupiah(
+              totalPengeluaran
+            ),
+          ],
+
+          [
+            'Dokter',
+            formatRupiah(
+              totalDokter
+            ),
+          ],
+
+          [
+            'Saldo Awal',
+            formatRupiah(
+              saldoAwal
+            ),
+          ],
+
+          [
+            'Saldo Akhir',
+            formatRupiah(
+              saldoAkhir
+            ),
+          ],
+        ],
+
+        margin: {
+          left: 14,
+          right: 14,
         },
 
-        {
-          title: 'Voucher Rp',
-          value: formatRupiah(
-            totalPemasukanVoucher
-          ),
+        styles: {
+          fontSize: 10,
+          cellPadding: 4,
+          textColor: 40,
+          lineColor: [220, 220, 220],
+          lineWidth: 0.2,
+          valign: 'middle',
         },
 
-        {
-          title: 'Pemasukan Lain',
-          value: formatRupiah(
-            totalPemasukanLain
-          ),
+        headStyles: {
+          fillColor: [22, 163, 74],
+          textColor: 255,
+          fontStyle: 'bold',
+          halign: 'center',
         },
 
-        {
-          title: 'Kasbon',
-          value: formatRupiah(
-            totalPengeluaran
-          ),
+        alternateRowStyles: {
+          fillColor: [248, 250, 252],
         },
-      ];
 
-      let startX = 14;
+        columnStyles: {
+          0: {
+            cellWidth: 90,
+            fontStyle: 'bold',
+          },
 
-      cards.forEach((card) => {
-        // shadow
-        doc.setFillColor(220, 220, 220);
-
-        doc.roundedRect(
-          startX + 1,
-          114,
-          42,
-          28,
-          4,
-          4,
-          'F'
-        );
-
-        // card
-        doc.setFillColor(255, 255, 255);
-
-        doc.roundedRect(
-          startX,
-          113,
-          42,
-          28,
-          4,
-          4,
-          'F'
-        );
-
-        doc.setTextColor(120);
-
-        doc.setFontSize(9);
-
-        doc.setFont(
-          'helvetica',
-          'normal'
-        );
-
-        doc.text(
-          card.title,
-          startX + 4,
-          123
-        );
-
-        doc.setTextColor(
-          22,
-          163,
-          74
-        );
-
-        doc.setFont(
-          'helvetica',
-          'bold'
-        );
-
-        doc.setFontSize(11);
-
-        doc.text(
-          card.value,
-          startX + 4,
-          133
-        );
-
-        startX += 45;
+          1: {
+            halign: 'right',
+            cellWidth: 80,
+          },
+        },
       });
 
       // =====================================

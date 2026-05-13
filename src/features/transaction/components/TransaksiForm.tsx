@@ -106,6 +106,7 @@ const TransaksiForm = ({ ladiesId, onSuccess }: Props) => {
             <option value="voucher">Pemasukan (Voucher)</option>
             <option value="pemasukan_lain">Pemasukan Lain</option>
             <option value="kasbon">Pengeluaran (Kasbon)</option>
+            <option value="dokter">Dokter</option>
           </select>
         </div>
         <div className="col-12 col-md-6">
