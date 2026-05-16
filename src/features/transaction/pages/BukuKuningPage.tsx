@@ -57,9 +57,8 @@ const formatRupiah = (value: number | string) => {
   return `Rp${num.toLocaleString('id-ID')}`;
 };
 
-const [rekapAbsensi, setRekapAbsensi] = useState<Absensi[]>([]);
-
 const BukuKuningPage = () => {
+  const [rekapAbsensi, setRekapAbsensi] = useState<Absensi[]>([]);
   const [ladiesList, setLadiesList] = useState<Lady[]>([]);
   const [selectedLadyId, setSelectedLadyId] = useState('');
   const [bulan, setBulan] = useState(new Date().getMonth() + 1);
