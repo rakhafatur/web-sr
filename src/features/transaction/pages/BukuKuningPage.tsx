@@ -298,14 +298,12 @@ const BukuKuningPage = () => {
       rows
         .filter(
           (r) =>
-            r.keterangan ===
-            'Voucher'
+            r.keterangan === 'Voucher'
         )
         .reduce(
           (sum, r) =>
             sum +
-            (typeof r.pemasukan ===
-              'number'
+            (typeof r.pemasukan === 'number'
               ? r.pemasukan
               : 0),
           0
@@ -314,7 +312,9 @@ const BukuKuningPage = () => {
     const totalPengeluaran = rows
       .filter(
         (r) =>
-          !r.keterangan?.startsWith('Dokter -')
+          !r.keterangan?.startsWith(
+            'Dokter -'
+          )
       )
       .reduce(
         (sum, r) =>
@@ -327,7 +327,9 @@ const BukuKuningPage = () => {
 
     const totalDokter = rows
       .filter((r) =>
-        r.keterangan?.startsWith('Dokter -')
+        r.keterangan?.startsWith(
+          'Dokter -'
+        )
       )
       .reduce(
         (sum, r) =>
@@ -339,7 +341,10 @@ const BukuKuningPage = () => {
       );
 
     const totalPemasukanLain = rows
-      .filter((r) => r.keterangan !== 'Voucher')
+      .filter(
+        (r) =>
+          r.keterangan !== 'Voucher'
+      )
       .reduce(
         (sum, r) =>
           sum +
@@ -349,7 +354,9 @@ const BukuKuningPage = () => {
         0
       );
 
-    const saldoAwal = rows[0]?.saldo || 0;
+    const saldoAwal =
+      rows[0]?.saldo || 0;
+
     const saldoAkhir =
       rows[rows.length - 1]?.saldo || 0;
 
@@ -358,94 +365,145 @@ const BukuKuningPage = () => {
         doc.internal.pageSize.getWidth();
 
       // =====================================
-      // BACKGROUND PAGE 1
+      // PAGE 1
       // =====================================
-      doc.setFillColor(245, 247, 250);
 
-      doc.rect(0, 0, 210, 297, 'F');
+      doc.setFillColor(
+        248,
+        250,
+        252
+      );
 
-      // =====================================
+      doc.rect(
+        0,
+        0,
+        210,
+        297,
+        'F'
+      );
+
+      // TOP ACCENT
+      doc.setFillColor(
+        22,
+        163,
+        74
+      );
+
+      doc.rect(
+        0,
+        0,
+        210,
+        5,
+        'F'
+      );
+
       // HEADER
-      // =====================================
-      doc.setFillColor(22, 163, 74);
+      doc.setFillColor(
+        255,
+        255,
+        255
+      );
 
-      doc.rect(0, 0, 210, 38, 'F');
+      doc.rect(
+        0,
+        5,
+        210,
+        36,
+        'F'
+      );
 
+      // LOGO
       doc.addImage(
         img,
         'PNG',
-        16,
-        9,
-        18,
-        18
+        168,
+        10,
+        24,
+        24
       );
 
-      doc.setTextColor(255);
-
+      // TITLE
       doc.setFont(
         'helvetica',
         'bold'
       );
 
-      doc.setFontSize(22);
+      doc.setFontSize(28);
 
-      doc.text(
-        'LAPORAN TRANSAKSI',
-        42,
-        18
+      doc.setTextColor(
+        20,
+        20,
+        20
       );
 
-      doc.setFontSize(11);
+      doc.text(
+        'Laporan',
+        14,
+        22
+      );
+
+      doc.setTextColor(
+        22,
+        163,
+        74
+      );
+
+      doc.text(
+        'Transaksi',
+        58,
+        22
+      );
+
+      doc.setFontSize(12);
 
       doc.setFont(
         'helvetica',
         'normal'
       );
 
+      doc.setTextColor(120);
+
       doc.text(
-        `${monthNames[bulan - 1]} ${tahun}`,
-        42,
-        26
+        `${monthNames[bulan - 1]
+        } ${tahun}`,
+        14,
+        30
       );
 
       // =====================================
-      // CARD INFORMASI
+      // CARD DETAIL
       // =====================================
 
-      // shadow
-      doc.setFillColor(220, 220, 220);
+      doc.setDrawColor(230);
 
-      doc.roundedRect(
-        15,
-        47,
-        180,
-        40,
-        4,
-        4,
-        'F'
+      doc.setFillColor(
+        255,
+        255,
+        255
       );
-
-      // card
-      doc.setFillColor(255, 255, 255);
 
       doc.roundedRect(
         14,
         46,
-        180,
-        40,
-        4,
-        4,
-        'F'
+        182,
+        42,
+        6,
+        6,
+        'FD'
       );
-
-      doc.setTextColor(120);
 
       doc.setFont(
         'helvetica',
         'bold'
       );
 
-      doc.setFontSize(10);
+      doc.setFontSize(11);
+
+      doc.setTextColor(
+        22,
+        163,
+        74
+      );
 
       doc.text(
         'DETAIL LADIES',
@@ -453,14 +511,14 @@ const BukuKuningPage = () => {
         58
       );
 
-      doc.setTextColor(40);
-
       doc.setFont(
         'helvetica',
         'normal'
       );
 
       doc.setFontSize(11);
+
+      doc.setTextColor(40);
 
       doc.text(
         'Nama',
@@ -512,6 +570,13 @@ const BukuKuningPage = () => {
         70
       );
 
+      doc.setFont(
+        'helvetica',
+        'bold'
+      );
+
+      doc.setFontSize(16);
+
       doc.text(
         selectedLady?.pin || '-',
         140,
@@ -519,19 +584,29 @@ const BukuKuningPage = () => {
       );
 
       // =====================================
-      // TITLE SUMMARY
+      // SECTION TITLE
       // =====================================
-      doc.setTextColor(30);
+
+      doc.setDrawColor(220);
+
+      doc.line(
+        72,
+        103,
+        196,
+        103
+      );
 
       doc.setFont(
         'helvetica',
         'bold'
       );
 
-      doc.setFontSize(14);
+      doc.setFontSize(16);
+
+      doc.setTextColor(25);
 
       doc.text(
-        'RINGKASAN KEUANGAN',
+        'Ringkasan Keuangan',
         14,
         105
       );
@@ -543,9 +618,14 @@ const BukuKuningPage = () => {
       autoTable(doc, {
         startY: 112,
 
-        theme: 'grid',
+        theme: 'plain',
 
-        head: [['Ringkasan', 'Nominal']],
+        head: [
+          [
+            'Ringkasan',
+            'Nominal',
+          ],
+        ],
 
         body: [
           [
@@ -603,22 +683,36 @@ const BukuKuningPage = () => {
 
         styles: {
           fontSize: 10,
-          cellPadding: 4,
+          cellPadding: 6,
           textColor: 40,
-          lineColor: [220, 220, 220],
-          lineWidth: 0.2,
-          valign: 'middle',
+          lineColor: [
+            235,
+            235,
+            235,
+          ],
+          lineWidth: 0.3,
         },
 
         headStyles: {
-          fillColor: [22, 163, 74],
-          textColor: 255,
+          fillColor: [
+            240,
+            253,
+            244,
+          ],
+          textColor: [
+            22,
+            163,
+            74,
+          ],
           fontStyle: 'bold',
-          halign: 'center',
         },
 
         alternateRowStyles: {
-          fillColor: [248, 250, 252],
+          fillColor: [
+            250,
+            250,
+            250,
+          ],
         },
 
         columnStyles: {
@@ -632,12 +726,28 @@ const BukuKuningPage = () => {
             cellWidth: 80,
           },
         },
+
+        didParseCell: (
+          data
+        ) => {
+          if (
+            data.row.index === 6 &&
+            data.column.index === 1
+          ) {
+            data.cell.styles.textColor =
+              [22, 163, 74];
+
+            data.cell.styles.fontStyle =
+              'bold';
+          }
+        },
       });
 
       // =====================================
       // FOOTER PAGE 1
       // =====================================
-      doc.setDrawColor(220);
+
+      doc.setDrawColor(230);
 
       doc.line(
         14,
@@ -670,49 +780,91 @@ const BukuKuningPage = () => {
       // =====================================
       // PAGE 2
       // =====================================
+
       doc.addPage();
 
-      doc.setFillColor(245, 247, 250);
+      doc.setFillColor(
+        248,
+        250,
+        252
+      );
 
-      doc.rect(0, 0, 210, 297, 'F');
+      doc.rect(
+        0,
+        0,
+        210,
+        297,
+        'F'
+      );
 
       // HEADER
-      doc.setFillColor(22, 163, 74);
+      doc.setFillColor(
+        255,
+        255,
+        255
+      );
 
-      doc.rect(0, 0, 210, 26, 'F');
+      doc.rect(
+        0,
+        0,
+        210,
+        28,
+        'F'
+      );
 
-      doc.setTextColor(255);
+      doc.setFillColor(
+        22,
+        163,
+        74
+      );
+
+      doc.rect(
+        0,
+        0,
+        210,
+        5,
+        'F'
+      );
 
       doc.setFont(
         'helvetica',
         'bold'
       );
 
-      doc.setFontSize(16);
+      doc.setFontSize(22);
+
+      doc.setTextColor(20);
 
       doc.text(
-        'DETAIL TRANSAKSI',
+        'Detail Transaksi',
         14,
-        17
+        20
       );
 
       // CARD TABLE
-      doc.setFillColor(255, 255, 255);
+      doc.setFillColor(
+        255,
+        255,
+        255
+      );
+
+      doc.setDrawColor(230);
 
       doc.roundedRect(
         10,
-        32,
+        34,
         190,
-        240,
-        4,
-        4,
-        'F'
+        238,
+        6,
+        6,
+        'FD'
       );
 
+      // TABLE
       autoTable(doc, {
-        startY: 38,
+        startY: 42,
 
-        theme: 'grid',
+        theme: 'plain',
 
         head: [[
           'Tanggal',
@@ -723,38 +875,53 @@ const BukuKuningPage = () => {
           'Saldo',
         ]],
 
-        body: rows.map((r) => [
-          r.tanggal,
-          r.keterangan,
-          r.voucher || '-',
-          formatRupiah(
-            r.pemasukan || 0
-          ),
-          formatRupiah(
-            r.pengeluaran || 0
-          ),
-          formatRupiah(r.saldo),
-        ]),
+        body: rows.map(
+          (r) => [
+            r.tanggal,
+            r.keterangan,
+            r.voucher || '-',
+            formatRupiah(
+              r.pemasukan || 0
+            ),
+            formatRupiah(
+              r.pengeluaran || 0
+            ),
+            formatRupiah(r.saldo),
+          ]
+        ),
 
         styles: {
           fontSize: 9,
-          cellPadding: 3,
+          cellPadding: 4,
           textColor: 40,
-          lineColor: [220, 220, 220], // warna border
-          lineWidth: 0.2, // tebal border tipis biar elegan
-          valign: 'middle',
+          lineColor: [
+            235,
+            235,
+            235,
+          ],
+          lineWidth: 0.3,
         },
 
         headStyles: {
-          fillColor: [22, 163, 74],
-          textColor: 255,
+          fillColor: [
+            240,
+            253,
+            244,
+          ],
+          textColor: [
+            22,
+            163,
+            74,
+          ],
           fontStyle: 'bold',
-          lineWidth: 0.2,
-          lineColor: [220, 220, 220],
         },
 
         alternateRowStyles: {
-          fillColor: [248, 250, 252],
+          fillColor: [
+            250,
+            250,
+            250,
+          ],
         },
 
         margin: {
@@ -792,8 +959,24 @@ const BukuKuningPage = () => {
           },
         },
 
+        didParseCell: (
+          data
+        ) => {
+          if (
+            data.column.index === 5 &&
+            typeof data.cell.raw ===
+            'string' &&
+            data.cell.raw.includes(
+              '-'
+            )
+          ) {
+            data.cell.styles.textColor =
+              [220, 38, 38];
+          }
+        },
+
         didDrawPage: () => {
-          doc.setDrawColor(220);
+          doc.setDrawColor(230);
 
           doc.line(
             14,
