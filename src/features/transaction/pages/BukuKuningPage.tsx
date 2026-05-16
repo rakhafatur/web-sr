@@ -831,7 +831,7 @@ const BukuKuningPage = () => {
         'bold'
       );
 
-      doc.setFontSize(22);
+      doc.setFontSize(18);
 
       doc.setTextColor(20);
 
