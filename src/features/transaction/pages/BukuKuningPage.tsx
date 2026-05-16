@@ -26,6 +26,12 @@ type Row = {
   saldo: number;
 };
 
+type Absensi = {
+  tanggal: string;
+  status: string;
+  keterangan: string | null;
+};
+
 const monthNames = [
   'Januari',
   'Februari',
@@ -50,6 +56,8 @@ const formatRupiah = (value: number | string) => {
 
   return `Rp${num.toLocaleString('id-ID')}`;
 };
+
+const [rekapAbsensi, setRekapAbsensi] = useState<Absensi[]>([]);
 
 const BukuKuningPage = () => {
   const [ladiesList, setLadiesList] = useState<Lady[]>([]);
@@ -106,7 +114,7 @@ const BukuKuningPage = () => {
 
       const saldoAwal = rekap?.saldo_akhir ?? 0;
 
-      const [vouchers, kasbon, pemasukan, dokter] = await Promise.all([
+      const [vouchers, kasbon, pemasukan, dokter, absensi] = await Promise.all([
         supabase
           .from('vouchers')
           .select('tanggal, jumlah')
@@ -134,7 +142,17 @@ const BukuKuningPage = () => {
           .eq('ladies_id', selectedLadyId)
           .gte('tanggal', from)
           .lte('tanggal', to),
+
+        supabase
+          .from('absensi')
+          .select('tanggal, status, keterangan')
+          .eq('ladies_id', selectedLadyId)
+          .gte('tanggal', from)
+          .lte('tanggal', to)
+          .order('tanggal', { ascending: true })
       ]);
+
+
 
       const transaksi: Row[] = [];
 
@@ -218,7 +236,10 @@ const BukuKuningPage = () => {
         });
       });
 
+      setRekapAbsensi(absensi?.data || []);
+
       setRows(fullRows);
+
     };
 
     fetchData();
@@ -587,13 +608,92 @@ const BukuKuningPage = () => {
       // SECTION TITLE
       // =====================================
 
+      // =====================================
+      // REKAP ABSENSI
+      // =====================================
+
+      const totalKERJA = rekapAbsensi.filter(
+        (r) => r.status === 'KERJA'
+      ).length;
+
+      const totalMENS = rekapAbsensi.filter(
+        (r) => r.status === 'MENS'
+      ).length;
+
+      const totalOFF = rekapAbsensi.filter(
+        (r) => r.status === 'OFF'
+      ).length;
+
+      const totalSAKIT = rekapAbsensi.filter(
+        (r) => r.status === 'SAKIT'
+      ).length;
+
+      doc.setFont(
+        'helvetica',
+        'bold'
+      );
+
+      doc.setFontSize(15);
+
+      doc.setTextColor(25);
+
+      doc.text(
+        'Rekap Absensi',
+        14,
+        102
+      );
+
+      autoTable(doc, {
+        startY: 108,
+
+        theme: 'plain',
+
+        head: [[
+          'KERJA',
+          'MENS',
+          'OFF',
+          'SAKIT',
+        ]],
+
+        body: [[
+          `${totalKERJA} Hari`,
+          `${totalMENS} Hari`,
+          `${totalOFF} Hari`,
+          `${totalSAKIT} Hari`,
+        ]],
+
+        margin: {
+          left: 14,
+          right: 14,
+        },
+
+        styles: {
+          fontSize: 10,
+          cellPadding: 6,
+          halign: 'center',
+          textColor: 40,
+          lineColor: [235, 235, 235],
+          lineWidth: 0.3,
+        },
+
+        headStyles: {
+          fillColor: [240, 253, 244],
+          textColor: [22, 163, 74],
+          fontStyle: 'bold',
+        },
+
+        alternateRowStyles: {
+          fillColor: [250, 250, 250],
+        },
+      });
+
       doc.setDrawColor(220);
 
       doc.line(
         72,
-        103,
+        145,
         196,
-        103
+        145
       );
 
       doc.setFont(
@@ -608,7 +708,7 @@ const BukuKuningPage = () => {
       doc.text(
         'Ringkasan Keuangan',
         14,
-        105
+        147
       );
 
       // =====================================
@@ -616,7 +716,7 @@ const BukuKuningPage = () => {
       // =====================================
 
       autoTable(doc, {
-        startY: 112,
+        startY: 154,
 
         theme: 'plain',
 
