@@ -879,7 +879,7 @@ const BukuKuningPage = () => {
           (r) => [
             r.tanggal,
             r.keterangan,
-            r.voucher || '-',
+            r.voucher || '',
             formatRupiah(
               r.pemasukan || 0
             ),
