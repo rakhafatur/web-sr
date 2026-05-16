@@ -418,8 +418,8 @@ const BukuKuningPage = () => {
         'PNG',
         168,
         10,
-        24,
-        24
+        32,
+        32
       );
 
       // TITLE
