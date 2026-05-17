@@ -432,14 +432,13 @@ const BukuKuningPage = () => {
         'F'
       );
 
-      // LOGO
       doc.addImage(
         img,
         'PNG',
-        168,
-        10,
-        32,
-        32
+        156, // sedikit ke kiri supaya tetap balance
+        2,   // tetap center vertikal
+        38,  // diperbesar
+        38
       );
 
       // TITLE
@@ -526,10 +525,14 @@ const BukuKuningPage = () => {
       );
 
       doc.text(
-        'DETAIL LADIES',
+        'PROFIL',
         20,
         58
       );
+
+      // =====================================
+      // DETAIL TEXT
+      // =====================================
 
       doc.setFont(
         'helvetica',
@@ -540,6 +543,7 @@ const BukuKuningPage = () => {
 
       doc.setTextColor(40);
 
+      // Nama
       doc.text(
         'Nama',
         20,
@@ -559,6 +563,7 @@ const BukuKuningPage = () => {
         70
       );
 
+      // Outlet
       doc.text(
         'Outlet',
         20,
@@ -578,6 +583,7 @@ const BukuKuningPage = () => {
         78
       );
 
+      // PIN
       doc.text(
         'PIN',
         120,
@@ -590,13 +596,7 @@ const BukuKuningPage = () => {
         70
       );
 
-      doc.setFont(
-        'helvetica',
-        'bold'
-      );
-
-      doc.setFontSize(16);
-
+      // ukuran & style disamakan
       doc.text(
         selectedLady?.pin || '-',
         140,
@@ -627,25 +627,33 @@ const BukuKuningPage = () => {
         (r) => r.status === 'SAKIT'
       ).length;
 
+      // =====================================
+      // TITLE REKAP ABSENSI
+      // =====================================
+
       doc.setFont(
         'helvetica',
         'bold'
       );
 
-      doc.setFontSize(15);
+      doc.setFontSize(14);
 
-      doc.setTextColor(25);
+      doc.setTextColor(20);
 
       doc.text(
         'Rekap Absensi',
         14,
-        102
+        100
       );
 
-      autoTable(doc, {
-        startY: 108,
+      // =====================================
+      // TABLE REKAP ABSENSI
+      // =====================================
 
-        theme: 'plain',
+      autoTable(doc, {
+        startY: 105,
+
+        theme: 'grid',
 
         head: [[
           'KERJA',
@@ -666,48 +674,75 @@ const BukuKuningPage = () => {
           right: 14,
         },
 
+        tableWidth: 182,
+
         styles: {
-          fontSize: 10,
-          cellPadding: 6,
+          fontSize: 9,
+          cellPadding: 4.5,
           halign: 'center',
-          textColor: 40,
-          lineColor: [235, 235, 235],
-          lineWidth: 0.3,
+          valign: 'middle',
+          textColor: 35,
+          lineColor: [225, 225, 225],
+          lineWidth: 0.4,
         },
 
         headStyles: {
-          fillColor: [240, 253, 244],
-          textColor: [22, 163, 74],
+          fillColor: [22, 163, 74],
+          textColor: 255,
           fontStyle: 'bold',
+          fontSize: 9.5,
+        },
+
+        bodyStyles: {
+          fillColor: [255, 255, 255],
         },
 
         alternateRowStyles: {
-          fillColor: [250, 250, 250],
+          fillColor: [248, 250, 252],
+        },
+
+        columnStyles: {
+          0: { cellWidth: 45.5 },
+          1: { cellWidth: 45.5 },
+          2: { cellWidth: 45.5 },
+          3: { cellWidth: 45.5 },
         },
       });
 
-      doc.setDrawColor(220);
+      // =====================================
+      // SPACING
+      // =====================================
+
+      const rekapEndY =
+        (doc as any).lastAutoTable.finalY;
+
+      // divider lebih jauh dari table
+      doc.setDrawColor(225);
 
       doc.line(
-        72,
-        145,
+        14,
+        rekapEndY + 10,
         196,
-        145
+        rekapEndY + 10
       );
+
+      // =====================================
+      // TITLE RINGKASAN
+      // =====================================
 
       doc.setFont(
         'helvetica',
         'bold'
       );
 
-      doc.setFontSize(16);
+      doc.setFontSize(14);
 
-      doc.setTextColor(25);
+      doc.setTextColor(20);
 
       doc.text(
         'Ringkasan Keuangan',
         14,
-        147
+        rekapEndY + 20
       );
 
       // =====================================
@@ -715,9 +750,9 @@ const BukuKuningPage = () => {
       // =====================================
 
       autoTable(doc, {
-        startY: 154,
+        startY: rekapEndY + 25,
 
-        theme: 'plain',
+        theme: 'grid',
 
         head: [
           [
@@ -780,38 +815,30 @@ const BukuKuningPage = () => {
           right: 14,
         },
 
+        tableWidth: 182,
+
         styles: {
-          fontSize: 10,
-          cellPadding: 6,
-          textColor: 40,
-          lineColor: [
-            235,
-            235,
-            235,
-          ],
-          lineWidth: 0.3,
+          fontSize: 9,
+          cellPadding: 4.5,
+          textColor: 35,
+          lineColor: [225, 225, 225],
+          lineWidth: 0.4,
+          valign: 'middle',
         },
 
         headStyles: {
-          fillColor: [
-            240,
-            253,
-            244,
-          ],
-          textColor: [
-            22,
-            163,
-            74,
-          ],
+          fillColor: [22, 163, 74],
+          textColor: 255,
           fontStyle: 'bold',
+          fontSize: 9.5,
+        },
+
+        bodyStyles: {
+          fillColor: [255, 255, 255],
         },
 
         alternateRowStyles: {
-          fillColor: [
-            250,
-            250,
-            250,
-          ],
+          fillColor: [248, 250, 252],
         },
 
         columnStyles: {
@@ -821,14 +848,15 @@ const BukuKuningPage = () => {
           },
 
           1: {
+            cellWidth: 92,
             halign: 'right',
-            cellWidth: 80,
           },
         },
 
         didParseCell: (
           data
         ) => {
+          // saldo akhir
           if (
             data.row.index === 6 &&
             data.column.index === 1
@@ -838,6 +866,8 @@ const BukuKuningPage = () => {
 
             data.cell.styles.fontStyle =
               'bold';
+
+            data.cell.styles.fontSize = 10;
           }
         },
       });
@@ -846,31 +876,43 @@ const BukuKuningPage = () => {
       // FOOTER PAGE 1
       // =====================================
 
+      const summaryEndY =
+        (doc as any).lastAutoTable.finalY;
+
+      // footer otomatis tetap jauh dari table
+      const footerY =
+        Math.max(summaryEndY + 18, 282);
+
       doc.setDrawColor(230);
 
       doc.line(
         14,
-        284,
+        footerY,
         196,
-        284
+        footerY
       );
 
       doc.setTextColor(120);
 
-      doc.setFontSize(9);
+      doc.setFontSize(8.5);
+
+      doc.setFont(
+        'helvetica',
+        'normal'
+      );
 
       doc.text(
         `Dicetak ${new Date().toLocaleDateString(
           'id-ID'
         )}`,
         14,
-        289
+        footerY + 5
       );
 
       doc.text(
         'SR Agency System',
         196,
-        289,
+        footerY + 5,
         {
           align: 'right',
         }
@@ -881,6 +923,10 @@ const BukuKuningPage = () => {
       // =====================================
 
       doc.addPage();
+
+      // =====================================
+      // BACKGROUND PAGE 2
+      // =====================================
 
       doc.setFillColor(
         248,
@@ -896,7 +942,10 @@ const BukuKuningPage = () => {
         'F'
       );
 
+      // =====================================
       // HEADER
+      // =====================================
+
       doc.setFillColor(
         255,
         255,
@@ -930,40 +979,28 @@ const BukuKuningPage = () => {
         'bold'
       );
 
-      doc.setFontSize(18);
+      doc.setFontSize(17);
 
       doc.setTextColor(20);
 
       doc.text(
         'Detail Transaksi',
         14,
-        20
+        19
       );
 
-      // CARD TABLE
-      doc.setFillColor(
-        255,
-        255,
-        255
-      );
+      // =====================================
+      // CARD CONTAINER
+      // =====================================
 
-      doc.setDrawColor(230);
+      // =====================================
+      // DETAIL TABLE
+      // =====================================
 
-      doc.roundedRect(
-        10,
-        34,
-        190,
-        238,
-        6,
-        6,
-        'FD'
-      );
-
-      // TABLE
       autoTable(doc, {
         startY: 42,
 
-        theme: 'plain',
+        theme: 'grid',
 
         head: [[
           'Tanggal',
@@ -989,109 +1026,140 @@ const BukuKuningPage = () => {
           ]
         ),
 
-        styles: {
-          fontSize: 9,
-          cellPadding: 4,
-          textColor: 40,
-          lineColor: [
-            235,
-            235,
-            235,
-          ],
-          lineWidth: 0.3,
-        },
-
-        headStyles: {
-          fillColor: [
-            240,
-            253,
-            244,
-          ],
-          textColor: [
-            22,
-            163,
-            74,
-          ],
-          fontStyle: 'bold',
-        },
-
-        alternateRowStyles: {
-          fillColor: [
-            250,
-            250,
-            250,
-          ],
-        },
-
         margin: {
           left: 14,
           right: 14,
         },
 
+        tableWidth: 182,
+
+        styles: {
+          fontSize: 8.5,
+          cellPadding: 4,
+          textColor: 35,
+          lineColor: [225, 225, 225],
+          lineWidth: 0.4,
+          valign: 'middle',
+          overflow: 'linebreak',
+        },
+
+        headStyles: {
+          fillColor: [22, 163, 74],
+          textColor: 255,
+          fontStyle: 'bold',
+          fontSize: 9,
+          halign: 'center',
+        },
+
+        bodyStyles: {
+          fillColor: [255, 255, 255],
+        },
+
+        alternateRowStyles: {
+          fillColor: [248, 250, 252],
+        },
+
         columnStyles: {
+          // Tanggal
           0: {
-            cellWidth: 26,
-          },
-
-          1: {
-            cellWidth: 46,
-          },
-
-          2: {
             cellWidth: 24,
             halign: 'center',
           },
 
+          // Keterangan
+          1: {
+            cellWidth: 50,
+          },
+
+          // Voucher
+          2: {
+            cellWidth: 20,
+            halign: 'center',
+          },
+
+          // Pemasukan
           3: {
             cellWidth: 28,
             halign: 'right',
           },
 
+          // Pengeluaran
           4: {
             cellWidth: 28,
             halign: 'right',
           },
 
+          // Saldo
           5: {
             cellWidth: 32,
             halign: 'right',
+            fontStyle: 'bold',
           },
         },
 
         didParseCell: (
           data
         ) => {
+          // saldo minus merah
           if (
             data.column.index === 5 &&
             typeof data.cell.raw ===
             'string' &&
-            data.cell.raw.includes(
-              '-'
-            )
+            data.cell.raw.includes('-')
           ) {
             data.cell.styles.textColor =
               [220, 38, 38];
+
+            data.cell.styles.fontStyle =
+              'bold';
+          }
+
+          // pengeluaran merah soft
+          if (
+            data.column.index === 4 &&
+            data.section === 'body'
+          ) {
+            data.cell.styles.textColor =
+              [185, 28, 28];
+          }
+
+          // pemasukan hijau
+          if (
+            data.column.index === 3 &&
+            data.section === 'body'
+          ) {
+            data.cell.styles.textColor =
+              [22, 163, 74];
           }
         },
 
         didDrawPage: () => {
+          // =====================================
+          // FOOTER
+          // =====================================
+
           doc.setDrawColor(230);
 
           doc.line(
             14,
-            284,
+            282,
             196,
-            284
+            282
           );
 
-          doc.setFontSize(9);
+          doc.setFont(
+            'helvetica',
+            'normal'
+          );
+
+          doc.setFontSize(8.5);
 
           doc.setTextColor(120);
 
           doc.text(
             `Halaman ${doc.getNumberOfPages()}`,
             pageWidth / 2,
-            289,
+            287,
             {
               align: 'center',
             }
@@ -1100,7 +1168,7 @@ const BukuKuningPage = () => {
           doc.text(
             'SR Agency System',
             196,
-            289,
+            287,
             {
               align: 'right',
             }
