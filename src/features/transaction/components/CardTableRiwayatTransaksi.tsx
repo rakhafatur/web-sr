@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
 import {
-  FiEdit2,
   FiTrash2,
   FiChevronLeft,
   FiChevronRight,
@@ -21,7 +20,6 @@ type Props = {
   page: number;
   rowsPerPage: number;
   onPageChange: (page: number) => void;
-  onEdit?: (row: Transaksi) => void;
   onDelete?: (row: Transaksi) => void;
 };
 
@@ -64,7 +62,6 @@ const CardTableRiwayatTransaksi = ({
   page,
   rowsPerPage,
   onPageChange,
-  onEdit,
   onDelete,
 }: Props) => {
   const orderedRows = [
@@ -116,52 +113,73 @@ const CardTableRiwayatTransaksi = ({
                 '#fff',
 
               border:
-                '1px solid #f1f1f1',
+                '1px solid #f4f4f5',
 
-              borderRadius: 14,
+              borderRadius: 12,
 
               padding:
-                '12px 14px',
+                '10px 12px',
 
               boxShadow:
-                '0 2px 8px rgba(0,0,0,0.04)',
+                '0 1px 4px rgba(0,0,0,0.03)',
             }}
           >
-            {/* TOP */}
-            <div className="d-flex justify-content-between align-items-start">
-              <div>
-                <div
-                  style={{
-                    display:
-                      'inline-flex',
+            <div className="d-flex justify-content-between align-items-center">
+              {/* LEFT */}
+              <div
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                }}
+              >
+                {/* BADGE + DATE */}
+                <div className="d-flex align-items-center gap-2 mb-1">
+                  <div
+                    style={{
+                      padding:
+                        '2px 7px',
 
-                    padding:
-                      '3px 8px',
+                      borderRadius: 999,
 
-                    borderRadius: 999,
+                      background:
+                        style.bg,
 
-                    background:
-                      style.bg,
+                      color:
+                        style.text,
 
-                    color:
-                      style.text,
+                      fontSize: 9,
 
-                    fontSize: 10,
+                      fontWeight: 700,
 
-                    fontWeight: 700,
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    {style.label}
+                  </div>
 
-                    marginBottom: 6,
-                  }}
-                >
-                  {style.label}
+                  <div
+                    style={{
+                      fontSize: 10,
+                      color: '#999',
+                      fontWeight: 500,
+                    }}
+                  >
+                    {dayjs(
+                      row.tanggal
+                    ).format(
+                      'DD MMM'
+                    )}
+                  </div>
                 </div>
 
+                {/* JUMLAH */}
                 <div
                   style={{
-                    fontSize: 19,
+                    fontSize: 16,
                     fontWeight: 700,
                     color:
                       style.text,
+
                     lineHeight: 1.1,
                   }}
                 >
@@ -171,11 +189,21 @@ const CardTableRiwayatTransaksi = ({
                   ).toLocaleString()}
                 </div>
 
+                {/* KETERANGAN */}
                 <div
                   style={{
-                    fontSize: 12,
+                    fontSize: 11,
                     color: '#777',
                     marginTop: 2,
+
+                    whiteSpace:
+                      'nowrap',
+
+                    overflow:
+                      'hidden',
+
+                    textOverflow:
+                      'ellipsis',
                   }}
                 >
                   {row.tipe ===
@@ -183,88 +211,56 @@ const CardTableRiwayatTransaksi = ({
                     ? `${
                         row.jumlah /
                         150000
-                      } × voucher`
+                      }× voucher`
                     : row.keterangan ||
                       '-'}
                 </div>
               </div>
 
-              {/* ACTION */}
-              <div className="d-flex gap-1">
-                <button
-                  className="btn btn-sm border-0"
-                  style={{
-                    width: 34,
-                    height: 34,
-                    borderRadius: 10,
-                    background:
-                      '#f3f4f6',
+              {/* DELETE */}
+              <button
+                className="btn border-0 d-flex align-items-center justify-content-center"
+                style={{
+                  width: 32,
+                  height: 32,
 
-                    color: '#444',
-                  }}
-                  onClick={() =>
-                    onEdit?.(row)
-                  }
-                >
-                  <FiEdit2
-                    size={14}
-                  />
-                </button>
+                  borderRadius: 10,
 
-                <button
-                  className="btn btn-sm border-0"
-                  style={{
-                    width: 34,
-                    height: 34,
-                    borderRadius: 10,
-                    background:
-                      '#fee2e2',
+                  background:
+                    '#fee2e2',
 
-                    color:
-                      '#dc2626',
-                  }}
-                  onClick={() =>
-                    onDelete?.(
-                      row
-                    )
-                  }
-                >
-                  <FiTrash2
-                    size={14}
-                  />
-                </button>
-              </div>
-            </div>
+                  color:
+                    '#dc2626',
 
-            {/* FOOTER */}
-            <div
-              className="mt-2"
-              style={{
-                fontSize: 11,
-                color: '#999',
-                fontWeight: 500,
-              }}
-            >
-              {dayjs(
-                row.tanggal
-              ).format(
-                'DD MMM YYYY'
-              )}
+                  flexShrink: 0,
+                }}
+                onClick={() =>
+                  onDelete?.(
+                    row
+                  )
+                }
+              >
+                <FiTrash2
+                  size={13}
+                />
+              </button>
             </div>
           </div>
         );
       })}
 
       {/* PAGINATION */}
-      <div className="d-flex justify-content-center align-items-center gap-2 mt-2">
+      <div className="d-flex justify-content-center align-items-center gap-2 mt-1">
         <button
-          className="btn border-0"
+          className="btn border-0 d-flex align-items-center justify-content-center"
           style={{
-            width: 36,
-            height: 36,
+            width: 32,
+            height: 32,
+
             borderRadius: 10,
+
             background:
-              '#f3f4f6',
+              '#f4f4f5',
           }}
           onClick={() =>
             page > 0 &&
@@ -274,15 +270,15 @@ const CardTableRiwayatTransaksi = ({
           }
           disabled={page === 0}
         >
-          <FiChevronLeft />
+          <FiChevronLeft size={15} />
         </button>
 
         <div
           style={{
-            fontSize: 12,
+            fontSize: 11,
             fontWeight: 600,
             color: '#666',
-            minWidth: 50,
+            minWidth: 42,
             textAlign: 'center',
           }}
         >
@@ -290,13 +286,15 @@ const CardTableRiwayatTransaksi = ({
         </div>
 
         <button
-          className="btn border-0"
+          className="btn border-0 d-flex align-items-center justify-content-center"
           style={{
-            width: 36,
-            height: 36,
+            width: 32,
+            height: 32,
+
             borderRadius: 10,
+
             background:
-              '#f3f4f6',
+              '#f4f4f5',
           }}
           onClick={() =>
             page <
@@ -311,7 +309,7 @@ const CardTableRiwayatTransaksi = ({
             totalPages - 1
           }
         >
-          <FiChevronRight />
+          <FiChevronRight size={15} />
         </button>
       </div>
     </div>
