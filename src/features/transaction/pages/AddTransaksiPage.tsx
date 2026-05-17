@@ -88,19 +88,29 @@ const AddTransaksiPage = () => {
           </div>
 
           <div>
-            <h2 className="fw-bold mb-1">
-              Transaksi Ladies
-            </h2>
+  <h2
+    className="fw-bold mb-1"
+    style={{
+      fontSize: isMobile
+        ? '1.25rem'
+        : '2rem',
+      lineHeight: 1.2,
+    }}
+  >
+    Transaksi Ladies
+  </h2>
 
-            <div
-              style={{
-                opacity: 0.9,
-                fontSize: '0.95rem',
-              }}
-            >
-              Kelola transaksi voucher & kasbon
-            </div>
-          </div>
+  <div
+    style={{
+      opacity: 0.9,
+      fontSize: isMobile
+        ? '0.8rem'
+        : '0.95rem',
+    }}
+  >
+    Kelola transaksi harian
+  </div>
+</div>
         </div>
       </div>
 
