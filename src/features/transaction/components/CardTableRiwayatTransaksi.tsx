@@ -5,7 +5,6 @@ import {
   FiChevronLeft,
   FiChevronRight,
 } from 'react-icons/fi';
-import { useState } from 'react';
 
 type Transaksi = {
   id: string;
@@ -24,16 +23,6 @@ type Props = {
   onPageChange: (page: number) => void;
   onEdit?: (row: Transaksi) => void;
   onDelete?: (row: Transaksi) => void;
-  editId?: string | null;
-  editForm?: {
-    jumlah: string;
-    keterangan: string;
-  };
-  setEditForm?: (form: {
-    jumlah: string;
-    keterangan: string;
-  }) => void;
-  onSave?: (row: Transaksi) => void;
 };
 
 const getTypeStyle = (
@@ -44,28 +33,28 @@ const getTypeStyle = (
       return {
         bg: '#dcfce7',
         text: '#15803d',
-        badge: 'Voucher',
+        label: 'Voucher',
       };
 
     case 'kasbon':
       return {
         bg: '#fee2e2',
         text: '#dc2626',
-        badge: 'Kasbon',
+        label: 'Kasbon',
       };
 
     case 'pemasukan_lain':
       return {
         bg: '#dbeafe',
         text: '#2563eb',
-        badge: 'Pemasukan',
+        label: 'Pemasukan',
       };
 
     default:
       return {
         bg: '#f3f4f6',
         text: '#374151',
-        badge: 'Lainnya',
+        label: 'Lainnya',
       };
   }
 };
@@ -77,10 +66,6 @@ const CardTableRiwayatTransaksi = ({
   onPageChange,
   onEdit,
   onDelete,
-  editId,
-  editForm,
-  setEditForm,
-  onSave,
 }: Props) => {
   const orderedRows = [
     ...data,
@@ -115,13 +100,8 @@ const CardTableRiwayatTransaksi = ({
       )
     );
 
-  const [openActionId, setOpenActionId] =
-    useState<string | null>(
-      null
-    );
-
   return (
-    <div className="d-flex flex-column gap-3">
+    <div className="d-flex flex-column gap-2">
       {currentRows.map((row) => {
         const style =
           getTypeStyle(
@@ -138,281 +118,137 @@ const CardTableRiwayatTransaksi = ({
               border:
                 '1px solid #f1f1f1',
 
-              borderRadius: 20,
+              borderRadius: 14,
 
-              padding: 16,
+              padding:
+                '12px 14px',
 
               boxShadow:
-                '0 2px 12px rgba(0,0,0,0.04)',
+                '0 2px 8px rgba(0,0,0,0.04)',
             }}
           >
-            {/* HEADER */}
-            <div className="d-flex justify-content-between align-items-start mb-3">
-              <div
-                style={{
-                  padding:
-                    '4px 10px',
-
-                  borderRadius: 999,
-
-                  background:
-                    style.bg,
-
-                  color:
-                    style.text,
-
-                  fontSize: 11,
-
-                  fontWeight: 700,
-
-                  letterSpacing:
-                    0.4,
-                }}
-              >
-                {style.badge}
-              </div>
-
-              <button
-                className="btn btn-sm border-0"
-                style={{
-                  background:
-                    '#f8f8f8',
-
-                  borderRadius: 10,
-
-                  width: 34,
-
-                  height: 34,
-                }}
-                onClick={() =>
-                  setOpenActionId(
-                    openActionId ===
-                      row.id
-                      ? null
-                      : row.id
-                  )
-                }
-              >
-                ⋯
-              </button>
-            </div>
-
-            {/* JUMLAH */}
-            <div
-              style={{
-                fontSize: 24,
-                fontWeight: 700,
-                color:
-                  style.text,
-                lineHeight: 1.2,
-              }}
-            >
-              {editId ===
-              row.id &&
-              editForm &&
-              setEditForm ? (
-                <input
-                  className="form-control"
+            {/* TOP */}
+            <div className="d-flex justify-content-between align-items-start">
+              <div>
+                <div
                   style={{
-                    borderRadius: 12,
-                    border:
-                      '1px solid #ddd',
+                    display:
+                      'inline-flex',
+
+                    padding:
+                      '3px 8px',
+
+                    borderRadius: 999,
+
+                    background:
+                      style.bg,
+
+                    color:
+                      style.text,
+
+                    fontSize: 10,
 
                     fontWeight: 700,
 
-                    fontSize: 20,
+                    marginBottom: 6,
                   }}
-                  type="text"
-                  value={
-                    editForm.jumlah
-                  }
-                  onChange={(
-                    e
-                  ) =>
-                    setEditForm({
-                      ...editForm,
-                      jumlah:
-                        e.target
-                          .value,
-                    })
-                  }
-                />
-              ) : (
-                <>
+                >
+                  {style.label}
+                </div>
+
+                <div
+                  style={{
+                    fontSize: 19,
+                    fontWeight: 700,
+                    color:
+                      style.text,
+                    lineHeight: 1.1,
+                  }}
+                >
                   Rp
                   {Number(
                     row.jumlah
                   ).toLocaleString()}
-                </>
-              )}
-            </div>
+                </div>
 
-            {/* KETERANGAN */}
-            <div
-              style={{
-                marginTop: 6,
-                color: '#666',
-                fontSize: 14,
-                lineHeight: 1.4,
-              }}
-            >
-              {row.tipe ===
-              'voucher' ? (
-                <>
-                  {row.jumlah /
-                    150000}{' '}
-                  × Voucher
-                </>
-              ) : editId ===
-                  row.id &&
-                editForm &&
-                setEditForm ? (
-                <input
-                  className="form-control mt-2"
+                <div
                   style={{
-                    borderRadius: 12,
-                    border:
-                      '1px solid #ddd',
+                    fontSize: 12,
+                    color: '#777',
+                    marginTop: 2,
                   }}
-                  type="text"
-                  value={
-                    editForm.keterangan
+                >
+                  {row.tipe ===
+                  'voucher'
+                    ? `${
+                        row.jumlah /
+                        150000
+                      } × voucher`
+                    : row.keterangan ||
+                      '-'}
+                </div>
+              </div>
+
+              {/* ACTION */}
+              <div className="d-flex gap-1">
+                <button
+                  className="btn btn-sm border-0"
+                  style={{
+                    width: 34,
+                    height: 34,
+                    borderRadius: 10,
+                    background:
+                      '#f3f4f6',
+
+                    color: '#444',
+                  }}
+                  onClick={() =>
+                    onEdit?.(row)
                   }
-                  onChange={(
-                    e
-                  ) =>
-                    setEditForm({
-                      ...editForm,
-                      keterangan:
-                        e.target
-                          .value,
-                    })
+                >
+                  <FiEdit2
+                    size={14}
+                  />
+                </button>
+
+                <button
+                  className="btn btn-sm border-0"
+                  style={{
+                    width: 34,
+                    height: 34,
+                    borderRadius: 10,
+                    background:
+                      '#fee2e2',
+
+                    color:
+                      '#dc2626',
+                  }}
+                  onClick={() =>
+                    onDelete?.(
+                      row
+                    )
                   }
-                />
-              ) : (
-                row.keterangan ||
-                '-'
-              )}
+                >
+                  <FiTrash2
+                    size={14}
+                  />
+                </button>
+              </div>
             </div>
 
             {/* FOOTER */}
-            <div className="d-flex justify-content-between align-items-center mt-4">
-              <div
-                style={{
-                  fontSize: 12,
-                  color: '#999',
-                  fontWeight: 500,
-                }}
-              >
-                {dayjs(
-                  row.tanggal
-                ).format(
-                  'DD MMM YYYY'
-                )}
-              </div>
-
-              {/* ACTIONS */}
-              {openActionId ===
-                row.id && (
-                <div className="d-flex gap-2">
-                  {editId ===
-                  row.id ? (
-                    <button
-                      className="btn btn-sm border-0"
-                      style={{
-                        background:
-                          '#dcfce7',
-
-                        color:
-                          '#15803d',
-
-                        borderRadius: 999,
-
-                        padding:
-                          '6px 14px',
-
-                        fontWeight: 600,
-                      }}
-                      onClick={() => {
-                        onSave?.(
-                          row
-                        );
-
-                        setOpenActionId(
-                          null
-                        );
-                      }}
-                    >
-                      Simpan
-                    </button>
-                  ) : (
-                    <button
-                      className="btn btn-sm border-0 d-flex align-items-center gap-1"
-                      style={{
-                        background:
-                          '#f3f4f6',
-
-                        color:
-                          '#374151',
-
-                        borderRadius: 999,
-
-                        padding:
-                          '6px 14px',
-
-                        fontWeight: 600,
-                      }}
-                      onClick={() => {
-                        onEdit?.(
-                          row
-                        );
-
-                        setOpenActionId(
-                          null
-                        );
-                      }}
-                    >
-                      <FiEdit2
-                        size={
-                          14
-                        }
-                      />
-                      Edit
-                    </button>
-                  )}
-
-                  <button
-                    className="btn btn-sm border-0 d-flex align-items-center gap-1"
-                    style={{
-                      background:
-                        '#fee2e2',
-
-                      color:
-                        '#dc2626',
-
-                      borderRadius: 999,
-
-                      padding:
-                        '6px 14px',
-
-                      fontWeight: 600,
-                    }}
-                    onClick={() => {
-                      onDelete?.(
-                        row
-                      );
-
-                      setOpenActionId(
-                        null
-                      );
-                    }}
-                  >
-                    <FiTrash2
-                      size={14}
-                    />
-                    Hapus
-                  </button>
-                </div>
+            <div
+              className="mt-2"
+              style={{
+                fontSize: 11,
+                color: '#999',
+                fontWeight: 500,
+              }}
+            >
+              {dayjs(
+                row.tanggal
+              ).format(
+                'DD MMM YYYY'
               )}
             </div>
           </div>
@@ -420,13 +256,13 @@ const CardTableRiwayatTransaksi = ({
       })}
 
       {/* PAGINATION */}
-      <div className="d-flex justify-content-center align-items-center gap-3 mt-2">
+      <div className="d-flex justify-content-center align-items-center gap-2 mt-2">
         <button
           className="btn border-0"
           style={{
-            width: 40,
-            height: 40,
-            borderRadius: 12,
+            width: 36,
+            height: 36,
+            borderRadius: 10,
             background:
               '#f3f4f6',
           }}
@@ -443,23 +279,22 @@ const CardTableRiwayatTransaksi = ({
 
         <div
           style={{
-            fontSize: 13,
+            fontSize: 12,
             fontWeight: 600,
             color: '#666',
-            minWidth: 60,
+            minWidth: 50,
             textAlign: 'center',
           }}
         >
-          {page + 1} /{' '}
-          {totalPages}
+          {page + 1}/{totalPages}
         </div>
 
         <button
           className="btn border-0"
           style={{
-            width: 40,
-            height: 40,
-            borderRadius: 12,
+            width: 36,
+            height: 36,
+            borderRadius: 10,
             background:
               '#f3f4f6',
           }}

@@ -642,12 +642,7 @@ const RiwayatTransaksi = ({
           onPageChange={(p) =>
             setPage(p + 1)
           }
-          onEdit={handleEdit}
           onDelete={handleDelete}
-          editId={editId}
-          editForm={editForm}
-          setEditForm={setEditForm}
-          onSave={handleSave}
         />
       ) : (
         <>
