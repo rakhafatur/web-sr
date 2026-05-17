@@ -2,26 +2,18 @@
   "compilerOptions": {
     "target": "ESNext",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-
     "jsx": "react-jsx",
-
     "module": "ESNext",
     "moduleResolution": "bundler",
-
     "resolveJsonModule": true,
     "isolatedModules": true,
-
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-
     "strict": true,
     "noEmit": true,
-
-    "types": ["react"]
+    "types": ["react"]                  
   },
-
   "include": ["src"]
 }
