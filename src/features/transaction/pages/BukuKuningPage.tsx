@@ -506,7 +506,7 @@ const BukuKuningPage = () => {
         14,
         46,
         182,
-        48,
+        42,
         6,
         6,
         'FD'
@@ -528,7 +528,7 @@ const BukuKuningPage = () => {
       doc.text(
         'DETAIL LADIES',
         20,
-        60
+        58
       );
 
       doc.setFont(
@@ -543,13 +543,13 @@ const BukuKuningPage = () => {
       doc.text(
         'Nama',
         20,
-        74
+        70
       );
 
       doc.text(
         ':',
         42,
-        74
+        70
       );
 
       doc.text(
@@ -562,13 +562,13 @@ const BukuKuningPage = () => {
       doc.text(
         'Outlet',
         20,
-        84
+        78
       );
 
       doc.text(
         ':',
         42,
-        84
+        78
       );
 
       doc.text(
@@ -581,13 +581,13 @@ const BukuKuningPage = () => {
       doc.text(
         'PIN',
         120,
-        74
+        70
       );
 
       doc.text(
         ':',
         135,
-        74
+        70
       );
 
       doc.setFont(
@@ -595,7 +595,7 @@ const BukuKuningPage = () => {
         'bold'
       );
 
-      doc.setFontSize(11);
+      doc.setFontSize(16);
 
       doc.text(
         selectedLady?.pin || '-',
@@ -689,10 +689,10 @@ const BukuKuningPage = () => {
       doc.setDrawColor(220);
 
       doc.line(
-        14,
-        150,
+        72,
+        145,
         196,
-        150
+        145
       );
 
       doc.setFont(
@@ -707,7 +707,7 @@ const BukuKuningPage = () => {
       doc.text(
         'Ringkasan Keuangan',
         14,
-        160
+        147
       );
 
       // =====================================
@@ -715,7 +715,7 @@ const BukuKuningPage = () => {
       // =====================================
 
       autoTable(doc, {
-        startY: 168,
+        startY: 154,
 
         theme: 'plain',
 
@@ -950,10 +950,10 @@ const BukuKuningPage = () => {
       doc.setDrawColor(230);
 
       doc.roundedRect(
-        12,
-        36,
-        186,
-        232,
+        10,
+        34,
+        190,
+        238,
         6,
         6,
         'FD'
@@ -990,8 +990,8 @@ const BukuKuningPage = () => {
         ),
 
         styles: {
-          fontSize: 8.5,
-          cellPadding: 5.5,
+          fontSize: 9,
+          cellPadding: 4,
           textColor: 40,
           lineColor: [
             235,
@@ -1030,15 +1030,15 @@ const BukuKuningPage = () => {
 
         columnStyles: {
           0: {
-            cellWidth: 28,
+            cellWidth: 26,
           },
 
           1: {
-            cellWidth: 52,
+            cellWidth: 46,
           },
 
           2: {
-            cellWidth: 18,
+            cellWidth: 24,
             halign: 'center',
           },
 
