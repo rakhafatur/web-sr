@@ -1,14 +1,13 @@
 import { useState } from 'react';
+import { useMediaQuery } from 'react-responsive';
 import { supabase } from '../../../lib/supabaseClient';
 import FormInput from '../../../components/FormInput';
 import {
-  FiCalendar,
-  FiDollarSign,
-  FiFileText,
   FiGift,
-  FiPlusCircle,
-  FiTrendingDown,
   FiTrendingUp,
+  FiTrendingDown,
+  FiFileText,
+  FiPlus,
 } from 'react-icons/fi';
 
 type Props = {
@@ -20,6 +19,10 @@ const TransaksiForm = ({
   ladiesId,
   onSuccess,
 }: Props) => {
+  const isMobile = useMediaQuery({
+    maxWidth: 768,
+  });
+
   const [loading, setLoading] =
     useState(false);
 
@@ -179,7 +182,7 @@ const TransaksiForm = ({
 
     {
       value: 'pemasukan_lain',
-      label: 'Pemasukan Lain',
+      label: 'Pemasukan',
       icon: <FiTrendingUp />,
       color: '#ca8a04',
       bg: '#fef9c3',
@@ -202,184 +205,147 @@ const TransaksiForm = ({
     },
   ];
 
-  const selectedType =
-    transactionTypes.find(
-      (t) => t.value === form.tipe
-    );
-
   return (
-    <div>
-      {/* TYPE SELECT */}
-      <div className="mb-4">
-        <label
-          className="fw-semibold mb-3 d-block"
-          style={{
-            color:
-              'var(--color-dark)',
-          }}
-        >
-          Jenis Transaksi
-        </label>
+    <div
+      style={{
+        paddingBottom: isMobile
+          ? 90
+          : 0,
+      }}
+    >
+      {/* MOBILE TYPE SELECT */}
+      <div
+        className={`row ${
+          isMobile ? 'g-2' : 'g-3'
+        } mb-3`}
+      >
+        {transactionTypes.map(
+          (item) => {
+            const active =
+              form.tipe ===
+              item.value;
 
-        <div className="row g-3">
-          {transactionTypes.map(
-            (item) => {
-              const active =
-                form.tipe ===
-                item.value;
+            return (
+              <div
+                key={item.value}
+                className="col-6"
+              >
+                <button
+                  type="button"
+                  onClick={() =>
+                    setForm({
+                      ...form,
+                      tipe:
+                        item.value,
+                    })
+                  }
+                  className="w-100 border-0"
+                  style={{
+                    borderRadius:
+                      isMobile
+                        ? 12
+                        : 20,
 
-              return (
-                <div
-                  key={item.value}
-                  className="col-6"
+                    padding:
+                      isMobile
+                        ? '10px 8px'
+                        : '16px 14px',
+
+                    background:
+                      active
+                        ? item.bg
+                        : '#fff',
+
+                    border: active
+                      ? `1.5px solid ${item.color}`
+                      : '1px solid #eee',
+
+                    transition:
+                      'all 0.2s ease',
+
+                    minHeight:
+                      isMobile
+                        ? 70
+                        : 100,
+
+                    boxShadow:
+                      active
+                        ? `0 4px 12px ${item.bg}`
+                        : '0 1px 4px rgba(0,0,0,0.04)',
+                  }}
                 >
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setForm({
-                        ...form,
-                        tipe:
-                          item.value,
-                      })
-                    }
-                    className="w-100 border-0"
+                  <div
+                    className="d-flex flex-column align-items-center justify-content-center"
                     style={{
-                      borderRadius: 20,
-                      padding:
-                        '16px 14px',
-                      background:
-                        active
-                          ? item.bg
-                          : '#fff',
-                      border: active
-                        ? `2px solid ${item.color}`
-                        : '2px solid #eee',
-                      transition:
-                        'all 0.2s ease',
-                      boxShadow:
-                        active
-                          ? `0 8px 20px ${item.bg}`
-                          : '0 2px 8px rgba(0,0,0,0.04)',
+                      color:
+                        item.color,
                     }}
                   >
                     <div
-                      className="d-flex flex-column align-items-center justify-content-center"
                       style={{
-                        color:
-                          item.color,
+                        fontSize:
+                          isMobile
+                            ? 16
+                            : 24,
+
+                        marginBottom:
+                          isMobile
+                            ? 4
+                            : 8,
                       }}
                     >
-                      <div
-                        style={{
-                          fontSize: 24,
-                          marginBottom: 8,
-                        }}
-                      >
-                        {item.icon}
-                      </div>
-
-                      <div
-                        style={{
-                          fontWeight: 700,
-                          fontSize:
-                            '0.9rem',
-                        }}
-                      >
-                        {item.label}
-                      </div>
+                      {item.icon}
                     </div>
-                  </button>
-                </div>
-              );
-            }
-          )}
-        </div>
-      </div>
 
-      {/* HEADER INFO */}
-      <div
-        className="mb-4 p-3 rounded-4"
-        style={{
-          background:
-            selectedType?.bg,
-          border: `1px solid ${selectedType?.color}20`,
-        }}
-      >
-        <div className="d-flex align-items-center gap-3">
-          <div
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: 16,
-              background:
-                selectedType?.color,
-              color: '#fff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent:
-                'center',
-              fontSize: 22,
-            }}
-          >
-            {selectedType?.icon}
-          </div>
+                    <div
+                      style={{
+                        fontWeight: 700,
 
-          <div>
-            <div
-              className="fw-bold"
-              style={{
-                color:
-                  selectedType?.color,
-              }}
-            >
-              {
-                selectedType?.label
-              }
-            </div>
+                        fontSize:
+                          isMobile
+                            ? '0.75rem'
+                            : '0.9rem',
 
-            <div
-              style={{
-                fontSize: '0.85rem',
-                color: '#666',
-              }}
-            >
-              Isi detail transaksi
-              dengan lengkap
-            </div>
-          </div>
-        </div>
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      {item.label}
+                    </div>
+                  </div>
+                </button>
+              </div>
+            );
+          }
+        )}
       </div>
 
       {/* FORM */}
-      <div className="row g-3">
+      <div
+        className={`row ${
+          isMobile ? 'g-2' : 'g-3'
+        }`}
+      >
         {/* DATE */}
         <div className="col-12">
           <div
-            className="p-3 rounded-4"
+            className={
+              isMobile
+                ? ''
+                : 'p-3 rounded-4'
+            }
             style={{
-              background: '#fafafa',
-              border:
-                '1px solid #eee',
+              background:
+                isMobile
+                  ? 'transparent'
+                  : '#fafafa',
+
+              border: isMobile
+                ? 'none'
+                : '1px solid #eee',
             }}
           >
-            <div className="d-flex align-items-center gap-2 mb-2">
-              <FiCalendar
-                color="#666"
-              />
-
-              <label
-                className="fw-semibold mb-0"
-                style={{
-                  color:
-                    'var(--color-dark)',
-                }}
-              >
-                Tanggal
-              </label>
-            </div>
-
             <FormInput
-              label=""
+              label="Tanggal"
               name="tanggal"
               value={form.tanggal}
               onChange={
@@ -396,28 +362,25 @@ const TransaksiForm = ({
           <>
             <div className="col-12">
               <div
-                className="p-3 rounded-4"
+                className={
+                  isMobile
+                    ? ''
+                    : 'p-3 rounded-4'
+                }
                 style={{
                   background:
-                    '#fafafa',
+                    isMobile
+                      ? 'transparent'
+                      : '#fafafa',
+
                   border:
-                    '1px solid #eee',
+                    isMobile
+                      ? 'none'
+                      : '1px solid #eee',
                 }}
               >
-                <div className="d-flex align-items-center gap-2 mb-2">
-                  <FiGift
-                    color="#16a34a"
-                  />
-
-                  <label
-                    className="fw-semibold mb-0"
-                  >
-                    Jumlah Voucher
-                  </label>
-                </div>
-
                 <FormInput
-                  label=""
+                  label="Jumlah Voucher"
                   name="jumlah_voucher"
                   value={
                     form.jumlah_voucher
@@ -430,12 +393,23 @@ const TransaksiForm = ({
               </div>
             </div>
 
+            {/* TOTAL */}
             <div className="col-12">
               <div
-                className="p-4 rounded-4"
                 style={{
+                  borderRadius:
+                    isMobile
+                      ? 14
+                      : 20,
+
+                  padding:
+                    isMobile
+                      ? '12px 14px'
+                      : '20px',
+
                   background:
                     'linear-gradient(135deg, #dcfce7, #f0fdf4)',
+
                   border:
                     '1px solid #bbf7d0',
                 }}
@@ -443,20 +417,29 @@ const TransaksiForm = ({
                 <div
                   style={{
                     fontSize:
-                      '0.85rem',
+                      isMobile
+                        ? '0.72rem'
+                        : '0.85rem',
+
                     color: '#166534',
-                    marginBottom: 6,
+
+                    marginBottom: 4,
                   }}
                 >
-                  Total Pemasukan
+                  Total Voucher
                 </div>
 
                 <div
                   className="fw-bold"
                   style={{
                     fontSize:
-                      '1.8rem',
+                      isMobile
+                        ? '1.15rem'
+                        : '1.8rem',
+
                     color: '#15803d',
+
+                    lineHeight: 1.2,
                   }}
                 >
                   Rp
@@ -468,129 +451,163 @@ const TransaksiForm = ({
                 <div
                   style={{
                     fontSize:
-                      '0.82rem',
+                      isMobile
+                        ? '0.7rem'
+                        : '0.82rem',
+
                     color: '#166534',
-                    marginTop: 6,
+
+                    marginTop: 4,
                   }}
                 >
                   {jumlahVoucherRaw ||
                     0}{' '}
-                  voucher × Rp150.000
+                  × 150.000
                 </div>
               </div>
             </div>
           </>
         ) : (
           <>
-            {/* KETERANGAN */}
             <div className="col-12">
-              <div
-                className="p-3 rounded-4"
-                style={{
-                  background:
-                    '#fafafa',
-                  border:
-                    '1px solid #eee',
-                }}
-              >
-                <div className="d-flex align-items-center gap-2 mb-2">
-                  <FiFileText
-                    color="#666"
-                  />
-
-                  <label className="fw-semibold mb-0">
-                    Keterangan
-                  </label>
-                </div>
-
-                <FormInput
-                  label=""
-                  name="keterangan"
-                  value={
-                    form.keterangan
-                  }
-                  onChange={
-                    handleChange
-                  }
-                  type="text"
-                />
-              </div>
+              <FormInput
+                label="Keterangan"
+                name="keterangan"
+                value={
+                  form.keterangan
+                }
+                onChange={
+                  handleChange
+                }
+                type="text"
+              />
             </div>
 
-            {/* JUMLAH */}
             <div className="col-12">
-              <div
-                className="p-3 rounded-4"
-                style={{
-                  background:
-                    '#fafafa',
-                  border:
-                    '1px solid #eee',
-                }}
-              >
-                <div className="d-flex align-items-center gap-2 mb-2">
-                  <FiDollarSign
-                    color="#666"
-                  />
-
-                  <label className="fw-semibold mb-0">
-                    Jumlah
-                  </label>
-                </div>
-
-                <FormInput
-                  label=""
-                  name="jumlah"
-                  value={form.jumlah}
-                  onChange={
-                    handleChange
-                  }
-                  type="text"
-                />
-              </div>
+              <FormInput
+                label="Jumlah"
+                name="jumlah"
+                value={form.jumlah}
+                onChange={
+                  handleChange
+                }
+                type="text"
+              />
             </div>
           </>
         )}
       </div>
 
-      {/* BUTTON */}
-      <div className="mt-4">
-        <button
-          className="btn w-100 border-0"
+      {/* DESKTOP BUTTON */}
+      {!isMobile && (
+        <div className="mt-4">
+          <button
+            className="btn w-100 border-0"
+            style={{
+              background:
+                'linear-gradient(135deg, var(--color-green), #65d68d)',
+
+              color: '#fff',
+
+              borderRadius: 18,
+
+              height: 56,
+
+              fontWeight: 700,
+
+              fontSize: '1rem',
+
+              boxShadow:
+                '0 10px 24px rgba(34,197,94,0.25)',
+            }}
+            onClick={
+              handleSubmit
+            }
+            disabled={loading}
+          >
+            <div className="d-flex align-items-center justify-content-center gap-2">
+              {loading ? (
+                <>
+                  <div
+                    className="spinner-border spinner-border-sm"
+                    role="status"
+                  />
+                  Menyimpan...
+                </>
+              ) : (
+                <>
+                  <FiPlus
+                    size={18}
+                  />
+                  Tambah Transaksi
+                </>
+              )}
+            </div>
+          </button>
+        </div>
+      )}
+
+      {/* MOBILE STICKY BUTTON */}
+      {isMobile && (
+        <div
           style={{
-            background:
-              'linear-gradient(135deg, var(--color-green), #65d68d)',
-            color: '#fff',
-            borderRadius: 18,
-            height: 56,
-            fontWeight: 700,
-            fontSize: '1rem',
-            boxShadow:
-              '0 10px 24px rgba(34,197,94,0.25)',
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+
+            background: '#fff',
+
+            padding:
+              '12px 16px',
+
+            borderTop:
+              '1px solid #eee',
+
+            zIndex: 999,
           }}
-          onClick={handleSubmit}
-          disabled={loading}
         >
-          <div className="d-flex align-items-center justify-content-center gap-2">
+          <button
+            className="btn w-100 border-0"
+            style={{
+              background:
+                'linear-gradient(135deg, var(--color-green), #65d68d)',
+
+              color: '#fff',
+
+              borderRadius: 14,
+
+              height: 48,
+
+              fontWeight: 700,
+
+              fontSize: '0.92rem',
+            }}
+            onClick={
+              handleSubmit
+            }
+            disabled={loading}
+          >
             {loading ? (
               <>
                 <div
-                  className="spinner-border spinner-border-sm"
+                  className="spinner-border spinner-border-sm me-2"
                   role="status"
                 />
                 Menyimpan...
               </>
             ) : (
               <>
-                <FiPlusCircle
-                  size={18}
+                <FiPlus
+                  size={16}
+                  className="me-2"
                 />
                 Tambah Transaksi
               </>
             )}
-          </div>
-        </button>
-      </div>
+          </button>
+        </div>
+      )}
     </div>
   );
 };
