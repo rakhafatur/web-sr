@@ -88,29 +88,31 @@ const AddTransaksiPage = () => {
           </div>
 
           <div>
-  <h2
-    className="fw-bold mb-1"
-    style={{
-      fontSize: isMobile
-        ? '1.25rem'
-        : '2rem',
-      lineHeight: 1.2,
-    }}
-  >
-    Transaksi Ladies
-  </h2>
+            <h2
+              className="fw-semibold mb-0"
+              style={{
+                fontSize: isMobile
+                  ? '0.98rem'
+                  : '1.8rem',
+                lineHeight: 1.2,
+                color: '#111',
+              }}
+            >
+              Transaksi Ladies
+            </h2>
 
-  <div
-    style={{
-      opacity: 0.9,
-      fontSize: isMobile
-        ? '0.8rem'
-        : '0.95rem',
-    }}
-  >
-    Kelola transaksi harian
-  </div>
-</div>
+            <div
+              style={{
+                opacity: 0.7,
+                fontSize: isMobile
+                  ? '0.72rem'
+                  : '0.92rem',
+                marginTop: 2,
+              }}
+            >
+              Kelola transaksi harian
+            </div>
+          </div>
         </div>
       </div>
 
