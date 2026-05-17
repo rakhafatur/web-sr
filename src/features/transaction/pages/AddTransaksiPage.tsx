@@ -95,7 +95,6 @@ const AddTransaksiPage = () => {
                   ? '0.98rem'
                   : '1.8rem',
                 lineHeight: 1.2,
-                color: '#111',
               }}
             >
               Transaksi Ladies
@@ -348,20 +347,8 @@ const AddTransaksiPage = () => {
                         color: '#666',
                       }}
                     >
-                      Histori transaksi terbaru
+                      Histori transaksi terbaru {selectedLady.nama_ladies}
                     </div>
-                  </div>
-
-                  <div
-                    className="px-3 py-2 rounded-pill"
-                    style={{
-                      background: '#f4f4f4',
-                      fontSize: '0.82rem',
-                      fontWeight: 600,
-                      color: '#444',
-                    }}
-                  >
-                    PIN: {selectedLady.pin}
                   </div>
                 </div>
               </div>
