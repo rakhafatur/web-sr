@@ -1,8 +1,9 @@
 import dayjs from 'dayjs';
 import {
-  FiCalendar, FiMoreVertical, FiEdit2, FiTrash2, FiFileText,
-  FiDollarSign, FiMinusCircle, FiPlusCircle,
-  FiArrowLeft, FiArrowRight,
+  FiEdit2,
+  FiTrash2,
+  FiChevronLeft,
+  FiChevronRight,
 } from 'react-icons/fi';
 import { useState } from 'react';
 
@@ -18,42 +19,53 @@ type Transaksi = {
 
 type Props = {
   data: Transaksi[];
-  page: number; // zero-based
+  page: number;
   rowsPerPage: number;
   onPageChange: (page: number) => void;
   onEdit?: (row: Transaksi) => void;
   onDelete?: (row: Transaksi) => void;
   editId?: string | null;
-  editForm?: { jumlah: string; keterangan: string };
-  setEditForm?: (form: { jumlah: string; keterangan: string }) => void;
+  editForm?: {
+    jumlah: string;
+    keterangan: string;
+  };
+  setEditForm?: (form: {
+    jumlah: string;
+    keterangan: string;
+  }) => void;
   onSave?: (row: Transaksi) => void;
 };
 
-const tipeStyle = (tipe: string) => {
+const getTypeStyle = (
+  tipe: string
+) => {
   switch (tipe) {
     case 'voucher':
       return {
-        icon: <FiPlusCircle className="me-2" style={{ color: 'var(--color-green)' }} />,
-        border: '2px solid var(--color-green)',
-        jumlahColor: 'var(--color-green)',
+        bg: '#dcfce7',
+        text: '#15803d',
+        badge: 'Voucher',
       };
+
     case 'kasbon':
       return {
-        icon: <FiMinusCircle className="me-2" style={{ color: 'var(--color-danger)' }} />,
-        border: '2px solid var(--color-danger)',
-        jumlahColor: 'var(--color-danger)',
+        bg: '#fee2e2',
+        text: '#dc2626',
+        badge: 'Kasbon',
       };
+
     case 'pemasukan_lain':
       return {
-        icon: <FiDollarSign className="me-2" style={{ color: 'var(--color-primary)' }} />,
-        border: '2px solid var(--color-primary)',
-        jumlahColor: 'var(--color-primary)',
+        bg: '#dbeafe',
+        text: '#2563eb',
+        badge: 'Pemasukan',
       };
+
     default:
       return {
-        icon: <FiFileText className="me-2" />,
-        border: '1px solid var(--color-green)',
-        jumlahColor: 'var(--color-dark)',
+        bg: '#f3f4f6',
+        text: '#374151',
+        badge: 'Lainnya',
       };
   }
 };
@@ -70,148 +82,401 @@ const CardTableRiwayatTransaksi = ({
   setEditForm,
   onSave,
 }: Props) => {
-  // Order by tanggal DESC khusus mobile
-  const orderedRows = [...data].sort((a, b) => dayjs(b.tanggal).valueOf() - dayjs(a.tanggal).valueOf());
-  const start = page * rowsPerPage;
-  const end = start + rowsPerPage;
-  const currentRows = orderedRows.slice(start, end);
-  const totalPages = Math.max(1, Math.ceil(data.length / rowsPerPage));
+  const orderedRows = [
+    ...data,
+  ].sort(
+    (a, b) =>
+      dayjs(
+        b.tanggal
+      ).valueOf() -
+      dayjs(
+        a.tanggal
+      ).valueOf()
+  );
 
-  const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
+  const start =
+    page * rowsPerPage;
+
+  const end =
+    start + rowsPerPage;
+
+  const currentRows =
+    orderedRows.slice(
+      start,
+      end
+    );
+
+  const totalPages =
+    Math.max(
+      1,
+      Math.ceil(
+        data.length /
+          rowsPerPage
+      )
+    );
+
+  const [openActionId, setOpenActionId] =
+    useState<string | null>(
+      null
+    );
 
   return (
     <div className="d-flex flex-column gap-3">
-      {currentRows.map((row, i) => {
-        const style = tipeStyle(row.tipe);
+      {currentRows.map((row) => {
+        const style =
+          getTypeStyle(
+            row.tipe
+          );
 
         return (
           <div
             key={row.id}
-            className="position-relative rounded shadow-sm p-3"
             style={{
-              backgroundColor: 'var(--color-white)',
-              border: style.border,
-              transition: 'border-color .2s',
+              background:
+                '#fff',
+
+              border:
+                '1px solid #f1f1f1',
+
+              borderRadius: 20,
+
+              padding: 16,
+
+              boxShadow:
+                '0 2px 12px rgba(0,0,0,0.04)',
             }}
           >
-            {/* 3-dot menu */}
-            <div className="position-absolute" style={{ top: 10, right: 10, zIndex: 2 }}>
-              <button
-                className="btn btn-sm btn-light border"
-                onClick={() => setOpenMenuIndex(openMenuIndex === i ? null : i)}
+            {/* HEADER */}
+            <div className="d-flex justify-content-between align-items-start mb-3">
+              <div
+                style={{
+                  padding:
+                    '4px 10px',
+
+                  borderRadius: 999,
+
+                  background:
+                    style.bg,
+
+                  color:
+                    style.text,
+
+                  fontSize: 11,
+
+                  fontWeight: 700,
+
+                  letterSpacing:
+                    0.4,
+                }}
               >
-                <FiMoreVertical />
+                {style.badge}
+              </div>
+
+              <button
+                className="btn btn-sm border-0"
+                style={{
+                  background:
+                    '#f8f8f8',
+
+                  borderRadius: 10,
+
+                  width: 34,
+
+                  height: 34,
+                }}
+                onClick={() =>
+                  setOpenActionId(
+                    openActionId ===
+                      row.id
+                      ? null
+                      : row.id
+                  )
+                }
+              >
+                ⋯
               </button>
-              {openMenuIndex === i && (
-                <div
-                  className="position-absolute bg-white border rounded shadow-sm p-2"
-                  style={{ top: '110%', right: 0, minWidth: 110, zIndex: 3 }}
-                >
-                  {editId === row.id ? (
-                    <button
-                      className="dropdown-item text-success d-flex align-items-center gap-2"
-                      onClick={() => {
-                        onSave?.(row);
-                        setOpenMenuIndex(null);
-                      }}
-                    >
-                      💾 Simpan
-                    </button>
-                  ) : (
-                    <button
-                      className="dropdown-item text-dark d-flex align-items-center gap-2"
-                      onClick={() => {
-                        onEdit?.(row);
-                        setOpenMenuIndex(null);
-                      }}
-                    >
-                      <FiEdit2 /> Edit
-                    </button>
-                  )}
-                  <button
-                    className="dropdown-item text-danger d-flex align-items-center gap-2"
-                    onClick={() => {
-                      onDelete?.(row);
-                      setOpenMenuIndex(null);
-                    }}
-                  >
-                    <FiTrash2 /> Hapus
-                  </button>
-                </div>
-              )}
             </div>
 
-            {/* Tanggal */}
-            <div className="d-flex align-items-center mb-2" style={{ color: 'var(--color-dark)' }}>
-              <FiCalendar className="me-2" />
-              <strong>{dayjs(row.tanggal).format('YYYY-MM-DD')}</strong>
-            </div>
-
-            {/* Icon & Jumlah */}
-            <div className="d-flex align-items-center mb-1" style={{ color: style.jumlahColor, fontWeight: 600, fontSize: 18 }}>
-              {style.icon}
-              {editId === row.id && editForm && setEditForm ? (
+            {/* JUMLAH */}
+            <div
+              style={{
+                fontSize: 24,
+                fontWeight: 700,
+                color:
+                  style.text,
+                lineHeight: 1.2,
+              }}
+            >
+              {editId ===
+              row.id &&
+              editForm &&
+              setEditForm ? (
                 <input
                   className="form-control"
                   style={{
-                    backgroundColor: 'var(--color-white)',
-                    color: style.jumlahColor,
-                    borderColor: style.jumlahColor,
-                    maxWidth: 120,
-                    display: 'inline-block'
+                    borderRadius: 12,
+                    border:
+                      '1px solid #ddd',
+
+                    fontWeight: 700,
+
+                    fontSize: 20,
                   }}
                   type="text"
-                  value={editForm.jumlah}
-                  onChange={e => setEditForm({ ...editForm, jumlah: e.target.value })}
+                  value={
+                    editForm.jumlah
+                  }
+                  onChange={(
+                    e
+                  ) =>
+                    setEditForm({
+                      ...editForm,
+                      jumlah:
+                        e.target
+                          .value,
+                    })
+                  }
                 />
               ) : (
-                `Rp${Number(row.jumlah).toLocaleString()}`
+                <>
+                  Rp
+                  {Number(
+                    row.jumlah
+                  ).toLocaleString()}
+                </>
               )}
             </div>
 
-            {/* Keterangan */}
-            <div className="d-flex align-items-center mb-1" style={{ color: 'var(--color-dark)' }}>
-              <FiFileText className="me-2" />
-              {row.tipe === 'voucher'
-                ? `Voucher ${row.jumlah / 150000} x 150.000`
-                : editId === row.id && editForm && setEditForm
-                  ? (
-                    <input
-                      className="form-control"
+            {/* KETERANGAN */}
+            <div
+              style={{
+                marginTop: 6,
+                color: '#666',
+                fontSize: 14,
+                lineHeight: 1.4,
+              }}
+            >
+              {row.tipe ===
+              'voucher' ? (
+                <>
+                  {row.jumlah /
+                    150000}{' '}
+                  × Voucher
+                </>
+              ) : editId ===
+                  row.id &&
+                editForm &&
+                setEditForm ? (
+                <input
+                  className="form-control mt-2"
+                  style={{
+                    borderRadius: 12,
+                    border:
+                      '1px solid #ddd',
+                  }}
+                  type="text"
+                  value={
+                    editForm.keterangan
+                  }
+                  onChange={(
+                    e
+                  ) =>
+                    setEditForm({
+                      ...editForm,
+                      keterangan:
+                        e.target
+                          .value,
+                    })
+                  }
+                />
+              ) : (
+                row.keterangan ||
+                '-'
+              )}
+            </div>
+
+            {/* FOOTER */}
+            <div className="d-flex justify-content-between align-items-center mt-4">
+              <div
+                style={{
+                  fontSize: 12,
+                  color: '#999',
+                  fontWeight: 500,
+                }}
+              >
+                {dayjs(
+                  row.tanggal
+                ).format(
+                  'DD MMM YYYY'
+                )}
+              </div>
+
+              {/* ACTIONS */}
+              {openActionId ===
+                row.id && (
+                <div className="d-flex gap-2">
+                  {editId ===
+                  row.id ? (
+                    <button
+                      className="btn btn-sm border-0"
                       style={{
-                        backgroundColor: 'var(--color-white)',
-                        color: 'var(--color-dark)',
-                        borderColor: style.jumlahColor,
-                        maxWidth: 180,
-                        display: 'inline-block'
+                        background:
+                          '#dcfce7',
+
+                        color:
+                          '#15803d',
+
+                        borderRadius: 999,
+
+                        padding:
+                          '6px 14px',
+
+                        fontWeight: 600,
                       }}
-                      type="text"
-                      value={editForm.keterangan}
-                      onChange={e => setEditForm({ ...editForm, keterangan: e.target.value })}
+                      onClick={() => {
+                        onSave?.(
+                          row
+                        );
+
+                        setOpenActionId(
+                          null
+                        );
+                      }}
+                    >
+                      Simpan
+                    </button>
+                  ) : (
+                    <button
+                      className="btn btn-sm border-0 d-flex align-items-center gap-1"
+                      style={{
+                        background:
+                          '#f3f4f6',
+
+                        color:
+                          '#374151',
+
+                        borderRadius: 999,
+
+                        padding:
+                          '6px 14px',
+
+                        fontWeight: 600,
+                      }}
+                      onClick={() => {
+                        onEdit?.(
+                          row
+                        );
+
+                        setOpenActionId(
+                          null
+                        );
+                      }}
+                    >
+                      <FiEdit2
+                        size={
+                          14
+                        }
+                      />
+                      Edit
+                    </button>
+                  )}
+
+                  <button
+                    className="btn btn-sm border-0 d-flex align-items-center gap-1"
+                    style={{
+                      background:
+                        '#fee2e2',
+
+                      color:
+                        '#dc2626',
+
+                      borderRadius: 999,
+
+                      padding:
+                        '6px 14px',
+
+                      fontWeight: 600,
+                    }}
+                    onClick={() => {
+                      onDelete?.(
+                        row
+                      );
+
+                      setOpenActionId(
+                        null
+                      );
+                    }}
+                  >
+                    <FiTrash2
+                      size={14}
                     />
-                  )
-                  : (row.keterangan || '-')
-              }
+                    Hapus
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         );
       })}
 
       {/* PAGINATION */}
-      <div className="d-flex justify-content-between align-items-center mt-2">
+      <div className="d-flex justify-content-center align-items-center gap-3 mt-2">
         <button
-          className="btn btn-outline-success btn-sm d-flex align-items-center gap-1"
-          onClick={() => page > 0 && onPageChange(page - 1)}
+          className="btn border-0"
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 12,
+            background:
+              '#f3f4f6',
+          }}
+          onClick={() =>
+            page > 0 &&
+            onPageChange(
+              page - 1
+            )
+          }
           disabled={page === 0}
         >
-          <FiArrowLeft /> <span>Sebelumnya</span>
+          <FiChevronLeft />
         </button>
-        <button
-          className="btn btn-outline-success btn-sm d-flex align-items-center gap-1"
-          onClick={() => page < totalPages - 1 && onPageChange(page + 1)}
-          disabled={page >= totalPages - 1}
+
+        <div
+          style={{
+            fontSize: 13,
+            fontWeight: 600,
+            color: '#666',
+            minWidth: 60,
+            textAlign: 'center',
+          }}
         >
-          <span>Selanjutnya</span> <FiArrowRight />
+          {page + 1} /{' '}
+          {totalPages}
+        </div>
+
+        <button
+          className="btn border-0"
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 12,
+            background:
+              '#f3f4f6',
+          }}
+          onClick={() =>
+            page <
+              totalPages -
+                1 &&
+            onPageChange(
+              page + 1
+            )
+          }
+          disabled={
+            page >=
+            totalPages - 1
+          }
+        >
+          <FiChevronRight />
         </button>
       </div>
     </div>

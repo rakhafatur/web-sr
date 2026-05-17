@@ -98,8 +98,7 @@ const AddTransaksiPage = () => {
                 fontSize: '0.95rem',
               }}
             >
-              Kelola transaksi voucher & kasbon dengan
-              tampilan lebih modern
+              Kelola transaksi voucher & kasbon
             </div>
           </div>
         </div>
