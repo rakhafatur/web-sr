@@ -79,6 +79,9 @@ const RiwayatTransaksi = ({
       case 'pemasukan_lain':
         return 'pemasukan_lain';
 
+      case 'dokter':
+        return 'dokter';
+
       default:
         return '';
     }
@@ -91,6 +94,7 @@ const RiwayatTransaksi = ({
       voucher,
       kasbon,
       pemasukanLain,
+      riwayatDokter,
     ] = await Promise.all([
       supabase
         .from('vouchers')
@@ -110,6 +114,16 @@ const RiwayatTransaksi = ({
 
       supabase
         .from('pemasukan_lain')
+        .select('*')
+        .eq(
+          'ladies_id',
+          ladiesId
+        ),
+
+      supabase
+        .from(
+          'dokter'
+        )
         .select('*')
         .eq(
           'ladies_id',
@@ -145,6 +159,17 @@ const RiwayatTransaksi = ({
           priority: 3,
         })
       ),
+
+      ...(
+        riwayatDokter.data || []
+      ).map((r) => ({
+        ...r,
+        tipe:
+          'dokter',
+        tipeLabel:
+          'Dokter',
+        priority: 4,
+      })),
     ];
 
     const search =
@@ -317,7 +342,9 @@ const RiwayatTransaksi = ({
     const pengeluaran = data
       .filter(
         (d) =>
-          d.tipe === 'kasbon'
+          d.tipe === 'kasbon' ||
+          d.tipe ===
+            'dokter'
       )
       .reduce(
         (acc, curr) =>
@@ -360,6 +387,13 @@ const RiwayatTransaksi = ({
         color: '#b91c1c',
         label: 'Kasbon',
       },
+
+      dokter: {
+        bg: '#dbeafe',
+        color: '#2563eb',
+        label:
+          'Dokter',
+      },
     };
 
     const style =
@@ -392,7 +426,6 @@ const RiwayatTransaksi = ({
 
   return (
     <div className="mt-3">
-      {/* SUMMARY */}
       {!isMobile && (
         <div className="row g-3 mb-4">
           {[
@@ -413,7 +446,7 @@ const RiwayatTransaksi = ({
 
             {
               title:
-                'Total Kasbon',
+                'Total Pengeluaran',
 
               value:
                 summary.pengeluaran,
@@ -509,7 +542,6 @@ const RiwayatTransaksi = ({
         </div>
       )}
 
-      {/* FILTER */}
       {!isMobile && (
         <div className="card border-0 shadow-sm rounded-4 mb-4">
           <div className="p-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
@@ -540,6 +572,13 @@ const RiwayatTransaksi = ({
                     'kasbon',
                   label:
                     'Kasbon',
+                },
+
+                {
+                  value:
+                    'Dokter',
+                  label:
+                    'Dokter',
                 },
               ].map((item) => (
                 <button
@@ -636,7 +675,6 @@ const RiwayatTransaksi = ({
         </div>
       )}
 
-      {/* MOBILE */}
       {isMobile ? (
         <CardTableRiwayatTransaksi
           data={data}
@@ -649,7 +687,6 @@ const RiwayatTransaksi = ({
         />
       ) : (
         <>
-          {/* TABLE */}
           <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
             <DataTable
               columns={[
@@ -691,11 +728,16 @@ const RiwayatTransaksi = ({
                           row.tipe ===
                           'kasbon'
                             ? '#dc2626'
+                            : row.tipe ===
+                              'dokter'
+                            ? '#2563eb'
                             : '#16a34a',
                       }}
                     >
                       {row.tipe ===
-                      'kasbon'
+                        'kasbon' ||
+                      row.tipe ===
+                        'dokter'
                         ? '- '
                         : '+ '}
                       Rp
@@ -775,7 +817,6 @@ const RiwayatTransaksi = ({
             />
           </div>
 
-          {/* EMPTY */}
           {!loading &&
             data.length ===
               0 && (
@@ -808,7 +849,6 @@ const RiwayatTransaksi = ({
               </div>
             )}
 
-          {/* PAGINATION */}
           {data.length >
             0 && (
             <div className="d-flex justify-content-between align-items-center mt-4">

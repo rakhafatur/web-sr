@@ -43,9 +43,16 @@ const getTypeStyle = (
 
     case 'pemasukan_lain':
       return {
+        bg: '#fef3c7',
+        text: '#b45309',
+        label: 'Pemasukan',
+      };
+
+    case 'dokter':
+      return {
         bg: '#dbeafe',
         text: '#2563eb',
-        label: 'Pemasukan',
+        label: 'Dokter',
       };
 
     default:
@@ -183,6 +190,12 @@ const CardTableRiwayatTransaksi = ({
                     lineHeight: 1.1,
                   }}
                 >
+                  {row.tipe ===
+                    'kasbon' ||
+                  row.tipe ===
+                    'dokter'
+                    ? '- '
+                    : '+ '}
                   Rp
                   {Number(
                     row.jumlah
