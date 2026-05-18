@@ -25,6 +25,7 @@ import RiwayatAbsensiPage from './features/ladies/pages/RiwayatAbsensiPage';
 import VoucherListPage from './features/ladies/pages/VoucherListPage';
 import KasbonListPage from './features/ladies/pages/KasbonListPage';
 import DokterListPage from './features/ladies/pages/DokterListPage';
+import PemasukanLainListPage from './features/ladies/pages/PemasukanLainListPage';
 import PeraturanPage from './features/ladies/pages/PeraturanPage';
 import ProfilePage from './features/ladies/pages/ProfilePage';
 
@@ -77,6 +78,7 @@ function App() {
             <Route path="/ladies/home" element={<ProtectedRoute><MainLayout><HomeLadiesPage /></MainLayout></ProtectedRoute>} />
             <Route path="/ladies/absensi" element={<ProtectedRoute><MainLayout><RiwayatAbsensiPage /></MainLayout></ProtectedRoute>} />
             <Route path="/ladies/voucher" element={<ProtectedRoute><MainLayout><VoucherListPage /></MainLayout></ProtectedRoute>} />
+            <Route path="/ladies/pemasukan_lain" element={<ProtectedRoute><MainLayout><PemasukanLainListPage /></MainLayout></ProtectedRoute>} />
             <Route path="/ladies/kasbon" element={<ProtectedRoute><MainLayout><KasbonListPage /></MainLayout></ProtectedRoute>} />
             <Route path="/ladies/dokter" element={<ProtectedRoute><MainLayout><DokterListPage /></MainLayout></ProtectedRoute>} />
             <Route path="/ladies/peraturan" element={<ProtectedRoute><MainLayout><PeraturanPage /></MainLayout></ProtectedRoute>} />

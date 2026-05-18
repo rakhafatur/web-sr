@@ -24,8 +24,9 @@ function BottomNavbarLadies() {
             <h6 className="modal-title">Transaksi</h6>
             <ul>
               <li onClick={() => { navigate('/ladies/voucher'); setActiveModal(null); }}>Voucher</li>
+              <li onClick={() => { navigate('/ladies/pemasukan_lain'); setActiveModal(null); }}>Voucher</li>
               <li onClick={() => { navigate('/ladies/kasbon'); setActiveModal(null); }}>Kasbon</li>
-              <li onClick={() => { navigate('/ladies/dokter'); setActiveModal(null); }}>Kasbon</li>
+              <li onClick={() => { navigate('/ladies/dokter'); setActiveModal(null); }}>Dokter</li>
             </ul>
           </div>
         </div>
