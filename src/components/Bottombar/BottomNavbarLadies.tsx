@@ -25,6 +25,7 @@ function BottomNavbarLadies() {
             <ul>
               <li onClick={() => { navigate('/ladies/voucher'); setActiveModal(null); }}>Voucher</li>
               <li onClick={() => { navigate('/ladies/kasbon'); setActiveModal(null); }}>Kasbon</li>
+              <li onClick={() => { navigate('/ladies/dokter'); setActiveModal(null); }}>Kasbon</li>
             </ul>
           </div>
         </div>
