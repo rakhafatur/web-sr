@@ -104,7 +104,7 @@ const HomeLadiesPage = () => {
         {/* HERO */}
         <motion.div className="hero">
           <div className="hero-title">
-            Halo {user?.nama_ladies || 'Ladies'} ✨
+            Halo {user?.nama_ladies} ✨
           </div>
           <div className="hero-sub">
             {dayjs().format('dddd, DD MMMM YYYY')}
