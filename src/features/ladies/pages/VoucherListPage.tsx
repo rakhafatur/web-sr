@@ -479,7 +479,6 @@ const VoucherListPage = () => {
                           lineHeight: 1.1,
                         }}
                       >
-                        🎫{' '}
                         {
                           row.jumlah_voucher
                         }{' '}
