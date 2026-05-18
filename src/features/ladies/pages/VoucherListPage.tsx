@@ -3,8 +3,12 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
 import { supabase } from '../../../lib/supabaseClient';
 import dayjs from 'dayjs';
-import './VoucherListPage.css';
-import logo from '../../../assets/logosr-green.png'; // ← tambahkan logo loading
+import {
+  FiChevronLeft,
+  FiChevronRight,
+  FiGift,
+} from 'react-icons/fi';
+import logo from '../../../assets/logosr-green.png';
 
 type Voucher = {
   id: string;
@@ -22,54 +26,141 @@ type UserWithLadies = {
 };
 
 const VoucherListPage = () => {
-  const user = useSelector((state: RootState) => state.user.currentUser) as UserWithLadies;
-  const [selectedMonth, setSelectedMonth] = useState(dayjs().startOf('month'));
-  const [vouchers, setVouchers] = useState<Voucher[]>([]);
-  const [totalPcs, setTotalPcs] = useState(0);
-  const [totalRp, setTotalRp] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const itemsPerPage = 10;
+  const user = useSelector(
+    (state: RootState) =>
+      state.user.currentUser
+  ) as UserWithLadies;
 
-  const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    let newDate = dayjs(`${value}-01`);
+  const [
+    selectedMonth,
+    setSelectedMonth,
+  ] = useState(
+    dayjs().startOf('month')
+  );
+
+  const [
+    vouchers,
+    setVouchers,
+  ] = useState<Voucher[]>([]);
+
+  const [
+    totalPcs,
+    setTotalPcs,
+  ] = useState(0);
+
+  const [
+    totalRp,
+    setTotalRp,
+  ] = useState(0);
+
+  const [page, setPage] =
+    useState(0);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const rowsPerPage = 10;
+
+  const handleMonthChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value =
+      e.target.value;
+
+    let newDate = dayjs(
+      `${value}-01`
+    );
+
     if (!newDate.isValid()) {
-      newDate = dayjs().startOf('month');
+      newDate =
+        dayjs().startOf(
+          'month'
+        );
     }
-    setSelectedMonth(newDate);
-    setCurrentPage(1);
+
+    setSelectedMonth(
+      newDate
+    );
+
+    setPage(0);
   };
 
   const prevMonth = () => {
-    setSelectedMonth(selectedMonth.subtract(1, 'month'));
-    setCurrentPage(1);
+    setSelectedMonth(
+      selectedMonth.subtract(
+        1,
+        'month'
+      )
+    );
+
+    setPage(0);
   };
 
   const nextMonth = () => {
-    const next = selectedMonth.add(1, 'month');
-    if (next.isAfter(dayjs(), 'month')) return;
+    const next =
+      selectedMonth.add(
+        1,
+        'month'
+      );
+
+    if (
+      next.isAfter(
+        dayjs(),
+        'month'
+      )
+    )
+      return;
+
     setSelectedMonth(next);
-    setCurrentPage(1);
+    setPage(0);
   };
 
   useEffect(() => {
     if (user?.ladies_id) {
-      fetchVoucher(user.ladies_id);
+      fetchVoucher(
+        user.ladies_id
+      );
     }
   }, [user, selectedMonth]);
 
-  const fetchVoucher = async (ladiesId: string) => {
+  const fetchVoucher = async (
+    ladiesId: string
+  ) => {
     setLoading(true);
-    const bulanAwal = selectedMonth.startOf('month');
-    const bulanAkhir = selectedMonth.endOf('month');
 
-    const { data, error } = await supabase
-      .from('vouchers')
-      .select('*')
-      .eq('ladies_id', ladiesId)
-      .gte('tanggal', bulanAwal.format('YYYY-MM-DD'))
-      .lte('tanggal', bulanAkhir.format('YYYY-MM-DD'));
+    const bulanAwal =
+      selectedMonth.startOf(
+        'month'
+      );
+
+    const bulanAkhir =
+      selectedMonth.endOf(
+        'month'
+      );
+
+    const { data, error } =
+      await supabase
+        .from('vouchers')
+        .select('*')
+        .eq(
+          'ladies_id',
+          ladiesId
+        )
+        .gte(
+          'tanggal',
+          bulanAwal.format(
+            'YYYY-MM-DD'
+          )
+        )
+        .lte(
+          'tanggal',
+          bulanAkhir.format(
+            'YYYY-MM-DD'
+          )
+        )
+        .order('tanggal', {
+          ascending: false,
+        });
 
     if (error || !data) {
       setVouchers([]);
@@ -80,77 +171,435 @@ const VoucherListPage = () => {
     }
 
     setVouchers(data);
-    const pcs = data.reduce((sum, v) => sum + (v.jumlah_voucher || 0), 0);
+
+    const pcs =
+      data.reduce(
+        (sum, v) =>
+          sum +
+          (v.jumlah_voucher ||
+            0),
+        0
+      );
+
     setTotalPcs(pcs);
-    setTotalRp(pcs * 150000);
-    setCurrentPage(1);
+
+    setTotalRp(
+      pcs * 150000
+    );
+
     setLoading(false);
   };
 
-  const isNextDisabled = selectedMonth.isSame(dayjs().startOf('month'), 'month');
-  const totalPages = Math.ceil(vouchers.length / itemsPerPage);
-  const paginatedVouchers = vouchers.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const totalPages =
+    Math.max(
+      1,
+      Math.ceil(
+        vouchers.length /
+          rowsPerPage
+      )
+    );
+
+  const start =
+    page * rowsPerPage;
+
+  const end =
+    start + rowsPerPage;
+
+  const currentRows =
+    vouchers.slice(
+      start,
+      end
+    );
+
+  const isNextDisabled =
+    selectedMonth.isSame(
+      dayjs().startOf(
+        'month'
+      ),
+      'month'
+    );
 
   if (loading) {
     return (
-      <div className="voucher-page loading-state">
-        <div className="loading-content">
-          <img src={logo} alt="Memuat..." className="loading-logo" />
-          <p>Memuat data voucher...</p>
+      <div
+        className="d-flex flex-column justify-content-center align-items-center"
+        style={{
+          minHeight:
+            '70vh',
+        }}
+      >
+        <img
+          src={logo}
+          alt="loading"
+          style={{
+            width: 90,
+            marginBottom: 14,
+            animation:
+              'pulse 1.5s infinite',
+          }}
+        />
+
+        <div
+          style={{
+            fontSize: 14,
+            color: '#666',
+            fontWeight: 500,
+          }}
+        >
+          Memuat voucher...
         </div>
       </div>
     );
   }
 
   return (
-    <div className="voucher-page">
-      <div className="voucher-monthbar">
-        <button onClick={prevMonth} className="nav-btn" aria-label="Bulan sebelumnya">←</button>
+    <div
+      className="d-flex flex-column gap-3"
+      style={{
+        paddingBottom: 20,
+      }}
+    >
+      {/* MONTH BAR */}
+      <div
+        className="d-flex align-items-center justify-content-between"
+        style={{
+          gap: 10,
+        }}
+      >
+        <button
+          className="btn border-0 d-flex align-items-center justify-content-center"
+          style={{
+            width: 38,
+            height: 38,
+            borderRadius: 12,
+            background:
+              '#f4f4f5',
+          }}
+          onClick={
+            prevMonth
+          }
+        >
+          <FiChevronLeft />
+        </button>
+
         <input
           type="month"
-          value={selectedMonth.format('YYYY-MM')}
-          onChange={handleMonthChange}
-          max={dayjs().format('YYYY-MM')}
-          className="voucher-monthbar-input"
+          value={selectedMonth.format(
+            'YYYY-MM'
+          )}
+          onChange={
+            handleMonthChange
+          }
+          max={dayjs().format(
+            'YYYY-MM'
+          )}
+          className="form-control"
+          style={{
+            borderRadius: 12,
+            height: 38,
+            fontSize: 13,
+            fontWeight: 600,
+            border:
+              '1px solid #e5e7eb',
+          }}
         />
+
         <button
-          onClick={nextMonth}
-          disabled={isNextDisabled}
-          className="nav-btn"
-          aria-label="Bulan berikutnya"
-        >→</button>
+          className="btn border-0 d-flex align-items-center justify-content-center"
+          style={{
+            width: 38,
+            height: 38,
+            borderRadius: 12,
+            background:
+              '#f4f4f5',
+          }}
+          onClick={
+            nextMonth
+          }
+          disabled={
+            isNextDisabled
+          }
+        >
+          <FiChevronRight />
+        </button>
       </div>
 
-      <div className="voucher-impact">
-        <h2>
-          🎉 Kamu sudah kumpulkan <span>{totalPcs} voucher</span>
-        </h2>
-        <p>Total yang akan kamu terima: </p>
-        <p><strong>Rp {totalRp.toLocaleString('id-ID')}</strong></p>
+      {/* SUMMARY */}
+      <div
+        style={{
+          background:
+            'linear-gradient(135deg,#22c55e,#16a34a)',
+          borderRadius: 18,
+          padding:
+            '18px 16px',
+          color: '#fff',
+          boxShadow:
+            '0 6px 18px rgba(34,197,94,0.18)',
+        }}
+      >
+        <div
+          className="d-flex align-items-center gap-2 mb-2"
+        >
+          <div
+            className="d-flex align-items-center justify-content-center"
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 12,
+              background:
+                'rgba(255,255,255,0.15)',
+            }}
+          >
+            <FiGift
+              size={18}
+            />
+          </div>
+
+          <div>
+            <div
+              style={{
+                fontSize: 12,
+                opacity: 0.9,
+              }}
+            >
+              Total Voucher
+            </div>
+
+            <div
+              style={{
+                fontSize: 22,
+                fontWeight: 700,
+                lineHeight: 1.1,
+              }}
+            >
+              {totalPcs} pcs
+            </div>
+          </div>
+        </div>
+
+        <div
+          style={{
+            fontSize: 12,
+            opacity: 0.9,
+          }}
+        >
+          Estimasi Pendapatan
+        </div>
+
+        <div
+          style={{
+            fontSize: 20,
+            fontWeight: 700,
+            marginTop: 2,
+          }}
+        >
+          Rp{' '}
+          {totalRp.toLocaleString(
+            'id-ID'
+          )}
+        </div>
       </div>
 
-      {vouchers.length === 0 ? (
-        <p className="voucher-empty">Belum ada voucher di bulan ini. Semangat ya!</p>
+      {/* EMPTY */}
+      {vouchers.length ===
+      0 ? (
+        <div
+          style={{
+            background:
+              '#fff',
+            border:
+              '1px solid #f1f5f9',
+            borderRadius: 16,
+            padding:
+              '30px 20px',
+            textAlign:
+              'center',
+            color: '#777',
+            fontSize: 13,
+          }}
+        >
+          Belum ada voucher
+          di bulan ini ✨
+        </div>
       ) : (
         <>
-          <ul className="voucher-list">
-            {paginatedVouchers.map((v) => (
-              <li key={v.id} className="voucher-item">
-                <p>
-                  <strong>{v.tanggal ? dayjs(v.tanggal).format('DD MMM YYYY') : '-'}</strong> — {v.jumlah_voucher ?? '??'} pcs
-                </p>
-                {v.keterangan && <p className="voucher-ket">{v.keterangan}</p>}
-              </li>
-            ))}
-          </ul>
+          {/* CARD LIST */}
+          <div className="d-flex flex-column gap-2">
+            {currentRows.map(
+              (row) => (
+                <div
+                  key={row.id}
+                  style={{
+                    background:
+                      '#fff',
 
-          <div className="voucher-pagination">
-            <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className="nav-btn">←</button>
-            <span>{currentPage} / {totalPages}</span>
-            <button onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} className="nav-btn">→</button>
+                    border:
+                      '1px solid #f4f4f5',
+
+                    borderRadius: 14,
+
+                    padding:
+                      '12px 14px',
+
+                    boxShadow:
+                      '0 1px 4px rgba(0,0,0,0.03)',
+                  }}
+                >
+                  <div className="d-flex justify-content-between align-items-start">
+                    <div
+                      style={{
+                        flex: 1,
+                        minWidth: 0,
+                      }}
+                    >
+                      {/* DATE */}
+                      <div
+                        style={{
+                          fontSize: 11,
+                          color:
+                            '#999',
+                          fontWeight: 600,
+                          marginBottom: 6,
+                        }}
+                      >
+                        {dayjs(
+                          row.tanggal
+                        ).format(
+                          'DD MMM YYYY'
+                        )}
+                      </div>
+
+                      {/* PCS */}
+                      <div
+                        style={{
+                          fontSize: 18,
+                          fontWeight: 700,
+                          color:
+                            '#16a34a',
+                          lineHeight: 1.1,
+                        }}
+                      >
+                        🎫{' '}
+                        {
+                          row.jumlah_voucher
+                        }{' '}
+                        pcs
+                      </div>
+
+                      {/* NOMINAL */}
+                      <div
+                        style={{
+                          fontSize: 12,
+                          color:
+                            '#444',
+                          marginTop: 3,
+                          fontWeight: 600,
+                        }}
+                      >
+                        Rp{' '}
+                        {(
+                          row.jumlah_voucher *
+                          150000
+                        ).toLocaleString(
+                          'id-ID'
+                        )}
+                      </div>
+
+                      {/* KETERANGAN */}
+                      <div
+                        style={{
+                          fontSize: 11,
+                          color:
+                            '#777',
+                          marginTop: 6,
+
+                          whiteSpace:
+                            'nowrap',
+
+                          overflow:
+                            'hidden',
+
+                          textOverflow:
+                            'ellipsis',
+                        }}
+                      >
+                        {row.keterangan ||
+                          'Tidak ada catatan'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
+            )}
+          </div>
+
+          {/* PAGINATION */}
+          <div className="d-flex justify-content-center align-items-center gap-2 mt-1">
+            <button
+              className="btn border-0 d-flex align-items-center justify-content-center"
+              style={{
+                width: 34,
+                height: 34,
+
+                borderRadius: 10,
+
+                background:
+                  '#f4f4f5',
+              }}
+              onClick={() =>
+                page > 0 &&
+                setPage(
+                  page - 1
+                )
+              }
+              disabled={
+                page === 0
+              }
+            >
+              <FiChevronLeft size={15} />
+            </button>
+
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                color: '#666',
+                minWidth: 42,
+                textAlign:
+                  'center',
+              }}
+            >
+              {page + 1}/
+              {totalPages}
+            </div>
+
+            <button
+              className="btn border-0 d-flex align-items-center justify-content-center"
+              style={{
+                width: 34,
+                height: 34,
+
+                borderRadius: 10,
+
+                background:
+                  '#f4f4f5',
+              }}
+              onClick={() =>
+                page <
+                  totalPages -
+                    1 &&
+                setPage(
+                  page + 1
+                )
+              }
+              disabled={
+                page >=
+                totalPages -
+                  1
+              }
+            >
+              <FiChevronRight size={15} />
+            </button>
           </div>
         </>
       )}
