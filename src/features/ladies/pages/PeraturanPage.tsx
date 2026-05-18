@@ -173,7 +173,7 @@ const PeraturanPage = () => {
                   lineHeight: 1.2,
                 }}
               >
-                Peraturan Ladies
+                Peraturan
               </div>
             </div>
           </div>
