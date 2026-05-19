@@ -475,7 +475,14 @@ const AbsensiPage = () => {
           <div className="row g-4">
             {/* LADIES */}
             <div className="col-12 col-lg-4">
-              <label className="fw-semibold mb-2">
+              <label
+                className="fw-semibold mb-2"
+                style={{
+                  fontSize: isMobile
+                    ? '0.82rem'
+                    : '0.95rem',
+                }}
+              >
                 Pilih Ladies
               </label>
 
@@ -492,12 +499,28 @@ const AbsensiPage = () => {
                   setPage(1);
                 }}
                 style={{
-                  height: 58,
-                  borderRadius: 18,
+                  height: isMobile
+                    ? 50
+                    : 58,
+
+                  borderRadius: isMobile
+                    ? 14
+                    : 18,
+
                   border:
                     '2px solid #d8f3df',
-                  paddingLeft: 18,
+
+                  paddingLeft: isMobile
+                    ? 14
+                    : 18,
+
+                  paddingRight: 40,
+
                   fontWeight: 600,
+
+                  fontSize: isMobile
+                    ? '0.82rem'
+                    : '0.95rem',
                 }}
               >
                 <option value="">
@@ -538,11 +561,24 @@ const AbsensiPage = () => {
                   )
                 }
                 style={{
-                  height: 58,
-                  borderRadius: 18,
+                  height: isMobile
+                    ? 50
+                    : 58,
+
+                  borderRadius: isMobile
+                    ? 14
+                    : 18,
+
                   border:
                     '2px solid #d8f3df',
-                  paddingInline: 18,
+
+                  paddingInline: isMobile
+                    ? 14
+                    : 18,
+
+                  fontSize: isMobile
+                    ? '0.82rem'
+                    : '0.95rem',
                 }}
               />
             </div>
@@ -663,19 +699,55 @@ const AbsensiPage = () => {
           </div>
 
           {/* BUTTON */}
-          <div className="mt-4">
+          <div
+            className="mt-4 d-flex"
+            style={{
+              justifyContent: isMobile
+                ? 'center'
+                : 'flex-start',
+            }}
+          >
             <button
               className="btn"
               onClick={handleSubmit}
               style={{
                 background:
                   'linear-gradient(135deg,#22c55e,#4ade80)',
+
                 color: 'white',
+
                 border: 'none',
-                borderRadius: 16,
-                height: 54,
-                paddingInline: 28,
+
+                borderRadius: isMobile
+                  ? 14
+                  : 16,
+
+                height: isMobile
+                  ? 48
+                  : 54,
+
+                width: isMobile
+                  ? '100%'
+                  : 'auto',
+
+                maxWidth: isMobile
+                  ? 260
+                  : 'unset',
+
+                paddingInline: isMobile
+                  ? 20
+                  : 28,
+
                 fontWeight: 700,
+
+                fontSize: isMobile
+                  ? '0.84rem'
+                  : '0.95rem',
+
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+
                 boxShadow:
                   '0 10px 25px rgba(34,197,94,0.25)',
               }}
