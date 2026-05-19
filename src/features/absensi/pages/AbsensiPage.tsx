@@ -884,119 +884,96 @@ const AbsensiPage = () => {
 
           {/* SUMMARY */}
           <div
-            className="d-flex justify-content-between align-items-center mb-3"
-            style={{
-              gap: 12,
-            }}
+            className="row g-2 mb-4"
           >
-            {/* LEFT */}
-            <div
-              style={{
-                minWidth: 0,
-              }}
-            >
+            {[
+              {
+                label: 'Kerja',
+                total: totalKERJA,
+                bg: '#dcfce7',
+                color: '#166534',
+              },
+              {
+                label: 'Mens',
+                total: totalMENS,
+                bg: '#fee2e2',
+                color: '#991b1b',
+              },
+              {
+                label: 'Off',
+                total: totalOFF,
+                bg: '#e5e7eb',
+                color: '#374151',
+              },
+              {
+                label: 'Sakit',
+                total: totalSAKIT,
+                bg: '#fef3c7',
+                color: '#92400e',
+              },
+            ].map((item) => (
               <div
-                className="fw-bold"
-                style={{
-                  fontSize: isMobile
-                    ? '0.92rem'
-                    : '1.1rem',
-
-                  color:
-                    'var(--color-dark)',
-
-                  lineHeight: 1.1,
-                }}
+                className="col-6 col-lg-3"
+                key={item.label}
               >
-                Rekap Absensi
+                <div
+                  className="h-100"
+                  style={{
+                    background:
+                      item.bg,
+
+                    borderRadius:
+                      isMobile
+                        ? 16
+                        : 22,
+
+                    padding:
+                      isMobile
+                        ? '12px 14px'
+                        : '18px 20px',
+
+                    boxShadow:
+                      '0 2px 10px rgba(0,0,0,0.04)',
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: isMobile
+                        ? '0.7rem'
+                        : '0.82rem',
+
+                      color:
+                        item.color,
+
+                      opacity: 0.8,
+
+                      fontWeight: 600,
+                    }}
+                  >
+                    {item.label}
+                  </div>
+
+                  <div
+                    style={{
+                      fontSize: isMobile
+                        ? '1.4rem'
+                        : '2rem',
+
+                      fontWeight: 800,
+
+                      lineHeight: 1.1,
+
+                      marginTop: 2,
+
+                      color:
+                        item.color,
+                    }}
+                  >
+                    {item.total}
+                  </div>
+                </div>
               </div>
-
-              <div
-                style={{
-                  fontSize: isMobile
-                    ? '0.72rem'
-                    : '0.9rem',
-
-                  color: '#777',
-
-                  marginTop: 2,
-                }}
-              >
-                {
-                  monthNames[
-                  bulan - 1
-                  ]
-                }{' '}
-                {tahun}
-              </div>
-            </div>
-
-            {/* RIGHT */}
-            <div
-              className="d-flex align-items-center"
-              style={{
-                gap: 6,
-                flexShrink: 0,
-              }}
-            >
-              <button
-                className="btn border-0 d-flex align-items-center justify-content-center"
-                onClick={
-                  handlePrevMonth
-                }
-                style={{
-                  width: isMobile
-                    ? 34
-                    : 40,
-
-                  height: isMobile
-                    ? 34
-                    : 40,
-
-                  borderRadius: 12,
-
-                  background:
-                    '#f4f4f5',
-
-                  padding: 0,
-
-                  fontSize: isMobile
-                    ? '0.8rem'
-                    : '1rem',
-                }}
-              >
-                ←
-              </button>
-
-              <button
-                className="btn border-0 d-flex align-items-center justify-content-center"
-                onClick={
-                  handleNextMonth
-                }
-                style={{
-                  width: isMobile
-                    ? 34
-                    : 40,
-
-                  height: isMobile
-                    ? 34
-                    : 40,
-
-                  borderRadius: 12,
-
-                  background:
-                    '#f4f4f5',
-
-                  padding: 0,
-
-                  fontSize: isMobile
-                    ? '0.8rem'
-                    : '1rem',
-                }}
-              >
-                →
-              </button>
-            </div>
+            ))}
           </div>
 
           {/* RIWAYAT */}
