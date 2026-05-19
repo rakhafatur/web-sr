@@ -5,7 +5,6 @@ import {
   FiTrash2,
   FiChevronLeft,
   FiChevronRight,
-  FiEdit2,
   FiMoreVertical,
 } from 'react-icons/fi';
 
@@ -20,7 +19,6 @@ type Props = {
   page: number;
   rowsPerPage: number;
   onPageChange: (page: number) => void;
-  onEdit?: (absen: Absensi) => void;
   onDelete?: (tanggal: string) => void;
 };
 
@@ -70,7 +68,6 @@ const CardTableAbsensi = ({
   page,
   rowsPerPage,
   onPageChange,
-  onEdit,
   onDelete,
 }: Props) => {
   const orderedRows = [
@@ -146,128 +143,6 @@ const CardTableAbsensi = ({
                   'relative',
               }}
             >
-              {/* MENU */}
-              <div
-                style={{
-                  position:
-                    'absolute',
-
-                  top: 10,
-
-                  right: 10,
-                }}
-              >
-                <button
-                  className="btn border-0 d-flex align-items-center justify-content-center"
-                  style={{
-                    width: 32,
-                    height: 32,
-
-                    borderRadius: 10,
-
-                    background:
-                      '#f8fafc',
-
-                    color:
-                      '#64748b',
-                  }}
-                  onClick={() =>
-                    setOpenMenuIndex(
-                      openMenuIndex ===
-                        index
-                        ? null
-                        : index
-                    )
-                  }
-                >
-                  <FiMoreVertical
-                    size={15}
-                  />
-                </button>
-
-                {openMenuIndex ===
-                  index && (
-                    <div
-                      style={{
-                        position:
-                          'absolute',
-
-                        top: '110%',
-
-                        right: 0,
-
-                        background:
-                          '#fff',
-
-                        border:
-                          '1px solid #e5e7eb',
-
-                        borderRadius: 14,
-
-                        padding: 6,
-
-                        minWidth: 120,
-
-                        boxShadow:
-                          '0 10px 30px rgba(0,0,0,0.08)',
-
-                        zIndex: 20,
-                      }}
-                    >
-                      <button
-                        className="btn w-100 border-0 d-flex align-items-center gap-2"
-                        style={{
-                          borderRadius: 10,
-
-                          fontSize: 13,
-
-                          color:
-                            '#334155',
-                        }}
-                        onClick={() => {
-                          onEdit?.(
-                            row
-                          );
-
-                          setOpenMenuIndex(
-                            null
-                          );
-                        }}
-                      >
-                        <FiEdit2
-                          size={14}
-                        />
-                        Edit
-                      </button>
-
-                      <button
-                        className="btn w-100 border-0 d-flex align-items-center gap-2"
-                        style={{
-                          borderRadius: 10,
-
-                          fontSize: 13,
-
-                          color:
-                            '#dc2626',
-                        }}
-                        onClick={() => {
-                          onDelete?.(
-                            row.tanggal
-                          );
-
-                          setOpenMenuIndex(
-                            null
-                          );
-                        }}
-                      >
-                        <FiTrash2
-                          size={14}
-                        />
-                        Hapus
-                      </button>
-                    </div>
-                  )}
-              </div>
 
               {/* CONTENT */}
               <div className="d-flex justify-content-between align-items-start">
