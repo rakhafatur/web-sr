@@ -61,19 +61,22 @@ const SmartChatPage: React.FC = () => {
     const totalKeseluruhan = totalVoucher * 225000;
 
     return `
-📊 Rincian Voucher Bulan Ini
+📊 VOUCHER BULAN INI
+──────────────────
 
-🧾 Total Voucher:
+🧾 Total Voucher
 ${totalVoucher.toFixed(0)} pcs
 
-💃 Total Ladies:
+💃 Total Ladies
 Rp${totalLadies.toLocaleString("id-ID")}
 
-💰 Total Keuntungan:
+💰 Total Keuntungan
 Rp${totalKeuntungan.toLocaleString("id-ID")}
 
-🏦 Total Keseluruhan:
+🏦 Total Keseluruhan
 Rp${totalKeseluruhan.toLocaleString("id-ID")}
+
+──────────────────
 `;
   };
 
@@ -107,20 +110,24 @@ Rp${totalKeseluruhan.toLocaleString("id-ID")}
     const totalKeseluruhan = totalVoucher * 225000;
 
     return `
-📅 Voucher Minggu Ini
-(${startOfWeek.format("DD MMM")} - ${endOfWeek.format("DD MMM")})
+📅 VOUCHER MINGGU INI
+──────────────────
 
-🧾 Total Voucher:
+${startOfWeek.format("DD MMM")} • ${endOfWeek.format("DD MMM")}
+
+🧾 Total Voucher
 ${totalVoucher.toFixed(0)} pcs
 
-💃 Total Ladies:
+💃 Total Ladies
 Rp${totalLadies.toLocaleString("id-ID")}
 
-💰 Total Keuntungan:
+💰 Total Keuntungan
 Rp${totalKeuntungan.toLocaleString("id-ID")}
 
-🏦 Total Keseluruhan:
+🏦 Total Keseluruhan
 Rp${totalKeseluruhan.toLocaleString("id-ID")}
+
+──────────────────
 `;
   };
 
@@ -464,11 +471,10 @@ ${formatList(minLadies, totals)}
           {messages.map((msg, idx) => (
             <div
               key={idx}
-              className={`d-flex mb-3 ${
-                msg.sender === "ai"
-                  ? "justify-content-start"
-                  : "justify-content-end"
-              }`}
+              className={`d-flex mb-3 ${msg.sender === "ai"
+                ? "justify-content-start"
+                : "justify-content-end"
+                }`}
             >
               <SmartChatBox
                 sender={msg.sender}
