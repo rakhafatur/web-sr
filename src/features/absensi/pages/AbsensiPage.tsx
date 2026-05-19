@@ -883,71 +883,121 @@ const AbsensiPage = () => {
           </div>
 
           {/* SUMMARY */}
-          <div className="row g-3 mb-4">
-            {[
-              {
-                label: 'Kerja',
-                total: totalKERJA,
-                bg: '#dcfce7',
-                color: '#166534',
-              },
-              {
-                label: 'Mens',
-                total: totalMENS,
-                bg: '#fee2e2',
-                color: '#991b1b',
-              },
-              {
-                label: 'Off',
-                total: totalOFF,
-                bg: '#e5e7eb',
-                color: '#374151',
-              },
-              {
-                label: 'Sakit',
-                total: totalSAKIT,
-                bg: '#fef3c7',
-                color: '#92400e',
-              },
-            ].map((item) => (
-              <div
-                className="col-6 col-lg-3"
-                key={item.label}
-              >
-                <div
-                  className="p-4 rounded-4 shadow-sm h-100"
-                  style={{
-                    background:
-                      item.bg,
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize:
-                        '0.85rem',
-                      opacity: 0.75,
-                      color:
-                        item.color,
-                    }}
-                  >
-                    {item.label}
-                  </div>
+          <div
+  className="d-flex justify-content-between align-items-center mb-3"
+  style={{
+    gap: 12,
+  }}
+>
+  {/* LEFT */}
+  <div
+    style={{
+      minWidth: 0,
+    }}
+  >
+    <div
+      className="fw-bold"
+      style={{
+        fontSize: isMobile
+          ? '0.92rem'
+          : '1.1rem',
 
-                  <div
-                    className="fw-bold"
-                    style={{
-                      fontSize:
-                        '2rem',
-                      color:
-                        item.color,
-                    }}
-                  >
-                    {item.total}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+        color:
+          'var(--color-dark)',
+
+        lineHeight: 1.1,
+      }}
+    >
+      Rekap Absensi
+    </div>
+
+    <div
+      style={{
+        fontSize: isMobile
+          ? '0.72rem'
+          : '0.9rem',
+
+        color: '#777',
+
+        marginTop: 2,
+      }}
+    >
+      {
+        monthNames[
+          bulan - 1
+        ]
+      }{' '}
+      {tahun}
+    </div>
+  </div>
+
+  {/* RIGHT */}
+  <div
+    className="d-flex align-items-center"
+    style={{
+      gap: 6,
+      flexShrink: 0,
+    }}
+  >
+    <button
+      className="btn border-0 d-flex align-items-center justify-content-center"
+      onClick={
+        handlePrevMonth
+      }
+      style={{
+        width: isMobile
+          ? 34
+          : 40,
+
+        height: isMobile
+          ? 34
+          : 40,
+
+        borderRadius: 12,
+
+        background:
+          '#f4f4f5',
+
+        padding: 0,
+
+        fontSize: isMobile
+          ? '0.8rem'
+          : '1rem',
+      }}
+    >
+      ←
+    </button>
+
+    <button
+      className="btn border-0 d-flex align-items-center justify-content-center"
+      onClick={
+        handleNextMonth
+      }
+      style={{
+        width: isMobile
+          ? 34
+          : 40,
+
+        height: isMobile
+          ? 34
+          : 40,
+
+        borderRadius: 12,
+
+        background:
+          '#f4f4f5',
+
+        padding: 0,
+
+        fontSize: isMobile
+          ? '0.8rem'
+          : '1rem',
+      }}
+    >
+      →
+    </button>
+  </div>
+</div>
 
           {/* RIWAYAT */}
           <div
