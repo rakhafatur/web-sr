@@ -486,11 +486,13 @@ ${formatList(minLadies, totals)}
           {loading && (
             <div className="d-flex justify-content-start mb-3">
               <div
-                className="px-3 py-2 rounded-4 shadow-sm"
                 style={{
-                  background: "white",
-                  border: "1px solid #e8f7ee",
-                  maxWidth: 220,
+                  background: "rgba(255,255,255,0.85)",
+                  backdropFilter: "blur(14px)",
+                  border: "1px solid rgba(255,255,255,0.7)",
+                  padding: "14px 18px",
+                  borderRadius: "24px 24px 24px 8px",
+                  boxShadow: "0 10px 30px rgba(0,0,0,0.06)",
                 }}
               >
                 <div className="d-flex align-items-center gap-2">
@@ -498,17 +500,20 @@ ${formatList(minLadies, totals)}
                     className="spinner-border spinner-border-sm"
                     role="status"
                     style={{
-                      color: "var(--color-green)",
+                      color: "#22c55e",
+                      width: 18,
+                      height: 18,
                     }}
                   />
 
                   <span
                     style={{
-                      fontSize: "0.9rem",
-                      color: "#666",
+                      fontSize: "0.92rem",
+                      color: "#4b5563",
+                      fontWeight: 500,
                     }}
                   >
-                    AI sedang berpikir...
+                    Smart Assistant sedang menganalisa...
                   </span>
                 </div>
               </div>
