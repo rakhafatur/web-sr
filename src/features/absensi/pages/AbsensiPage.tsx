@@ -766,14 +766,29 @@ const AbsensiPage = () => {
       {selectedLadyId && (
         <>
           {/* HEADER REKAP */}
-          <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-            <div>
+          <div
+            className="d-flex justify-content-between align-items-center mb-3"
+            style={{
+              gap: 12,
+            }}
+          >
+            {/* LEFT */}
+            <div
+              style={{
+                minWidth: 0,
+              }}
+            >
               <div
                 className="fw-bold"
                 style={{
-                  fontSize: '1.1rem',
+                  fontSize: isMobile
+                    ? '0.92rem'
+                    : '1.1rem',
+
                   color:
                     'var(--color-dark)',
+
+                  lineHeight: 1.1,
                 }}
               >
                 Rekap Absensi
@@ -781,9 +796,13 @@ const AbsensiPage = () => {
 
               <div
                 style={{
-                  fontSize:
-                    '0.9rem',
-                  color: '#666',
+                  fontSize: isMobile
+                    ? '0.72rem'
+                    : '0.9rem',
+
+                  color: '#777',
+
+                  marginTop: 2,
                 }}
               >
                 {
@@ -795,21 +814,68 @@ const AbsensiPage = () => {
               </div>
             </div>
 
-            <div className="d-flex align-items-center gap-2">
+            {/* RIGHT */}
+            <div
+              className="d-flex align-items-center"
+              style={{
+                gap: 6,
+                flexShrink: 0,
+              }}
+            >
               <button
-                className="btn btn-light border"
+                className="btn border-0 d-flex align-items-center justify-content-center"
                 onClick={
                   handlePrevMonth
                 }
+                style={{
+                  width: isMobile
+                    ? 34
+                    : 40,
+
+                  height: isMobile
+                    ? 34
+                    : 40,
+
+                  borderRadius: 12,
+
+                  background:
+                    '#f4f4f5',
+
+                  padding: 0,
+
+                  fontSize: isMobile
+                    ? '0.8rem'
+                    : '1rem',
+                }}
               >
                 ←
               </button>
 
               <button
-                className="btn btn-light border"
+                className="btn border-0 d-flex align-items-center justify-content-center"
                 onClick={
                   handleNextMonth
                 }
+                style={{
+                  width: isMobile
+                    ? 34
+                    : 40,
+
+                  height: isMobile
+                    ? 34
+                    : 40,
+
+                  borderRadius: 12,
+
+                  background:
+                    '#f4f4f5',
+
+                  padding: 0,
+
+                  fontSize: isMobile
+                    ? '0.8rem'
+                    : '1rem',
+                }}
               >
                 →
               </button>
