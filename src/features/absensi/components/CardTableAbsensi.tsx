@@ -102,7 +102,7 @@ const CardTableAbsensi = ({
       1,
       Math.ceil(
         data.length /
-          rowsPerPage
+        rowsPerPage
       )
     );
 
@@ -187,90 +187,90 @@ const CardTableAbsensi = ({
 
                 {openMenuIndex ===
                   index && (
-                  <div
-                    style={{
-                      position:
-                        'absolute',
-
-                      top: '110%',
-
-                      right: 0,
-
-                      background:
-                        '#fff',
-
-                      border:
-                        '1px solid #e5e7eb',
-
-                      borderRadius: 14,
-
-                      padding: 6,
-
-                      minWidth: 120,
-
-                      boxShadow:
-                        '0 10px 30px rgba(0,0,0,0.08)',
-
-                      zIndex: 20,
-                    }}
-                  >
-                    <button
-                      className="btn w-100 border-0 d-flex align-items-center gap-2"
+                    <div
                       style={{
-                        borderRadius: 10,
+                        position:
+                          'absolute',
 
-                        fontSize: 13,
+                        top: '110%',
 
-                        color:
-                          '#334155',
-                      }}
-                      onClick={() => {
-                        onEdit?.(
-                          row
-                        );
+                        right: 0,
 
-                        setOpenMenuIndex(
-                          null
-                        );
+                        background:
+                          '#fff',
+
+                        border:
+                          '1px solid #e5e7eb',
+
+                        borderRadius: 14,
+
+                        padding: 6,
+
+                        minWidth: 120,
+
+                        boxShadow:
+                          '0 10px 30px rgba(0,0,0,0.08)',
+
+                        zIndex: 20,
                       }}
                     >
-                      <FiEdit2
-                        size={14}
-                      />
-                      Edit
-                    </button>
+                      <button
+                        className="btn w-100 border-0 d-flex align-items-center gap-2"
+                        style={{
+                          borderRadius: 10,
 
-                    <button
-                      className="btn w-100 border-0 d-flex align-items-center gap-2"
-                      style={{
-                        borderRadius: 10,
+                          fontSize: 13,
 
-                        fontSize: 13,
+                          color:
+                            '#334155',
+                        }}
+                        onClick={() => {
+                          onEdit?.(
+                            row
+                          );
 
-                        color:
-                          '#dc2626',
-                      }}
-                      onClick={() => {
-                        onDelete?.(
-                          row.tanggal
-                        );
+                          setOpenMenuIndex(
+                            null
+                          );
+                        }}
+                      >
+                        <FiEdit2
+                          size={14}
+                        />
+                        Edit
+                      </button>
 
-                        setOpenMenuIndex(
-                          null
-                        );
-                      }}
-                    >
-                      <FiTrash2
-                        size={14}
-                      />
-                      Hapus
-                    </button>
-                  </div>
-                )}
+                      <button
+                        className="btn w-100 border-0 d-flex align-items-center gap-2"
+                        style={{
+                          borderRadius: 10,
+
+                          fontSize: 13,
+
+                          color:
+                            '#dc2626',
+                        }}
+                        onClick={() => {
+                          onDelete?.(
+                            row.tanggal
+                          );
+
+                          setOpenMenuIndex(
+                            null
+                          );
+                        }}
+                      >
+                        <FiTrash2
+                          size={14}
+                        />
+                        Hapus
+                      </button>
+                    </div>
+                  )}
               </div>
 
               {/* CONTENT */}
-              <div className="d-flex justify-content-between align-items-center">
+              <div className="d-flex justify-content-between align-items-start">
                 {/* LEFT */}
                 <div
                   style={{
@@ -282,83 +282,41 @@ const CardTableAbsensi = ({
                   <div className="d-flex align-items-center gap-2 mb-1">
                     <div
                       style={{
-                        padding:
-                          '3px 8px',
-
+                        padding: '4px 9px',
                         borderRadius: 999,
-
-                        background:
-                          style.bg,
-
-                        color:
-                          style.text,
-
+                        background: style.bg,
+                        color: style.text,
                         fontSize: 10,
-
                         fontWeight: 700,
-
                         lineHeight: 1.2,
                       }}
                     >
-                      {
-                        style.label
-                      }
+                      {style.label}
                     </div>
 
                     <div
                       style={{
-                        fontSize: 10,
-
-                        color:
-                          '#94a3b8',
-
+                        fontSize: 11,
+                        color: '#94a3b8',
                         fontWeight: 600,
                       }}
                     >
-                      {dayjs(
-                        row.tanggal
-                      ).format(
+                      {dayjs(row.tanggal).format(
                         'DD MMM YYYY'
                       )}
                     </div>
-                  </div>
-
-                  {/* STATUS TEXT */}
-                  <div
-                    style={{
-                      fontSize: 17,
-
-                      fontWeight: 700,
-
-                      color:
-                        style.text,
-
-                      lineHeight: 1.1,
-                    }}
-                  >
-                    {
-                      style.label
-                    }
                   </div>
 
                   {/* KETERANGAN */}
                   <div
                     style={{
                       fontSize: 12,
-
-                      color:
-                        '#64748b',
-
+                      color: '#64748b',
                       marginTop: 4,
-
-                      whiteSpace:
-                        'nowrap',
-
-                      overflow:
-                        'hidden',
-
-                      textOverflow:
-                        'ellipsis',
+                      lineHeight: 1.4,
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
                     }}
                   >
                     {row.keterangan ||
@@ -366,32 +324,23 @@ const CardTableAbsensi = ({
                   </div>
                 </div>
 
-                {/* QUICK DELETE */}
+                {/* DELETE */}
                 <button
                   className="btn border-0 d-flex align-items-center justify-content-center"
                   style={{
                     width: 34,
                     height: 34,
-
                     borderRadius: 12,
-
-                    background:
-                      '#fee2e2',
-
-                    color:
-                      '#dc2626',
-
+                    background: '#fee2e2',
+                    color: '#dc2626',
                     flexShrink: 0,
+                    marginLeft: 10,
                   }}
                   onClick={() =>
-                    onDelete?.(
-                      row.tanggal
-                    )
+                    onDelete?.(row.tanggal)
                   }
                 >
-                  <FiTrash2
-                    size={14}
-                  />
+                  <FiTrash2 size={14} />
                 </button>
               </div>
             </div>
@@ -455,8 +404,8 @@ const CardTableAbsensi = ({
           }}
           onClick={() =>
             page <
-              totalPages -
-                1 &&
+            totalPages -
+            1 &&
             onPageChange(
               page + 1
             )
