@@ -1,11 +1,19 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../../lib/supabaseClient';
 import dayjs from 'dayjs';
-import AddAbsensiModal from '../components/AddAbsensiModal';
 import { useMediaQuery } from 'react-responsive';
+
+import AddAbsensiModal from '../components/AddAbsensiModal';
 import CardTableAbsensi from '../components/CardTableAbsensi';
-import DataTable from '../../../components/DataTable'; // Tambahkan ini
-import { FiPlus, FiEdit2, FiTrash2 } from 'react-icons/fi';
+import DataTable from '../../../components/DataTable';
+
+import {
+  FiPlus,
+  FiEdit2,
+  FiTrash2,
+  FiCalendar,
+  FiUsers,
+} from 'react-icons/fi';
 
 type Lady = {
   id: string;
@@ -21,70 +29,159 @@ type Absensi = {
 };
 
 const monthNames = [
-  'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+  'Januari',
+  'Februari',
+  'Maret',
+  'April',
+  'Mei',
+  'Juni',
+  'Juli',
+  'Agustus',
+  'September',
+  'Oktober',
+  'November',
+  'Desember',
 ];
 
 const AbsensiPage = () => {
-  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const isMobile = useMediaQuery({
+    maxWidth: 768,
+  });
 
-  const [ladies, setLadies] = useState<Lady[]>([]);
-  const [selectedLadyId, setSelectedLadyId] = useState('');
-  const [tanggal, setTanggal] = useState(dayjs().format('YYYY-MM-DD'));
-  const [status, setStatus] = useState('KERJA');
-  const [keterangan, setKeterangan] = useState('');
-  const [riwayat, setRiwayat] = useState<Absensi[]>([]);
-  const [rekapRiwayat, setRekapRiwayat] = useState<Absensi[]>([]);
-  const [bulan, setBulan] = useState(dayjs().month() + 1);
-  const [tahun, setTahun] = useState(dayjs().year());
+  const [ladies, setLadies] = useState<
+    Lady[]
+  >([]);
+
+  const [selectedLadyId, setSelectedLadyId] =
+    useState('');
+
+  const [tanggal, setTanggal] = useState(
+    dayjs().format('YYYY-MM-DD')
+  );
+
+  const [status, setStatus] =
+    useState('KERJA');
+
+  const [keterangan, setKeterangan] =
+    useState('');
+
+  const [riwayat, setRiwayat] = useState<
+    Absensi[]
+  >([]);
+
+  const [rekapRiwayat, setRekapRiwayat] =
+    useState<Absensi[]>([]);
+
+  const [bulan, setBulan] = useState(
+    dayjs().month() + 1
+  );
+
+  const [tahun, setTahun] = useState(
+    dayjs().year()
+  );
+
   const [page, setPage] = useState(1);
+
   const limit = isMobile ? 5 : 10;
 
-  const [showModal, setShowModal] = useState(false);
-  const [editAbsensi, setEditAbsensi] = useState<Absensi | null>(null);
-  const [selectedTanggal, setSelectedTanggal] = useState<string | null>(null);
+  const [showModal, setShowModal] =
+    useState(false);
 
-  // TOTAL PAGE logic
-  const totalPages = Math.max(1, Math.ceil(rekapRiwayat.length / limit));
+  const [editAbsensi, setEditAbsensi] =
+    useState<Absensi | null>(null);
+
+  const [
+    selectedTanggal,
+    setSelectedTanggal,
+  ] = useState<string | null>(null);
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(rekapRiwayat.length / limit)
+  );
+
+  const selectedLady = ladies.find(
+    (l) => l.id === selectedLadyId
+  );
 
   useEffect(() => {
     const fetchLadies = async () => {
       const { data } = await supabase
         .from('ladies')
         .select('*')
-        .eq('status', 'active');
+        .eq('status', 'active')
+        .order('nama_ladies', {
+          ascending: true,
+        });
+
       setLadies(data || []);
     };
+
     fetchLadies();
   }, []);
 
   const handleSubmit = async () => {
-    if (!selectedLadyId || !tanggal || !status) return alert('Lengkapi semua data!');
-
-    const today = dayjs().format('YYYY-MM-DD');
-    if (tanggal > today) return alert('🛑 Tanggal tidak boleh di masa depan!');
-
-    const { data: existing } = await supabase
-      .from('absensi')
-      .select('*')
-      .eq('ladies_id', selectedLadyId)
-      .eq('tanggal', tanggal);
-
-    if (existing && existing.length > 0) {
-      return alert('⚠️ Absensi untuk tanggal ini sudah ada!');
+    if (
+      !selectedLadyId ||
+      !tanggal ||
+      !status
+    ) {
+      return alert(
+        'Lengkapi semua data!'
+      );
     }
 
-    const { error } = await supabase.from('absensi').upsert({
-      ladies_id: selectedLadyId,
-      tanggal,
-      status,
-      keterangan: keterangan || null,
-    });
+    const today = dayjs().format(
+      'YYYY-MM-DD'
+    );
+
+    if (tanggal > today) {
+      return alert(
+        '🛑 Tanggal tidak boleh di masa depan!'
+      );
+    }
+
+    const { data: existing } =
+      await supabase
+        .from('absensi')
+        .select('*')
+        .eq(
+          'ladies_id',
+          selectedLadyId
+        )
+        .eq('tanggal', tanggal);
+
+    if (
+      existing &&
+      existing.length > 0
+    ) {
+      return alert(
+        '⚠️ Absensi untuk tanggal ini sudah ada!'
+      );
+    }
+
+    const { error } =
+      await supabase
+        .from('absensi')
+        .upsert({
+          ladies_id: selectedLadyId,
+          tanggal,
+          status,
+          keterangan:
+            keterangan || null,
+        });
 
     if (error) {
-      alert('❌ Gagal menyimpan absen');
+      alert(
+        '❌ Gagal menyimpan absensi'
+      );
     } else {
-      alert('✅ Absen berhasil disimpan!');
+      alert(
+        '✅ Absensi berhasil disimpan!'
+      );
+
+      setKeterangan('');
+
       fetchRiwayat();
       fetchRekapRiwayat();
     }
@@ -93,47 +190,80 @@ const AbsensiPage = () => {
   const fetchRiwayat = async () => {
     if (!selectedLadyId) return;
 
-    const start = `${tahun}-${String(bulan).padStart(2, '0')}-01`;
-    const end = dayjs(start).endOf('month').format('YYYY-MM-DD');
+    const start = `${tahun}-${String(
+      bulan
+    ).padStart(2, '0')}-01`;
+
+    const end = dayjs(start)
+      .endOf('month')
+      .format('YYYY-MM-DD');
+
     const from = (page - 1) * limit;
+
     const to = from + limit - 1;
 
     const { data } = await supabase
       .from('absensi')
-      .select('tanggal, status, keterangan')
-      .eq('ladies_id', selectedLadyId)
+      .select(
+        'tanggal, status, keterangan'
+      )
+      .eq(
+        'ladies_id',
+        selectedLadyId
+      )
       .gte('tanggal', start)
       .lte('tanggal', end)
-      .order('tanggal', { ascending: true })
+      .order('tanggal', {
+        ascending: false,
+      })
       .range(from, to);
 
     setRiwayat(data || []);
   };
 
-  const fetchRekapRiwayat = async () => {
-    if (!selectedLadyId) return;
+  const fetchRekapRiwayat =
+    async () => {
+      if (!selectedLadyId) return;
 
-    const start = `${tahun}-${String(bulan).padStart(2, '0')}-01`;
-    const end = dayjs(start).endOf('month').format('YYYY-MM-DD');
+      const start = `${tahun}-${String(
+        bulan
+      ).padStart(2, '0')}-01`;
 
-    const { data } = await supabase
-      .from('absensi')
-      .select('tanggal, status, keterangan')
-      .eq('ladies_id', selectedLadyId)
-      .gte('tanggal', start)
-      .lte('tanggal', end)
-      .order('tanggal', { ascending: true });
+      const end = dayjs(start)
+        .endOf('month')
+        .format('YYYY-MM-DD');
 
-    setRekapRiwayat(data || []);
-  };
+      const { data } = await supabase
+        .from('absensi')
+        .select(
+          'tanggal, status, keterangan'
+        )
+        .eq(
+          'ladies_id',
+          selectedLadyId
+        )
+        .gte('tanggal', start)
+        .lte('tanggal', end)
+        .order('tanggal', {
+          ascending: false,
+        });
+
+      setRekapRiwayat(data || []);
+    };
 
   useEffect(() => {
     if (selectedLadyId) {
       fetchRiwayat();
       fetchRekapRiwayat();
     }
+
     // eslint-disable-next-line
-  }, [selectedLadyId, bulan, tahun, page]);
+  }, [
+    selectedLadyId,
+    bulan,
+    tahun,
+    page,
+  ]);
 
   const handlePrevMonth = () => {
     if (bulan === 1) {
@@ -142,6 +272,7 @@ const AbsensiPage = () => {
     } else {
       setBulan((prev) => prev - 1);
     }
+
     setPage(1);
   };
 
@@ -152,224 +283,696 @@ const AbsensiPage = () => {
     } else {
       setBulan((prev) => prev + 1);
     }
+
     setPage(1);
   };
 
-  const handleEdit = (absen: Absensi) => {
+  const handleEdit = (
+    absen: Absensi
+  ) => {
     setEditAbsensi(absen);
-    setSelectedTanggal(absen.tanggal);
+    setSelectedTanggal(
+      absen.tanggal
+    );
     setShowModal(true);
   };
 
-  const handleDelete = async (tanggal: string) => {
-    const confirm = window.confirm('❗ Yakin ingin menghapus absensi tanggal ini?');
-    if (!confirm || !selectedLadyId) return;
+  const handleDelete = async (
+    tanggal: string
+  ) => {
+    const confirm =
+      window.confirm(
+        '❗ Yakin ingin menghapus absensi ini?'
+      );
 
-    const { error } = await supabase
-      .from('absensi')
-      .delete()
-      .eq('ladies_id', selectedLadyId)
-      .eq('tanggal', tanggal);
+    if (
+      !confirm ||
+      !selectedLadyId
+    )
+      return;
 
-    if (error) alert('❌ Gagal hapus data: ' + error.message);
-    else {
+    const { error } =
+      await supabase
+        .from('absensi')
+        .delete()
+        .eq(
+          'ladies_id',
+          selectedLadyId
+        )
+        .eq('tanggal', tanggal);
+
+    if (error) {
+      alert(
+        '❌ Gagal hapus data: ' +
+          error.message
+      );
+    } else {
       fetchRiwayat();
       fetchRekapRiwayat();
     }
   };
 
-  const totalKERJA = rekapRiwayat.filter((r) => r.status === 'KERJA').length;
-  const totalMENS = rekapRiwayat.filter((r) => r.status === 'MENS').length;
-  const totalOFF = rekapRiwayat.filter((r) => r.status === 'OFF').length;
-  const totalSAKIT = rekapRiwayat.filter((r) => r.status === 'SAKIT').length;
+  const totalKERJA =
+    rekapRiwayat.filter(
+      (r) => r.status === 'KERJA'
+    ).length;
 
-  // MAPPING UNTUK DataTable (wajib ada id unik)
-  const riwayatWithId = riwayat.map((row, idx) => ({
-    ...row,
-    id: row.tanggal + '-' + idx,
-  }));
+  const totalMENS =
+    rekapRiwayat.filter(
+      (r) => r.status === 'MENS'
+    ).length;
+
+  const totalOFF =
+    rekapRiwayat.filter(
+      (r) => r.status === 'OFF'
+    ).length;
+
+  const totalSAKIT =
+    rekapRiwayat.filter(
+      (r) => r.status === 'SAKIT'
+    ).length;
+
+  const riwayatWithId = riwayat.map(
+    (row, idx) => ({
+      ...row,
+      id:
+        row.tanggal + '-' + idx,
+    })
+  );
 
   return (
-    <div className="container py-4" style={{ background: 'var(--color-bg)', minHeight: '100vh' }}>
-      <h2 className="fw-bold fs-4 mb-4" style={{ color: 'var(--color-dark)' }}>
-        🗓️ Absensi Harian
-      </h2>
-
-      {/* Form */}
-      <div className="row mb-3">
-        <div className="col-md-4 mb-3">
-          <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>Pilih Ladies</label>
-          <select
-            className="form-select"
+    <div
+      className="container-fluid py-4 px-md-4 px-3"
+      style={{
+        background:
+          'linear-gradient(to bottom, #f7fff9 0%, #ffffff 100%)',
+        minHeight: '100vh',
+      }}
+    >
+      {/* HERO */}
+      <div
+        className="mb-4 p-4 rounded-4 shadow-sm"
+        style={{
+          background:
+            'linear-gradient(135deg, var(--color-green), #7be0a9)',
+          color: 'white',
+        }}
+      >
+        <div className="d-flex align-items-center gap-3">
+          <div
             style={{
-              backgroundColor: 'var(--color-white)',
-              color: 'var(--color-dark)',
-              borderColor: 'var(--color-green)',
-            }}
-            value={selectedLadyId}
-            onChange={(e) => {
-              setSelectedLadyId(e.target.value);
-              setPage(1);
+              width: 60,
+              height: 60,
+              borderRadius: 18,
+              background:
+                'rgba(255,255,255,0.2)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent:
+                'center',
+              fontSize: 26,
+              backdropFilter:
+                'blur(8px)',
             }}
           >
-            <option value="" disabled>-- Pilih --</option>
-            {ladies.map((l) => (
-              <option key={l.id} value={l.id}>
-                {l.nama_ladies} - {l.nama_outlet} ({l.pin})
-              </option>
-            ))}
-          </select>
-        </div>
+            <FiCalendar />
+          </div>
 
-        <div className="col-md-4 mb-3">
-          <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>Tanggal</label>
-          <input
-            type="date"
-            className="form-control"
-            style={{
-              backgroundColor: 'var(--color-white)',
-              color: 'var(--color-dark)',
-              borderColor: 'var(--color-green)',
-            }}
-            value={tanggal}
-            onChange={(e) => setTanggal(e.target.value)}
-          />
-        </div>
+          <div>
+            <h2
+              className="fw-semibold mb-0"
+              style={{
+                fontSize:
+                  isMobile
+                    ? '1rem'
+                    : '1.8rem',
+                lineHeight: 1.2,
+              }}
+            >
+              Absensi Harian
+            </h2>
 
-        <div className="col-md-4 mb-3">
-          <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>Status</label>
-          <div className="d-flex gap-3">
-            {['KERJA', 'MENS', 'OFF', 'SAKIT'].map((opt) => (
-              <div className="form-check" key={opt}>
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  id={opt}
-                  name="status"
-                  value={opt}
-                  checked={status === opt}
-                  onChange={(e) => setStatus(e.target.value)}
-                />
-                <label className="form-check-label" htmlFor={opt} style={{ color: 'var(--color-dark)' }}>
-                  {opt}
-                </label>
-              </div>
-            ))}
+            <div
+              style={{
+                opacity: 0.75,
+                fontSize:
+                  isMobile
+                    ? '0.74rem'
+                    : '0.92rem',
+                marginTop: 2,
+              }}
+            >
+              Kelola absensi ladies
+              harian
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="mb-4">
-        <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>Keterangan (opsional)</label>
-        <textarea
-          className="form-control"
-          rows={2}
+      {/* FORM CARD */}
+      <div
+        className="card border-0 shadow-sm rounded-4 mb-4"
+        style={{
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          className="px-4 py-3 border-bottom"
           style={{
-            backgroundColor: 'var(--color-white)',
-            color: 'var(--color-dark)',
-            borderColor: 'var(--color-green)',
+            background:
+              'linear-gradient(to right, #effff4, #ffffff)',
           }}
-          value={keterangan}
-          onChange={(e) => setKeterangan(e.target.value)}
-        />
+        >
+          <div className="d-flex align-items-center gap-2">
+            <FiUsers
+              size={18}
+              style={{
+                color:
+                  'var(--color-green)',
+              }}
+            />
+
+            <div>
+              <div className="fw-bold">
+                Input Absensi
+              </div>
+
+              <div
+                style={{
+                  fontSize:
+                    '0.85rem',
+                  color: '#666',
+                }}
+              >
+                Isi data absensi
+                harian ladies
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-4">
+          <div className="row g-4">
+            {/* LADIES */}
+            <div className="col-12 col-lg-4">
+              <label className="fw-semibold mb-2">
+                Pilih Ladies
+              </label>
+
+              <select
+                className="form-select shadow-none"
+                value={
+                  selectedLadyId
+                }
+                onChange={(e) => {
+                  setSelectedLadyId(
+                    e.target.value
+                  );
+
+                  setPage(1);
+                }}
+                style={{
+                  height: 58,
+                  borderRadius: 18,
+                  border:
+                    '2px solid #d8f3df',
+                  paddingLeft: 18,
+                  fontWeight: 600,
+                }}
+              >
+                <option value="">
+                  -- Pilih Ladies --
+                </option>
+
+                {ladies.map((l) => (
+                  <option
+                    key={l.id}
+                    value={l.id}
+                  >
+                    {
+                      l.nama_ladies
+                    }{' '}
+                    •{' '}
+                    {
+                      l.nama_outlet
+                    }{' '}
+                    ({l.pin})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* DATE */}
+            <div className="col-12 col-lg-4">
+              <label className="fw-semibold mb-2">
+                Tanggal
+              </label>
+
+              <input
+                type="date"
+                className="form-control shadow-none"
+                value={tanggal}
+                onChange={(e) =>
+                  setTanggal(
+                    e.target.value
+                  )
+                }
+                style={{
+                  height: 58,
+                  borderRadius: 18,
+                  border:
+                    '2px solid #d8f3df',
+                  paddingInline: 18,
+                }}
+              />
+            </div>
+
+            {/* STATUS */}
+            <div className="col-12 col-lg-4">
+              <label className="fw-semibold mb-2">
+                Status
+              </label>
+
+              <div className="d-flex flex-wrap gap-2">
+                {[
+                  'KERJA',
+                  'MENS',
+                  'OFF',
+                  'SAKIT',
+                ].map((opt) => {
+                  const active =
+                    status === opt;
+
+                  return (
+                    <button
+                      key={opt}
+                      type="button"
+                      onClick={() =>
+                        setStatus(opt)
+                      }
+                      className="btn"
+                      style={{
+                        borderRadius: 14,
+                        padding:
+                          '10px 16px',
+                        fontWeight: 700,
+                        border: active
+                          ? 'none'
+                          : '1px solid #dfeee4',
+                        background:
+                          active
+                            ? 'linear-gradient(135deg,#22c55e,#4ade80)'
+                            : '#fff',
+                        color: active
+                          ? 'white'
+                          : '#444',
+                      }}
+                    >
+                      {opt}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* KETERANGAN */}
+            <div className="col-12">
+              <label className="fw-semibold mb-2">
+                Keterangan
+              </label>
+
+              <textarea
+                className="form-control shadow-none"
+                rows={3}
+                value={keterangan}
+                onChange={(e) =>
+                  setKeterangan(
+                    e.target.value
+                  )
+                }
+                placeholder="Tambahkan catatan jika diperlukan..."
+                style={{
+                  borderRadius: 18,
+                  border:
+                    '2px solid #d8f3df',
+                  padding: 16,
+                }}
+              />
+            </div>
+          </div>
+
+          {/* BUTTON */}
+          <div className="mt-4">
+            <button
+              className="btn"
+              onClick={handleSubmit}
+              style={{
+                background:
+                  'linear-gradient(135deg,#22c55e,#4ade80)',
+                color: 'white',
+                border: 'none',
+                borderRadius: 16,
+                height: 54,
+                paddingInline: 28,
+                fontWeight: 700,
+                boxShadow:
+                  '0 10px 25px rgba(34,197,94,0.25)',
+              }}
+            >
+              <FiPlus
+                size={18}
+                className="me-2"
+              />
+              Simpan Absensi
+            </button>
+          </div>
+        </div>
       </div>
 
-      <button className="btn btn-success mt-2 mb-4" onClick={handleSubmit}>
-        ✅ Simpan Absen
-      </button>
-
-      {/* Ringkasan + Tabel/Card */}
+      {/* CONTENT */}
       {selectedLadyId && (
         <>
-          <div className="d-flex align-items-center gap-2 mt-4 mb-3">
-            <button className="btn btn-outline-success btn-sm" onClick={handlePrevMonth}>←</button>
-            <span className="fw-semibold" style={{ color: 'var(--color-dark)' }}>{monthNames[bulan - 1]} {tahun}</span>
-            <button className="btn btn-outline-success btn-sm" onClick={handleNextMonth}>→</button>
-          </div>
-
-          <div className="mb-4" style={{ color: 'var(--color-dark)' }}>
-            <strong>Rekap Bulan Ini:</strong><br />
-            Kerja: {totalKERJA} | Mens: {totalMENS} | Off: {totalOFF} | Sakit: {totalSAKIT}
-          </div>
-
-          {!isMobile ? (
-            <>
-              <DataTable
-                columns={[
-                  { key: 'tanggal', label: 'Tanggal' },
-                  {
-                    key: 'status',
-                    label: 'Status',
-                    render: (a) => (
-                      <span className={`badge ${a.status === 'KERJA'
-                        ? 'bg-success'
-                        : a.status === 'MENS'
-                          ? 'bg-danger'
-                          : a.status === 'OFF'
-                            ? 'bg-secondary'
-                            : a.status === 'SAKIT'
-                              ? 'bg-warning text-dark'
-                              : 'bg-light text-dark'
-                        }`}>
-                        {a.status}
-                      </span>
-                    ),
-                  },
-                  { key: 'keterangan', label: 'Keterangan', render: (a) => a.keterangan || '-' },
-                  {
-                    key: 'id', // <--- PENTING: harus pakai salah satu key data!
-                    label: 'Aksi',
-                    render: (a) => (
-                      <>
-                        <button className="btn btn-sm btn-outline-warning me-2" onClick={() => handleEdit(a)}>
-                          <FiEdit2 />
-                        </button>
-                        <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(a.tanggal)}>
-                          < FiTrash2 />
-                        </button>
-                      </>
-                    ),
-                  },
-                ]}
-                data={riwayatWithId}
-              />
-
-              {/* PAGINATION */}
-              <div className="d-flex justify-content-between align-items-center mt-4">
-                <button
-                  className="btn btn-outline-success"
-                  onClick={() => page > 1 && setPage(page - 1)}
-                  disabled={page <= 1}
-                >
-                  ← Sebelumnya
-                </button>
-                <span style={{ color: 'var(--color-dark)' }}>
-                  Halaman {page} dari {totalPages}
-                </span>
-                <button
-                  className="btn btn-outline-success"
-                  onClick={() => page < totalPages && setPage(page + 1)}
-                  disabled={page >= totalPages}
-                >
-                  Selanjutnya →
-                </button>
+          {/* HEADER REKAP */}
+          <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+              <div
+                className="fw-bold"
+                style={{
+                  fontSize: '1.1rem',
+                  color:
+                    'var(--color-dark)',
+                }}
+              >
+                Rekap Absensi
               </div>
-            </>
-          ) : (
-            <CardTableAbsensi
-              data={rekapRiwayat}
-              page={page - 1}
-              rowsPerPage={limit}
-              onPageChange={(p) => {
-                if (p >= 0 && p < totalPages) setPage(p + 1);
+
+              <div
+                style={{
+                  fontSize:
+                    '0.9rem',
+                  color: '#666',
+                }}
+              >
+                {
+                  monthNames[
+                    bulan - 1
+                  ]
+                }{' '}
+                {tahun}
+              </div>
+            </div>
+
+            <div className="d-flex align-items-center gap-2">
+              <button
+                className="btn btn-light border"
+                onClick={
+                  handlePrevMonth
+                }
+              >
+                ←
+              </button>
+
+              <button
+                className="btn btn-light border"
+                onClick={
+                  handleNextMonth
+                }
+              >
+                →
+              </button>
+            </div>
+          </div>
+
+          {/* SUMMARY */}
+          <div className="row g-3 mb-4">
+            {[
+              {
+                label: 'Kerja',
+                total: totalKERJA,
+                bg: '#dcfce7',
+                color: '#166534',
+              },
+              {
+                label: 'Mens',
+                total: totalMENS,
+                bg: '#fee2e2',
+                color: '#991b1b',
+              },
+              {
+                label: 'Off',
+                total: totalOFF,
+                bg: '#e5e7eb',
+                color: '#374151',
+              },
+              {
+                label: 'Sakit',
+                total: totalSAKIT,
+                bg: '#fef3c7',
+                color: '#92400e',
+              },
+            ].map((item) => (
+              <div
+                className="col-6 col-lg-3"
+                key={item.label}
+              >
+                <div
+                  className="p-4 rounded-4 shadow-sm h-100"
+                  style={{
+                    background:
+                      item.bg,
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize:
+                        '0.85rem',
+                      opacity: 0.75,
+                      color:
+                        item.color,
+                    }}
+                  >
+                    {item.label}
+                  </div>
+
+                  <div
+                    className="fw-bold"
+                    style={{
+                      fontSize:
+                        '2rem',
+                      color:
+                        item.color,
+                    }}
+                  >
+                    {item.total}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* RIWAYAT */}
+          <div
+            className="card border-0 shadow-sm rounded-4"
+            style={{
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              className="px-4 py-3 border-bottom"
+              style={{
+                background:
+                  'linear-gradient(to right,#ffffff,#f5fff8)',
               }}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          )}
+            >
+              <div className="fw-bold">
+                Riwayat Absensi
+              </div>
+
+              <div
+                style={{
+                  fontSize:
+                    '0.85rem',
+                  color: '#666',
+                }}
+              >
+                Histori absensi{' '}
+                {selectedLady?.nama_ladies}
+              </div>
+            </div>
+
+            <div
+              className={
+                isMobile
+                  ? 'p-2'
+                  : 'p-3'
+              }
+            >
+              {!isMobile ? (
+                <>
+                  <DataTable
+                    columns={[
+                      {
+                        key:
+                          'tanggal',
+                        label:
+                          'Tanggal',
+                      },
+                      {
+                        key:
+                          'status',
+                        label:
+                          'Status',
+                        render: (
+                          a
+                        ) => (
+                          <span
+                            className={`badge ${
+                              a.status ===
+                              'KERJA'
+                                ? 'bg-success'
+                                : a.status ===
+                                  'MENS'
+                                ? 'bg-danger'
+                                : a.status ===
+                                  'OFF'
+                                ? 'bg-secondary'
+                                : 'bg-warning text-dark'
+                            }`}
+                          >
+                            {
+                              a.status
+                            }
+                          </span>
+                        ),
+                      },
+                      {
+                        key:
+                          'keterangan',
+                        label:
+                          'Keterangan',
+                        render: (
+                          a
+                        ) =>
+                          a.keterangan ||
+                          '-',
+                      },
+                      {
+                        key: 'id',
+                        label:
+                          'Aksi',
+                        render: (
+                          a
+                        ) => (
+                          <div className="d-flex gap-2">
+                            <button
+                              className="btn btn-sm btn-light border"
+                              onClick={() =>
+                                handleEdit(
+                                  a
+                                )
+                              }
+                            >
+                              <FiEdit2 />
+                            </button>
+
+                            <button
+                              className="btn btn-sm btn-light border text-danger"
+                              onClick={() =>
+                                handleDelete(
+                                  a.tanggal
+                                )
+                              }
+                            >
+                              <FiTrash2 />
+                            </button>
+                          </div>
+                        ),
+                      },
+                    ]}
+                    data={
+                      riwayatWithId
+                    }
+                  />
+
+                  {/* PAGINATION */}
+                  <div className="d-flex justify-content-between align-items-center mt-4">
+                    <button
+                      className="btn btn-outline-success rounded-pill px-4"
+                      disabled={
+                        page <= 1
+                      }
+                      onClick={() =>
+                        setPage(
+                          page - 1
+                        )
+                      }
+                    >
+                      ← Sebelumnya
+                    </button>
+
+                    <div
+                      style={{
+                        color:
+                          '#666',
+                      }}
+                    >
+                      Halaman {page}{' '}
+                      dari{' '}
+                      {
+                        totalPages
+                      }
+                    </div>
+
+                    <button
+                      className="btn btn-outline-success rounded-pill px-4"
+                      disabled={
+                        page >=
+                        totalPages
+                      }
+                      onClick={() =>
+                        setPage(
+                          page + 1
+                        )
+                      }
+                    >
+                      Selanjutnya →
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <CardTableAbsensi
+                  data={
+                    rekapRiwayat
+                  }
+                  page={page - 1}
+                  rowsPerPage={limit}
+                  onPageChange={(
+                    p
+                  ) => {
+                    if (
+                      p >= 0 &&
+                      p <
+                        totalPages
+                    ) {
+                      setPage(
+                        p + 1
+                      );
+                    }
+                  }}
+                  onEdit={
+                    handleEdit
+                  }
+                  onDelete={
+                    handleDelete
+                  }
+                />
+              )}
+            </div>
+          </div>
         </>
       )}
 
+      {/* MODAL */}
       <AddAbsensiModal
         show={showModal}
         onClose={() => {
@@ -379,24 +982,42 @@ const AbsensiPage = () => {
         }}
         absensi={editAbsensi}
         onSubmit={async (data) => {
-          if (!selectedLadyId || !selectedTanggal) return;
+          if (
+            !selectedLadyId ||
+            !selectedTanggal
+          )
+            return;
 
-          const { error } = await supabase
-            .from('absensi')
-            .update({
-              status: data.status,
-              keterangan: data.keterangan ?? null,
-            })
-            .eq('ladies_id', selectedLadyId)
-            .eq('tanggal', selectedTanggal);
+          const { error } =
+            await supabase
+              .from('absensi')
+              .update({
+                status:
+                  data.status,
+                keterangan:
+                  data.keterangan ??
+                  null,
+              })
+              .eq(
+                'ladies_id',
+                selectedLadyId
+              )
+              .eq(
+                'tanggal',
+                selectedTanggal
+              );
 
           if (error) {
-            alert('❌ Gagal update data: ' + error.message);
+            alert(
+              '❌ Gagal update data: ' +
+                error.message
+            );
           }
 
           setShowModal(false);
           setEditAbsensi(null);
           setSelectedTanggal(null);
+
           fetchRiwayat();
           fetchRekapRiwayat();
         }}
@@ -404,5 +1025,4 @@ const AbsensiPage = () => {
     </div>
   );
 };
-
 export default AbsensiPage;
