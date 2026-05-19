@@ -324,7 +324,7 @@ const AbsensiPage = () => {
     if (error) {
       alert(
         '❌ Gagal hapus data: ' +
-          error.message
+        error.message
       );
     } else {
       fetchRiwayat();
@@ -548,12 +548,21 @@ const AbsensiPage = () => {
             </div>
 
             {/* STATUS */}
+            {/* STATUS */}
             <div className="col-12 col-lg-4">
               <label className="fw-semibold mb-2">
                 Status
               </label>
 
-              <div className="d-flex flex-wrap gap-2">
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: isMobile
+                    ? 'repeat(4, 1fr)'
+                    : 'repeat(4, auto)',
+                  gap: isMobile ? 8 : 10,
+                }}
+              >
                 {[
                   'KERJA',
                   'MENS',
@@ -573,19 +582,38 @@ const AbsensiPage = () => {
                       className="btn"
                       style={{
                         borderRadius: 14,
-                        padding:
-                          '10px 16px',
+
+                        height: isMobile
+                          ? 42
+                          : 46,
+
+                        padding: isMobile
+                          ? '0 6px'
+                          : '0 16px',
+
                         fontWeight: 700,
+
+                        fontSize: isMobile
+                          ? '0.7rem'
+                          : '0.88rem',
+
                         border: active
                           ? 'none'
                           : '1px solid #dfeee4',
-                        background:
-                          active
-                            ? 'linear-gradient(135deg,#22c55e,#4ade80)'
-                            : '#fff',
+
+                        background: active
+                          ? 'linear-gradient(135deg,#22c55e,#4ade80)'
+                          : '#fff',
+
                         color: active
                           ? 'white'
                           : '#444',
+
+                        whiteSpace: 'nowrap',
+
+                        boxShadow: active
+                          ? '0 8px 18px rgba(34,197,94,0.18)'
+                          : 'none',
                       }}
                     >
                       {opt}
@@ -603,19 +631,32 @@ const AbsensiPage = () => {
 
               <textarea
                 className="form-control shadow-none"
-                rows={3}
+                rows={isMobile ? 2 : 3}
                 value={keterangan}
                 onChange={(e) =>
                   setKeterangan(
                     e.target.value
                   )
                 }
-                placeholder="Tambahkan catatan jika diperlukan..."
+                placeholder="Tambahkan catatan..."
                 style={{
-                  borderRadius: 18,
+                  borderRadius: 16,
                   border:
                     '2px solid #d8f3df',
-                  padding: 16,
+
+                  padding: isMobile
+                    ? '12px 14px'
+                    : 16,
+
+                  fontSize: isMobile
+                    ? '0.82rem'
+                    : '0.92rem',
+
+                  minHeight: isMobile
+                    ? 80
+                    : 110,
+
+                  resize: 'none',
                 }}
               />
             </div>
@@ -675,7 +716,7 @@ const AbsensiPage = () => {
               >
                 {
                   monthNames[
-                    bulan - 1
+                  bulan - 1
                   ]
                 }{' '}
                 {tahun}
@@ -826,18 +867,17 @@ const AbsensiPage = () => {
                           a
                         ) => (
                           <span
-                            className={`badge ${
-                              a.status ===
+                            className={`badge ${a.status ===
                               'KERJA'
-                                ? 'bg-success'
-                                : a.status ===
-                                  'MENS'
+                              ? 'bg-success'
+                              : a.status ===
+                                'MENS'
                                 ? 'bg-danger'
                                 : a.status ===
                                   'OFF'
-                                ? 'bg-secondary'
-                                : 'bg-warning text-dark'
-                            }`}
+                                  ? 'bg-secondary'
+                                  : 'bg-warning text-dark'
+                              }`}
                           >
                             {
                               a.status
@@ -952,7 +992,7 @@ const AbsensiPage = () => {
                     if (
                       p >= 0 &&
                       p <
-                        totalPages
+                      totalPages
                     ) {
                       setPage(
                         p + 1
@@ -1010,7 +1050,7 @@ const AbsensiPage = () => {
           if (error) {
             alert(
               '❌ Gagal update data: ' +
-                error.message
+              error.message
             );
           }
 
