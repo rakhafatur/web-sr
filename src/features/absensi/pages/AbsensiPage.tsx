@@ -1164,9 +1164,6 @@ const AbsensiPage = () => {
                       );
                     }
                   }}
-                  onEdit={
-                    handleEdit
-                  }
                   onDelete={
                     handleDelete
                   }
