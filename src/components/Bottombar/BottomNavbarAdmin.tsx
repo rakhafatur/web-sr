@@ -183,7 +183,6 @@ function BottomNavbarAdmin() {
                 <FiShield />,
                 'Approval User',
                 '/user-approval',
-                'NEW'
               )}
 
               {renderMenuItem(

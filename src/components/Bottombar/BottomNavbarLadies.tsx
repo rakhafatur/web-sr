@@ -1,81 +1,246 @@
+import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
+
 import {
   FiHome,
   FiDollarSign,
   FiCalendar,
-  FiUser
+  FiUser,
+  FiChevronRight,
+  FiBookOpen,
+  FiCreditCard,
+  FiActivity,
 } from 'react-icons/fi';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import ReactDOM from 'react-dom';
+
+import {
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
+
 import './BottomNavbarLadies.css';
 
 function BottomNavbarLadies() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [activeModal, setActiveModal] = useState<'menu' | 'transaksi' | null>(null);
 
-  const isActive = (path: string) => location.pathname.startsWith(path);
+  const [activeModal, setActiveModal] = useState<
+    'menu' | 'transaksi' | null
+  >(null);
 
-  const renderModalContent = () => {
-    if (activeModal === 'transaksi') {
-      return (
-        <div className="bottom-modal-backdrop" onClick={() => setActiveModal(null)}>
-          <div className="bottom-modal" onClick={(e) => e.stopPropagation()}>
-            <h6 className="modal-title">Transaksi</h6>
-            <ul>
-              <li onClick={() => { navigate('/ladies/voucher'); setActiveModal(null); }}>Voucher</li>
-              <li onClick={() => { navigate('/ladies/pemasukan_lain'); setActiveModal(null); }}>Pemasukan Lain</li>
-              <li onClick={() => { navigate('/ladies/kasbon'); setActiveModal(null); }}>Kasbon</li>
-              <li onClick={() => { navigate('/ladies/dokter'); setActiveModal(null); }}>Dokter</li>
-            </ul>
-          </div>
-        </div>
-      );
-    }
+  const isActive = (path: string) =>
+    location.pathname.startsWith(path);
 
-    if (activeModal === 'menu') {
-      return (
-        <div className="bottom-modal-backdrop" onClick={() => setActiveModal(null)}>
-          <div className="bottom-modal" onClick={(e) => e.stopPropagation()}>
-            <h6 className="modal-title">Menu</h6>
-            <ul>
-              <li onClick={() => { navigate('/ladies/profile'); setActiveModal(null); }}>Profile</li>
-              <li onClick={() => { navigate('/ladies/peraturan'); setActiveModal(null); }}>Peraturan</li>
-              {/* <li onClick={() => { navigate('/smart-chat-ladies'); setActiveModal(null); }}>Chat SR</li> */}
-            </ul>
-          </div>
-        </div>
-      );
-    }
-
-    return null;
+  const closeModal = () => {
+    setActiveModal(null);
   };
 
-  return (
-    <>
-      <div className="bottom-navbar">
-        <div className="nav-item" onClick={() => { navigate('/ladies/home'); setActiveModal(null); }}>
-          <FiHome className={`nav-icon ${isActive('/ladies/home') ? 'active' : ''}`} />
-          <span>Home</span>
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    closeModal();
+  };
+
+  const renderMenuItem = (
+    icon: React.ReactNode,
+    label: string,
+    path: string,
+    badge?: string
+  ) => (
+    <div
+      className="bottom-sheet-item"
+      onClick={() => handleNavigate(path)}
+    >
+      <div className="bottom-sheet-item-left">
+        <div className="bottom-sheet-icon">
+          {icon}
         </div>
 
-        <div className="nav-item" onClick={() => setActiveModal('transaksi')}>
-          <FiDollarSign className={`nav-icon ${activeModal === 'transaksi' ? 'active' : ''}`} />
-          <span>Transaksi</span>
-        </div>
+        <div>
+          <div className="bottom-sheet-label">
+            {label}
+          </div>
 
-        <div className="nav-item" onClick={() => { navigate('/ladies/absensi'); setActiveModal(null); }}>
-          <FiCalendar className={`nav-icon ${isActive('/ladies/absensi') ? 'active' : ''}`} />
-          <span>Absensi</span>
-        </div>
-
-        <div className="nav-item" onClick={() => setActiveModal('menu')}>
-          <FiUser className={`nav-icon ${activeModal === 'menu' ? 'active' : ''}`} />
-          <span>Menu</span>
+          {badge && (
+            <div className="bottom-sheet-badge">
+              {badge}
+            </div>
+          )}
         </div>
       </div>
 
-      {activeModal && ReactDOM.createPortal(renderModalContent(), document.body)}
+      <FiChevronRight className="bottom-sheet-arrow" />
+    </div>
+  );
+
+  const renderModalContent = () => (
+    <div
+      className="bottom-modal-backdrop"
+      onClick={closeModal}
+    >
+      <div
+        className="bottom-modal"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* HANDLE */}
+        <div className="bottom-sheet-handle-wrapper">
+          <div className="bottom-sheet-handle" />
+        </div>
+
+        {/* HEADER */}
+        <div className="bottom-sheet-header">
+          <div>
+            <div className="bottom-sheet-title">
+              {activeModal === 'transaksi'
+                ? 'Transaksi'
+                : 'Menu'}
+            </div>
+
+            <div className="bottom-sheet-subtitle">
+              Kelola fitur dan navigasi aplikasi
+            </div>
+          </div>
+        </div>
+
+        {/* CONTENT */}
+        <div className="bottom-sheet-content">
+          {activeModal === 'transaksi' && (
+            <>
+              <div className="sheet-section-title">
+                Input Transaksi
+              </div>
+
+              {renderMenuItem(
+                <FiCreditCard />,
+                'Voucher',
+                '/ladies/voucher'
+              )}
+
+              {renderMenuItem(
+                <FiDollarSign />,
+                'Pemasukan Lain',
+                '/ladies/pemasukan_lain'
+              )}
+
+              {renderMenuItem(
+                <FiBookOpen />,
+                'Kasbon',
+                '/ladies/kasbon'
+              )}
+
+              {renderMenuItem(
+                <FiActivity />,
+                'Dokter',
+                '/ladies/dokter'
+              )}
+            </>
+          )}
+
+          {activeModal === 'menu' && (
+            <>
+              <div className="sheet-section-title">
+                Account
+              </div>
+
+              {renderMenuItem(
+                <FiUser />,
+                'Profile',
+                '/ladies/profile'
+              )}
+
+              {renderMenuItem(
+                <FiBookOpen />,
+                'Peraturan',
+                '/ladies/peraturan'
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      <div className="bottom-navbar-wrapper">
+        <div className="bottom-navbar">
+          {/* HOME */}
+          <div
+            className={`nav-item ${
+              isActive('/ladies/home')
+                ? 'active'
+                : ''
+            }`}
+            onClick={() => {
+              navigate('/ladies/home');
+              closeModal();
+            }}
+          >
+            <div className="nav-icon-wrapper">
+              <FiHome className="nav-icon" />
+            </div>
+
+            <span>Home</span>
+          </div>
+
+          {/* TRANSAKSI */}
+          <div
+            className={`nav-item ${
+              activeModal === 'transaksi'
+                ? 'active'
+                : ''
+            }`}
+            onClick={() =>
+              setActiveModal('transaksi')
+            }
+          >
+            <div className="nav-icon-wrapper">
+              <FiDollarSign className="nav-icon" />
+            </div>
+
+            <span>Transaksi</span>
+          </div>
+
+          {/* ABSENSI */}
+          <div
+            className={`nav-item ${
+              isActive('/ladies/absensi')
+                ? 'active'
+                : ''
+            }`}
+            onClick={() => {
+              navigate('/ladies/absensi');
+              closeModal();
+            }}
+          >
+            <div className="nav-icon-wrapper">
+              <FiCalendar className="nav-icon" />
+            </div>
+
+            <span>Absensi</span>
+          </div>
+
+          {/* MENU */}
+          <div
+            className={`nav-item ${
+              activeModal === 'menu'
+                ? 'active'
+                : ''
+            }`}
+            onClick={() => setActiveModal('menu')}
+          >
+            <div className="nav-icon-wrapper">
+              <FiUser className="nav-icon" />
+            </div>
+
+            <span>Menu</span>
+          </div>
+        </div>
+      </div>
+
+      {activeModal &&
+        ReactDOM.createPortal(
+          renderModalContent(),
+          document.body
+        )}
     </>
   );
 }
