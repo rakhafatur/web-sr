@@ -2,10 +2,21 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../../../lib/supabaseClient';
 import AddUserModal from '../components/AddUserModal';
 import bcrypt from 'bcryptjs';
+
 import DataTable from '../../../components/DataTable';
 import UserCardList from '../components/UserCardList';
+
 import { useMediaQuery } from 'react-responsive';
-import { FiPlus, FiEdit2, FiTrash2 } from 'react-icons/fi';
+
+import {
+  FiPlus,
+  FiEdit2,
+  FiTrash2,
+  FiUsers,
+  FiRefreshCw,
+  FiSearch,
+  FiShield,
+} from 'react-icons/fi';
 
 type User = {
   id: string;
@@ -14,57 +25,114 @@ type User = {
 };
 
 const UserListPage = () => {
-  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const isMobile = useMediaQuery({
+    maxWidth: 768,
+  });
+
   const [userList, setUserList] = useState<User[]>([]);
-  const [editUser, setEditUser] = useState<User | null>(null);
-  const [showForm, setShowForm] = useState(false);
+  const [editUser, setEditUser] =
+    useState<User | null>(null);
+
+  const [showForm, setShowForm] =
+    useState(false);
+
+  const [loading, setLoading] =
+    useState(true);
 
   const [page, setPage] = useState(1);
+
   const limit = isMobile ? 5 : 10;
+
   const [total, setTotal] = useState(0);
-  const [keyword, setKeyword] = useState('');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const [keyword, setKeyword] =
+    useState('');
+
+  const [isSidebarOpen, setIsSidebarOpen] =
+    useState(false);
 
   useEffect(() => {
     const observer = new MutationObserver(() => {
-      const backdrop = document.querySelector('.sidebar-backdrop');
+      const backdrop =
+        document.querySelector(
+          '.sidebar-backdrop'
+        );
+
       setIsSidebarOpen(!!backdrop);
     });
-    observer.observe(document.body, { childList: true, subtree: true });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
     return () => observer.disconnect();
   }, []);
 
   const fetchUsers = async () => {
+    setLoading(true);
+
     const from = (page - 1) * limit;
     const to = from + limit - 1;
 
     let query = supabase
       .from('users')
-      .select('*', { count: 'exact' })
-      .eq('is_active', true) // ✅ hanya tampilkan user aktif
+      .select('*', {
+        count: 'exact',
+      })
+      .eq('is_active', true)
       .range(from, to);
 
     if (keyword.trim() !== '') {
-      query = query.or(`username.ilike.%${keyword}%,nama.ilike.%${keyword}%`);
+      query = query.or(
+        `username.ilike.%${keyword}%,nama.ilike.%${keyword}%`
+      );
     }
 
-    const { data, count, error } = await query;
+    const { data, count, error } =
+      await query;
 
     if (error) {
-      console.error('❌ Gagal ambil data user:', error);
+      console.error(
+        '❌ Gagal ambil data user:',
+        error
+      );
     } else {
       setUserList(data || []);
       setTotal(count || 0);
     }
+
+    setLoading(false);
   };
 
-  const handleDelete = async (id: string) => {
-    const confirm = window.confirm('❗ Yakin ingin hapus user ini?');
+  useEffect(() => {
+    fetchUsers();
+
+    // eslint-disable-next-line
+  }, [page, keyword, isMobile]);
+
+  const handleDelete = async (
+    id: string
+  ) => {
+    const confirm = window.confirm(
+      '❗ Yakin ingin hapus user ini?'
+    );
+
     if (!confirm) return;
 
-    const { error } = await supabase.from('users').delete().eq('id', id);
-    if (error) alert('❌ Gagal hapus user: ' + error.message);
-    else fetchUsers();
+    const { error } = await supabase
+      .from('users')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      alert(
+        '❌ Gagal hapus user: ' +
+        error.message
+      );
+    } else {
+      fetchUsers();
+    }
   };
 
   const handleSaveUser = async (data: {
@@ -82,200 +150,621 @@ const UserListPage = () => {
         .update({
           username: data.username,
           nama: data.nama,
-          ...(hashedPassword ? { password: hashedPassword } : {}),
+          ...(hashedPassword
+            ? {
+              password:
+                hashedPassword,
+            }
+            : {}),
         })
         .eq('id', editUser.id);
-      if (error) alert('❌ Gagal update user: ' + error.message);
+
+      if (error) {
+        alert(
+          '❌ Gagal update user: ' +
+          error.message
+        );
+      }
     } else {
-      const { error } = await supabase.from('users').insert([
-        {
-          username: data.username,
-          nama: data.nama,
-          password: hashedPassword,
-        },
-      ]);
-      if (error) alert('❌ Gagal tambah user: ' + error.message);
+      const { error } = await supabase
+        .from('users')
+        .insert([
+          {
+            username: data.username,
+            nama: data.nama,
+            password: hashedPassword,
+          },
+        ]);
+
+      if (error) {
+        alert(
+          '❌ Gagal tambah user: ' +
+          error.message
+        );
+      }
     }
 
     setEditUser(null);
     setShowForm(false);
+
     fetchUsers();
   };
 
-  useEffect(() => {
-    fetchUsers();
-    // eslint-disable-next-line
-  }, [page, keyword, isMobile]);
-
-  const totalPages = Math.ceil(total / limit);
+  const totalPages = Math.ceil(
+    total / limit
+  );
 
   return (
     <div
-      className="p-4"
+      className="container-fluid py-4 px-md-4 px-3"
       style={{
+        background:
+          'linear-gradient(to bottom, #f7fff9 0%, #ffffff 100%)',
         minHeight: '100vh',
-        backgroundColor: 'var(--color-bg)',
-        color: 'var(--color-dark)',
-        paddingBottom: isMobile ? '100px' : undefined,
+        paddingBottom: isMobile
+          ? '100px'
+          : undefined,
       }}
     >
-      {isMobile && (
-        <div className="mb-3">
-          <input
-            type="text"
-            className="form-control bg-white text-dark border border-success"
-            placeholder="🔍 Cari user..."
-            value={keyword}
-            onChange={(e) => {
-              setPage(1);
-              setKeyword(e.target.value);
-            }}
-          />
-        </div>
-      )}
-
-      <AddUserModal
-        show={showForm}
-        onClose={() => {
-          setShowForm(false);
-          setEditUser(null);
+      {/* HEADER */}
+      <div
+        className="mb-4 p-4 rounded-4 shadow-sm position-relative overflow-hidden"
+        style={{
+          background:
+            'linear-gradient(135deg, var(--color-green), #7be0a9)',
+          color: 'white',
         }}
-        onSubmit={handleSaveUser}
-        user={editUser}
-      />
+      >
+        <div
+          style={{
+            position: 'absolute',
+            right: -50,
+            top: -50,
+            width: 180,
+            height: 180,
+            borderRadius: '50%',
+            background:
+              'rgba(255,255,255,0.08)',
+          }}
+        />
 
-      {isMobile ? (
-        <>
-          <UserCardList
-            users={userList}
-            onEdit={(u) => {
-              setEditUser(u);
-              setShowForm(true);
-            }}
-            onDelete={handleDelete}
-          />
-
-          {totalPages > 1 && (
-            <div className="d-flex justify-content-between align-items-center mt-4">
-              <button
-                className="btn btn-outline-success"
-                onClick={() => setPage(page - 1)}
-                disabled={page <= 1}
-              >
-                ← Sebelumnya
-              </button>
-              <button
-                className="btn btn-outline-success"
-                onClick={() => setPage(page + 1)}
-                disabled={page >= totalPages}
-              >
-                Selanjutnya →
-              </button>
+        <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 position-relative">
+          <div className="d-flex align-items-center gap-3">
+            <div
+              style={{
+                width: isMobile
+                  ? 56
+                  : 68,
+                height: isMobile
+                  ? 56
+                  : 68,
+                borderRadius: 22,
+                background:
+                  'rgba(255,255,255,0.18)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: isMobile
+                  ? 24
+                  : 30,
+                backdropFilter:
+                  'blur(10px)',
+                flexShrink: 0,
+              }}
+            >
+              <FiUsers />
             </div>
-          )}
 
-          {!isSidebarOpen && (
-            <button
-              onClick={() => {
-                setEditUser(null);
-                setShowForm(true);
-              }}
-              className="fab-button"
-            >
-              <FiPlus />
-            </button>
-          )}
-        </>
-      ) : (
-        <>
-          <div className="d-flex justify-content-between align-items-stretch mb-3 gap-2">
-            <button
-              className="btn btn-success fw-bold"
-              onClick={() => {
-                setEditUser(null);
-                setShowForm(true);
-              }}
-            >
-              <FiPlus className="me-2" /> Tambah User
-            </button>
-            <input
-              type="text"
-              className="form-control bg-white text-dark border border-success"
-              placeholder="🔍 Cari user..."
-              value={keyword}
-              onChange={(e) => {
-                setPage(1);
-                setKeyword(e.target.value);
-              }}
-              style={{ maxWidth: 300 }}
-            />
+            <div>
+              <h2
+                className="fw-bold mb-1"
+                style={{
+                  fontSize: isMobile
+                    ? '1.08rem'
+                    : '1.9rem',
+                }}
+              >
+                Management User
+              </h2>
+
+              <div
+                style={{
+                  opacity: 0.82,
+                  fontSize: isMobile
+                    ? '0.74rem'
+                    : '0.92rem',
+                }}
+              >
+                Kelola user dan akses
+                sistem SR Agency
+              </div>
+            </div>
           </div>
 
-          <DataTable
-            columns={[
-              { key: 'username', label: 'Username' },
-              { key: 'nama', label: 'Nama Lengkap' },
-              {
-                key: 'id',
-                label: 'Aksi',
-                render: (u: User) => (
-                  <div className="d-flex gap-2">
-                    <button
-                      className="btn btn-sm btn-outline-warning d-flex align-items-center justify-content-center"
-                      style={{
-                        width: 32,
-                        height: 32,
-                        padding: 0,
-                        borderRadius: 6,
-                      }}
-                      onClick={() => {
-                        setEditUser(u);
-                        setShowForm(true);
-                      }}
-                      title="Edit"
-                    >
-                      <FiEdit2 size={16} />
-                    </button>
-                    <button
-                      className="btn btn-sm btn-outline-danger d-flex align-items-center justify-content-center"
-                      style={{
-                        width: 32,
-                        height: 32,
-                        padding: 0,
-                        borderRadius: 6,
-                      }}
-                      onClick={() => handleDelete(u.id)}
-                      title="Hapus"
-                    >
-                      <FiTrash2 size={16} />
-                    </button>
-                  </div>
-                ),
-              },
-            ]}
-            data={userList}
-          />
-
-          {totalPages > 1 && (
-            <div className="d-flex justify-content-between align-items-center mt-4">
+          {!isMobile && (
+            <div className="d-flex align-items-center gap-2">
               <button
-                className="btn btn-outline-success"
-                onClick={() => setPage(page - 1)}
-                disabled={page <= 1}
+                onClick={fetchUsers}
+                className="btn btn-light fw-semibold d-flex align-items-center gap-2"
+                style={{
+                  borderRadius: 14,
+                  color:
+                    'var(--color-green)',
+                }}
               >
-                ← Sebelumnya
+                <FiRefreshCw />
+                Refresh
               </button>
+
               <button
-                className="btn btn-outline-success"
-                onClick={() => setPage(page + 1)}
-                disabled={page >= totalPages}
+                className="btn btn-success fw-bold d-flex align-items-center gap-2"
+                style={{
+                  borderRadius: 14,
+                  background:
+                    'rgba(255,255,255,0.18)',
+                  border:
+                    '1px solid rgba(255,255,255,0.3)',
+                }}
+                onClick={() => {
+                  setEditUser(null);
+                  setShowForm(true);
+                }}
               >
-                Selanjutnya →
+                <FiPlus />
+                Tambah User
               </button>
             </div>
           )}
-        </>
-      )}
+        </div>
+      </div>
+
+      {/* SUMMARY */}
+      <div className="row g-3 mb-4">
+        <div className="col-12 col-md-6">
+          <div
+            className="card border-0 shadow-sm rounded-4 h-100"
+            style={{
+              overflow: 'hidden',
+            }}
+          >
+            <div className="p-4">
+              <div className="d-flex align-items-center justify-content-between">
+                <div>
+                  <div
+                    style={{
+                      fontSize: '0.82rem',
+                      color: '#666',
+                    }}
+                  >
+                    Total User Aktif
+                  </div>
+
+                  <div
+                    className="fw-bold mt-1"
+                    style={{
+                      fontSize: '1.8rem',
+                      color:
+                        'var(--color-dark)',
+                    }}
+                  >
+                    {total}
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    width: 58,
+                    height: 58,
+                    borderRadius: 18,
+                    background:
+                      '#effff4',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color:
+                      'var(--color-green)',
+                    fontSize: 24,
+                  }}
+                >
+                  <FiUsers />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-12 col-md-6">
+          <div
+            className="card border-0 shadow-sm rounded-4 h-100"
+            style={{
+              overflow: 'hidden',
+            }}
+          >
+            <div className="p-4">
+              <div className="d-flex align-items-center justify-content-between">
+                <div>
+                  <div
+                    style={{
+                      fontSize: '0.82rem',
+                      color: '#666',
+                    }}
+                  >
+                    Status Sistem
+                  </div>
+
+                  <div
+                    className="fw-bold mt-1"
+                    style={{
+                      fontSize: '1.1rem',
+                      color:
+                        'var(--color-dark)',
+                    }}
+                  >
+                    Semua User Aktif
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    width: 58,
+                    height: 58,
+                    borderRadius: 18,
+                    background:
+                      '#effff4',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color:
+                      'var(--color-green)',
+                    fontSize: 24,
+                  }}
+                >
+                  <FiShield />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* CONTENT */}
+      <div
+        className="card border-0 shadow-sm rounded-4"
+        style={{
+          overflow: 'hidden',
+        }}
+      >
+        {/* TOPBAR */}
+        <div
+          className="px-4 py-3 border-bottom"
+          style={{
+            background:
+              'linear-gradient(to right, #fafafa, #ffffff)',
+          }}
+        >
+          <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+              <div
+                className="fw-bold"
+                style={{
+                  color:
+                    'var(--color-dark)',
+                }}
+              >
+                List User
+              </div>
+
+              <div
+                style={{
+                  fontSize: '0.84rem',
+                  color: '#666',
+                }}
+              >
+                Data seluruh user aktif
+                dalam sistem
+              </div>
+            </div>
+
+            {!isMobile && (
+              <div
+                style={{
+                  width: 320,
+                  position: 'relative',
+                }}
+              >
+                <FiSearch
+                  size={18}
+                  style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: 16,
+                    transform:
+                      'translateY(-50%)',
+                    color: '#888',
+                  }}
+                />
+
+                <input
+                  type="text"
+                  className="form-control shadow-none"
+                  placeholder="Cari username / nama..."
+                  value={keyword}
+                  onChange={(e) => {
+                    setPage(1);
+                    setKeyword(
+                      e.target.value
+                    );
+                  }}
+                  style={{
+                    height: 48,
+                    borderRadius: 14,
+                    paddingLeft: 42,
+                    border:
+                      '2px solid rgba(25,153,71,0.12)',
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* MOBILE SEARCH */}
+        {isMobile && (
+          <div className="p-3 border-bottom">
+            <div
+              style={{
+                position: 'relative',
+              }}
+            >
+              <FiSearch
+                size={18}
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: 16,
+                  transform:
+                    'translateY(-50%)',
+                  color: '#888',
+                }}
+              />
+
+              <input
+                type="text"
+                className="form-control shadow-none"
+                placeholder="Cari user..."
+                value={keyword}
+                onChange={(e) => {
+                  setPage(1);
+                  setKeyword(
+                    e.target.value
+                  );
+                }}
+                style={{
+                  height: 50,
+                  borderRadius: 14,
+                  paddingLeft: 42,
+                  border:
+                    '2px solid rgba(25,153,71,0.12)',
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* BODY */}
+        <div className="p-2 p-md-3">
+          {loading ? (
+            <div
+              className="d-flex align-items-center gap-3 p-4"
+              style={{
+                color: '#666',
+              }}
+            >
+              <div
+                className="spinner-border spinner-border-sm"
+                role="status"
+              />
+
+              <span>
+                Mengambil data user...
+              </span>
+            </div>
+          ) : (
+            <>
+              <AddUserModal
+                show={showForm}
+                onClose={() => {
+                  setShowForm(false);
+                  setEditUser(null);
+                }}
+                onSubmit={handleSaveUser}
+                user={editUser}
+              />
+
+              {isMobile ? (
+                <>
+                  <UserCardList
+                    users={userList}
+                    onEdit={(u) => {
+                      setEditUser(u);
+                      setShowForm(true);
+                    }}
+                    onDelete={
+                      handleDelete
+                    }
+                  />
+
+                  {!isSidebarOpen && (
+                    <button
+                      onClick={() => {
+                        setEditUser(
+                          null
+                        );
+
+                        setShowForm(
+                          true
+                        );
+                      }}
+                      className="fab-button"
+                    >
+                      <FiPlus />
+                    </button>
+                  )}
+                </>
+              ) : (
+                <DataTable
+                  columns={[
+                    {
+                      key: 'username',
+                      label:
+                        'Username',
+                    },
+                    {
+                      key: 'nama',
+                      label:
+                        'Nama Lengkap',
+                    },
+                    {
+                      key: 'id',
+                      label: 'Aksi',
+                      render: (
+                        u: User
+                      ) => (
+                        <div className="d-flex gap-2">
+                          <button
+                            className="btn btn-sm btn-outline-warning d-flex align-items-center justify-content-center"
+                            style={{
+                              width: 34,
+                              height: 34,
+                              padding: 0,
+                              borderRadius: 10,
+                            }}
+                            onClick={() => {
+                              setEditUser(
+                                u
+                              );
+
+                              setShowForm(
+                                true
+                              );
+                            }}
+                          >
+                            <FiEdit2
+                              size={
+                                15
+                              }
+                            />
+                          </button>
+
+                          <button
+                            className="btn btn-sm btn-outline-danger d-flex align-items-center justify-content-center"
+                            style={{
+                              width: 34,
+                              height: 34,
+                              padding: 0,
+                              borderRadius: 10,
+                            }}
+                            onClick={() =>
+                              handleDelete(
+                                u.id
+                              )
+                            }
+                          >
+                            <FiTrash2
+                              size={
+                                15
+                              }
+                            />
+                          </button>
+                        </div>
+                      ),
+                    },
+                  ]}
+                  data={userList}
+                />
+              )}
+
+              {/* EMPTY */}
+              {!loading &&
+                userList.length === 0 && (
+                  <div
+                    className="p-5 text-center"
+                    style={{
+                      color: '#666',
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: 46,
+                      }}
+                    >
+                      👤
+                    </div>
+
+                    <div className="fw-bold mt-3">
+                      User tidak ditemukan
+                    </div>
+
+                    <div
+                      style={{
+                        fontSize:
+                          '0.9rem',
+                        marginTop: 4,
+                      }}
+                    >
+                      Coba gunakan keyword
+                      lain.
+                    </div>
+                  </div>
+                )}
+
+              {/* PAGINATION */}
+              {totalPages > 1 && (
+                <div className="d-flex justify-content-between align-items-center mt-4 px-2">
+                  <button
+                    className="btn btn-outline-success"
+                    onClick={() =>
+                      setPage(page - 1)
+                    }
+                    disabled={page <= 1}
+                    style={{
+                      borderRadius: 12,
+                    }}
+                  >
+                    ← Sebelumnya
+                  </button>
+
+                  <div
+                    className="fw-semibold"
+                    style={{
+                      fontSize: '0.88rem',
+                      color: '#666',
+                    }}
+                  >
+                    Halaman {page} dari{' '}
+                    {totalPages}
+                  </div>
+
+                  <button
+                    className="btn btn-outline-success"
+                    onClick={() =>
+                      setPage(page + 1)
+                    }
+                    disabled={
+                      page >= totalPages
+                    }
+                    style={{
+                      borderRadius: 12,
+                    }}
+                  >
+                    Selanjutnya →
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

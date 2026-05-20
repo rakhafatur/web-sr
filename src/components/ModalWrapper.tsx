@@ -1,5 +1,6 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { useMediaQuery } from 'react-responsive';
+import { FiX } from 'react-icons/fi';
 
 type Props = {
   show: boolean;
@@ -9,55 +10,159 @@ type Props = {
   onClose: () => void;
 };
 
-const ModalWrapper = ({ show, title, children, footer, onClose }: Props) => {
-  const isMobile = useMediaQuery({ maxWidth: 768 });
-  if (!show) return null;
+const ModalWrapper = ({
+  show,
+  title,
+  children,
+  footer,
+  onClose,
+}: Props) => {
+  const isMobile = useMediaQuery({
+    maxWidth: 768,
+  });
 
-  const baseStyle: React.CSSProperties = {
-    backgroundColor: 'var(--color-white)',
-    border: '1px solid var(--color-green)',
-    borderRadius: '1.25rem',
-    boxShadow: '0 4px 24px rgba(0,0,0,0.09)',
-    color: 'var(--color-dark)',
-    width: isMobile ? '95vw' : 420,
-    maxWidth: '95vw',
-    maxHeight: '90vh',
-    display: 'flex',
-    flexDirection: 'column',
-    animation: isMobile ? 'slideUp 0.3s ease-out' : 'fadeIn 0.3s ease-out',
-    position: 'absolute',
-    left: '50%',
-    transform: isMobile ? 'translateX(-50%)' : 'translate(-50%, -50%)',
-    bottom: isMobile ? 0 : undefined,
-    top: isMobile ? undefined : '50%',
-  };
+  useEffect(() => {
+    if (show) {
+      document.body.style.overflow =
+        'hidden';
+    } else {
+      document.body.style.overflow =
+        '';
+    }
+
+    return () => {
+      document.body.style.overflow =
+        '';
+    };
+  }, [show]);
+
+  if (!show) return null;
 
   return (
     <div
-      className="position-fixed top-0 start-0 w-100 h-100"
-      style={{ backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 1050 }}
+      className="position-fixed"
+      style={{
+        inset: 0,
+        background:
+          'rgba(15, 23, 42, 0.55)',
+        zIndex: 1050,
+      }}
+      onClick={onClose}
     >
-      <div style={baseStyle}>
+      {/* MODAL */}
+      <div
+        onClick={(e) =>
+          e.stopPropagation()
+        }
+        style={{
+          width: isMobile
+            ? '100%'
+            : 520,
+
+          maxWidth: isMobile
+            ? '100%'
+            : '92vw',
+
+          maxHeight: isMobile
+            ? '92vh'
+            : '88vh',
+
+          background:
+            'linear-gradient(to bottom, #ffffff, #fcfffd)',
+
+          border:
+            '1px solid rgba(25,153,71,0.08)',
+
+          borderRadius: isMobile
+            ? '28px 28px 0 0'
+            : 30,
+
+          overflow: 'hidden',
+
+          boxShadow:
+            '0 20px 60px rgba(0,0,0,0.16)',
+
+          display: 'flex',
+          flexDirection: 'column',
+
+          position: 'absolute',
+
+          left: 0,
+          right: 0,
+
+          marginLeft: 'auto',
+          marginRight: 'auto',
+
+          top: isMobile
+            ? undefined
+            : 40,
+
+          bottom: isMobile
+            ? 0
+            : undefined,
+        }}
+      >
+        {/* HEADER */}
         <div
-          className="d-flex justify-content-between align-items-center p-4 border-bottom"
+          className="px-4 py-4 border-bottom"
           style={{
-            backgroundColor: 'var(--color-green-light)',
-            position: 'sticky',
-            top: 0,
-            zIndex: 1,
+            background:
+              'linear-gradient(to right, #f5fff8, #ffffff)',
+
+            borderColor:
+              'rgba(0,0,0,0.05)',
+
+            flexShrink: 0,
           }}
         >
-          <h5 className="m-0 fw-bold">{title}</h5>
-          <button className="btn-close" onClick={onClose}></button>
+          <div className="d-flex align-items-start justify-content-between gap-3">
+            <div className="flex-grow-1">
+              {title}
+            </div>
+
+            <button
+              onClick={onClose}
+              className="border-0 d-flex align-items-center justify-content-center"
+              style={{
+                width: 38,
+                height: 38,
+                borderRadius: 12,
+                background:
+                  '#f3f4f6',
+                color: '#666',
+                flexShrink: 0,
+                cursor: 'pointer',
+              }}
+            >
+              <FiX size={18} />
+            </button>
+          </div>
         </div>
-        <div className="flex-grow-1 overflow-auto p-4">{children}</div>
+
+        {/* BODY */}
+        <div
+          className="flex-grow-1 overflow-auto"
+          style={{
+            padding: isMobile
+              ? 20
+              : 28,
+          }}
+        >
+          {children}
+        </div>
+
+        {/* FOOTER */}
         {footer && (
           <div
-            className="p-4 border-top d-flex justify-content-end gap-2"
+            className="px-4 py-3 border-top"
             style={{
-              backgroundColor: 'var(--color-green-light)',
-              // Hapus position: sticky dan bottom!
-              position: 'static',
+              background:
+                'linear-gradient(to right, #fafafa, #ffffff)',
+
+              borderColor:
+                'rgba(0,0,0,0.05)',
+
+              flexShrink: 0,
             }}
           >
             {footer}
