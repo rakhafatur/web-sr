@@ -183,23 +183,6 @@ const AddTransaksiPage = () => {
               ))}
             </select>
 
-            <select
-              className="form-select shadow-none"
-              value={selectedLadyId}
-              onChange={(e) => setSelectedLadyId(e.target.value)}
-              style={{
-                height: isMobile ? 50 : 58,
-                borderRadius: isMobile ? 14 : 18,
-                border: '2px solid #d8f3df',
-                paddingLeft: isMobile ? 14 : 18,
-                paddingRight: 18,
-                fontWeight: 600,
-                fontSize: isMobile ? '0.82rem' : '0.95rem',
-                backgroundColor: '#fff',
-                color: 'var(--color-dark)',
-              }}
-            ></select>
-
           </div>
 
           {/* EMPTY STATE */}
