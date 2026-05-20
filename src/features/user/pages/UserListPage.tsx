@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import { supabase } from '../../../lib/supabaseClient';
-import AddUserModal from '../components/AddUserModal';
-import bcrypt from 'bcryptjs';
 
 import DataTable from '../../../components/DataTable';
 import UserCardList from '../components/UserCardList';
@@ -25,16 +25,14 @@ type User = {
 };
 
 const UserListPage = () => {
+  const navigate = useNavigate();
+
   const isMobile = useMediaQuery({
     maxWidth: 768,
   });
 
-  const [userList, setUserList] = useState<User[]>([]);
-  const [editUser, setEditUser] =
-    useState<User | null>(null);
-
-  const [showForm, setShowForm] =
-    useState(false);
+  const [userList, setUserList] =
+    useState<User[]>([]);
 
   const [loading, setLoading] =
     useState(true);
@@ -47,27 +45,6 @@ const UserListPage = () => {
 
   const [keyword, setKeyword] =
     useState('');
-
-  const [isSidebarOpen, setIsSidebarOpen] =
-    useState(false);
-
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      const backdrop =
-        document.querySelector(
-          '.sidebar-backdrop'
-        );
-
-      setIsSidebarOpen(!!backdrop);
-    });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
-
-    return () => observer.disconnect();
-  }, []);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -128,66 +105,11 @@ const UserListPage = () => {
     if (error) {
       alert(
         '❌ Gagal hapus user: ' +
-        error.message
+          error.message
       );
     } else {
       fetchUsers();
     }
-  };
-
-  const handleSaveUser = async (data: {
-    username: string;
-    nama: string;
-    password?: string;
-  }) => {
-    const hashedPassword = data.password
-      ? await bcrypt.hash(data.password, 10)
-      : undefined;
-
-    if (editUser) {
-      const { error } = await supabase
-        .from('users')
-        .update({
-          username: data.username,
-          nama: data.nama,
-          ...(hashedPassword
-            ? {
-              password:
-                hashedPassword,
-            }
-            : {}),
-        })
-        .eq('id', editUser.id);
-
-      if (error) {
-        alert(
-          '❌ Gagal update user: ' +
-          error.message
-        );
-      }
-    } else {
-      const { error } = await supabase
-        .from('users')
-        .insert([
-          {
-            username: data.username,
-            nama: data.nama,
-            password: hashedPassword,
-          },
-        ]);
-
-      if (error) {
-        alert(
-          '❌ Gagal tambah user: ' +
-          error.message
-        );
-      }
-    }
-
-    setEditUser(null);
-    setShowForm(false);
-
-    fetchUsers();
   };
 
   const totalPages = Math.ceil(
@@ -201,9 +123,6 @@ const UserListPage = () => {
         background:
           'linear-gradient(to bottom, #f7fff9 0%, #ffffff 100%)',
         minHeight: '100vh',
-        paddingBottom: isMobile
-          ? '100px'
-          : undefined,
       }}
     >
       {/* HEADER */}
@@ -243,7 +162,8 @@ const UserListPage = () => {
                   'rgba(255,255,255,0.18)',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
+                justifyContent:
+                  'center',
                 fontSize: isMobile
                   ? 24
                   : 30,
@@ -305,10 +225,11 @@ const UserListPage = () => {
                   border:
                     '1px solid rgba(255,255,255,0.3)',
                 }}
-                onClick={() => {
-                  setEditUser(null);
-                  setShowForm(true);
-                }}
+                onClick={() =>
+                  navigate(
+                    '/user-create'
+                  )
+                }
               >
                 <FiPlus />
                 Tambah User
@@ -332,7 +253,8 @@ const UserListPage = () => {
                 <div>
                   <div
                     style={{
-                      fontSize: '0.82rem',
+                      fontSize:
+                        '0.82rem',
                       color: '#666',
                     }}
                   >
@@ -342,7 +264,8 @@ const UserListPage = () => {
                   <div
                     className="fw-bold mt-1"
                     style={{
-                      fontSize: '1.8rem',
+                      fontSize:
+                        '1.8rem',
                       color:
                         'var(--color-dark)',
                     }}
@@ -359,8 +282,10 @@ const UserListPage = () => {
                     background:
                       '#effff4',
                     display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    alignItems:
+                      'center',
+                    justifyContent:
+                      'center',
                     color:
                       'var(--color-green)',
                     fontSize: 24,
@@ -385,7 +310,8 @@ const UserListPage = () => {
                 <div>
                   <div
                     style={{
-                      fontSize: '0.82rem',
+                      fontSize:
+                        '0.82rem',
                       color: '#666',
                     }}
                   >
@@ -395,7 +321,8 @@ const UserListPage = () => {
                   <div
                     className="fw-bold mt-1"
                     style={{
-                      fontSize: '1.1rem',
+                      fontSize:
+                        '1.1rem',
                       color:
                         'var(--color-dark)',
                     }}
@@ -412,8 +339,10 @@ const UserListPage = () => {
                     background:
                       '#effff4',
                     display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    alignItems:
+                      'center',
+                    justifyContent:
+                      'center',
                     color:
                       'var(--color-green)',
                     fontSize: 24,
@@ -475,7 +404,8 @@ const UserListPage = () => {
                 <FiSearch
                   size={18}
                   style={{
-                    position: 'absolute',
+                    position:
+                      'absolute',
                     top: '50%',
                     left: 16,
                     transform:
@@ -519,7 +449,8 @@ const UserListPage = () => {
               <FiSearch
                 size={18}
                 style={{
-                  position: 'absolute',
+                  position:
+                    'absolute',
                   top: '50%',
                   left: 16,
                   transform:
@@ -571,46 +502,18 @@ const UserListPage = () => {
             </div>
           ) : (
             <>
-              <AddUserModal
-                show={showForm}
-                onClose={() => {
-                  setShowForm(false);
-                  setEditUser(null);
-                }}
-                onSubmit={handleSaveUser}
-                user={editUser}
-              />
-
               {isMobile ? (
-                <>
-                  <UserCardList
-                    users={userList}
-                    onEdit={(u) => {
-                      setEditUser(u);
-                      setShowForm(true);
-                    }}
-                    onDelete={
-                      handleDelete
-                    }
-                  />
-
-                  {!isSidebarOpen && (
-                    <button
-                      onClick={() => {
-                        setEditUser(
-                          null
-                        );
-
-                        setShowForm(
-                          true
-                        );
-                      }}
-                      className="fab-button"
-                    >
-                      <FiPlus />
-                    </button>
-                  )}
-                </>
+                <UserCardList
+                  users={userList}
+                  onEdit={(u) =>
+                    navigate(
+                      `/users/${u.id}`
+                    )
+                  }
+                  onDelete={
+                    handleDelete
+                  }
+                />
               ) : (
                 <DataTable
                   columns={[
@@ -639,15 +542,11 @@ const UserListPage = () => {
                               padding: 0,
                               borderRadius: 10,
                             }}
-                            onClick={() => {
-                              setEditUser(
-                                u
-                              );
-
-                              setShowForm(
-                                true
-                              );
-                            }}
+                            onClick={() =>
+                              navigate(
+                                `/users/${u.id}`
+                              )
+                            }
                           >
                             <FiEdit2
                               size={
@@ -686,7 +585,8 @@ const UserListPage = () => {
 
               {/* EMPTY */}
               {!loading &&
-                userList.length === 0 && (
+                userList.length ===
+                  0 && (
                   <div
                     className="p-5 text-center"
                     style={{
@@ -702,7 +602,8 @@ const UserListPage = () => {
                     </div>
 
                     <div className="fw-bold mt-3">
-                      User tidak ditemukan
+                      User tidak
+                      ditemukan
                     </div>
 
                     <div
@@ -712,8 +613,8 @@ const UserListPage = () => {
                         marginTop: 4,
                       }}
                     >
-                      Coba gunakan keyword
-                      lain.
+                      Coba gunakan
+                      keyword lain.
                     </div>
                   </div>
                 )}
@@ -726,7 +627,9 @@ const UserListPage = () => {
                     onClick={() =>
                       setPage(page - 1)
                     }
-                    disabled={page <= 1}
+                    disabled={
+                      page <= 1
+                    }
                     style={{
                       borderRadius: 12,
                     }}
@@ -737,12 +640,13 @@ const UserListPage = () => {
                   <div
                     className="fw-semibold"
                     style={{
-                      fontSize: '0.88rem',
+                      fontSize:
+                        '0.88rem',
                       color: '#666',
                     }}
                   >
-                    Halaman {page} dari{' '}
-                    {totalPages}
+                    Halaman {page}{' '}
+                    dari {totalPages}
                   </div>
 
                   <button
@@ -751,7 +655,8 @@ const UserListPage = () => {
                       setPage(page + 1)
                     }
                     disabled={
-                      page >= totalPages
+                      page >=
+                      totalPages
                     }
                     style={{
                       borderRadius: 12,

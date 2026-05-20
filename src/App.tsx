@@ -6,6 +6,7 @@ import SignUpPage from './features/auth/pages/SignUpPage';
 import HomePage from './features/home/pages/HomePage';
 import UserListPage from './features/user/pages/UserListPage';
 import UserApprovalPage from './features/user/pages/UserApprovalPage';
+import CreateUserPage from './features/user/pages/CreateUser';
 import PengawasListPage from './features/pengawas/pages/PengawasListPage';
 import LadiesListPage from './features/ladies/pages/LadiesListPage';
 import NotFoundPage from './features/core/pages/NotFoundPage';
@@ -33,6 +34,7 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from './layout/MainLayout';
 import SplashScreen from './components/Common/SplashScreen';
+import CreateUser from './features/user/pages/CreateUser';
 
 
 function App() {
@@ -61,6 +63,7 @@ function App() {
             {/* Protected routes */}
             <Route path="/" element={<ProtectedRoute><MainLayout><HomePage /></MainLayout></ProtectedRoute>} />
             <Route path="/users" element={<ProtectedRoute><MainLayout><UserListPage /></MainLayout></ProtectedRoute>} />
+            <Route path="/user-create" element={<ProtectedRoute><MainLayout><CreateUserPage /></MainLayout></ProtectedRoute>} />
             <Route path="/user-approval" element={<ProtectedRoute><MainLayout><UserApprovalPage /></MainLayout></ProtectedRoute>} />
             <Route path="/pengawas" element={<ProtectedRoute><MainLayout><PengawasListPage /></MainLayout></ProtectedRoute>} />
             <Route path="/ladies" element={<ProtectedRoute><MainLayout><LadiesListPage /></MainLayout></ProtectedRoute>} />
