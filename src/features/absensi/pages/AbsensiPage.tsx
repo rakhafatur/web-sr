@@ -365,7 +365,7 @@ const AbsensiPage = () => {
       className="container-fluid py-4 px-md-4 px-3"
       style={{
         background:
-          'linear-gradient(to bottom, #f7fff9 0%, #ffffff 100%)',
+          'var(--color-bg)',
         minHeight: '100vh',
       }}
     >
