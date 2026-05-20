@@ -36,19 +36,12 @@ const AddTransaksiPage = () => {
 
       const { data, error } = await supabase
         .from('ladies')
-        .select(
-          'id, nama_ladies, nama_outlet, pin, status'
-        )
+        .select('id, nama_ladies, nama_outlet, pin, status')
         .eq('status', 'active')
-        .order('nama_ladies', {
-          ascending: true,
-        });
+        .order('nama_ladies', { ascending: true });
 
       if (error) {
-        console.error(
-          'Gagal mengambil data ladies:',
-          error.message
-        );
+        console.error('Gagal mengambil data ladies:', error.message);
       } else {
         setLadiesList(data || []);
       }
@@ -83,8 +76,7 @@ const AddTransaksiPage = () => {
               width: 60,
               height: 60,
               borderRadius: 18,
-              background:
-                'rgba(255,255,255,0.2)',
+              background: 'rgba(255,255,255,0.2)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -100,7 +92,7 @@ const AddTransaksiPage = () => {
               className="fw-semibold mb-0"
               style={{
                 fontSize: isMobile
-                  ? '1rem'
+                  ? '0.98rem'
                   : '1.8rem',
                 lineHeight: 1.2,
               }}
@@ -110,9 +102,9 @@ const AddTransaksiPage = () => {
 
             <div
               style={{
-                opacity: 0.78,
+                opacity: 0.7,
                 fontSize: isMobile
-                  ? '0.75rem'
+                  ? '0.72rem'
                   : '0.92rem',
                 marginTop: 2,
               }}
@@ -124,219 +116,254 @@ const AddTransaksiPage = () => {
       </div>
 
       {/* SELECT LADIES */}
-      <div className="mb-5">
-        <div className="d-flex align-items-center gap-2 mb-3">
-          <FiUsers
-            size={18}
-            style={{
-              color: 'var(--color-green)',
-            }}
-          />
-
-          <span
-            className="fw-semibold"
-            style={{
-              color: 'var(--color-dark)',
-              fontSize: '0.95rem',
-            }}
-          >
-            Pilih Ladies
-          </span>
-        </div>
-
+      <div
+        className="card border-0 shadow-sm rounded-4 mb-4"
+        style={{
+          overflow: 'hidden',
+        }}
+      >
         <div
+          className="px-4 py-3 border-bottom"
           style={{
-            position: 'relative',
+            background: '#fafafa',
           }}
         >
-          <select
-            className="form-select shadow-none"
-            value={selectedLadyId}
-            onChange={(e) =>
-              setSelectedLadyId(e.target.value)
-            }
-            style={{
-              height: 58,
-              borderRadius: 20,
-              border: '2px solid #d8f3df',
-              paddingLeft: 18,
-              paddingRight: 48,
-              fontWeight: 600,
-              fontSize: '0.97rem',
-              backgroundColor: '#fff',
-              color: 'var(--color-dark)',
-              appearance: 'none',
-            }}
-          >
-            <option value="">
-              -- Pilih Ladies --
-            </option>
+          <div className="d-flex align-items-center gap-2">
+            <FiUsers
+              size={18}
+              style={{ color: 'var(--color-green)' }}
+            />
 
-            {ladiesList.map((lady) => (
-              <option
-                key={lady.id}
-                value={lady.id}
-              >
-                {lady.nama_ladies} •{' '}
-                {lady.nama_outlet} ({lady.pin})
-              </option>
-            ))}
-          </select>
-
-          <FiChevronDown
-            size={20}
-            style={{
-              position: 'absolute',
-              top: '50%',
-              right: 18,
-              transform: 'translateY(-50%)',
-              pointerEvents: 'none',
-              color: '#666',
-            }}
-          />
+            <span
+              className="fw-semibold"
+              style={{ color: 'var(--color-dark)' }}
+            >
+              Pilih Ladies
+            </span>
+          </div>
         </div>
 
-        {/* EMPTY STATE */}
-        {!selectedLadyId && !loading && (
+        <div className="p-4">
           <div
-            className="mt-4 p-4 rounded-4"
             style={{
-              background: '#fff8e7',
-              border: '1px solid #ffe2a8',
+              position: 'relative',
             }}
           >
-            <div className="d-flex align-items-start gap-3">
-              <div style={{ fontSize: 24 }}>
-                ⚠️
-              </div>
+            <select
+              className="form-select shadow-none"
+              value={selectedLadyId}
+              onChange={(e) =>
+                setSelectedLadyId(e.target.value)
+              }
+              style={{
+                height: 58,
+                borderRadius: 18,
+                border: '2px solid #d8f3df',
+                paddingLeft: 18,
+                paddingRight: 48,
+                fontWeight: 600,
+                fontSize: '0.97rem',
+                backgroundColor: '#fff',
+                color: 'var(--color-dark)',
+                appearance: 'none',
+              }}
+            >
+              <option value="">
+                -- Pilih Ladies --
+              </option>
 
-              <div>
-                <div className="fw-bold mb-1">
-                  Ladies belum dipilih
+              {ladiesList.map((lady) => (
+                <option
+                  key={lady.id}
+                  value={lady.id}
+                >
+                  {lady.nama_ladies} •{' '}
+                  {lady.nama_outlet} ({lady.pin})
+                </option>
+              ))}
+            </select>
+
+            <FiChevronDown
+              size={20}
+              style={{
+                position: 'absolute',
+                top: '50%',
+                right: 18,
+                transform: 'translateY(-50%)',
+                pointerEvents: 'none',
+                color: '#666',
+              }}
+            />
+          </div>
+
+          {/* EMPTY STATE */}
+          {!selectedLadyId && !loading && (
+            <div
+              className="mt-4 p-4 rounded-4"
+              style={{
+                background: '#fff8e7',
+                border: '1px solid #ffe2a8',
+              }}
+            >
+              <div className="d-flex align-items-start gap-3">
+                <div style={{ fontSize: 24 }}>
+                  ⚠️
                 </div>
 
-                <div
-                  style={{
-                    fontSize: '0.92rem',
-                    color: '#666',
-                  }}
-                >
-                  Pilih salah satu ladies untuk
-                  menampilkan form transaksi dan
-                  riwayat data.
+                <div>
+                  <div className="fw-bold mb-1">
+                    Ladies belum dipilih
+                  </div>
+
+                  <div
+                    style={{
+                      fontSize: '0.92rem',
+                      color: '#666',
+                    }}
+                  >
+                    Pilih salah satu ladies untuk
+                    menampilkan form transaksi dan
+                    riwayat data.
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* LOADING */}
-        {loading && (
-          <div
-            className="d-flex align-items-center gap-3 mt-3"
-            style={{
-              color: '#666',
-            }}
-          >
+          {/* LOADING */}
+          {loading && (
             <div
-              className="spinner-border spinner-border-sm"
-              role="status"
-            />
+              className="d-flex align-items-center gap-3 mt-3"
+              style={{
+                color: '#666',
+              }}
+            >
+              <div
+                className="spinner-border spinner-border-sm"
+                role="status"
+              />
 
-            <span>
-              Mengambil data ladies...
-            </span>
-          </div>
-        )}
+              <span>Mengambil data ladies...</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* CONTENT */}
       {selectedLady && (
-        <div className="row g-5 align-items-start">
+        <div className="row g-4">
           {/* FORM */}
           <div className="col-12 col-xl-4">
-            <div className="mb-3">
-              <div className="d-flex justify-content-between align-items-start gap-2 flex-wrap">
-                <div>
-                  <div
-                    className="fw-bold"
-                    style={{
-                      color:
-                        'var(--color-dark)',
-                      fontSize: '1rem',
-                    }}
-                  >
-                    Tambah Transaksi
+            <div
+              className="card border-0 shadow-sm rounded-4 h-100"
+              style={{
+                overflow: 'hidden',
+              }}
+            >
+              <div
+                className="px-4 py-3 border-bottom"
+                style={{
+                  background:
+                    'linear-gradient(to right, #effff4, #ffffff)',
+                }}
+              >
+                <div className="d-flex justify-content-between align-items-start">
+                  <div>
+                    <div
+                      className="fw-bold"
+                      style={{
+                        color: 'var(--color-dark)',
+                        fontSize: '1rem',
+                      }}
+                    >
+                      Tambah Transaksi
+                    </div>
+
+                    <div
+                      style={{
+                        fontSize: '0.85rem',
+                        color: '#666',
+                      }}
+                    >
+                      {selectedLady.nama_ladies}
+                    </div>
                   </div>
 
                   <div
+                    className="px-3 py-1 rounded-pill"
                     style={{
-                      fontSize: '0.85rem',
-                      color: '#666',
+                      background: '#dff7e7',
+                      color: '#159947',
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
                     }}
                   >
-                    {
-                      selectedLady.nama_ladies
-                    }
+                    {selectedLady.nama_outlet}
                   </div>
-                </div>
-
-                <div
-                  className="px-3 py-1 rounded-pill"
-                  style={{
-                    background: '#dff7e7',
-                    color: '#159947',
-                    fontSize: '0.78rem',
-                    fontWeight: 700,
-                  }}
-                >
-                  {
-                    selectedLady.nama_outlet
-                  }
                 </div>
               </div>
-            </div>
 
-            <TransaksiForm
-              ladiesId={selectedLadyId}
-              onSuccess={() =>
-                setRefresh((r) => r + 1)
-              }
-            />
+              <div className="p-3 p-md-4">
+                <TransaksiForm
+                  ladiesId={selectedLadyId}
+                  onSuccess={() =>
+                    setRefresh((r) => r + 1)
+                  }
+                />
+              </div>
+            </div>
           </div>
 
           {/* RIWAYAT */}
           <div className="col-12 col-xl-8">
-            <div className="mb-3">
+            <div
+              className="card border-0 shadow-sm rounded-4"
+              style={{
+                overflow: 'hidden',
+              }}
+            >
               <div
-                className="fw-bold d-flex align-items-center gap-2"
+                className="px-4 py-3 border-bottom"
                 style={{
-                  color:
-                    'var(--color-dark)',
-                  fontSize: '1rem',
+                  background:
+                    'linear-gradient(to right, #ffffff, #f5fff8)',
                 }}
               >
-                <FiClock />
-                Riwayat Transaksi
+                <div className="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                  <div>
+                    <div
+                      className="fw-bold d-flex align-items-center gap-2"
+                      style={{
+                        color: 'var(--color-dark)',
+                      }}
+                    >
+                      <FiClock />
+                      Riwayat Transaksi
+                    </div>
+
+                    <div
+                      style={{
+                        fontSize: '0.85rem',
+                        color: '#666',
+                      }}
+                    >
+                      Histori transaksi terbaru {selectedLady.nama_ladies}
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div
-                style={{
-                  fontSize: '0.85rem',
-                  color: '#666',
-                }}
-              >
-                Histori transaksi terbaru{' '}
-                {
-                  selectedLady.nama_ladies
+                className={
+                  isMobile ? 'p-2' : 'p-3'
                 }
+              >
+                <RiwayatTransaksi
+                  ladiesId={selectedLadyId}
+                  refresh={refresh}
+                />
               </div>
             </div>
-
-            <RiwayatTransaksi
-              ladiesId={selectedLadyId}
-              refresh={refresh}
-            />
           </div>
         </div>
       )}
