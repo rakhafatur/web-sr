@@ -105,7 +105,7 @@ const UserListPage = () => {
     if (error) {
       alert(
         '❌ Gagal hapus user: ' +
-          error.message
+        error.message
       );
     } else {
       fetchUsers();
@@ -586,7 +586,7 @@ const UserListPage = () => {
               {/* EMPTY */}
               {!loading &&
                 userList.length ===
-                  0 && (
+                0 && (
                   <div
                     className="p-5 text-center"
                     style={{
@@ -669,6 +669,32 @@ const UserListPage = () => {
             </>
           )}
         </div>
+
+        {/* FAB MOBILE */}
+        {isMobile && (
+          <button
+            onClick={() => navigate('/user-create')}
+            style={{
+              position: 'fixed',
+              right: 20,
+              bottom: 90,
+              width: 58,
+              height: 58,
+              borderRadius: '50%',
+              border: 'none',
+              background: 'linear-gradient(135deg, var(--color-green), #67d492)',
+              color: 'white',
+              fontSize: 22,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+              zIndex: 9999,
+            }}
+          >
+            <FiPlus />
+          </button>
+        )}
       </div>
     </div>
   );
