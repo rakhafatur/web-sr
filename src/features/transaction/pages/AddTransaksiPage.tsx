@@ -57,7 +57,7 @@ const AddTransaksiPage = () => {
       className="container-fluid py-4 px-md-4 px-3"
       style={{
         background:
-          'linear-gradient(to bottom, #f7fff9 0%, #ffffff 100%)',
+          'var(--color-bg)',
         minHeight: '100vh',
       }}
     >
@@ -156,13 +156,13 @@ const AddTransaksiPage = () => {
                 setSelectedLadyId(e.target.value)
               }
               style={{
-                height: 58,
-                borderRadius: 18,
+                height: isMobile ? 50 : 58,
+                borderRadius: isMobile ? 14 : 18,
                 border: '2px solid #d8f3df',
-                paddingLeft: 18,
-                paddingRight: 48,
+                paddingLeft: isMobile ? 14 : 18,
+                paddingRight: isMobile ? 40 : 48,
                 fontWeight: 600,
-                fontSize: '0.97rem',
+                fontSize: isMobile ? '0.82rem' : '0.97rem',
                 backgroundColor: '#fff',
                 color: 'var(--color-dark)',
                 appearance: 'none',
