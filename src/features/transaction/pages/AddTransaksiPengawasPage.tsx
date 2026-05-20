@@ -134,8 +134,15 @@ const AddTransaksiPagePengawas = () => {
               borderRadius: isMobile ? 14 : 18,
               border: '2px solid #d8f3df',
               fontWeight: 600,
+              fontSize: isMobile ? '0.82rem' : '0.97rem',
+
               backgroundColor: '#fff',
               color: 'var(--color-dark)',
+
+              paddingLeft: isMobile ? 14 : 18,
+              paddingRight: isMobile ? 40 : 48,
+
+              appearance: 'none',
             }}
           >
             <option value="">-- Pilih Pengawas --</option>
