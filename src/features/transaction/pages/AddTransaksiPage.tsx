@@ -183,17 +183,23 @@ const AddTransaksiPage = () => {
               ))}
             </select>
 
-            <FiChevronDown
-              size={20}
+            <select
+              className="form-select shadow-none"
+              value={selectedLadyId}
+              onChange={(e) => setSelectedLadyId(e.target.value)}
               style={{
-                position: 'absolute',
-                top: '50%',
-                right: 18,
-                transform: 'translateY(-50%)',
-                pointerEvents: 'none',
-                color: '#666',
+                height: isMobile ? 50 : 58,
+                borderRadius: isMobile ? 14 : 18,
+                border: '2px solid #d8f3df',
+                paddingLeft: isMobile ? 14 : 18,
+                paddingRight: 18,
+                fontWeight: 600,
+                fontSize: isMobile ? '0.82rem' : '0.95rem',
+                backgroundColor: '#fff',
+                color: 'var(--color-dark)',
               }}
-            />
+            ></select>
+
           </div>
 
           {/* EMPTY STATE */}
