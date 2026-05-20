@@ -507,7 +507,7 @@ const UserListPage = () => {
                   users={userList}
                   onEdit={(u) =>
                     navigate(
-                      `/users/${u.id}`
+                      `/user-detail/${u.id}`
                     )
                   }
                   onDelete={
@@ -544,7 +544,7 @@ const UserListPage = () => {
                             }}
                             onClick={() =>
                               navigate(
-                                `/users/${u.id}`
+                                `/user-detail/${u.id}`
                               )
                             }
                           >

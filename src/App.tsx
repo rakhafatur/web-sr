@@ -7,6 +7,7 @@ import HomePage from './features/home/pages/HomePage';
 import UserListPage from './features/user/pages/UserListPage';
 import UserApprovalPage from './features/user/pages/UserApprovalPage';
 import CreateUserPage from './features/user/pages/CreateUser';
+import DetailUserPage from './features/user/pages/DetailUser';
 import PengawasListPage from './features/pengawas/pages/PengawasListPage';
 import LadiesListPage from './features/ladies/pages/LadiesListPage';
 import NotFoundPage from './features/core/pages/NotFoundPage';
@@ -65,6 +66,7 @@ function App() {
             <Route path="/users" element={<ProtectedRoute><MainLayout><UserListPage /></MainLayout></ProtectedRoute>} />
             <Route path="/user-create" element={<ProtectedRoute><MainLayout><CreateUserPage /></MainLayout></ProtectedRoute>} />
             <Route path="/user-approval" element={<ProtectedRoute><MainLayout><UserApprovalPage /></MainLayout></ProtectedRoute>} />
+            <Route path="/user-detail/:id" element={<ProtectedRoute><MainLayout><DetailUserPage /></MainLayout></ProtectedRoute>} />
             <Route path="/pengawas" element={<ProtectedRoute><MainLayout><PengawasListPage /></MainLayout></ProtectedRoute>} />
             <Route path="/ladies" element={<ProtectedRoute><MainLayout><LadiesListPage /></MainLayout></ProtectedRoute>} />
             <Route path="/buku-kuning" element={<ProtectedRoute><MainLayout><BukuKuningPage /></MainLayout></ProtectedRoute>} />
