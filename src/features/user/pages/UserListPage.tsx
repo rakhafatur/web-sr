@@ -11,7 +11,6 @@ import { useMediaQuery } from 'react-responsive';
 import {
   FiPlus,
   FiUsers,
-  FiRefreshCw,
   FiSearch,
   FiShield,
 } from 'react-icons/fi';
@@ -143,17 +142,6 @@ const UserListPage = () => {
               >
                 <FiPlus size={14} />
                 Tambah User
-              </button>
-
-              <button
-                onClick={fetchUsers}
-                className="btn btn-outline-light btn-sm d-flex align-items-center gap-1"
-                style={{
-                  borderRadius: 12,
-                }}
-              >
-                <FiRefreshCw size={14} />
-                Refresh
               </button>
             </div>
           </div>
