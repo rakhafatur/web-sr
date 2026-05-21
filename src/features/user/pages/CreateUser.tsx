@@ -10,6 +10,7 @@ import {
 
 import FormInput from '../../../components/FormInput';
 import { supabase } from '../../../lib/supabaseClient';
+import bcrypt from 'bcryptjs';
 
 const CreateUser = () => {
   const navigate = useNavigate();
@@ -41,11 +42,13 @@ const CreateUser = () => {
     try {
       setLoading(true);
 
+      const hashedPassword = await bcrypt.hash(form.password, 10);
+
       const { error } = await supabase.from('users').insert([
         {
           username: form.username,
           nama: form.nama,
-          password: form.password,
+          password: hashedPassword,
         },
       ]);
 
