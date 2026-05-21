@@ -480,11 +480,13 @@ const RekapVoucherPage = () => {
               />
             </div>
 
-            <div className="col-12 col-md-2 d-grid">
+            <div className="col-12 col-md-2">
               <button
                 className="btn"
                 onClick={fetchData}
                 style={{
+                  width: '100%',
+
                   height: isMobile
                     ? 48
                     : 56,
@@ -511,13 +513,13 @@ const RekapVoucherPage = () => {
 
             {dataPerOutlet.length >
               0 && (
-                <div className="col-12 col-md-2 d-grid">
+                <div className="col-12 col-md-2">
                   <button
                     className="btn"
-                    onClick={
-                      handleExportPDF
-                    }
+                    onClick={handleExportPDF}
                     style={{
+                      width: '100%',
+
                       height: isMobile
                         ? 48
                         : 56,
