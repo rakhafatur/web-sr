@@ -1,10 +1,24 @@
 import { useState } from 'react';
 import dayjs from 'dayjs';
+import { useMediaQuery } from 'react-responsive';
+
 import { supabase } from '../../../lib/supabaseClient';
 import DataTable from '../../../components/DataTable';
+
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+
 import logo from '../../../assets/logosr-black.png';
+
+import {
+  FiCalendar,
+  FiDownload,
+  FiRefreshCw,
+  FiGift,
+  FiTrendingUp,
+  FiDollarSign,
+  FiUsers,
+} from 'react-icons/fi';
 
 type VoucherRow = {
   jumlah: number;
@@ -25,14 +39,36 @@ type OutletGroup = {
   }[];
 };
 
-const formatRupiah = (n: number) => `Rp${n.toLocaleString('id-ID')}`;
+const formatRupiah = (n: number) =>
+  `Rp${n.toLocaleString('id-ID')}`;
 
 const RekapVoucherPage = () => {
-  const [start, setStart] = useState(dayjs().startOf('week').add(1, 'day').format('YYYY-MM-DD'));
-  const [end, setEnd] = useState(dayjs().endOf('week').add(1, 'day').format('YYYY-MM-DD'));
-  const [dataPerOutlet, setDataPerOutlet] = useState<OutletGroup[]>([]);
-  const [totalVoucherAll, setTotalVoucherAll] = useState(0);
-  const [totalNominalAll, setTotalNominalAll] = useState(0);
+  const isMobile = useMediaQuery({
+    maxWidth: 768,
+  });
+
+  const [start, setStart] = useState(
+    dayjs()
+      .startOf('week')
+      .add(1, 'day')
+      .format('YYYY-MM-DD')
+  );
+
+  const [end, setEnd] = useState(
+    dayjs()
+      .endOf('week')
+      .add(1, 'day')
+      .format('YYYY-MM-DD')
+  );
+
+  const [dataPerOutlet, setDataPerOutlet] =
+    useState<OutletGroup[]>([]);
+
+  const [totalVoucherAll, setTotalVoucherAll] =
+    useState(0);
+
+  const [totalNominalAll, setTotalNominalAll] =
+    useState(0);
 
   const fetchData = async () => {
     const { data, error } = await supabase
@@ -61,27 +97,44 @@ const RekapVoucherPage = () => {
       ladies: v.ladies,
     })) as VoucherRow[];
 
-    const grouped: Record<string, OutletGroup> = {};
+    const grouped: Record<
+      string,
+      OutletGroup
+    > = {};
+
     let totalVoucher = 0;
     let totalNominal = 0;
 
     vouchers.forEach((v) => {
       const lady = v.ladies;
+
       if (!lady) return;
 
-      const outlet = lady.nama_outlet;
+      const outlet =
+        lady.nama_outlet || 'Tanpa Outlet';
+
       const nama = lady.nama_ladies;
+
       const nominal = Number(v.jumlah);
+
       const pcs = nominal / 150000;
 
       totalVoucher += pcs;
       totalNominal += nominal;
 
       if (!grouped[outlet]) {
-        grouped[outlet] = { outlet, data: [] };
+        grouped[outlet] = {
+          outlet,
+          data: [],
+        };
       }
 
-      const existing = grouped[outlet].data.find((d) => d.nama_ladies === nama);
+      const existing =
+        grouped[outlet].data.find(
+          (d) =>
+            d.nama_ladies === nama
+        );
+
       if (existing) {
         existing.totalVoucher += pcs;
         existing.totalNominal += nominal;
@@ -94,197 +147,1038 @@ const RekapVoucherPage = () => {
       }
     });
 
-    setDataPerOutlet(Object.values(grouped));
+    setDataPerOutlet(
+      Object.values(grouped)
+    );
+
     setTotalVoucherAll(totalVoucher);
+
     setTotalNominalAll(totalNominal);
   };
 
   const handleExportPDF = () => {
     const doc = new jsPDF();
+
     const img = new Image();
+
     img.src = logo;
 
     img.onload = () => {
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(0);
-      doc.addImage(img, 'PNG', 10, 12, 16, 16);
-      doc.setFontSize(14);
-      doc.text('REKAP VOUCHER PER OUTLET', 30, 20);
-      doc.setFontSize(12);
-      doc.text(`Periode: ${start} s/d ${end}`, 30, 26);
+      doc.addImage(
+        img,
+        'PNG',
+        12,
+        10,
+        16,
+        16
+      );
+
+      doc.setFontSize(15);
+
+      doc.text(
+        'REKAP VOUCHER PER OUTLET',
+        32,
+        18
+      );
+
+      doc.setFontSize(11);
+
+      doc.text(
+        `Periode ${start} s/d ${end}`,
+        32,
+        24
+      );
 
       let currentY = 38;
 
-      dataPerOutlet.forEach((outletGroup) => {
-        const tableData = outletGroup.data.map((d) => [
-          d.nama_ladies,
-          d.totalVoucher.toFixed(0),
-        ]);
-        const totalVoucherOutlet = outletGroup.data.reduce((sum, d) => sum + d.totalVoucher, 0);
+      dataPerOutlet.forEach(
+        (outletGroup) => {
+          const tableData =
+            outletGroup.data.map((d) => [
+              d.nama_ladies,
+              d.totalVoucher.toFixed(0),
+              formatRupiah(
+                d.totalNominal
+              ),
+            ]);
 
-        doc.text(`Outlet: ${outletGroup.outlet}`, 14, currentY);
+          const totalVoucherOutlet =
+            outletGroup.data.reduce(
+              (sum, d) =>
+                sum + d.totalVoucher,
+              0
+            );
 
-        autoTable(doc, {
-          startY: currentY + 6,
-          head: [['Nama Ladies', 'Voucher (pcs)']],
-          body: tableData,
-          theme: 'grid',
-          headStyles: { fillColor: [56, 176, 0], textColor: 255 },
-          bodyStyles: { textColor: 0 },
-          styles: { fontSize: 10 },
-        });
+          doc.setFontSize(12);
 
-        const lastY = (doc as any).lastAutoTable.finalY || 0;
-        doc.text(`Total Voucher: ${totalVoucherOutlet.toFixed(0)} pcs`, 14, lastY + 6);
-        currentY = lastY + 14;
-      });
+          doc.text(
+            `Outlet: ${outletGroup.outlet}`,
+            14,
+            currentY
+          );
 
-      const today = new Date().toLocaleDateString('id-ID');
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
+          autoTable(doc, {
+            startY: currentY + 5,
 
-      doc.setFontSize(10);
-      doc.text(`Dicetak: ${today}`, 14, pageHeight - 10);
-      doc.text('SR Agency', pageWidth - 14, pageHeight - 10, { align: 'right' });
-      doc.text(`Halaman 1`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+            head: [
+              [
+                'Nama Ladies',
+                'Voucher',
+                'Total',
+              ],
+            ],
 
-      doc.save(`Rekap-Voucher-${start}-sampai-${end}.pdf`);
+            body: tableData,
+
+            theme: 'grid',
+
+            headStyles: {
+              fillColor: [76, 175, 80],
+              textColor: 255,
+            },
+
+            styles: {
+              fontSize: 10,
+            },
+          });
+
+          const lastY =
+            (doc as any)
+              .lastAutoTable.finalY || 0;
+
+          doc.text(
+            `Total Voucher: ${totalVoucherOutlet.toFixed(
+              0
+            )} pcs`,
+            14,
+            lastY + 7
+          );
+
+          currentY = lastY + 18;
+        }
+      );
+
+      const pageHeight =
+        doc.internal.pageSize.getHeight();
+
+      const pageWidth =
+        doc.internal.pageSize.getWidth();
+
+      doc.setFontSize(9);
+
+      doc.text(
+        `Dicetak ${dayjs().format(
+          'DD/MM/YYYY HH:mm'
+        )}`,
+        14,
+        pageHeight - 10
+      );
+
+      doc.text(
+        'SR Agency',
+        pageWidth - 14,
+        pageHeight - 10,
+        {
+          align: 'right',
+        }
+      );
+
+      doc.save(
+        `Rekap-Voucher-${start}-${end}.pdf`
+      );
     };
   };
 
   return (
-    <div className="container py-4" style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
-      <h2 className="fw-bold fs-4 mb-4" style={{ color: 'var(--color-dark)' }}>
-        📊 Rekap Voucher per Outlet
-      </h2>
+    <div
+      className="container-fluid py-4 px-md-4 px-3"
+      style={{
+        background:
+          'var(--color-bg)',
+        minHeight: '100vh',
+      }}
+    >
+      {/* HERO */}
+      <div
+        className="mb-4 p-4 rounded-4 shadow-sm"
+        style={{
+          background:
+            'linear-gradient(135deg, var(--color-green), #7be0a9)',
+          color: 'white',
+        }}
+      >
+        <div className="d-flex align-items-center gap-3">
+          <div
+            style={{
+              width: isMobile
+                ? 54
+                : 64,
 
-      <div className="row gy-3 gx-3 align-items-end mb-4">
-        <div className="col-md-4">
-          <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>Dari Tanggal</label>
-          <input
-            type="date"
-            className="form-control"
-            style={{
-              backgroundColor: 'var(--color-white)',
-              color: 'var(--color-dark)',
-              borderColor: 'var(--color-green)',
+              height: isMobile
+                ? 54
+                : 64,
+
+              borderRadius: 18,
+
+              background:
+                'rgba(255,255,255,0.2)',
+
+              display: 'flex',
+
+              alignItems: 'center',
+
+              justifyContent:
+                'center',
+
+              fontSize: isMobile
+                ? 22
+                : 28,
+
+              backdropFilter:
+                'blur(8px)',
             }}
-            value={start}
-            onChange={(e) => setStart(e.target.value)}
-          />
-        </div>
-        <div className="col-md-4">
-          <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>Sampai Tanggal</label>
-          <input
-            type="date"
-            className="form-control"
-            style={{
-              backgroundColor: 'var(--color-white)',
-              color: 'var(--color-dark)',
-              borderColor: 'var(--color-green)',
-            }}
-            value={end}
-            onChange={(e) => setEnd(e.target.value)}
-          />
-        </div>
-        <div className="col-md-2 d-grid">
-          <button className="btn btn-success" onClick={fetchData}>
-            🔄 Tampilkan
-          </button>
-        </div>
-        {dataPerOutlet.length > 0 && (
-          <div className="col-md-2 d-grid">
-            <button className="btn btn-outline-success" onClick={handleExportPDF}>
-              📄 Export PDF
-            </button>
+          >
+            <FiGift />
           </div>
-        )}
+
+          <div>
+            <h2
+              className="fw-bold mb-0"
+              style={{
+                fontSize: isMobile
+                  ? '1rem'
+                  : '1.8rem',
+              }}
+            >
+              Rekap Voucher
+            </h2>
+
+            <div
+              style={{
+                opacity: 0.85,
+
+                fontSize: isMobile
+                  ? '0.72rem'
+                  : '0.92rem',
+
+                marginTop: 2,
+              }}
+            >
+              Monitoring voucher
+              per outlet & ladies
+            </div>
+          </div>
+        </div>
       </div>
 
-      {dataPerOutlet.length > 0 && (
-        <>
-          {dataPerOutlet.map((outletGroup, idx) => {
-            const totalVoucher = outletGroup.data.reduce((sum, d) => sum + d.totalVoucher, 0);
-            const totalNominal = outletGroup.data.reduce((sum, d) => sum + d.totalNominal, 0);
-            const totalHasil = totalVoucher * 75000;
-            const totalDidapat = totalVoucher * 225000;
+      {/* FILTER */}
+      <div
+        className="card border-0 shadow-sm rounded-4 mb-4"
+        style={{
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          className="px-4 py-3 border-bottom"
+          style={{
+            background:
+              'linear-gradient(to right,#effff4,#ffffff)',
+          }}
+        >
+          <div className="d-flex align-items-center gap-2">
+            <FiCalendar
+              style={{
+                color:
+                  'var(--color-green)',
+              }}
+            />
 
-            return (
-              <div key={idx} className="mb-5">
-                <h5 className="fw-bold mb-2" style={{ color: 'var(--color-green)' }}>
-                  Outlet: {outletGroup.outlet}
-                </h5>
-                <DataTable
-                  columns={[
-                    { key: 'nama_ladies', label: 'Nama Ladies' },
-                    {
-                      key: 'totalVoucher',
-                      label: 'Voucher (pcs)',
-                      render: (row: any) => row.totalVoucher.toFixed(0),
-                    },
-                    {
-                      key: 'totalNominal',
-                      label: 'Total Ladies',
-                      render: (row: any) => formatRupiah(row.totalNominal),
-                    },
-                    {
-                      key: 'totalHasil',
-                      label: 'Total Hasil',
-                      render: (row: any) => formatRupiah(row.totalVoucher * 75000),
-                    },
-                    {
-                      key: 'totalDidapat',
-                      label: 'Total Didapat',
-                      render: (row: any) => formatRupiah(row.totalVoucher * 225000),
-                    },
-                  ]}
-                  data={outletGroup.data.map((row, i) => ({
-                    id: `${outletGroup.outlet}-${i}`,
-                    ...row,
-                    totalHasil: row.totalVoucher * 75000,
-                    totalDidapat: row.totalVoucher * 225000,
-                  }))}
-                />
-
-                <div className="mt-3 p-3" style={{
-                  backgroundColor: 'var(--color-green-light)',
-                  border: '1px solid var(--color-green)',
-                  borderRadius: '0.5rem',
-                }}>
-                  <p className="mb-1" style={{ color: 'var(--color-dark)' }}><strong>Total Voucher:</strong> {totalVoucher.toFixed(0)} pcs</p>
-                  <p className="mb-1" style={{ color: 'var(--color-dark)' }}><strong>Total Ladies:</strong> {formatRupiah(totalNominal)}</p>
-                  <p className="mb-1" style={{ color: 'var(--color-dark)' }}><strong>Total Hasil:</strong> {formatRupiah(totalHasil)}</p>
-                  <p className="mb-0" style={{ color: 'var(--color-dark)' }}><strong>Total Didapat:</strong> {formatRupiah(totalDidapat)}</p>
-                </div>
+            <div>
+              <div className="fw-bold">
+                Filter Periode
               </div>
-            );
-          })}
 
-          <div className="mt-5 p-4 shadow-sm" style={{
-            backgroundColor: 'var(--color-green-light)',
-            border: '1px solid var(--color-green)',
-            borderRadius: '0.75rem',
-          }}>
-            <h5 className="mb-3" style={{ color: 'var(--color-dark)' }}>
-              <span className="badge text-bg-success me-2">🧾</span> Total Keseluruhan
-            </h5>
-            <ul className="list-group list-group-horizontal-md gap-3 flex-wrap">
-              <li className="list-group-item bg-transparent border-success" style={{ color: 'var(--color-dark)' }}>
-                <strong>Total Voucher:</strong><br /> {totalVoucherAll.toFixed(0)} pcs
-              </li>
-              <li className="list-group-item bg-transparent border-success" style={{ color: 'var(--color-dark)' }}>
-                <strong>Total Ladies:</strong><br /> {formatRupiah(totalNominalAll)}
-              </li>
-              <li className="list-group-item bg-transparent border-success" style={{ color: 'var(--color-dark)' }}>
-                <strong>Total Hasil:</strong><br /> {formatRupiah(totalVoucherAll * 75000)}
-              </li>
-              <li className="list-group-item bg-transparent border-success" style={{ color: 'var(--color-dark)' }}>
-                <strong>Total Didapat:</strong><br /> {formatRupiah(totalVoucherAll * 225000)}
-              </li>
-            </ul>
+              <div
+                style={{
+                  fontSize:
+                    '0.82rem',
+                  color: '#666',
+                }}
+              >
+                Pilih periode
+                voucher
+              </div>
+            </div>
           </div>
-        </>
-      )}
+        </div>
+
+        <div className="p-4">
+          <div className="row g-3">
+            <div className="col-12 col-md-4">
+              <label className="fw-semibold mb-2">
+                Dari Tanggal
+              </label>
+
+              <input
+                type="date"
+                className="form-control shadow-none"
+                value={start}
+                onChange={(e) =>
+                  setStart(
+                    e.target.value
+                  )
+                }
+                style={{
+                  height: isMobile
+                    ? 50
+                    : 56,
+
+                  borderRadius: 16,
+
+                  border:
+                    '2px solid #d8f3df',
+
+                  paddingInline: 16,
+
+                  fontSize: isMobile
+                    ? '0.84rem'
+                    : '0.92rem',
+                }}
+              />
+            </div>
+
+            <div className="col-12 col-md-4">
+              <label className="fw-semibold mb-2">
+                Sampai Tanggal
+              </label>
+
+              <input
+                type="date"
+                className="form-control shadow-none"
+                value={end}
+                onChange={(e) =>
+                  setEnd(
+                    e.target.value
+                  )
+                }
+                style={{
+                  height: isMobile
+                    ? 50
+                    : 56,
+
+                  borderRadius: 16,
+
+                  border:
+                    '2px solid #d8f3df',
+
+                  paddingInline: 16,
+
+                  fontSize: isMobile
+                    ? '0.84rem'
+                    : '0.92rem',
+                }}
+              />
+            </div>
+
+            <div className="col-12 col-md-2 d-grid">
+              <button
+                className="btn"
+                onClick={fetchData}
+                style={{
+                  height: isMobile
+                    ? 48
+                    : 56,
+
+                  borderRadius: 16,
+
+                  border: 'none',
+
+                  background:
+                    'linear-gradient(135deg,#22c55e,#4ade80)',
+
+                  color: 'white',
+
+                  fontWeight: 700,
+
+                  boxShadow:
+                    '0 10px 25px rgba(34,197,94,0.18)',
+                }}
+              >
+                <FiRefreshCw className="me-2" />
+                Tampilkan
+              </button>
+            </div>
+
+            {dataPerOutlet.length >
+              0 && (
+                <div className="col-12 col-md-2 d-grid">
+                  <button
+                    className="btn"
+                    onClick={
+                      handleExportPDF
+                    }
+                    style={{
+                      height: isMobile
+                        ? 48
+                        : 56,
+
+                      borderRadius: 16,
+
+                      border:
+                        '2px solid #22c55e',
+
+                      background:
+                        'white',
+
+                      color: '#16a34a',
+
+                      fontWeight: 700,
+                    }}
+                  >
+                    <FiDownload className="me-2" />
+                    PDF
+                  </button>
+                </div>
+              )}
+          </div>
+        </div>
+      </div>
+
+      {/* SUMMARY */}
+      {dataPerOutlet.length >
+        0 && (
+          <>
+            <div className="row g-3 mb-4">
+              {[
+                {
+                  title:
+                    'Total Voucher',
+                  value: `${totalVoucherAll.toFixed(
+                    0
+                  )} pcs`,
+                  icon: <FiGift />,
+                  bg: '#dcfce7',
+                  color: '#166534',
+                },
+
+                {
+                  title:
+                    'Total Ladies',
+                  value:
+                    formatRupiah(
+                      totalNominalAll
+                    ),
+                  icon: (
+                    <FiDollarSign />
+                  ),
+                  bg: '#dbeafe',
+                  color: '#1d4ed8',
+                },
+
+                {
+                  title:
+                    'Total Hasil',
+                  value:
+                    formatRupiah(
+                      totalVoucherAll *
+                      75000
+                    ),
+                  icon: (
+                    <FiTrendingUp />
+                  ),
+                  bg: '#fef3c7',
+                  color: '#92400e',
+                },
+
+                {
+                  title:
+                    'Total Didapat',
+                  value:
+                    formatRupiah(
+                      totalVoucherAll *
+                      225000
+                    ),
+                  icon: <FiUsers />,
+                  bg: '#ede9fe',
+                  color: '#6d28d9',
+                },
+              ].map((item) => (
+                <div
+                  className="col-6 col-lg-3"
+                  key={item.title}
+                >
+                  <div
+                    className="h-100"
+                    style={{
+                      background:
+                        item.bg,
+
+                      borderRadius:
+                        isMobile
+                          ? 16
+                          : 22,
+
+                      padding:
+                        isMobile
+                          ? '14px'
+                          : '20px',
+
+                      boxShadow:
+                        '0 2px 10px rgba(0,0,0,0.04)',
+                    }}
+                  >
+                    <div
+                      className="d-flex justify-content-between align-items-start"
+                    >
+                      <div
+                        style={{
+                          minWidth: 0,
+                        }}
+                      >
+                        <div
+                          style={{
+                            fontSize:
+                              isMobile
+                                ? '0.68rem'
+                                : '0.82rem',
+
+                            color:
+                              item.color,
+
+                            fontWeight: 700,
+
+                            opacity: 0.8,
+                          }}
+                        >
+                          {item.title}
+                        </div>
+
+                        <div
+                          style={{
+                            fontSize:
+                              isMobile
+                                ? '0.95rem'
+                                : '1.5rem',
+
+                            fontWeight: 800,
+
+                            lineHeight: 1.2,
+
+                            color:
+                              item.color,
+
+                            marginTop: 4,
+
+                            wordBreak:
+                              'break-word',
+                          }}
+                        >
+                          {item.value}
+                        </div>
+                      </div>
+
+                      <div
+                        style={{
+                          fontSize:
+                            isMobile
+                              ? 18
+                              : 24,
+
+                          color:
+                            item.color,
+
+                          opacity: 0.7,
+                        }}
+                      >
+                        {item.icon}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* OUTLET */}
+            {dataPerOutlet.map(
+              (outletGroup, idx) => {
+                const totalVoucher =
+                  outletGroup.data.reduce(
+                    (sum, d) =>
+                      sum +
+                      d.totalVoucher,
+                    0
+                  );
+
+                const totalNominal =
+                  outletGroup.data.reduce(
+                    (sum, d) =>
+                      sum +
+                      d.totalNominal,
+                    0
+                  );
+
+                const totalHasil =
+                  totalVoucher *
+                  75000;
+
+                const totalDidapat =
+                  totalVoucher *
+                  225000;
+
+                return (
+                  <div
+                    key={idx}
+                    className="card border-0 shadow-sm rounded-4 mb-4"
+                    style={{
+                      overflow:
+                        'hidden',
+                    }}
+                  >
+                    {/* HEADER */}
+                    <div
+                      className="px-4 py-3 border-bottom"
+                      style={{
+                        background:
+                          'linear-gradient(to right,#ffffff,#f5fff8)',
+                      }}
+                    >
+                      <div className="d-flex justify-content-between align-items-center">
+                        <div>
+                          <div
+                            className="fw-bold"
+                            style={{
+                              fontSize:
+                                isMobile
+                                  ? '0.95rem'
+                                  : '1.05rem',
+
+                              color:
+                                'var(--color-dark)',
+                            }}
+                          >
+                            {
+                              outletGroup.outlet
+                            }
+                          </div>
+
+                          <div
+                            style={{
+                              fontSize:
+                                '0.78rem',
+
+                              color:
+                                '#777',
+                            }}
+                          >
+                            {
+                              outletGroup
+                                .data
+                                .length
+                            }{' '}
+                            ladies
+                          </div>
+                        </div>
+
+                        <div
+                          className="badge"
+                          style={{
+                            background:
+                              '#dcfce7',
+
+                            color:
+                              '#166534',
+
+                            fontSize:
+                              '0.72rem',
+
+                            padding:
+                              '8px 12px',
+
+                            borderRadius: 999,
+                          }}
+                        >
+                          {totalVoucher.toFixed(
+                            0
+                          )}{' '}
+                          pcs
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* MOBILE CARD */}
+                    {isMobile ? (
+                      <div className="p-2">
+                        {outletGroup.data.map(
+                          (
+                            row,
+                            i
+                          ) => (
+                            <div
+                              key={i}
+                              className="mb-2"
+                              style={{
+                                border:
+                                  '1px solid #edf2f7',
+
+                                borderRadius: 18,
+
+                                padding: 14,
+
+                                background:
+                                  'white',
+                              }}
+                            >
+                              <div className="d-flex justify-content-between align-items-start gap-2">
+                                <div
+                                  style={{
+                                    minWidth: 0,
+                                  }}
+                                >
+                                  <div
+                                    className="fw-bold"
+                                    style={{
+                                      fontSize:
+                                        '0.84rem',
+
+                                      color:
+                                        'var(--color-dark)',
+                                    }}
+                                  >
+                                    {
+                                      row.nama_ladies
+                                    }
+                                  </div>
+
+                                  <div
+                                    style={{
+                                      fontSize:
+                                        '0.72rem',
+
+                                      color:
+                                        '#666',
+
+                                      marginTop: 2,
+                                    }}
+                                  >
+                                    Voucher{' '}
+                                    {row.totalVoucher.toFixed(
+                                      0
+                                    )}{' '}
+                                    pcs
+                                  </div>
+                                </div>
+
+                                <div
+                                  className="badge"
+                                  style={{
+                                    background:
+                                      '#dcfce7',
+
+                                    color:
+                                      '#166534',
+
+                                    borderRadius: 999,
+
+                                    padding:
+                                      '6px 10px',
+
+                                    fontSize:
+                                      '0.7rem',
+                                  }}
+                                >
+                                  {row.totalVoucher.toFixed(
+                                    0
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="row g-2 mt-2">
+                                <div className="col-6">
+                                  <div
+                                    style={{
+                                      background:
+                                        '#f8fafc',
+
+                                      borderRadius: 12,
+
+                                      padding:
+                                        '10px',
+                                    }}
+                                  >
+                                    <div
+                                      style={{
+                                        fontSize:
+                                          '0.65rem',
+
+                                        color:
+                                          '#777',
+                                      }}
+                                    >
+                                      Total Ladies
+                                    </div>
+
+                                    <div
+                                      className="fw-bold"
+                                      style={{
+                                        fontSize:
+                                          '0.74rem',
+                                      }}
+                                    >
+                                      {formatRupiah(
+                                        row.totalNominal
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="col-6">
+                                  <div
+                                    style={{
+                                      background:
+                                        '#f8fafc',
+
+                                      borderRadius: 12,
+
+                                      padding:
+                                        '10px',
+                                    }}
+                                  >
+                                    <div
+                                      style={{
+                                        fontSize:
+                                          '0.65rem',
+
+                                        color:
+                                          '#777',
+                                      }}
+                                    >
+                                      Total Hasil
+                                    </div>
+
+                                    <div
+                                      className="fw-bold"
+                                      style={{
+                                        fontSize:
+                                          '0.74rem',
+                                      }}
+                                    >
+                                      {formatRupiah(
+                                        row.totalVoucher *
+                                        75000
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    ) : (
+                      <div className="p-3">
+                        <DataTable
+                          columns={[
+                            {
+                              key:
+                                'nama_ladies',
+                              label:
+                                'Nama Ladies',
+                            },
+
+                            {
+                              key:
+                                'totalVoucher',
+
+                              label:
+                                'Voucher',
+
+                              render: (
+                                row: any
+                              ) =>
+                                `${row.totalVoucher.toFixed(
+                                  0
+                                )} pcs`,
+                            },
+
+                            {
+                              key:
+                                'totalNominal',
+
+                              label:
+                                'Total Ladies',
+
+                              render: (
+                                row: any
+                              ) =>
+                                formatRupiah(
+                                  row.totalNominal
+                                ),
+                            },
+
+                            {
+                              key:
+                                'totalHasil',
+
+                              label:
+                                'Total Hasil',
+
+                              render: (
+                                row: any
+                              ) =>
+                                formatRupiah(
+                                  row.totalVoucher *
+                                  75000
+                                ),
+                            },
+
+                            {
+                              key:
+                                'totalDidapat',
+
+                              label:
+                                'Total Didapat',
+
+                              render: (
+                                row: any
+                              ) =>
+                                formatRupiah(
+                                  row.totalVoucher *
+                                  225000
+                                ),
+                            },
+                          ]}
+                          data={outletGroup.data.map(
+                            (
+                              row,
+                              i
+                            ) => ({
+                              id: `${outletGroup.outlet}-${i}`,
+
+                              ...row,
+
+                              totalHasil:
+                                row.totalVoucher * 75000,
+
+                              totalDidapat:
+                                row.totalVoucher * 225000,
+                            })
+                          )}
+                        />
+                      </div>
+                    )}
+
+                    {/* FOOTER */}
+                    <div
+                      className="px-4 py-3 border-top"
+                      style={{
+                        background:
+                          '#fafafa',
+                      }}
+                    >
+                      <div className="row g-2">
+                        {[
+                          {
+                            label:
+                              'Voucher',
+                            value: `${totalVoucher.toFixed(
+                              0
+                            )} pcs`,
+                          },
+
+                          {
+                            label:
+                              'Total Ladies',
+                            value:
+                              formatRupiah(
+                                totalNominal
+                              ),
+                          },
+
+                          {
+                            label:
+                              'Total Hasil',
+                            value:
+                              formatRupiah(
+                                totalHasil
+                              ),
+                          },
+
+                          {
+                            label:
+                              'Total Didapat',
+                            value:
+                              formatRupiah(
+                                totalDidapat
+                              ),
+                          },
+                        ].map((item) => (
+                          <div
+                            className="col-6 col-lg-3"
+                            key={
+                              item.label
+                            }
+                          >
+                            <div
+                              style={{
+                                background:
+                                  'white',
+
+                                border:
+                                  '1px solid #eee',
+
+                                borderRadius: 14,
+
+                                padding:
+                                  isMobile
+                                    ? '10px'
+                                    : '14px',
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontSize:
+                                    isMobile
+                                      ? '0.65rem'
+                                      : '0.75rem',
+
+                                  color:
+                                    '#777',
+                                }}
+                              >
+                                {
+                                  item.label
+                                }
+                              </div>
+
+                              <div
+                                className="fw-bold"
+                                style={{
+                                  fontSize:
+                                    isMobile
+                                      ? '0.78rem'
+                                      : '0.92rem',
+
+                                  marginTop: 2,
+
+                                  color:
+                                    'var(--color-dark)',
+                                }}
+                              >
+                                {
+                                  item.value
+                                }
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+            )}
+          </>
+        )}
     </div>
   );
 };
