@@ -113,7 +113,7 @@ const AddLadiesModal = ({ show, onClose, onSubmit, lady }: Props) => {
           <input className="form-control bg-white text-dark border" value={form.nama_outlet || '-'} readOnly />
         ) : (
           <div className="d-flex gap-3">
-            {['SA', 'Royal', 'MTR'].map((outlet) => (
+            {['SA', 'Royal', 'MTR', 'Travel'].map((outlet) => (
               <div key={outlet} className="form-check">
                 <input
                   className="form-check-input"
