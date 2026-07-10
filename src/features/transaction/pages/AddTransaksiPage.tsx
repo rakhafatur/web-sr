@@ -295,6 +295,7 @@ const AddTransaksiPage = () => {
               <div className="p-3 p-md-4">
                 <TransaksiForm
                   ladiesId={selectedLadyId}
+                  outlet={selectedLady.nama_outlet}
                   onSuccess={() =>
                     setRefresh((r) => r + 1)
                   }

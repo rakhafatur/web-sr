@@ -12,11 +12,13 @@ import {
 
 type Props = {
   ladiesId: string;
+  outlet: string;
   onSuccess?: () => void;
 };
 
 const TransaksiForm = ({
   ladiesId,
+  outlet,
   onSuccess,
 }: Props) => {
   const isMobile = useMediaQuery({
@@ -25,6 +27,10 @@ const TransaksiForm = ({
 
   const [loading, setLoading] =
     useState(false);
+
+  const [travelType, setTravelType] = useState<
+    'Single' | 'Double'
+  >('Single');
 
   const [form, setForm] = useState({
     tanggal: '',
@@ -113,8 +119,15 @@ const TransaksiForm = ({
           )
         );
 
+      const hargaVoucher =
+        outlet === 'Travel'
+          ? travelType === 'Single'
+            ? 105000
+            : 95000
+          : 150000;
+
       const jumlah =
-        jumlahVoucher * 150000;
+        jumlahVoucher * hargaVoucher;
 
       payload.jumlah_voucher =
         jumlahVoucher;
@@ -139,7 +152,7 @@ const TransaksiForm = ({
     if (error) {
       alert(
         '❌ Gagal menambahkan transaksi: ' +
-          error.message
+        error.message
       );
     } else {
       alert(
@@ -165,11 +178,18 @@ const TransaksiForm = ({
       )
     );
 
+  const hargaVoucher =
+    outlet === 'Travel'
+      ? travelType === 'Single'
+        ? 105000
+        : 95000
+      : 150000;
+
   const totalJumlah = isNaN(
     jumlahVoucherRaw
   )
     ? 0
-    : jumlahVoucherRaw * 150000;
+    : jumlahVoucherRaw * hargaVoucher;
 
   const transactionTypes = [
     {
@@ -215,9 +235,8 @@ const TransaksiForm = ({
     >
       {/* MOBILE TYPE SELECT */}
       <div
-        className={`row ${
-          isMobile ? 'g-2' : 'g-3'
-        } mb-3`}
+        className={`row ${isMobile ? 'g-2' : 'g-3'
+          } mb-3`}
       >
         {transactionTypes.map(
           (item) => {
@@ -321,9 +340,8 @@ const TransaksiForm = ({
 
       {/* FORM */}
       <div
-        className={`row ${
-          isMobile ? 'g-2' : 'g-3'
-        }`}
+        className={`row ${isMobile ? 'g-2' : 'g-3'
+          }`}
       >
         {/* DATE */}
         <div className="col-12">
@@ -358,7 +376,7 @@ const TransaksiForm = ({
 
         {/* VOUCHER */}
         {form.tipe ===
-        'voucher' ? (
+          'voucher' ? (
           <>
             <div className="col-12">
               <div
@@ -392,6 +410,23 @@ const TransaksiForm = ({
                 />
               </div>
             </div>
+
+            {outlet === 'Travel' && (
+              <div className="col-12">
+                <label className="form-label">Tipe Travel</label>
+
+                <select
+                  className="form-select"
+                  value={travelType}
+                  onChange={(e) =>
+                    setTravelType(e.target.value as 'Single' | 'Double')
+                  }
+                >
+                  <option value="Single">Single</option>
+                  <option value="Double">Double</option>
+                </select>
+              </div>
+            )}
 
             {/* TOTAL */}
             <div className="col-12">
@@ -460,9 +495,7 @@ const TransaksiForm = ({
                     marginTop: 4,
                   }}
                 >
-                  {jumlahVoucherRaw ||
-                    0}{' '}
-                  × 150.000
+                  {jumlahVoucherRaw || 0} × {formatNumber(hargaVoucher.toString())}
                 </div>
               </div>
             </div>
