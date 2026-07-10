@@ -413,18 +413,49 @@ const TransaksiForm = ({
 
             {outlet === 'Travel' && (
               <div className="col-12">
-                <label className="form-label">Tipe Travel</label>
-
-                <select
-                  className="form-select"
-                  value={travelType}
-                  onChange={(e) =>
-                    setTravelType(e.target.value as 'Single' | 'Double')
+                <div
+                  className={
+                    isMobile
+                      ? ''
+                      : 'p-3 rounded-4'
                   }
+                  style={{
+                    background: isMobile
+                      ? 'transparent'
+                      : '#fafafa',
+                    border: isMobile
+                      ? 'none'
+                      : '1px solid #eee',
+                  }}
                 >
-                  <option value="Single">Single</option>
-                  <option value="Double">Double</option>
-                </select>
+                  <label
+                    className="form-label"
+                    style={{
+                      fontWeight: 600,
+                      marginBottom: 8,
+                    }}
+                  >
+                    Tipe Travel
+                  </label>
+
+                  <select
+                    className="form-select shadow-none"
+                    value={travelType}
+                    onChange={(e) =>
+                      setTravelType(
+                        e.target.value as 'Single' | 'Double'
+                      )
+                    }
+                    style={{
+                      height: isMobile ? 46 : 52,
+                      borderRadius: isMobile ? 12 : 16,
+                      border: '1px solid #d8f3df',
+                    }}
+                  >
+                    <option value="Single">Single</option>
+                    <option value="Double">Double</option>
+                  </select>
+                </div>
               </div>
             )}
 
