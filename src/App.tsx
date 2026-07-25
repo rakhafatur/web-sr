@@ -23,6 +23,12 @@ const BukuKuningPengawasPage = lazy(() => import('./features/transaction/pages/B
 const SmartChatPage = lazy(() => import('./features/smartchat/pages/SmartChatPage'));
 const SmartChatLadiesPage = lazy(() => import('./features/smartchat/pages/SmartChatLadiesPage'));
 const AgentPage = lazy(() => import('./features/agent/pages/AgentListPage'));
+const CreateAgentPage = lazy(() => import('./features/agent/pages/CreateAgent'));
+const DetailAgentPage = lazy(() => import('./features/agent/pages/DetailAgent'));
+const CreatePengawasPage = lazy(() => import('./features/pengawas/pages/CreatePengawas'));
+const DetailPengawasPage = lazy(() => import('./features/pengawas/pages/DetailPengawas'));
+const CreateLadiesPage = lazy(() => import('./features/ladies/pages/CreateLadies'));
+const DetailLadiesPage = lazy(() => import('./features/ladies/pages/DetailLadies'));
 
 const HomeLadiesPage = lazy(() => import('./features/ladies/pages/HomeLadiesPage'));
 const RiwayatAbsensiPage = lazy(() => import('./features/ladies/pages/RiwayatAbsensiPage'));
@@ -77,7 +83,11 @@ function App() {
               <Route path="/user-approval" element={<UserApprovalPage />} />
               <Route path="/user-detail/:id" element={<DetailUserPage />} />
               <Route path="/pengawas" element={<PengawasListPage />} />
+              <Route path="/pengawas-create" element={<CreatePengawasPage />} />
+              <Route path="/pengawas-detail/:id" element={<DetailPengawasPage />} />
               <Route path="/ladies" element={<LadiesListPage />} />
+              <Route path="/ladies-create" element={<CreateLadiesPage />} />
+              <Route path="/ladies-detail/:id" element={<DetailLadiesPage />} />
               <Route path="/buku-kuning" element={<BukuKuningPage />} />
               <Route path="/add-transaksi" element={<AddTransaksiPage />} />
               <Route path="/absensi" element={<AbsensiPage />} />
@@ -88,6 +98,8 @@ function App() {
               <Route path="/smart-chat" element={<SmartChatPage />} />
               <Route path="/smart-chat-ladies" element={<SmartChatLadiesPage />} />
               <Route path="/agent" element={<AgentPage />} />
+              <Route path="/agent-create" element={<CreateAgentPage />} />
+              <Route path="/agent-detail/:id" element={<DetailAgentPage />} />
 
               {/* Ladies-specific */}
               <Route path="/ladies/home" element={<HomeLadiesPage />} />

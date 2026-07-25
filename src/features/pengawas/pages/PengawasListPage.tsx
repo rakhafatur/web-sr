@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../../../lib/supabaseClient';
-import AddPengawasModal from '../components/AddPengawasModal';
+import { useNavigate } from 'react-router-dom';
+import { useEntityList } from '../../../hooks/useEntityList';
 import DataTable from '../../../components/DataTable';
 import PengawasCardList from '../components/PengawasCardList';
 import { useMediaQuery } from 'react-responsive';
-import { FiPlus, FiEdit2, FiTrash2 } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiUser } from 'react-icons/fi';
+import ListPageHeader from '../../../components/ListPageHeader';
 
 type Pengawas = {
   id: string;
@@ -17,15 +18,19 @@ type Pengawas = {
 };
 
 const PengawasListPage = () => {
+  const navigate = useNavigate();
   const isMobile = useMediaQuery({ maxWidth: 768 });
-  const [pengawasList, setPengawasList] = useState<Pengawas[]>([]);
-  const [editPengawas, setEditPengawas] = useState<Pengawas | null>(null);
-  const [showForm, setShowForm] = useState(false);
-
-  const [page, setPage] = useState(1);
   const limit = isMobile ? 5 : 10;
-  const [total, setTotal] = useState(0);
-  const [keyword, setKeyword] = useState('');
+
+  const {
+    list: pengawasList,
+    page,
+    setPage,
+    totalPages,
+    keyword,
+    setKeyword,
+    remove,
+  } = useEntityList<Pengawas>('pengawas', ['nama_lengkap', 'nama_panggilan'], limit);
 
   // ⬇️ Tambahan: untuk deteksi sidebar terbuka
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -39,57 +44,7 @@ const PengawasListPage = () => {
     return () => observer.disconnect();
   }, []);
 
-  const fetchPengawas = async () => {
-    const from = (page - 1) * limit;
-    const to = from + limit - 1;
-
-    let query = supabase
-      .from('pengawas')
-      .select('*', { count: 'exact' })
-      .range(from, to);
-
-    if (keyword.trim() !== '') {
-      query = query.or(`nama_lengkap.ilike.%${keyword}%,nama_panggilan.ilike.%${keyword}%`);
-    }
-
-    const { data, count, error } = await query;
-    if (error) console.error('Gagal ambil data pengawas:', error);
-    else {
-      setPengawasList(data || []);
-      setTotal(count || 0);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!window.confirm('Yakin ingin hapus pengawas ini?')) return;
-    const { error } = await supabase.from('pengawas').delete().eq('id', id);
-    if (error) alert('Gagal hapus pengawas: ' + error.message);
-    else fetchPengawas();
-  };
-
-  const handleSavePengawas = async (data: Omit<Pengawas, 'id'>) => {
-    if (editPengawas) {
-      const { error } = await supabase
-        .from('pengawas')
-        .update(data)
-        .eq('id', editPengawas.id);
-
-      if (error) alert('Gagal update pengawas: ' + error.message);
-    } else {
-      const { error } = await supabase.from('pengawas').insert([data]);
-      if (error) alert('Gagal tambah pengawas: ' + error.message);
-    }
-    setEditPengawas(null);
-    setShowForm(false);
-    fetchPengawas();
-  };
-
-  useEffect(() => {
-    fetchPengawas();
-    // eslint-disable-next-line
-  }, [page, keyword, isMobile]);
-
-  const totalPages = Math.ceil(total / limit);
+  const handleDelete = (id: string) => remove(id, 'Yakin ingin hapus pengawas ini?');
 
   return (
     <div
@@ -101,6 +56,12 @@ const PengawasListPage = () => {
         paddingBottom: isMobile ? '100px' : undefined,
       }}
     >
+      <ListPageHeader
+        icon={<FiUser />}
+        title="Management Pengawas"
+        description="Kelola data pengawas SR Agency"
+      />
+
       {isMobile && (
         <div className="mb-3">
           <input
@@ -116,24 +77,11 @@ const PengawasListPage = () => {
         </div>
       )}
 
-      <AddPengawasModal
-        show={showForm}
-        onClose={() => {
-          setShowForm(false);
-          setEditPengawas(null);
-        }}
-        onSubmit={handleSavePengawas}
-        pengawas={editPengawas}
-      />
-
       {isMobile ? (
         <>
           <PengawasCardList
             pengawas={pengawasList}
-            onEdit={(p) => {
-              setEditPengawas(p);
-              setShowForm(true);
-            }}
+            onEdit={(p) => navigate(`/pengawas-detail/${p.id}`)}
             onDelete={handleDelete}
           />
 
@@ -158,13 +106,7 @@ const PengawasListPage = () => {
 
           {/* ⬇️ FAB tidak tampil jika sidebar sedang terbuka */}
           {!isSidebarOpen && (
-            <button
-              onClick={() => {
-                setEditPengawas(null);
-                setShowForm(true);
-              }}
-              className="fab-button"
-            >
+            <button onClick={() => navigate('/pengawas-create')} className="fab-button">
               <FiPlus />
             </button>
           )}
@@ -174,10 +116,7 @@ const PengawasListPage = () => {
           <div className="d-flex justify-content-between align-items-stretch mb-3 gap-2">
             <button
               className="btn btn-success fw-bold"
-              onClick={() => {
-                setEditPengawas(null);
-                setShowForm(true);
-              }}
+              onClick={() => navigate('/pengawas-create')}
             >
               <FiPlus className="me-2" /> Tambah Pengawas
             </button>
@@ -205,10 +144,7 @@ const PengawasListPage = () => {
                   <div className="d-flex gap-2">
                     <button
                       className="btn btn-sm btn-outline-warning me-2"
-                      onClick={() => {
-                        setEditPengawas(p);
-                        setShowForm(true);
-                      }}
+                      onClick={() => navigate(`/pengawas-detail/${p.id}`)}
                       title="Edit"
                     >
                       <FiEdit2 />

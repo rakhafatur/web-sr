@@ -8,6 +8,7 @@ import dayjs from 'dayjs';
 import logo from '../../../assets/logosr-black.png';
 import { useMediaQuery } from 'react-responsive';
 import { FiBook, FiPrinter } from 'react-icons/fi';
+import ListPageHeader from '../../../components/ListPageHeader';
 
 type Lady = {
   id: string;
@@ -866,9 +867,11 @@ const BukuKuningPage = () => {
 
   return (
     <div className="container py-4">
-      <h2 className="text-dark fw-bold fs-4 mb-4">
-        📒 Buku Kuning Ladies
-      </h2>
+      <ListPageHeader
+        icon={<FiBook />}
+        title="Buku Kuning Ladies"
+        description="Kelola transaksi bulanan ladies (voucher, kasbon, dokter, pemasukan lain)"
+      />
 
       <div className="row mb-3">
         <div className="col-12 col-md-4 mb-2">

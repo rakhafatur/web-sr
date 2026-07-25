@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
-import { FiPlus, FiEdit2, FiTrash2 } from 'react-icons/fi';
-import { supabase } from '../../../lib/supabaseClient';
+import { FiPlus, FiEdit2, FiTrash2, FiUser } from 'react-icons/fi';
+import { useEntityList } from '../../../hooks/useEntityList';
 import DataTable from '../../../components/DataTable';
 import ListToolbar from '../../../components/ListToolBar';
-import AddLadiesModal from '../components/AddLadiesModal';
+import ListPageHeader from '../../../components/ListPageHeader';
 import LadiesCardList from '../components/LadiesCardList';
 
 export type Lady = {
@@ -21,15 +22,19 @@ export type Lady = {
 };
 
 const LadiesListPage = () => {
+  const navigate = useNavigate();
   const isMobile = useMediaQuery({ maxWidth: 768 });
-  const [ladiesList, setLadiesList] = useState<Lady[]>([]);
-  const [editLady, setEditLady] = useState<Lady | null>(null);
-  const [showForm, setShowForm] = useState(false);
-
-  const [page, setPage] = useState(1);
   const limit = isMobile ? 5 : 10;
-  const [total, setTotal] = useState(0);
-  const [keyword, setKeyword] = useState('');
+
+  const {
+    list: ladiesList,
+    page,
+    setPage,
+    totalPages,
+    keyword,
+    setKeyword,
+    remove,
+  } = useEntityList<Lady>('ladies', ['nama_lengkap', 'nama_ladies', 'nama_outlet'], limit);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -42,65 +47,16 @@ const LadiesListPage = () => {
     return () => observer.disconnect();
   }, []);
 
-  const fetchLadies = async () => {
-    const from = (page - 1) * limit;
-    const to = from + limit - 1;
-
-    let query = supabase
-      .from('ladies')
-      .select('*', { count: 'exact' })
-      .range(from, to);
-
-    if (keyword.trim() !== '') {
-      query = query.or(`nama_lengkap.ilike.%${keyword}%,nama_ladies.ilike.%${keyword}%,nama_outlet.ilike.%${keyword}%`);
-    }
-
-    const { data, count, error } = await query;
-
-    if (error) console.error('❌ Gagal ambil data ladies:', error);
-    else {
-      setLadiesList(data || []);
-      setTotal(count || 0);
-    }
-  };
-
-  const handleSaveLady = async (data: Omit<Lady, 'id'>) => {
-    const safeData = {
-      ...data,
-      tanggal_bergabung: data.tanggal_bergabung || null,
-    };
-
-    if (editLady) {
-      const { error } = await supabase.from('ladies').update(safeData).eq('id', editLady.id);
-      if (error) alert('❌ Gagal update data: ' + error.message);
-    } else {
-      const { error } = await supabase.from('ladies').insert([safeData]);
-      if (error) alert('❌ Gagal tambah data: ' + error.message);
-    }
-
-    setEditLady(null);
-    setShowForm(false);
-    fetchLadies();
-  };
-
-  const handleDelete = async (id: string) => {
-    const confirmDelete = window.confirm('❗ Yakin ingin hapus data ladies ini?');
-    if (!confirmDelete) return;
-
-    const { error } = await supabase.from('ladies').delete().eq('id', id);
-    if (error) alert('❌ Gagal hapus data: ' + error.message);
-    else fetchLadies();
-  };
-
-  useEffect(() => {
-    fetchLadies();
-    // eslint-disable-next-line
-  }, [page, keyword, isMobile]);
-
-  const totalPages = Math.ceil(total / limit);
+  const handleDelete = (id: string) => remove(id, '❗ Yakin ingin hapus data ladies ini?');
 
   return (
     <div className="p-4" style={{ minHeight: '100vh', backgroundColor: 'var(--color-bg)', color: 'var(--color-dark)', paddingBottom: isMobile ? '100px' : undefined }}>
+      <ListPageHeader
+        icon={<FiUser />}
+        title="Management Ladies"
+        description="Kelola data ladies SR Agency"
+      />
+
       {isMobile && (
         <div className="mb-3">
           <input
@@ -116,19 +72,13 @@ const LadiesListPage = () => {
         </div>
       )}
 
-      <AddLadiesModal
-        show={showForm}
-        onClose={() => {
-          setShowForm(false);
-          setEditLady(null);
-        }}
-        onSubmit={handleSaveLady}
-        lady={editLady}
-      />
-
       {isMobile ? (
         <>
-          <LadiesCardList ladies={ladiesList} onEdit={(l) => { setEditLady(l); setShowForm(true); }} onDelete={handleDelete} />
+          <LadiesCardList
+            ladies={ladiesList}
+            onEdit={(l) => navigate(`/ladies-detail/${l.id}`)}
+            onDelete={handleDelete}
+          />
           {totalPages > 1 && (
             <div className="d-flex justify-content-between align-items-center mt-4">
               <button className="btn btn-outline-success" onClick={() => setPage(page - 1)} disabled={page <= 1}>
@@ -140,13 +90,7 @@ const LadiesListPage = () => {
             </div>
           )}
           {!isSidebarOpen && (
-            <button
-              onClick={() => {
-                setEditLady(null);
-                setShowForm(true);
-              }}
-              className="fab-button"
-            >
+            <button onClick={() => navigate('/ladies-create')} className="fab-button">
               <FiPlus />
             </button>
           )}
@@ -159,10 +103,7 @@ const LadiesListPage = () => {
               setPage(1);
               setKeyword(val);
             }}
-            onAddClick={() => {
-              setEditLady(null);
-              setShowForm(true);
-            }}
+            onAddClick={() => navigate('/ladies-create')}
             addLabel={
               <span className="d-flex align-items-center">
                 <FiPlus className="me-2" /> Tambah Ladies
@@ -221,10 +162,7 @@ const LadiesListPage = () => {
                         padding: 0,
                         borderRadius: 6,
                       }}
-                      onClick={() => {
-                        setEditLady(lady);
-                        setShowForm(true);
-                      }}
+                      onClick={() => navigate(`/ladies-detail/${lady.id}`)}
                       title="Edit"
                     >
                       <FiEdit2 size={16} />
