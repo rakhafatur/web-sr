@@ -47,7 +47,7 @@ const ModalWrapper = ({
       style={{
         inset: 0,
         background:
-          'rgba(15, 23, 42, 0.55)',
+          'rgba(0, 0, 0, 0.6)',
         zIndex: 1050,
       }}
       onClick={onClose}
@@ -71,10 +71,10 @@ const ModalWrapper = ({
             : '88vh',
 
           background:
-            'linear-gradient(to bottom, #ffffff, #fcfffd)',
+            'linear-gradient(to bottom, var(--color-surface), var(--color-surface-2))',
 
           border:
-            '1px solid rgba(25,153,71,0.08)',
+            '1px solid var(--color-gray-200)',
 
           borderRadius: isMobile
             ? '28px 28px 0 0'
@@ -111,12 +111,12 @@ const ModalWrapper = ({
           style={{
             background:
               headerGradient ??
-              'linear-gradient(to right, #f5fff8, #ffffff)',
+              'linear-gradient(to right, var(--color-green-lighter), var(--color-surface))',
 
             color: headerGradient ? 'white' : undefined,
 
             borderColor:
-              'rgba(0,0,0,0.05)',
+              'rgba(255,255,255,0.08)',
 
             flexShrink: 0,
           }}
@@ -144,8 +144,8 @@ const ModalWrapper = ({
                       width: 38,
                       height: 38,
                       borderRadius: 12,
-                      background: '#f3f4f6',
-                      color: '#666',
+                      background: 'var(--color-surface-2)',
+                      color: 'var(--color-gray-500)',
                       flexShrink: 0,
                       cursor: 'pointer',
                     }
@@ -174,7 +174,7 @@ const ModalWrapper = ({
             className="px-4 py-3 border-top"
             style={{
               background:
-                'linear-gradient(to right, #fafafa, #ffffff)',
+                'linear-gradient(to right, var(--color-surface-2), var(--color-surface))',
 
               borderColor:
                 'rgba(0,0,0,0.05)',

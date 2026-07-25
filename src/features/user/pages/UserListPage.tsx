@@ -80,13 +80,7 @@ const UserListPage = () => {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <div
-      className="container-fluid py-4 px-3 px-md-4"
-      style={{
-        background: 'linear-gradient(to bottom, #f7fff9, #fff)',
-        minHeight: '100vh',
-      }}
-    >
+    <div className="page-shell py-4 px-3 px-md-4">
       {/* HEADER */}
       <div
         className="mb-3 p-3 p-md-4 rounded-4 shadow-sm position-relative overflow-hidden"

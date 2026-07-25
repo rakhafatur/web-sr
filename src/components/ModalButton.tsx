@@ -12,22 +12,22 @@ type Props = {
 
 const variantStyles: Record<Variant, React.CSSProperties> = {
   primary: {
-    background: 'linear-gradient(135deg,#22c55e,#4ade80)',
+    background: 'linear-gradient(135deg, var(--color-green), var(--color-accent))',
     color: 'white',
-    boxShadow: '0 10px 25px rgba(34,197,94,0.25)',
+    boxShadow: '0 10px 25px rgba(var(--color-primary-rgb),0.35)',
     fontWeight: 700,
     paddingInline: 22,
   },
   warning: {
-    background: 'linear-gradient(135deg,#f59e0b,#fbbf24)',
+    background: 'linear-gradient(135deg, var(--color-warning-solid), #c9820f)',
     color: 'white',
-    boxShadow: '0 10px 25px rgba(245,158,11,0.25)',
+    boxShadow: '0 10px 25px rgba(var(--color-warning-solid-rgb),0.3)',
     fontWeight: 700,
     paddingInline: 22,
   },
   secondary: {
-    background: '#f1f5f9',
-    color: '#334155',
+    background: 'var(--color-surface-2)',
+    color: 'var(--color-gray-700)',
     fontWeight: 600,
     paddingInline: 20,
   },

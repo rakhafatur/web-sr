@@ -97,7 +97,7 @@ const PeraturanPage = () => {
 
   return (
     <div
-      className="d-flex flex-column gap-3"
+      className="page-shell d-flex flex-column gap-3"
       style={{
         paddingBottom: 24,
       }}

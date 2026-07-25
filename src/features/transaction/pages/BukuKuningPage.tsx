@@ -866,7 +866,7 @@ const BukuKuningPage = () => {
   };
 
   return (
-    <div className="container py-4">
+    <div className="page-shell py-4">
       <ListPageHeader
         icon={<FiBook />}
         title="Buku Kuning Ladies"

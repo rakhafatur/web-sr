@@ -64,13 +64,7 @@ const CreateUser = () => {
   };
 
   return (
-    <div
-      className="container-fluid py-4 px-md-4 px-3"
-      style={{
-        background: 'linear-gradient(to bottom, #f7fff9 0%, #ffffff 100%)',
-        minHeight: '100vh',
-      }}
-    >
+    <div className="page-shell py-4 px-md-4 px-3">
       {/* HEADER */}
       <div
         className="mb-4 p-4 rounded-4 shadow-sm position-relative overflow-hidden"

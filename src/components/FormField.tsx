@@ -29,7 +29,7 @@ const dateInputStyle: React.CSSProperties = {
   padding: '0.5rem',
   border: '1px solid var(--color-green)',
   borderRadius: '0.375rem',
-  backgroundColor: 'var(--color-white)',
+  backgroundColor: 'var(--color-surface)',
   color: 'var(--color-dark)',
   fontSize: '1rem',
   height: '40px',

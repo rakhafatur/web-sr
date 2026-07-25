@@ -54,7 +54,7 @@ const KasbonListPage = () => {
   }
 
   return (
-    <div className="d-flex flex-column gap-3" style={{ paddingBottom: 20 }}>
+    <div className="page-shell d-flex flex-column gap-3" style={{ paddingBottom: 20 }}>
       <MonthNavigator
         selectedMonth={selectedMonth}
         onChange={handleMonthChange}

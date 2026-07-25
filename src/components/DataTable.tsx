@@ -60,7 +60,7 @@ function DataTable<T extends { id: string }>({
                   color: 'var(--color-dark)',
                   textAlign: 'left',
                   whiteSpace: 'nowrap',
-                  borderBottom: '2px solid #c9ecd8',
+                  borderBottom: '2px solid var(--color-green-light)',
                 }}
               >
                 {col.label}
@@ -72,13 +72,13 @@ function DataTable<T extends { id: string }>({
         <tbody>
           {data.length === 0 ? (
             <tr>
-              <td colSpan={columns.length} style={{ padding: '16px', textAlign: 'center', color: '#888' }}>
+              <td colSpan={columns.length} style={{ padding: '16px', textAlign: 'center', color: 'var(--color-gray-500)' }}>
                 {emptyMessage}
               </td>
             </tr>
           ) : (
             data.map((item) => (
-              <tr key={item.id} style={{ borderBottom: '1px solid #eee' }}>
+              <tr key={item.id} style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                 {columns.map((col) => (
                   <td key={String(col.key)} style={{ padding: '10px 12px' }}>
                     {col.render ? col.render(item) : (item[col.key] as React.ReactNode)}

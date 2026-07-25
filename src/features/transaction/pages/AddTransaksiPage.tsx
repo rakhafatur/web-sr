@@ -53,14 +53,7 @@ const AddTransaksiPage = () => {
   }, []);
 
   return (
-    <div
-      className="container-fluid py-4 px-md-4 px-3"
-      style={{
-        background:
-          'var(--color-bg)',
-        minHeight: '100vh',
-      }}
-    >
+    <div className="page-shell py-4 px-md-4 px-3">
       {/* HEADER */}
       <div
         className="mb-4 p-4 rounded-4 shadow-sm"

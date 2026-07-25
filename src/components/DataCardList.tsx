@@ -36,7 +36,7 @@ function DataCardList<T>({ items, getId, renderItem, onEdit, onDelete }: DataCar
             key={id}
             className="p-3 rounded position-relative shadow-sm"
             style={{
-              backgroundColor: 'var(--color-white)',
+              backgroundColor: 'var(--color-surface)',
               border: '1px solid var(--color-green)',
               color: 'var(--color-dark)',
             }}
@@ -46,7 +46,7 @@ function DataCardList<T>({ items, getId, renderItem, onEdit, onDelete }: DataCar
                 <button
                   className="btn btn-sm border-0"
                   style={{
-                    backgroundColor: '#f1f1f1',
+                    backgroundColor: 'var(--color-surface-2)',
                     width: 36,
                     height: 36,
                     display: 'flex',
@@ -62,8 +62,14 @@ function DataCardList<T>({ items, getId, renderItem, onEdit, onDelete }: DataCar
                 {activeId === id && (
                   <div
                     ref={menuRef}
-                    className="position-absolute bg-white border rounded shadow-sm p-2"
-                    style={{ top: '110%', right: 0, minWidth: 120, zIndex: 1000 }}
+                    className="position-absolute border rounded shadow-sm p-2"
+                    style={{
+                      top: '110%',
+                      right: 0,
+                      minWidth: 120,
+                      zIndex: 1000,
+                      backgroundColor: 'var(--color-surface)',
+                    }}
                   >
                     {onEdit && (
                       <button

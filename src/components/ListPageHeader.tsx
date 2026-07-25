@@ -11,7 +11,7 @@ const ListPageHeader = ({ icon, title, description }: Props) => (
   <div
     className="mb-3 p-3 p-md-4 rounded-4 shadow-sm position-relative overflow-hidden"
     style={{
-      background: 'linear-gradient(135deg, var(--color-green), #7be0a9)',
+      background: 'linear-gradient(135deg, var(--color-green), var(--color-accent))',
       color: 'white',
     }}
   >

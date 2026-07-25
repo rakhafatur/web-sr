@@ -117,7 +117,7 @@ const PerformaLadiesPage = () => {
   }, [bulan, tahun, ladiesList]);
 
   return (
-    <div className="container py-4" style={{ background: 'var(--color-bg)', minHeight: '100vh' }}>
+    <div className="page-shell py-4">
       <h2 className="fw-bold fs-4 mb-4" style={{ color: 'var(--color-dark)' }}>
         📊 Performa Ladies Bulan {monthNames[bulan - 1]} {tahun}
       </h2>

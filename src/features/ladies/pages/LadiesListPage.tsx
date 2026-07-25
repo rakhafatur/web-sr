@@ -50,7 +50,7 @@ const LadiesListPage = () => {
   const handleDelete = (id: string) => remove(id, '❗ Yakin ingin hapus data ladies ini?');
 
   return (
-    <div className="p-4" style={{ minHeight: '100vh', backgroundColor: 'var(--color-bg)', color: 'var(--color-dark)', paddingBottom: isMobile ? '100px' : undefined }}>
+    <div className="page-shell p-4" style={{ color: 'var(--color-dark)', paddingBottom: isMobile ? '100px' : undefined }}>
       <ListPageHeader
         icon={<FiUser />}
         title="Management Ladies"

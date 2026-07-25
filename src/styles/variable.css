@@ -1,41 +1,74 @@
 :root {
-  /* ===== Brand ===== */
-  --color-green: #5cb85c;
-  --color-green-light: #d8f3dc;
-  --color-green-lighter: #f0fdf4;
-  --color-accent: #4B6043;
+  /* ===== Tema aktif: Mono (Tahap 4) =====
+     Charcoal netral + satu aksen biru elektrik. Bukan tema opsional/toggle —
+     ini pengganti tema terang sebelumnya. Nama token dipertahankan (mis.
+     --color-green, --color-dark) supaya semua file yang sudah pakai token
+     ini otomatis ikut berubah tanpa perlu diganti satu-satu; isinya sekarang
+     tidak lagi harfiah "hijau" atau "gelap" secara warna. */
 
-  --color-bg: #f8f9fa;
-  --color-dark: #1a1a1a;
+  /* ===== Brand ===== */
+  --color-green: #5b8def;
+  --color-green-light: #1c2740;
+  --color-green-lighter: #141b2c;
+  --color-accent: #2f4f8f;
+
+  --color-bg: #0e0e10;
+  --color-bg-rgb: 14, 14, 16;
+  --color-dark: #edeef0;
   --color-white: #ffffff;
 
-  /* ===== Neutral scale (text, border, background) ===== */
-  --color-gray-50: #f8f9fa;
-  --color-gray-100: #f1f5f9;
-  --color-gray-200: #e5e7eb;
-  --color-gray-300: #d1d5db;
-  --color-gray-400: #9ca3af;
-  --color-gray-500: #6b7280;
-  --color-gray-600: #4b5563;
-  --color-gray-700: #374151;
-  --color-gray-800: #1f2937;
-  --color-gray-900: #111827;
+  /* Permukaan kartu/panel — dulu semua kartu pakai --color-white langsung,
+     sekarang pakai token ini supaya kartu tetap gelap, bukan putih. */
+  --color-surface: #17181a;
+  --color-surface-2: #1e1f22;
 
-  /* ===== Status ===== */
-  --color-warning: #fff3cd;
-  --color-warning-hover: #ffe8a1;
-  --color-danger: #f8d7da;
-  --color-danger-hover: #f5c2c7;
+  /* ===== Neutral scale (text, border, background) =====
+     50-300 = tint permukaan/border (redup, dekat warna bg).
+     400-900 = teks, dari paling redup (400) ke paling tegas (900). */
+  --color-gray-50: #0b0c0d;
+  --color-gray-100: #1c1d20;
+  --color-gray-200: #24252a;
+  --color-gray-300: #2f3136;
+  --color-gray-400: #5a5d63;
+  --color-gray-500: #6f7278;
+  --color-gray-600: #83868c;
+  --color-gray-700: #9497a0;
+  --color-gray-800: #c0c2c7;
+  --color-gray-900: #edeef0;
+
+  /* ===== Status (soft bg untuk badge/tombol soft) ===== */
+  --color-warning: #332711;
+  --color-warning-hover: #453516;
+  --color-danger: #33181b;
+  --color-danger-hover: #452226;
+  /* Teks di atas warning-solid/gold (selalu terang→gelap, tidak ikut tema,
+     karena warning-solid selalu warna terang). Dipakai di global.css. */
+  --color-ink-on-warning: #1a1710;
 
   /* ===== Kategori transaksi (semantic) ===== */
-  --color-income: #16a34a;
-  --color-income-soft: #dcfce7;
-  --color-expense: #dc2626;
-  --color-expense-soft: #fee2e2;
-  --color-medical: #2563eb;
-  --color-medical-soft: #dbeafe;
-  --color-voucher: #ca8a04;
-  --color-voucher-soft: #fef9c3;
+  --color-income: #57c98a;
+  --color-income-soft: #10281c;
+  --color-expense: #e2666f;
+  --color-expense-soft: #33181b;
+  --color-medical: #8b93f6;
+  --color-medical-soft: #1c2040;
+  --color-voucher: #f2a94e;
+  --color-voucher-soft: #332711;
+
+  /* ===== Semantic UI state =====
+     Satu-satunya sumber warna primary/success/warning/danger di seluruh app.
+     Dipakai juga untuk override variabel Bootstrap di global.css — jangan
+     tambah warna baru di halaman lain, pakai token ini. Varian *-rgb dipakai
+     untuk box-shadow/focus-ring yang butuh format "r, g, b". */
+  --color-primary: var(--color-accent);
+  --color-primary-rgb: 47, 79, 143;
+  --color-primary-hover: #24407a;
+  --color-success: var(--color-income);
+  --color-success-rgb: 87, 201, 138;
+  --color-warning-solid: var(--color-voucher);
+  --color-warning-solid-rgb: 242, 169, 78;
+  --color-danger-solid: var(--color-expense);
+  --color-danger-solid-rgb: 226, 102, 111;
 
   /* ===== Tipografi ===== */
   --font-base: 'Segoe UI', sans-serif;
@@ -65,11 +98,14 @@
   --space-10: 2.5rem;
   --space-12: 3rem;
 
-  /* ===== Radius scale (--radius dipertahankan untuk kompatibilitas) ===== */
+  /* ===== Radius scale (--radius dipertahankan untuk kompatibilitas) =====
+     Pakai salah satu dari ini di komponen baru — jangan tulis angka px/rem
+     bebas (12/14/18/24 dst) langsung di style halaman. */
   --radius: 0.75rem;
   --radius-sm: 0.375rem;
   --radius-md: 0.75rem;
   --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
   --radius-full: 999px;
 
   /* ===== Shadow scale (--shadow dipertahankan untuk kompatibilitas) ===== */
@@ -77,4 +113,8 @@
   --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.14);
+  --shadow-xl: 0 16px 40px rgba(0, 0, 0, 0.18);
+  /* Shadow "glow" bertema brand, pengganti rgba hijau yang di-hardcode ulang
+     per halaman (mis. hero card). */
+  --shadow-brand: 0 10px 30px rgba(var(--color-primary-rgb), 0.18);
 }

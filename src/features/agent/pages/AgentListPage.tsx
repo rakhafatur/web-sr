@@ -43,10 +43,8 @@ const AgentListPage = () => {
 
   return (
     <div
-      className="p-4"
+      className="page-shell p-4"
       style={{
-        minHeight: '100vh',
-        backgroundColor: 'var(--color-bg)',
         color: 'var(--color-dark)',
         paddingBottom: isMobile ? '100px' : undefined,
       }}

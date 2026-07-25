@@ -104,7 +104,7 @@ const DetailPengawas = () => {
 
   if (loading) {
     return (
-      <div className="container-fluid py-5" style={{ minHeight: '100vh' }}>
+      <div className="page-shell py-5">
         <div className="d-flex align-items-center gap-3">
           <div className="spinner-border spinner-border-sm" role="status" />
           <span>Mengambil data pengawas...</span>
@@ -114,13 +114,7 @@ const DetailPengawas = () => {
   }
 
   return (
-    <div
-      className="container-fluid py-4 px-md-4 px-3"
-      style={{
-        background: 'linear-gradient(to bottom, #f7fff9 0%, #ffffff 100%)',
-        minHeight: '100vh',
-      }}
-    >
+    <div className="page-shell py-4 px-md-4 px-3">
       <EntityPageHeader
         icon={<FiUser />}
         title="Detail Pengawas"
