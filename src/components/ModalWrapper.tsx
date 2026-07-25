@@ -8,6 +8,8 @@ type Props = {
   children: ReactNode;
   footer?: ReactNode;
   onClose: () => void;
+  /** Ganti header dari gradient terang default jadi band warna solid (mis. lewat <ModalHeading/>). */
+  headerGradient?: string;
 };
 
 const ModalWrapper = ({
@@ -16,6 +18,7 @@ const ModalWrapper = ({
   children,
   footer,
   onClose,
+  headerGradient,
 }: Props) => {
   const isMobile = useMediaQuery({
     maxWidth: 768,
@@ -104,10 +107,13 @@ const ModalWrapper = ({
       >
         {/* HEADER */}
         <div
-          className="px-4 py-4 border-bottom"
+          className={headerGradient ? 'px-4 py-4' : 'px-4 py-4 border-bottom'}
           style={{
             background:
+              headerGradient ??
               'linear-gradient(to right, #f5fff8, #ffffff)',
+
+            color: headerGradient ? 'white' : undefined,
 
             borderColor:
               'rgba(0,0,0,0.05)',
@@ -123,18 +129,29 @@ const ModalWrapper = ({
             <button
               onClick={onClose}
               className="border-0 d-flex align-items-center justify-content-center"
-              style={{
-                width: 38,
-                height: 38,
-                borderRadius: 12,
-                background:
-                  '#f3f4f6',
-                color: '#666',
-                flexShrink: 0,
-                cursor: 'pointer',
-              }}
+              style={
+                headerGradient
+                  ? {
+                      width: 42,
+                      height: 42,
+                      borderRadius: 14,
+                      background: 'rgba(255,255,255,0.18)',
+                      color: 'white',
+                      flexShrink: 0,
+                      cursor: 'pointer',
+                    }
+                  : {
+                      width: 38,
+                      height: 38,
+                      borderRadius: 12,
+                      background: '#f3f4f6',
+                      color: '#666',
+                      flexShrink: 0,
+                      cursor: 'pointer',
+                    }
+              }
             >
-              <FiX size={18} />
+              <FiX size={headerGradient ? 20 : 18} />
             </button>
           </div>
         </div>

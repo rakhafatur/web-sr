@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 
 import FormField from '../../../components/FormField';
 import ModalWrapper from '../../../components/ModalWrapper';
+import ModalHeading from '../../../components/ModalHeading';
+import ModalButton from '../../../components/ModalButton';
 
 import {
   FiUser,
@@ -9,8 +11,9 @@ import {
   FiEdit2,
   FiLock,
   FiCheckCircle,
-  FiX,
 } from 'react-icons/fi';
+
+const HEADER_GRADIENT = 'linear-gradient(135deg,var(--color-green),#7be0a9)';
 
 type User = {
   username: string;
@@ -123,121 +126,39 @@ const AddUserModal = ({
     <ModalWrapper
       show={show}
       onClose={onClose}
+      headerGradient={HEADER_GRADIENT}
       title={
-        <div className="d-flex align-items-center gap-3">
-          <div
-            style={{
-              width: 46,
-              height: 46,
-              borderRadius: 14,
-              background:
-                'linear-gradient(135deg, var(--color-green), #7be0a9)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontSize: 20,
-              flexShrink: 0,
-            }}
-          >
-            {user ? (
-              <FiUser />
-            ) : (
-              <FiPlus />
-            )}
-          </div>
-
-          <div>
-            <div
-              className="fw-bold"
-              style={{
-                fontSize: '1rem',
-                color:
-                  'var(--color-dark)',
-              }}
-            >
-              {user
-                ? 'Detail User'
-                : 'Tambah User'}
-            </div>
-
-            <div
-              style={{
-                fontSize: '0.8rem',
-                color: '#777',
-                marginTop: 2,
-              }}
-            >
-              {user
-                ? 'Kelola dan edit data user'
-                : 'Tambahkan user baru ke sistem'}
-            </div>
-          </div>
-        </div>
+        <ModalHeading
+          icon={user ? <FiUser /> : <FiPlus />}
+          title={user ? 'Detail User' : 'Tambah User'}
+          subtitle={user ? 'Kelola dan edit data user' : 'Tambahkan user baru ke sistem'}
+        />
       }
       footer={
-        <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 w-100">
-          <button
-            className="btn btn-light fw-semibold d-flex align-items-center gap-2"
-            onClick={onClose}
-            style={{
-              borderRadius: 12,
-              padding:
-                '10px 16px',
-            }}
-          >
-            <FiX />
+        <div className="d-flex justify-content-end gap-2 flex-wrap">
+          <ModalButton variant="secondary" onClick={onClose}>
             Tutup
-          </button>
+          </ModalButton>
 
-          <div className="d-flex align-items-center gap-2">
-            {readonly ? (
-              <button
-                className="btn btn-success fw-bold d-flex align-items-center gap-2"
-                onClick={() =>
-                  setReadonly(
-                    false
-                  )
-                }
-                style={{
-                  borderRadius: 12,
-                  padding:
-                    '10px 18px',
-                }}
-              >
-                <FiEdit2 />
-                Edit Form
-              </button>
-            ) : (
-              <button
-                className="btn btn-success fw-bold d-flex align-items-center gap-2"
-                onClick={
-                  handleSubmit
-                }
-                disabled={loading}
-                style={{
-                  borderRadius: 12,
-                  padding:
-                    '10px 18px',
-                }}
-              >
-                {loading ? (
-                  <>
-                    <div
-                      className="spinner-border spinner-border-sm"
-                      role="status"
-                    />
-                    Menyimpan...
-                  </>
-                ) : (
-                  <>
-                    <FiCheckCircle />
-                    Simpan User
-                  </>
-                )}
-              </button>
-            )}
-          </div>
+          {readonly ? (
+            <ModalButton variant="warning" icon={<FiEdit2 />} onClick={() => setReadonly(false)}>
+              Edit Form
+            </ModalButton>
+          ) : (
+            <ModalButton variant="primary" onClick={handleSubmit} disabled={loading}>
+              {loading ? (
+                <>
+                  <div className="spinner-border spinner-border-sm" role="status" />
+                  Menyimpan...
+                </>
+              ) : (
+                <>
+                  <FiCheckCircle />
+                  Simpan User
+                </>
+              )}
+            </ModalButton>
+          )}
         </div>
       }
     >

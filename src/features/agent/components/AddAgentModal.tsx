@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import FormField from '../../../components/FormField';
-import { FiUser, FiPlus, FiEdit2 } from 'react-icons/fi';
+import { FiUser, FiPlus, FiEdit2, FiSave } from 'react-icons/fi';
 import ModalWrapper from '../../../components/ModalWrapper';
+import ModalHeading from '../../../components/ModalHeading';
+import ModalButton from '../../../components/ModalButton';
+
+const HEADER_GRADIENT = 'linear-gradient(135deg,var(--color-green),#7be0a9)';
 
 type Agent = {
   nama_agent: string;
@@ -67,39 +71,33 @@ const AddAgentModal = ({ show, onClose, onSubmit, agent }: Props) => {
   );
 
   const footer = (
-    <>
-      {readonly ? (
-        <button
-          className="btn btn-success fw-bold d-flex align-items-center gap-2"
-          onClick={() => setReadonly(false)}
-        >
-          <FiEdit2 /> Edit
-        </button>
-      ) : (
-        <button className="btn btn-success fw-bold" onClick={handleSubmit}>
-          Simpan
-        </button>
-      )}
-      <button className="btn btn-secondary fw-bold" onClick={onClose}>
+    <div className="d-flex justify-content-end gap-2 flex-wrap">
+      <ModalButton variant="secondary" onClick={onClose}>
         Tutup
-      </button>
-    </>
+      </ModalButton>
+      {readonly ? (
+        <ModalButton variant="warning" icon={<FiEdit2 />} onClick={() => setReadonly(false)}>
+          Edit Form
+        </ModalButton>
+      ) : (
+        <ModalButton variant="primary" icon={<FiSave />} onClick={handleSubmit}>
+          Simpan
+        </ModalButton>
+      )}
+    </div>
   );
 
   return (
     <ModalWrapper
       show={show}
       onClose={onClose}
+      headerGradient={HEADER_GRADIENT}
       title={
-        agent ? (
-          <span className="d-flex align-items-center gap-2">
-            <FiUser /> Detail Agent
-          </span>
-        ) : (
-          <span className="d-flex align-items-center gap-2">
-            <FiPlus /> Tambah Agent
-          </span>
-        )
+        <ModalHeading
+          icon={agent ? <FiUser /> : <FiPlus />}
+          title={agent ? 'Detail Agent' : 'Tambah Agent'}
+          subtitle={agent ? 'Lihat atau edit data agent' : 'Tambahkan agent baru ke sistem'}
+        />
       }
       footer={footer}
     >

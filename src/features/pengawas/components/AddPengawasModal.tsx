@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
 import FormField from '../../../components/FormField';
-import { FiUser, FiPlus, FiEdit2 } from 'react-icons/fi';
+import { FiUser, FiPlus, FiEdit2, FiSave } from 'react-icons/fi';
 import ModalWrapper from '../../../components/ModalWrapper';
+import ModalHeading from '../../../components/ModalHeading';
+import ModalButton from '../../../components/ModalButton';
 import dayjs from 'dayjs';
+
+const HEADER_GRADIENT = 'linear-gradient(135deg,var(--color-green),#7be0a9)';
 
 type Pengawas = {
   nama_lengkap: string;
@@ -140,35 +144,34 @@ const AddPengawasModal = ({ show, onClose, onSubmit, pengawas }: Props) => {
   );
 
   const footer = (
-    <>
-      {readonly ? (
-        <button className="btn btn-success fw-bold d-flex align-items-center gap-2" onClick={() => setReadonly(false)}>
-          <FiEdit2 /> Edit Form
-        </button>
-      ) : (
-        <button className="btn btn-success fw-bold" onClick={handleSubmit}>
-          Simpan
-        </button>
-      )}
-      <button className="btn btn-secondary fw-bold" onClick={onClose}>
+    <div className="d-flex justify-content-end gap-2 flex-wrap">
+      <ModalButton variant="secondary" onClick={onClose}>
         Tutup
-      </button>
-    </>
+      </ModalButton>
+      {readonly ? (
+        <ModalButton variant="warning" icon={<FiEdit2 />} onClick={() => setReadonly(false)}>
+          Edit Form
+        </ModalButton>
+      ) : (
+        <ModalButton variant="primary" icon={<FiSave />} onClick={handleSubmit}>
+          Simpan
+        </ModalButton>
+      )}
+    </div>
   );
 
   return (
     <ModalWrapper
       show={show}
       onClose={onClose}
-      title={pengawas ? (
-        <span className="d-flex align-items-center gap-2">
-          <FiUser /> Detail Pengawas
-        </span>
-      ) : (
-        <span className="d-flex align-items-center gap-2">
-          <FiPlus /> Tambah Pengawas
-        </span>
-      )}
+      headerGradient={HEADER_GRADIENT}
+      title={
+        <ModalHeading
+          icon={pengawas ? <FiUser /> : <FiPlus />}
+          title={pengawas ? 'Detail Pengawas' : 'Tambah Pengawas'}
+          subtitle={pengawas ? 'Lihat atau edit data pengawas' : 'Tambahkan pengawas baru ke sistem'}
+        />
+      }
       footer={footer}
     >
       {formContent}
