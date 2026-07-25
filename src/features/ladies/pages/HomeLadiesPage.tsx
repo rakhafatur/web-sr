@@ -20,14 +20,7 @@ import {
 
 import bgImage from '../../../assets/bg-home.png';
 import logo from '../../../assets/logosr-green.png';
-
-type UserWithLadies = {
-  id: string;
-  username: string;
-  nama: string;
-  ladies_id: string;
-  nama_ladies?: string;
-};
+import type { UserWithLadies } from '../../../types/user';
 
 const HomeLadiesPage = () => {
   const user =

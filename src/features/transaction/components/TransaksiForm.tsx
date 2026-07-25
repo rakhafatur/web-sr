@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { supabase } from '../../../lib/supabaseClient';
-import FormInput from '../../../components/FormInput';
+import FormField from '../../../components/FormField';
 import {
   FiGift,
   FiTrendingUp,
@@ -362,7 +362,7 @@ const TransaksiForm = ({
                 : '1px solid #eee',
             }}
           >
-            <FormInput
+            <FormField
               label="Tanggal"
               name="tanggal"
               value={form.tanggal}
@@ -397,7 +397,7 @@ const TransaksiForm = ({
                       : '1px solid #eee',
                 }}
               >
-                <FormInput
+                <FormField
                   label="Jumlah Voucher"
                   name="jumlah_voucher"
                   value={
@@ -534,7 +534,7 @@ const TransaksiForm = ({
         ) : (
           <>
             <div className="col-12">
-              <FormInput
+              <FormField
                 label="Keterangan"
                 name="keterangan"
                 value={
@@ -548,7 +548,7 @@ const TransaksiForm = ({
             </div>
 
             <div className="col-12">
-              <FormInput
+              <FormField
                 label="Jumlah"
                 name="jumlah"
                 value={form.jumlah}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import FormInput from '../../../components/FormInput';
+import FormField from '../../../components/FormField';
 
 import {
   FiCalendar,
@@ -280,7 +280,7 @@ const AddAbsensiModal = ({
 
             {/* KETERANGAN */}
             <div>
-              <FormInput
+              <FormField
                 label="Keterangan"
                 name="keterangan"
                 value={form.keterangan}

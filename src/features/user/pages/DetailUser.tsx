@@ -16,7 +16,7 @@ import {
   FiX,
 } from 'react-icons/fi';
 
-import FormInput from '../../../components/FormInput';
+import FormField from '../../../components/FormField';
 import { supabase } from '../../../lib/supabaseClient';
 
 type FormType = {
@@ -437,7 +437,7 @@ const DetailUser = () => {
               Username
             </div>
 
-            <FormInput
+            <FormField
               label=""
               name="username"
               value={form.username}
@@ -458,7 +458,7 @@ const DetailUser = () => {
               Nama Lengkap
             </div>
 
-            <FormInput
+            <FormField
               label=""
               name="nama"
               value={form.nama}
@@ -482,7 +482,7 @@ const DetailUser = () => {
                 (Opsional)
               </div>
 
-              <FormInput
+              <FormField
                 label=""
                 name="password"
                 type="password"

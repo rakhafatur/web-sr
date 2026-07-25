@@ -8,7 +8,7 @@ import {
   FiUsers,
 } from 'react-icons/fi';
 
-import FormInput from '../../../components/FormInput';
+import FormField from '../../../components/FormField';
 import { supabase } from '../../../lib/supabaseClient';
 import bcrypt from 'bcryptjs';
 
@@ -164,7 +164,7 @@ const CreateUser = () => {
           {/* FORM */}
           <div className="d-flex flex-column gap-4">
             <div>
-              <FormInput
+              <FormField
                 label="Username"
                 name="username"
                 value={form.username}
@@ -173,7 +173,7 @@ const CreateUser = () => {
             </div>
 
             <div>
-              <FormInput
+              <FormField
                 label="Nama Lengkap"
                 name="nama"
                 value={form.nama}
@@ -183,7 +183,7 @@ const CreateUser = () => {
 
             <div>
 
-              <FormInput
+              <FormField
                 label="Password"
                 name="password"
                 type="password"

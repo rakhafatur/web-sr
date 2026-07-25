@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import FormInput from '../../../components/FormInput';
+import FormField from '../../../components/FormField';
 import { FiUser, FiPlus, FiEdit2 } from 'react-icons/fi';
 import ModalWrapper from '../../../components/ModalWrapper';
 import { supabase } from '../../../lib/supabaseClient';
@@ -99,12 +99,12 @@ const AddLadiesModal = ({ show, onClose, onSubmit, lady }: Props) => {
 
   const formContent = (
     <>
-      <FormInput label="Nama Lengkap" name="nama_lengkap" value={form.nama_lengkap} onChange={handleChange} readOnly={readonly} />
-      <FormInput label="Nama Ladies" name="nama_ladies" value={form.nama_ladies} onChange={handleChange} readOnly={readonly} />
-      <FormInput label="PIN" name="pin" value={form.pin} onChange={handleChange} readOnly={readonly} />
-      <FormInput label="Nomor KTP" name="nomor_ktp" value={form.nomor_ktp} onChange={handleChange} readOnly={readonly} />
-      <FormInput label="Tanggal Bergabung" name="tanggal_bergabung" value={form.tanggal_bergabung} onChange={handleChange} readOnly={readonly} type="date" />
-      <FormInput label="Alamat" name="alamat" value={form.alamat} onChange={handleChange} readOnly={readonly} type="textarea" />
+      <FormField label="Nama Lengkap" name="nama_lengkap" value={form.nama_lengkap} onChange={handleChange} readOnly={readonly} />
+      <FormField label="Nama Ladies" name="nama_ladies" value={form.nama_ladies} onChange={handleChange} readOnly={readonly} />
+      <FormField label="PIN" name="pin" value={form.pin} onChange={handleChange} readOnly={readonly} />
+      <FormField label="Nomor KTP" name="nomor_ktp" value={form.nomor_ktp} onChange={handleChange} readOnly={readonly} />
+      <FormField label="Tanggal Bergabung" name="tanggal_bergabung" value={form.tanggal_bergabung} onChange={handleChange} readOnly={readonly} type="date" />
+      <FormField label="Alamat" name="alamat" value={form.alamat} onChange={handleChange} readOnly={readonly} type="textarea" />
 
       {/* Dropdown Outlet */}
       <div className="mb-3">

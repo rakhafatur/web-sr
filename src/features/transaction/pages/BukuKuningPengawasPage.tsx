@@ -270,6 +270,16 @@ const BukuKuningPengawasPage = () => {
                 page={page}
                 rowsPerPage={rowsPerPage}
                 onPageChange={setPage}
+                renderItem={(row) => (
+                  <>
+                    <div><strong>📅 Tanggal:</strong> {dayjs(row.tanggal).format('YYYY-MM-DD')}</div>
+                    <div><strong>📋 Keterangan:</strong> {row.keterangan}</div>
+                    {row.voucher && <div><strong>🎫 Voucher:</strong> {row.voucher}</div>}
+                    {row.pemasukan && <div><strong>💰 Pemasukan:</strong> Rp{Number(row.pemasukan).toLocaleString()}</div>}
+                    {row.pengeluaran && <div><strong>💸 Pengeluaran:</strong> Rp{Number(row.pengeluaran).toLocaleString()}</div>}
+                    <div><strong>🧾 Saldo:</strong> Rp{Number(row.saldo).toLocaleString()}</div>
+                  </>
+                )}
               />
             ) : (
               <DataTable

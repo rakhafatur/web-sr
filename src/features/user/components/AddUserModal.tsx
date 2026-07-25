@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import FormInput from '../../../components/FormInput';
+import FormField from '../../../components/FormField';
 import ModalWrapper from '../../../components/ModalWrapper';
 
 import {
@@ -317,7 +317,7 @@ const AddUserModal = ({
               Username
             </div>
 
-            <FormInput
+            <FormField
               label=""
               name="username"
               value={form.username}
@@ -342,7 +342,7 @@ const AddUserModal = ({
               Nama Lengkap
             </div>
 
-            <FormInput
+            <FormField
               label=""
               name="nama"
               value={form.nama}
@@ -372,7 +372,7 @@ const AddUserModal = ({
                   : 'Password'}
               </div>
 
-              <FormInput
+              <FormField
                 label=""
                 name="password"
                 value={

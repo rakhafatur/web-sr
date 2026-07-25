@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import FormInput from '../../../components/FormInput';
+import FormField from '../../../components/FormField';
 import { FiUser, FiPlus, FiEdit2 } from 'react-icons/fi';
 import ModalWrapper from '../../../components/ModalWrapper';
 
@@ -56,7 +56,7 @@ const AddAgentModal = ({ show, onClose, onSubmit, agent }: Props) => {
 
   const formContent = (
     <>
-      <FormInput
+      <FormField
         label="Nama Agent"
         name="nama_agent"
         value={form.nama_agent}

@@ -10,9 +10,9 @@ import {
   FiCpu,
 } from "react-icons/fi";
 import { useMediaQuery } from "react-responsive";
-import SmartChatBox from "./SmartChatBox";
+import SmartChatBox from "../components/SmartChatBox";
 import dayjs from "dayjs";
-import { supabase } from "../../lib/supabaseClient";
+import { supabase } from "../../../lib/supabaseClient";
 
 type Message = {
   sender: "ai" | "user";

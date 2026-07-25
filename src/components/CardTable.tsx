@@ -1,28 +1,28 @@
 import React from 'react';
-import dayjs from 'dayjs';
 
-type Row = {
-  tanggal: string;
-  keterangan: string;
-  voucher?: number | string;
-  pemasukan?: number | string;
-  pengeluaran?: number | string;
-  saldo: number;
-};
-
-type Props = {
-  data: Row[];
+type FooterContext = {
   page: number;
-  rowsPerPage: number;
+  totalPages: number;
   onPageChange: (newPage: number) => void;
 };
 
-const CardTable = ({ data, page, rowsPerPage, onPageChange }: Props) => {
+type Props<T> = {
+  data: T[];
+  page: number;
+  rowsPerPage: number;
+  onPageChange: (newPage: number) => void;
+  renderItem: (item: T, index: number) => React.ReactNode;
+  /** Ganti footer pagination default (tombol teks polos) dengan tampilan kustom. */
+  renderFooter?: (ctx: FooterContext) => React.ReactNode;
+};
+
+function CardTable<T>({ data, page, rowsPerPage, onPageChange, renderItem, renderFooter }: Props<T>) {
   const paginatedRows = data.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
+  const totalPages = Math.max(1, Math.ceil(data.length / rowsPerPage));
 
   return (
     <>
-      {paginatedRows.map((row, index) => (
+      {paginatedRows.map((item, index) => (
         <div
           key={index}
           className="p-3 mb-3"
@@ -33,33 +33,32 @@ const CardTable = ({ data, page, rowsPerPage, onPageChange }: Props) => {
             boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
           }}
         >
-          <div><strong>📅 Tanggal:</strong> {dayjs(row.tanggal).format('YYYY-MM-DD')}</div>
-          <div><strong>📋 Keterangan:</strong> {row.keterangan}</div>
-          {row.voucher && <div><strong>🎫 Voucher:</strong> {row.voucher}</div>}
-          {row.pemasukan && <div><strong>💰 Pemasukan:</strong> Rp{Number(row.pemasukan).toLocaleString()}</div>}
-          {row.pengeluaran && <div><strong>💸 Pengeluaran:</strong> Rp{Number(row.pengeluaran).toLocaleString()}</div>}
-          <div><strong>🧾 Saldo:</strong> Rp{Number(row.saldo).toLocaleString()}</div>
+          {renderItem(item, index)}
         </div>
       ))}
 
-      <div className="d-flex justify-content-between align-items-center mt-3 px-1">
-        <button
-          className="btn btn-outline-success"
-          disabled={page === 0}
-          onClick={() => onPageChange(page - 1)}
-        >
-          ← Sebelumnya
-        </button>
-        <button
-          className="btn btn-outline-success"
-          disabled={(page + 1) * rowsPerPage >= data.length}
-          onClick={() => onPageChange(page + 1)}
-        >
-          Selanjutnya →
-        </button>
-      </div>
+      {renderFooter ? (
+        renderFooter({ page, totalPages, onPageChange })
+      ) : (
+        <div className="d-flex justify-content-between align-items-center mt-3 px-1">
+          <button
+            className="btn btn-outline-success"
+            disabled={page === 0}
+            onClick={() => onPageChange(page - 1)}
+          >
+            ← Sebelumnya
+          </button>
+          <button
+            className="btn btn-outline-success"
+            disabled={(page + 1) * rowsPerPage >= data.length}
+            onClick={() => onPageChange(page + 1)}
+          >
+            Selanjutnya →
+          </button>
+        </div>
+      )}
     </>
   );
-};
+}
 
 export default CardTable;

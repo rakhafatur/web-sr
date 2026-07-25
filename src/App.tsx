@@ -1,42 +1,42 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Suspense, useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
+import { Suspense, lazy, useEffect, useState } from 'react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-import LoginPage from './features/auth/pages/LoginPage';
-import SignUpPage from './features/auth/pages/SignUpPage';
-import HomePage from './features/home/pages/HomePage';
-import UserListPage from './features/user/pages/UserListPage';
-import UserApprovalPage from './features/user/pages/UserApprovalPage';
-import CreateUserPage from './features/user/pages/CreateUser';
-import DetailUserPage from './features/user/pages/DetailUser';
-import PengawasListPage from './features/pengawas/pages/PengawasListPage';
-import LadiesListPage from './features/ladies/pages/LadiesListPage';
-import NotFoundPage from './features/core/pages/NotFoundPage';
-import AddTransaksiPage from './features/transaction/pages/AddTransaksiPage';
-import BukuKuningPage from './features/transaction/pages/BukuKuningPage';
-import AbsensiPage from './features/absensi/pages/AbsensiPage';
-import RekapVoucherPage from './features/transaction/pages/RekapVoucherPage';
-import PerformaLadiesPage from './features/transaction/pages/PerformaLadiesPage';
-import AddTransaksiPengawasPage from './features/transaction/pages/AddTransaksiPengawasPage';
-import BukuKuningPengawasPage from './features/transaction/pages/BukuKuningPengawasPage';
-import SmartChatPage from './features/smartchat/SmartChatPage';
-import SmartChatLadiesPage from './features/smartchat/SmartChatLadiesPage';
-import AgentPage from './features/agent/pages/AgentListPage';
+const LoginPage = lazy(() => import('./features/auth/pages/LoginPage'));
+const SignUpPage = lazy(() => import('./features/auth/pages/SignUpPage'));
+const HomePage = lazy(() => import('./features/home/pages/HomePage'));
+const UserListPage = lazy(() => import('./features/user/pages/UserListPage'));
+const UserApprovalPage = lazy(() => import('./features/user/pages/UserApprovalPage'));
+const CreateUserPage = lazy(() => import('./features/user/pages/CreateUser'));
+const DetailUserPage = lazy(() => import('./features/user/pages/DetailUser'));
+const PengawasListPage = lazy(() => import('./features/pengawas/pages/PengawasListPage'));
+const LadiesListPage = lazy(() => import('./features/ladies/pages/LadiesListPage'));
+const NotFoundPage = lazy(() => import('./features/core/pages/NotFoundPage'));
+const AddTransaksiPage = lazy(() => import('./features/transaction/pages/AddTransaksiPage'));
+const BukuKuningPage = lazy(() => import('./features/transaction/pages/BukuKuningPage'));
+const AbsensiPage = lazy(() => import('./features/absensi/pages/AbsensiPage'));
+const RekapVoucherPage = lazy(() => import('./features/transaction/pages/RekapVoucherPage'));
+const PerformaLadiesPage = lazy(() => import('./features/transaction/pages/PerformaLadiesPage'));
+const AddTransaksiPengawasPage = lazy(() => import('./features/transaction/pages/AddTransaksiPengawasPage'));
+const BukuKuningPengawasPage = lazy(() => import('./features/transaction/pages/BukuKuningPengawasPage'));
+const SmartChatPage = lazy(() => import('./features/smartchat/pages/SmartChatPage'));
+const SmartChatLadiesPage = lazy(() => import('./features/smartchat/pages/SmartChatLadiesPage'));
+const AgentPage = lazy(() => import('./features/agent/pages/AgentListPage'));
 
-import HomeLadiesPage from './features/ladies/pages/HomeLadiesPage';
-import RiwayatAbsensiPage from './features/ladies/pages/RiwayatAbsensiPage';
-import VoucherListPage from './features/ladies/pages/VoucherListPage';
-import KasbonListPage from './features/ladies/pages/KasbonListPage';
-import DokterListPage from './features/ladies/pages/DokterListPage';
-import PemasukanLainListPage from './features/ladies/pages/PemasukanLainListPage';
-import PeraturanPage from './features/ladies/pages/PeraturanPage';
-import ProfilePage from './features/ladies/pages/ProfilePage';
+const HomeLadiesPage = lazy(() => import('./features/ladies/pages/HomeLadiesPage'));
+const RiwayatAbsensiPage = lazy(() => import('./features/ladies/pages/RiwayatAbsensiPage'));
+const VoucherListPage = lazy(() => import('./features/ladies/pages/VoucherListPage'));
+const KasbonListPage = lazy(() => import('./features/ladies/pages/KasbonListPage'));
+const DokterListPage = lazy(() => import('./features/ladies/pages/DokterListPage'));
+const PemasukanLainListPage = lazy(() => import('./features/ladies/pages/PemasukanLainListPage'));
+const PeraturanPage = lazy(() => import('./features/ladies/pages/PeraturanPage'));
+const ProfilePage = lazy(() => import('./features/ladies/pages/ProfilePage'));
 
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from './layout/MainLayout';
 import SplashScreen from './components/Common/SplashScreen';
-import CreateUser from './features/user/pages/CreateUser';
-
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -49,8 +49,8 @@ function App() {
   }, []);
 
   if (showSplash) {
-  return <SplashScreen onFinish={() => setShowSplash(false)} />;
-}
+    return <SplashScreen onFinish={() => setShowSplash(false)} />;
+  }
 
   return (
     <AuthProvider>
@@ -61,39 +61,52 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
 
-            {/* Protected routes */}
-            <Route path="/" element={<ProtectedRoute><MainLayout><HomePage /></MainLayout></ProtectedRoute>} />
-            <Route path="/users" element={<ProtectedRoute><MainLayout><UserListPage /></MainLayout></ProtectedRoute>} />
-            <Route path="/user-create" element={<ProtectedRoute><MainLayout><CreateUserPage /></MainLayout></ProtectedRoute>} />
-            <Route path="/user-approval" element={<ProtectedRoute><MainLayout><UserApprovalPage /></MainLayout></ProtectedRoute>} />
-            <Route path="/user-detail/:id" element={<ProtectedRoute><MainLayout><DetailUserPage /></MainLayout></ProtectedRoute>} />
-            <Route path="/pengawas" element={<ProtectedRoute><MainLayout><PengawasListPage /></MainLayout></ProtectedRoute>} />
-            <Route path="/ladies" element={<ProtectedRoute><MainLayout><LadiesListPage /></MainLayout></ProtectedRoute>} />
-            <Route path="/buku-kuning" element={<ProtectedRoute><MainLayout><BukuKuningPage /></MainLayout></ProtectedRoute>} />
-            <Route path="/add-transaksi" element={<ProtectedRoute><MainLayout><AddTransaksiPage /></MainLayout></ProtectedRoute>} />
-            <Route path="/absensi" element={<ProtectedRoute><MainLayout><AbsensiPage /></MainLayout></ProtectedRoute>} />
-            <Route path="/rekap-voucher" element={<ProtectedRoute><MainLayout><RekapVoucherPage /></MainLayout></ProtectedRoute>} />
-            <Route path="/performa-ladies" element={<ProtectedRoute><MainLayout><PerformaLadiesPage /></MainLayout></ProtectedRoute>} />
-            <Route path="/add-transaksi-pengawas" element={<ProtectedRoute><MainLayout><AddTransaksiPengawasPage /></MainLayout></ProtectedRoute>} />
-            <Route path="/buku-kuning-pengawas" element={<ProtectedRoute><MainLayout><BukuKuningPengawasPage /></MainLayout></ProtectedRoute>} />
-            <Route path="/smart-chat" element={<ProtectedRoute><MainLayout><SmartChatPage /></MainLayout></ProtectedRoute>} />
-            <Route path="/smart-chat-ladies" element={<ProtectedRoute><MainLayout><SmartChatLadiesPage /></MainLayout></ProtectedRoute>} />
-            <Route path="/agent" element={<ProtectedRoute><MainLayout><AgentPage /></MainLayout></ProtectedRoute>} />
-            {/* Ladies-specific */}
-            <Route path="/ladies/home" element={<ProtectedRoute><MainLayout><HomeLadiesPage /></MainLayout></ProtectedRoute>} />
-            <Route path="/ladies/absensi" element={<ProtectedRoute><MainLayout><RiwayatAbsensiPage /></MainLayout></ProtectedRoute>} />
-            <Route path="/ladies/voucher" element={<ProtectedRoute><MainLayout><VoucherListPage /></MainLayout></ProtectedRoute>} />
-            <Route path="/ladies/pemasukan_lain" element={<ProtectedRoute><MainLayout><PemasukanLainListPage /></MainLayout></ProtectedRoute>} />
-            <Route path="/ladies/kasbon" element={<ProtectedRoute><MainLayout><KasbonListPage /></MainLayout></ProtectedRoute>} />
-            <Route path="/ladies/dokter" element={<ProtectedRoute><MainLayout><DokterListPage /></MainLayout></ProtectedRoute>} />
-            <Route path="/ladies/peraturan" element={<ProtectedRoute><MainLayout><PeraturanPage /></MainLayout></ProtectedRoute>} />
-            <Route path="/ladies/profile" element={<ProtectedRoute><MainLayout><ProfilePage /></MainLayout></ProtectedRoute>} />
+            {/* Protected routes (shared layout) */}
+            <Route
+              element={
+                <ProtectedRoute>
+                  <MainLayout>
+                    <Outlet />
+                  </MainLayout>
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/" element={<HomePage />} />
+              <Route path="/users" element={<UserListPage />} />
+              <Route path="/user-create" element={<CreateUserPage />} />
+              <Route path="/user-approval" element={<UserApprovalPage />} />
+              <Route path="/user-detail/:id" element={<DetailUserPage />} />
+              <Route path="/pengawas" element={<PengawasListPage />} />
+              <Route path="/ladies" element={<LadiesListPage />} />
+              <Route path="/buku-kuning" element={<BukuKuningPage />} />
+              <Route path="/add-transaksi" element={<AddTransaksiPage />} />
+              <Route path="/absensi" element={<AbsensiPage />} />
+              <Route path="/rekap-voucher" element={<RekapVoucherPage />} />
+              <Route path="/performa-ladies" element={<PerformaLadiesPage />} />
+              <Route path="/add-transaksi-pengawas" element={<AddTransaksiPengawasPage />} />
+              <Route path="/buku-kuning-pengawas" element={<BukuKuningPengawasPage />} />
+              <Route path="/smart-chat" element={<SmartChatPage />} />
+              <Route path="/smart-chat-ladies" element={<SmartChatLadiesPage />} />
+              <Route path="/agent" element={<AgentPage />} />
+
+              {/* Ladies-specific */}
+              <Route path="/ladies/home" element={<HomeLadiesPage />} />
+              <Route path="/ladies/absensi" element={<RiwayatAbsensiPage />} />
+              <Route path="/ladies/voucher" element={<VoucherListPage />} />
+              <Route path="/ladies/pemasukan_lain" element={<PemasukanLainListPage />} />
+              <Route path="/ladies/kasbon" element={<KasbonListPage />} />
+              <Route path="/ladies/dokter" element={<DokterListPage />} />
+              <Route path="/ladies/peraturan" element={<PeraturanPage />} />
+              <Route path="/ladies/profile" element={<ProfilePage />} />
+            </Route>
 
             {/* 404 fallback */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>
       </BrowserRouter>
+
+      <ToastContainer position="top-right" autoClose={4000} newestOnTop />
     </AuthProvider>
   );
 }

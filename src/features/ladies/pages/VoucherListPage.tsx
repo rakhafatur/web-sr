@@ -1,14 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
-import { supabase } from '../../../lib/supabaseClient';
 import dayjs from 'dayjs';
-import {
-  FiChevronLeft,
-  FiChevronRight,
-  FiGift,
-} from 'react-icons/fi';
-import logo from '../../../assets/logosr-green.png';
+import { FiGift } from 'react-icons/fi';
+import type { UserWithLadies } from '../../../types/user';
+import CardTable from '../../../components/CardTable';
+import CardPagination from '../../../components/CardPagination';
+import MonthNavigator from '../components/MonthNavigator';
+import LedgerSummaryCard from '../components/LedgerSummaryCard';
+import LedgerEmptyState from '../components/LedgerEmptyState';
+import LedgerLoadingState from '../components/LedgerLoadingState';
+import { useMonthNavigation } from '../hooks/useMonthNavigation';
+import { useLedgerData } from '../hooks/useLedgerData';
 
 type Voucher = {
   id: string;
@@ -17,590 +20,107 @@ type Voucher = {
   keterangan?: string;
 };
 
-type UserWithLadies = {
-  id: string;
-  username: string;
-  nama: string;
-  ladies_id: string;
-  nama_ladies?: string;
-};
+const rowsPerPage = 10;
+const HARGA_PER_VOUCHER = 150000;
 
 const VoucherListPage = () => {
   const user = useSelector(
-    (state: RootState) =>
-      state.user.currentUser
+    (state: RootState) => state.user.currentUser
   ) as UserWithLadies;
 
-  const [
+  const {
     selectedMonth,
-    setSelectedMonth,
-  ] = useState(
-    dayjs().startOf('month')
+    page,
+    setPage,
+    handleMonthChange,
+    prevMonth,
+    nextMonth,
+    isNextDisabled,
+  } = useMonthNavigation();
+
+  const { list: vouchers, loading } = useLedgerData<Voucher>(
+    'vouchers',
+    user?.ladies_id,
+    selectedMonth,
+    'voucher'
   );
 
-  const [
-    vouchers,
-    setVouchers,
-  ] = useState<Voucher[]>([]);
+  const totalPcs = useMemo(
+    () => vouchers.reduce((sum, v) => sum + (v.jumlah_voucher || 0), 0),
+    [vouchers]
+  );
 
-  const [
-    totalPcs,
-    setTotalPcs,
-  ] = useState(0);
-
-  const [
-    totalRp,
-    setTotalRp,
-  ] = useState(0);
-
-  const [page, setPage] =
-    useState(0);
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const rowsPerPage = 10;
-
-  const handleMonthChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value =
-      e.target.value;
-
-    let newDate = dayjs(
-      `${value}-01`
-    );
-
-    if (!newDate.isValid()) {
-      newDate =
-        dayjs().startOf(
-          'month'
-        );
-    }
-
-    setSelectedMonth(
-      newDate
-    );
-
-    setPage(0);
-  };
-
-  const prevMonth = () => {
-    setSelectedMonth(
-      selectedMonth.subtract(
-        1,
-        'month'
-      )
-    );
-
-    setPage(0);
-  };
-
-  const nextMonth = () => {
-    const next =
-      selectedMonth.add(
-        1,
-        'month'
-      );
-
-    if (
-      next.isAfter(
-        dayjs(),
-        'month'
-      )
-    )
-      return;
-
-    setSelectedMonth(next);
-    setPage(0);
-  };
-
-  useEffect(() => {
-    if (user?.ladies_id) {
-      fetchVoucher(
-        user.ladies_id
-      );
-    }
-  }, [user, selectedMonth]);
-
-  const fetchVoucher = async (
-    ladiesId: string
-  ) => {
-    setLoading(true);
-
-    const bulanAwal =
-      selectedMonth.startOf(
-        'month'
-      );
-
-    const bulanAkhir =
-      selectedMonth.endOf(
-        'month'
-      );
-
-    const { data, error } =
-      await supabase
-        .from('vouchers')
-        .select('*')
-        .eq(
-          'ladies_id',
-          ladiesId
-        )
-        .gte(
-          'tanggal',
-          bulanAwal.format(
-            'YYYY-MM-DD'
-          )
-        )
-        .lte(
-          'tanggal',
-          bulanAkhir.format(
-            'YYYY-MM-DD'
-          )
-        )
-        .order('tanggal', {
-          ascending: false,
-        });
-
-    if (error || !data) {
-      setVouchers([]);
-      setTotalPcs(0);
-      setTotalRp(0);
-      setLoading(false);
-      return;
-    }
-
-    setVouchers(data);
-
-    const pcs =
-      data.reduce(
-        (sum, v) =>
-          sum +
-          (v.jumlah_voucher ||
-            0),
-        0
-      );
-
-    setTotalPcs(pcs);
-
-    setTotalRp(
-      pcs * 150000
-    );
-
-    setLoading(false);
-  };
-
-  const totalPages =
-    Math.max(
-      1,
-      Math.ceil(
-        vouchers.length /
-          rowsPerPage
-      )
-    );
-
-  const start =
-    page * rowsPerPage;
-
-  const end =
-    start + rowsPerPage;
-
-  const currentRows =
-    vouchers.slice(
-      start,
-      end
-    );
-
-  const isNextDisabled =
-    selectedMonth.isSame(
-      dayjs().startOf(
-        'month'
-      ),
-      'month'
-    );
+  const totalRp = totalPcs * HARGA_PER_VOUCHER;
 
   if (loading) {
-    return (
-      <div
-        className="d-flex flex-column justify-content-center align-items-center"
-        style={{
-          minHeight:
-            '70vh',
-        }}
-      >
-        <img
-          src={logo}
-          alt="loading"
-          style={{
-            width: 90,
-            marginBottom: 14,
-            animation:
-              'pulse 1.5s infinite',
-          }}
-        />
-
-        <div
-          style={{
-            fontSize: 14,
-            color: '#666',
-            fontWeight: 500,
-          }}
-        >
-          Memuat voucher...
-        </div>
-      </div>
-    );
+    return <LedgerLoadingState text="Memuat voucher..." />;
   }
 
   return (
-    <div
-      className="d-flex flex-column gap-3"
-      style={{
-        paddingBottom: 20,
-      }}
-    >
-      {/* MONTH BAR */}
-      <div
-        className="d-flex align-items-center justify-content-between"
-        style={{
-          gap: 10,
-        }}
-      >
-        <button
-          className="btn border-0 d-flex align-items-center justify-content-center"
-          style={{
-            width: 38,
-            height: 38,
-            borderRadius: 12,
-            background:
-              '#f4f4f5',
-          }}
-          onClick={
-            prevMonth
-          }
-        >
-          <FiChevronLeft />
-        </button>
+    <div className="d-flex flex-column gap-3" style={{ paddingBottom: 20 }}>
+      <MonthNavigator
+        selectedMonth={selectedMonth}
+        onChange={handleMonthChange}
+        onPrev={prevMonth}
+        onNext={nextMonth}
+        nextDisabled={isNextDisabled}
+      />
 
-        <input
-          type="month"
-          value={selectedMonth.format(
-            'YYYY-MM'
-          )}
-          onChange={
-            handleMonthChange
-          }
-          max={dayjs().format(
-            'YYYY-MM'
-          )}
-          className="form-control"
-          style={{
-            borderRadius: 12,
-            height: 38,
-            fontSize: 13,
-            fontWeight: 600,
-            border:
-              '1px solid #e5e7eb',
-          }}
-        />
-
-        <button
-          className="btn border-0 d-flex align-items-center justify-content-center"
-          style={{
-            width: 38,
-            height: 38,
-            borderRadius: 12,
-            background:
-              '#f4f4f5',
-          }}
-          onClick={
-            nextMonth
-          }
-          disabled={
-            isNextDisabled
-          }
-        >
-          <FiChevronRight />
-        </button>
-      </div>
-
-      {/* SUMMARY */}
-      <div
-        style={{
-          background:
-            'linear-gradient(135deg,#22c55e,#16a34a)',
-          borderRadius: 18,
-          padding:
-            '18px 16px',
-          color: '#fff',
-          boxShadow:
-            '0 6px 18px rgba(34,197,94,0.18)',
-        }}
-      >
-        <div
-          className="d-flex align-items-center gap-2 mb-2"
-        >
-          <div
-            className="d-flex align-items-center justify-content-center"
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 12,
-              background:
-                'rgba(255,255,255,0.15)',
-            }}
-          >
-            <FiGift
-              size={18}
-            />
-          </div>
-
-          <div>
-            <div
-              style={{
-                fontSize: 12,
-                opacity: 0.9,
-              }}
-            >
-              Total Voucher
+      <LedgerSummaryCard
+        gradient="linear-gradient(135deg,#22c55e,#16a34a)"
+        shadowColor="rgba(34,197,94,0.18)"
+        icon={<FiGift size={18} />}
+        label="Total Voucher"
+        value={<>{totalPcs} pcs</>}
+        subtitle={
+          <>
+            <div style={{ fontSize: 12, opacity: 0.9 }}>Estimasi Pendapatan</div>
+            <div style={{ fontSize: 20, fontWeight: 700, marginTop: 2 }}>
+              Rp {totalRp.toLocaleString('id-ID')}
             </div>
+          </>
+        }
+      />
 
-            <div
-              style={{
-                fontSize: 22,
-                fontWeight: 700,
-                lineHeight: 1.1,
-              }}
-            >
-              {totalPcs} pcs
-            </div>
-          </div>
-        </div>
-
-        <div
-          style={{
-            fontSize: 12,
-            opacity: 0.9,
-          }}
-        >
-          Estimasi Pendapatan
-        </div>
-
-        <div
-          style={{
-            fontSize: 20,
-            fontWeight: 700,
-            marginTop: 2,
-          }}
-        >
-          Rp{' '}
-          {totalRp.toLocaleString(
-            'id-ID'
-          )}
-        </div>
-      </div>
-
-      {/* EMPTY */}
-      {vouchers.length ===
-      0 ? (
-        <div
-          style={{
-            background:
-              '#fff',
-            border:
-              '1px solid #f1f5f9',
-            borderRadius: 16,
-            padding:
-              '30px 20px',
-            textAlign:
-              'center',
-            color: '#777',
-            fontSize: 13,
-          }}
-        >
-          Belum ada voucher
-          di bulan ini ✨
-        </div>
+      {vouchers.length === 0 ? (
+        <LedgerEmptyState message="Belum ada voucher di bulan ini ✨" />
       ) : (
-        <>
-          {/* CARD LIST */}
-          <div className="d-flex flex-column gap-2">
-            {currentRows.map(
-              (row) => (
+        <CardTable
+          data={vouchers}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onPageChange={setPage}
+          renderItem={(row) => (
+            <div className="d-flex justify-content-between align-items-start">
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 11, color: '#999', fontWeight: 600, marginBottom: 6 }}>
+                  {dayjs(row.tanggal).format('DD MMM YYYY')}
+                </div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: '#16a34a', lineHeight: 1.1 }}>
+                  {row.jumlah_voucher} pcs
+                </div>
+                <div style={{ fontSize: 12, color: '#444', marginTop: 3, fontWeight: 600 }}>
+                  Rp {(row.jumlah_voucher * HARGA_PER_VOUCHER).toLocaleString('id-ID')}
+                </div>
                 <div
-                  key={row.id}
                   style={{
-                    background:
-                      '#fff',
-
-                    border:
-                      '1px solid #f4f4f5',
-
-                    borderRadius: 14,
-
-                    padding:
-                      '12px 14px',
-
-                    boxShadow:
-                      '0 1px 4px rgba(0,0,0,0.03)',
+                    fontSize: 11,
+                    color: '#777',
+                    marginTop: 6,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
                   }}
                 >
-                  <div className="d-flex justify-content-between align-items-start">
-                    <div
-                      style={{
-                        flex: 1,
-                        minWidth: 0,
-                      }}
-                    >
-                      {/* DATE */}
-                      <div
-                        style={{
-                          fontSize: 11,
-                          color:
-                            '#999',
-                          fontWeight: 600,
-                          marginBottom: 6,
-                        }}
-                      >
-                        {dayjs(
-                          row.tanggal
-                        ).format(
-                          'DD MMM YYYY'
-                        )}
-                      </div>
-
-                      {/* PCS */}
-                      <div
-                        style={{
-                          fontSize: 18,
-                          fontWeight: 700,
-                          color:
-                            '#16a34a',
-                          lineHeight: 1.1,
-                        }}
-                      >
-                        {
-                          row.jumlah_voucher
-                        }{' '}
-                        pcs
-                      </div>
-
-                      {/* NOMINAL */}
-                      <div
-                        style={{
-                          fontSize: 12,
-                          color:
-                            '#444',
-                          marginTop: 3,
-                          fontWeight: 600,
-                        }}
-                      >
-                        Rp{' '}
-                        {(
-                          row.jumlah_voucher *
-                          150000
-                        ).toLocaleString(
-                          'id-ID'
-                        )}
-                      </div>
-
-                      {/* KETERANGAN */}
-                      <div
-                        style={{
-                          fontSize: 11,
-                          color:
-                            '#777',
-                          marginTop: 6,
-
-                          whiteSpace:
-                            'nowrap',
-
-                          overflow:
-                            'hidden',
-
-                          textOverflow:
-                            'ellipsis',
-                        }}
-                      >
-                        {row.keterangan ||
-                          'Tidak ada catatan'}
-                      </div>
-                    </div>
-                  </div>
+                  {row.keterangan || 'Tidak ada catatan'}
                 </div>
-              )
-            )}
-          </div>
-
-          {/* PAGINATION */}
-          <div className="d-flex justify-content-center align-items-center gap-2 mt-1">
-            <button
-              className="btn border-0 d-flex align-items-center justify-content-center"
-              style={{
-                width: 34,
-                height: 34,
-
-                borderRadius: 10,
-
-                background:
-                  '#f4f4f5',
-              }}
-              onClick={() =>
-                page > 0 &&
-                setPage(
-                  page - 1
-                )
-              }
-              disabled={
-                page === 0
-              }
-            >
-              <FiChevronLeft size={15} />
-            </button>
-
-            <div
-              style={{
-                fontSize: 11,
-                fontWeight: 600,
-                color: '#666',
-                minWidth: 42,
-                textAlign:
-                  'center',
-              }}
-            >
-              {page + 1}/
-              {totalPages}
+              </div>
             </div>
-
-            <button
-              className="btn border-0 d-flex align-items-center justify-content-center"
-              style={{
-                width: 34,
-                height: 34,
-
-                borderRadius: 10,
-
-                background:
-                  '#f4f4f5',
-              }}
-              onClick={() =>
-                page <
-                  totalPages -
-                    1 &&
-                setPage(
-                  page + 1
-                )
-              }
-              disabled={
-                page >=
-                totalPages -
-                  1
-              }
-            >
-              <FiChevronRight size={15} />
-            </button>
-          </div>
-        </>
+          )}
+          renderFooter={({ page, totalPages, onPageChange }) => (
+            <CardPagination page={page} totalPages={totalPages} onPageChange={onPageChange} />
+          )}
+        />
       )}
     </div>
   );

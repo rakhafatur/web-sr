@@ -6,6 +6,7 @@ export type User = {
   username: string;
   nama: string | null;
   user_group_id?: string | null;
+  ladies_id?: string | null;
 };
 
 type UserState = {

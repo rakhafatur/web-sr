@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { supabase } from '../../../lib/supabaseClient';
-import FormInput from '../../../components/FormInput';
+import FormField from '../../../components/FormField';
 
 import {
   FiTrendingDown,
@@ -192,7 +192,7 @@ const TransaksiFormPengawas = ({
       <div className={`row ${isMobile ? 'g-2' : 'g-3'}`}>
         {/* TANGGAL */}
         <div className="col-12">
-          <FormInput
+          <FormField
             label="Tanggal"
             name="tanggal"
             value={form.tanggal}
@@ -203,7 +203,7 @@ const TransaksiFormPengawas = ({
 
         {/* KETERANGAN */}
         <div className="col-12">
-          <FormInput
+          <FormField
             label="Keterangan"
             name="keterangan"
             value={form.keterangan}
@@ -214,7 +214,7 @@ const TransaksiFormPengawas = ({
 
         {/* JUMLAH */}
         <div className="col-12">
-          <FormInput
+          <FormField
             label="Jumlah"
             name="jumlah"
             value={form.jumlah}

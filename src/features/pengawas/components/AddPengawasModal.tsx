@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import FormInput from '../../../components/FormInput';
+import FormField from '../../../components/FormField';
 import { FiUser, FiPlus, FiEdit2 } from 'react-icons/fi';
 import ModalWrapper from '../../../components/ModalWrapper';
 import dayjs from 'dayjs';
@@ -83,28 +83,28 @@ const AddPengawasModal = ({ show, onClose, onSubmit, pengawas }: Props) => {
 
   const formContent = (
     <>
-      <FormInput
+      <FormField
         label="Nama Lengkap"
         name="nama_lengkap"
         value={form.nama_lengkap || ''}
         onChange={handleChange}
         readOnly={readonly}
       />
-      <FormInput
+      <FormField
         label="Nama Panggilan"
         name="nama_panggilan"
         value={form.nama_panggilan || ''}
         onChange={handleChange}
         readOnly={readonly}
       />
-      <FormInput
+      <FormField
         label="Nomor KTP"
         name="nomor_ktp"
         value={form.nomor_ktp || ''}
         onChange={handleChange}
         readOnly={readonly}
       />
-      <FormInput
+      <FormField
         label="Tanggal Lahir"
         name="tanggal_lahir"
         value={
@@ -116,7 +116,7 @@ const AddPengawasModal = ({ show, onClose, onSubmit, pengawas }: Props) => {
         readOnly={readonly}
         type={readonly ? 'text' : 'date'}
       />
-      <FormInput
+      <FormField
         label="Alamat"
         name="alamat"
         value={form.alamat || ''}
@@ -124,7 +124,7 @@ const AddPengawasModal = ({ show, onClose, onSubmit, pengawas }: Props) => {
         readOnly={readonly}
         type="textarea"
       />
-      <FormInput
+      <FormField
         label="Tanggal Bergabung"
         name="tanggal_bergabung"
         value={

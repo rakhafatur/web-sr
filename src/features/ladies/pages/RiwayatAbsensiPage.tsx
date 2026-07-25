@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import { supabase } from '../../../lib/supabaseClient';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
+import type { UserWithLadies } from '../../../types/user';
 import {
   FiCalendar,
   FiCheckCircle,
@@ -24,13 +25,6 @@ type AbsensiStatus =
 type AbsensiData = {
   [tanggal: string]:
     AbsensiStatus;
-};
-
-type UserWithLadies = {
-  id: string;
-  username: string;
-  nama: string | null;
-  ladies_id: string;
 };
 
 const RiwayatAbsensiPage =

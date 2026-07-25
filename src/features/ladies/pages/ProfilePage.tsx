@@ -11,13 +11,7 @@ import {
   FiShield,
 } from 'react-icons/fi';
 import logo from '../../../assets/logosr-green.png';
-
-type UserWithLadies = {
-  id: string;
-  username: string;
-  nama: string;
-  ladies_id: string;
-};
+import type { UserWithLadies } from '../../../types/user';
 
 type LadiesData = {
   nama_ladies: string;

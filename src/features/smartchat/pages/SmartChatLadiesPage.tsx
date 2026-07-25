@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { RootState } from "../../app/store";
-import SmartChatLadiesBox from "./SmartChatLadiesBox";
+import { RootState } from "../../../app/store";
+import SmartChatLadiesBox from "../components/SmartChatLadiesBox";
 import dayjs from "dayjs";
-import { supabase } from "../../lib/supabaseClient";
+import { supabase } from "../../../lib/supabaseClient";
 
 const SmartChatLadiesPage: React.FC = () => {
   const user = useSelector((state: RootState) => state.user.currentUser);

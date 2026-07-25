@@ -14,7 +14,7 @@ import {
 } from '../constant';
 
 function MainLayout({ children }: { children: React.ReactNode }) {
-  const user = useSelector((state: RootState) => state.user.currentUser) as any;
+  const user = useSelector((state: RootState) => state.user.currentUser);
   const isLadies = !!user?.ladies_id;
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
