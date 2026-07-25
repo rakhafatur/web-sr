@@ -205,7 +205,7 @@ const BukuKuningPengawasPage = () => {
       <div className="row mb-3">
         <div className="col-12 col-md-4 mb-2">
           <label className="form-label text-dark">Pilih Pengawas</label>
-          <select className="form-select bg-white text-dark border-success" value={selectedId} onChange={(e) => setSelectedId(e.target.value)}>
+          <select className="form-select" value={selectedId} onChange={(e) => setSelectedId(e.target.value)}>
             <option value="">-- Pilih --</option>
             {pengawasList.map((p) => (
               <option key={p.id} value={p.id}>
@@ -217,7 +217,7 @@ const BukuKuningPengawasPage = () => {
 
         <div className="col-6 col-md-4 mb-2">
           <label className="form-label text-dark">Bulan</label>
-          <select className="form-select bg-white text-dark border-success" value={bulan} onChange={(e) => setBulan(Number(e.target.value))}>
+          <select className="form-select" value={bulan} onChange={(e) => setBulan(Number(e.target.value))}>
             {monthNames.map((name, index) => (
               <option key={index + 1} value={index + 1}>{name}</option>
             ))}
@@ -226,7 +226,7 @@ const BukuKuningPengawasPage = () => {
 
         <div className="col-6 col-md-4 mb-2">
           <label className="form-label text-dark">Tahun</label>
-          <input type="number" className="form-control bg-white text-dark border-success" min={2020} max={2030} value={tahun} onChange={(e) => setTahun(Number(e.target.value))} />
+          <input type="number" className="form-control" min={2020} max={2030} value={tahun} onChange={(e) => setTahun(Number(e.target.value))} />
         </div>
       </div>
 

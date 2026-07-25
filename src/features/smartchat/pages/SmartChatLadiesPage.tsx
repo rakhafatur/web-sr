@@ -96,7 +96,10 @@ ${detailHarian}`;
   };
 
   return (
-    <div className="flex flex-col h-screen p-2 sm:p-4 bg-gray-50 text-gray-900">
+    <div
+      className="d-flex flex-column p-2 p-md-3"
+      style={{ height: '100vh', background: 'var(--color-bg)', color: 'var(--color-dark)' }}
+    >
       <div
         className="flex-1 overflow-y-auto mb-3 px-1 sm:px-3"
         ref={chatContainerRef}
@@ -117,7 +120,7 @@ ${detailHarian}`;
         <select
           value={selectedQuestion}
           onChange={(e) => handlePickQuestion(e.target.value)}
-          className="w-full border border-green-600 text-gray-900 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-green-500 bg-white"
+          className="form-control"
         >
           <option value="" disabled>
             Pilih pertanyaan...

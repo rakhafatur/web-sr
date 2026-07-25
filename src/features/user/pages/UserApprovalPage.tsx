@@ -156,7 +156,7 @@ const UserApprovalPage = () => {
       <div className="d-flex justify-content-end mb-3 gap-2">
         <input
           type="text"
-          className="form-control bg-white text-dark border border-success"
+          className="form-control"
           placeholder="🔍 Cari user..."
           value={keyword}
           onChange={(e) => {

@@ -61,7 +61,7 @@ const LadiesListPage = () => {
         <div className="mb-3">
           <input
             type="text"
-            className="form-control bg-white text-dark border border-success"
+            className="form-control"
             placeholder="🔍 Cari ladies..."
             value={keyword}
             onChange={(e) => {

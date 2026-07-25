@@ -880,7 +880,7 @@ const BukuKuningPage = () => {
           </label>
 
           <select
-            className="form-select bg-white text-dark border-success"
+            className="form-select"
             value={selectedLadyId}
             onChange={(e) =>
               setSelectedLadyId(
@@ -911,7 +911,7 @@ const BukuKuningPage = () => {
           </label>
 
           <select
-            className="form-select bg-white text-dark border-success"
+            className="form-select"
             value={bulan}
             onChange={(e) =>
               setBulan(
@@ -941,7 +941,7 @@ const BukuKuningPage = () => {
 
           <input
             type="number"
-            className="form-control bg-white text-dark border-success"
+            className="form-control"
             min={2020}
             max={2030}
             value={tahun}

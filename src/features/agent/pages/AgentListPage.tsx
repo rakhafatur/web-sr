@@ -59,7 +59,7 @@ const AgentListPage = () => {
         <div className="mb-3">
           <input
             type="text"
-            className="form-control bg-white text-dark border border-success"
+            className="form-control"
             placeholder="🔍 Cari agent..."
             value={keyword}
             onChange={(e) => {
@@ -112,7 +112,7 @@ const AgentListPage = () => {
             </button>
             <input
               type="text"
-              className="form-control bg-white text-dark border border-success"
+              className="form-control"
               placeholder="🔍 Cari agent..."
               value={keyword}
               onChange={(e) => {

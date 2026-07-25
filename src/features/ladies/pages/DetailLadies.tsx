@@ -236,7 +236,7 @@ const DetailLadies = () => {
           </label>
           {readonly ? (
             <input
-              className="form-control bg-white text-dark border"
+              className="form-control"
               value={form.nama_outlet || '-'}
               readOnly
             />
@@ -268,7 +268,7 @@ const DetailLadies = () => {
           </label>
           {readonly ? (
             <input
-              className="form-control bg-white text-dark border"
+              className="form-control"
               value={agents.find((a) => a.id === form.agent_id)?.nama_agent || '-'}
               readOnly
             />

@@ -64,7 +64,7 @@ const PengawasListPage = () => {
         <div className="mb-3">
           <input
             type="text"
-            className="form-control bg-white text-dark border border-success"
+            className="form-control"
             placeholder="🔍 Cari pengawas..."
             value={keyword}
             onChange={(e) => {
@@ -120,7 +120,7 @@ const PengawasListPage = () => {
             </button>
             <input
               type="text"
-              className="form-control bg-white text-dark border border-success"
+              className="form-control"
               placeholder="🔍 Cari pengawas..."
               value={keyword}
               onChange={(e) => {
