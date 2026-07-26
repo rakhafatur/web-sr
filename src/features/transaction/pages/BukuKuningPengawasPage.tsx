@@ -9,6 +9,15 @@ import logo from '../../../assets/logosr-black.png';
 import { useMediaQuery } from 'react-responsive';
 import { FiBook, FiPrinter } from 'react-icons/fi';
 import ListPageHeader from '../../../components/ListPageHeader';
+import {
+  PDF_COLORS,
+  drawBackground,
+  drawDecorativeCircles,
+  drawFooter,
+  drawPageBadges,
+  drawSectionTitle,
+  drawProfileCard,
+} from '../utils/pdfReport';
 
 const monthNames = [
   'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
@@ -146,49 +155,274 @@ const BukuKuningPengawasPage = () => {
   };
 
   const handleExportPDF = () => {
-    const doc = new jsPDF();
+    const doc = new jsPDF('p', 'mm', 'a4');
     const img = new Image();
     img.src = logo;
 
+    const selected = pengawasList.find((l) => l.id === selectedId);
+
+    const namaLabel = selected
+      ? selected.nama_panggilan
+      : 'Nama tidak ditemukan';
+
+    const totalGaji = rows.reduce(
+      (sum, r) => sum + (typeof r.pemasukan === 'number' ? r.pemasukan : 0),
+      0
+    );
+
+    const totalKasbon = rows.reduce(
+      (sum, r) => sum + (typeof r.pengeluaran === 'number' ? r.pengeluaran : 0),
+      0
+    );
+
+    const saldoAwal = rows[0]?.saldo || 0;
+    const saldoAkhir = rows[rows.length - 1]?.saldo || 0;
+
     img.onload = () => {
-      doc.addImage(img, 'PNG', 10, 12, 16, 16);
-      doc.setFontSize(14);
-      doc.text(`TOTALAN - ${monthNames[bulan - 1].toUpperCase()} - ${tahun}`, 30, 20);
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const C = PDF_COLORS;
 
-      // Hanya nama panggilan
-      const selected = pengawasList.find(l => l.id === selectedId);
-      const namaLabel = selected
-        ? `${selected.nama_panggilan}`
-        : 'Nama tidak ditemukan';
+      // =====================================
+      // PAGE 1 — HEADER
+      // =====================================
 
+      drawBackground(doc, C, pageWidth, pageHeight);
+      drawDecorativeCircles(doc, C, pageWidth);
+
+      // logo badge
+      doc.setDrawColor(...C.border);
+      doc.setLineWidth(0.3);
+      doc.setFillColor(...C.white);
+      doc.roundedRect(pageWidth - 46, 8, 32, 32, 6, 6, 'FD');
+      doc.addImage(img, 'PNG', pageWidth - 42, 12, 24, 24);
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(22);
+      doc.setTextColor(...C.ink);
+      doc.text('Laporan Transaksi', 14, 30);
+
+      doc.setFont('helvetica', 'normal');
       doc.setFontSize(12);
-      doc.text(namaLabel, 30, 26);
+      doc.setTextColor(...C.primary);
+      doc.text(`${monthNames[bulan - 1]} ${tahun}`, 14, 38);
+
+      // =====================================
+      // PROFILE CARD
+      // =====================================
+
+      const cardY = 46;
+      const cardH = 36;
+
+      drawProfileCard(
+        doc,
+        14,
+        cardY,
+        182,
+        cardH,
+        [
+          {
+            icon: 'person',
+            label: 'NAMA PANGGILAN',
+            value: selected?.nama_panggilan || '-',
+          },
+        ],
+        C
+      );
+
+      const cardBottom = cardY + cardH;
+
+      // =====================================
+      // RINGKASAN KEUANGAN
+      // =====================================
+
+      drawSectionTitle(doc, 'Ringkasan Keuangan', 14, cardBottom + 14, C);
+
+      const summaryDots: [number, number, number][] = [
+        C.primary,
+        C.danger,
+        C.muted,
+        C.primary,
+      ];
 
       autoTable(doc, {
-        startY: 32,
-        head: [['Tanggal', 'Keterangan', 'Voucher', 'Pemasukan', 'Pengeluaran', 'Saldo']],
+        startY: cardBottom + 19,
+
+        theme: 'grid',
+
+        head: [['Ringkasan', 'Nominal']],
+
+        body: [
+          ['Gaji', formatRupiah(totalGaji)],
+          ['Kasbon', formatRupiah(totalKasbon)],
+          ['Saldo Awal', formatRupiah(saldoAwal)],
+          ['Saldo Akhir', formatRupiah(saldoAkhir)],
+        ],
+
+        margin: { left: 14, right: 14 },
+
+        tableWidth: 182,
+
+        styles: {
+          fontSize: 9,
+          cellPadding: 4.5,
+          textColor: C.body,
+          lineColor: C.border,
+          lineWidth: 0.4,
+          valign: 'middle',
+        },
+
+        headStyles: {
+          fillColor: C.primary,
+          textColor: 255,
+          fontStyle: 'bold',
+          fontSize: 9.5,
+        },
+
+        alternateRowStyles: {
+          fillColor: C.bg,
+        },
+
+        columnStyles: {
+          0: {
+            cellWidth: 90,
+            fontStyle: 'bold',
+            cellPadding: { top: 4.5, right: 2, bottom: 4.5, left: 10 },
+          },
+
+          1: {
+            cellWidth: 92,
+            halign: 'right',
+          },
+        },
+
+        didParseCell: (data) => {
+          if (data.section !== 'body') return;
+
+          if (data.row.index === 3) {
+            data.cell.styles.fillColor = C.primarySoft;
+            data.cell.styles.textColor = C.primaryDark;
+            data.cell.styles.fontStyle = 'bold';
+
+            if (data.column.index === 1) {
+              data.cell.styles.fontSize = 10;
+            }
+          }
+        },
+
+        didDrawCell: (data) => {
+          if (data.section === 'body' && data.column.index === 0) {
+            const dotColor = summaryDots[data.row.index] ?? C.muted;
+            doc.setFillColor(...dotColor);
+            doc.circle(
+              data.cell.x + 4.3,
+              data.cell.y + data.cell.height / 2,
+              1.1,
+              'F'
+            );
+          }
+        },
+      });
+
+      drawFooter(doc, C, pageWidth, pageHeight);
+
+      // =====================================
+      // PAGE 2 — DETAIL TRANSAKSI
+      // =====================================
+
+      doc.addPage();
+
+      const drawDetailHeader = () => {
+        drawBackground(doc, C, pageWidth, pageHeight);
+        drawSectionTitle(doc, 'Detail Transaksi', 14, 26, C);
+
+        doc.setDrawColor(...C.border);
+        doc.setLineWidth(0.3);
+        doc.line(0, 34, pageWidth, 34);
+      };
+
+      autoTable(doc, {
+        startY: 42,
+
+        theme: 'grid',
+
+        head: [['Tanggal', 'Keterangan', 'Pemasukan', 'Pengeluaran', 'Saldo']],
+
         body: rows.map((r) => [
           r.tanggal,
           r.keterangan,
-          '', // Voucher selalu kosong
           formatRupiah(r.pemasukan || 0),
           formatRupiah(r.pengeluaran || 0),
           formatRupiah(r.saldo),
         ]),
+
+        margin: { top: 42, left: 14, right: 14, bottom: 24 },
+
+        tableWidth: 182,
+
+        styles: {
+          fontSize: 8.5,
+          cellPadding: 4,
+          textColor: C.body,
+          lineColor: C.border,
+          lineWidth: 0.4,
+          valign: 'middle',
+          overflow: 'linebreak',
+        },
+
         headStyles: {
-          fillColor: [56, 176, 0],
+          fillColor: C.primary,
           textColor: 255,
+          fontStyle: 'bold',
+          fontSize: 9,
+          halign: 'center',
+        },
+
+        alternateRowStyles: {
+          fillColor: C.bg,
+        },
+
+        columnStyles: {
+          0: { cellWidth: 26, halign: 'center' },
+          1: { cellWidth: 62 },
+          2: { cellWidth: 32, halign: 'right' },
+          3: { cellWidth: 32, halign: 'right' },
+          4: { cellWidth: 30, halign: 'right', fontStyle: 'bold' },
+        },
+
+        didParseCell: (data) => {
+          // baris saldo pembuka ("Sisa Kasbon")
+          if (data.section === 'body' && data.row.index === 0) {
+            data.cell.styles.fillColor = C.slateSoft;
+            data.cell.styles.fontStyle = 'bold';
+          }
+
+          // saldo minus merah
+          if (
+            data.column.index === 4 &&
+            typeof data.cell.raw === 'string' &&
+            data.cell.raw.includes('-')
+          ) {
+            data.cell.styles.textColor = C.danger;
+            data.cell.styles.fontStyle = 'bold';
+          }
+
+          // pengeluaran merah
+          if (data.column.index === 3 && data.section === 'body') {
+            data.cell.styles.textColor = C.danger;
+          }
+        },
+
+        willDrawPage: () => {
+          drawDetailHeader();
+        },
+
+        didDrawPage: () => {
+          drawFooter(doc, C, pageWidth, pageHeight);
         },
       });
 
-      const today = new Date().toLocaleDateString('id-ID');
-      const pageWidth = doc.internal.pageSize.getWidth();
-
-      doc.setFontSize(10);
-      doc.setTextColor(100);
-      doc.text(`Dicetak: ${today}`, 14, 285);
-      doc.text('SR Agency', pageWidth - 14, 285, { align: 'right' });
-      doc.text(`Halaman 1`, pageWidth / 2, 285, { align: 'center' });
+      drawPageBadges(doc, C);
 
       doc.save(`Totalan-${namaLabel}-${bulan}-${tahun}.pdf`);
     };
