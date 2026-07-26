@@ -12,6 +12,8 @@ type Props = {
   type?: 'button' | 'submit';
   size?: Size;
   fullWidth?: boolean;
+  /** Override titik-titik gaya (mis. height) untuk kasus penyelarasan lokal — variant/size tetap sumber kebenaran warna & bentuk. */
+  style?: React.CSSProperties;
 };
 
 const variantStyles: Record<Variant, React.CSSProperties> = {
@@ -52,7 +54,7 @@ const sizeStyles: Record<Size, React.CSSProperties> = {
 };
 
 /** Tombol "kaya" (gradient + shadow) yang jadi standar semua CTA/modal/form-submit di app. */
-const Button = ({ variant, onClick, icon, children, disabled, type = 'button', size = 'lg', fullWidth }: Props) => (
+const Button = ({ variant, onClick, icon, children, disabled, type = 'button', size = 'lg', fullWidth, style }: Props) => (
   <button
     type={type}
     className="btn d-flex align-items-center justify-content-center gap-2"
@@ -63,6 +65,7 @@ const Button = ({ variant, onClick, icon, children, disabled, type = 'button', s
       width: fullWidth ? '100%' : undefined,
       ...sizeStyles[size],
       ...variantStyles[variant],
+      ...style,
     }}
   >
     {icon}

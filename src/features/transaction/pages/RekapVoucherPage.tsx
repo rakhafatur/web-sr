@@ -475,14 +475,32 @@ const RekapVoucherPage = () => {
             </div>
 
             <div className="col-12 col-md-2">
-              <Button variant="primary" fullWidth onClick={fetchData} icon={<FiRefreshCw />}>
+              <label className="fw-semibold mb-2 d-none d-md-block" style={{ visibility: 'hidden' }}>
+                Aksi
+              </label>
+              <Button
+                variant="primary"
+                fullWidth
+                onClick={fetchData}
+                icon={<FiRefreshCw />}
+                style={{ height: isMobile ? 50 : 56 }}
+              >
                 Tampilkan
               </Button>
             </div>
 
             {dataPerOutlet.length > 0 && (
               <div className="col-12 col-md-2">
-                <Button variant="secondary" fullWidth onClick={handleExportPDF} icon={<FiDownload />}>
+                <label className="fw-semibold mb-2 d-none d-md-block" style={{ visibility: 'hidden' }}>
+                  Aksi
+                </label>
+                <Button
+                  variant="secondary"
+                  fullWidth
+                  onClick={handleExportPDF}
+                  icon={<FiDownload />}
+                  style={{ height: isMobile ? 50 : 56 }}
+                >
                   PDF
                 </Button>
               </div>

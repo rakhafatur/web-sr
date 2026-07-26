@@ -1,0 +1,135 @@
+/* Shell bersama untuk halaman Login & SignUp — sengaja satu file supaya
+   keduanya otomatis konsisten (bukan copy-paste terpisah yang gampang drift). */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(var(--color-primary-rgb), 0.16), transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(var(--color-success-rgb), 0.08), transparent 40%),
+    var(--color-bg);
+}
+
+.auth-container {
+  display: flex;
+  width: 100%;
+  max-width: 1000px;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-gray-200);
+  box-shadow: var(--shadow-xl);
+}
+
+.auth-illustration {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem;
+  background: linear-gradient(160deg, var(--color-surface-2), var(--color-bg));
+  position: relative;
+}
+
+.auth-illustration::after {
+  content: '';
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.25), transparent 70%);
+  top: -60px;
+  right: -60px;
+  pointer-events: none;
+}
+
+.auth-illustration img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-lg);
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .auth-illustration {
+    display: none;
+  }
+}
+
+.auth-form-wrapper {
+  flex: 1;
+  padding: 2.5rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-title {
+  color: var(--color-dark);
+  font-weight: 700;
+}
+
+.auth-brand {
+  color: var(--color-green);
+}
+
+.auth-subtitle {
+  color: var(--color-gray-600);
+  font-size: 0.9rem;
+}
+
+.auth-field-label {
+  color: var(--color-gray-700);
+  font-size: 0.86rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.auth-input-group {
+  position: relative;
+}
+
+.auth-input-group .auth-input-icon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  color: var(--color-gray-500);
+  pointer-events: none;
+}
+
+.auth-input-group .form-control,
+.auth-input-group .form-select {
+  padding-left: 40px;
+  height: 46px;
+  border-radius: var(--radius-md);
+}
+
+.auth-input-group .eye-toggle {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  padding-inline: 0.75rem;
+}
+
+.auth-footer-text {
+  color: var(--color-gray-600);
+  font-size: 0.88rem;
+}
+
+.auth-link {
+  color: var(--color-green);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
+  color: var(--color-green);
+}
