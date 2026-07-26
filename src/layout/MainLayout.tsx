@@ -17,8 +17,8 @@ function MainLayout({ children }: { children: React.ReactNode }) {
   const user = useSelector((state: RootState) => state.user.currentUser);
   const isLadies = !!user?.ladies_id;
 
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 768);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
 

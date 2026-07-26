@@ -10,7 +10,7 @@ import {
   FiCheckCircle,
   FiShield,
 } from 'react-icons/fi';
-import logo from '../../../assets/logosr-green.png';
+import logo from '../../../assets/logosr-blue.png';
 import type { UserWithLadies } from '../../../types/user';
 import ProfileHeroCard from '../../../components/ProfileHeroCard';
 import InfoRow from '../../../components/InfoRow';

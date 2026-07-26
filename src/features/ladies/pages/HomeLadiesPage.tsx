@@ -19,7 +19,7 @@ import {
 } from 'framer-motion';
 
 import bgImage from '../../../assets/bg-home.png';
-import logo from '../../../assets/logosr-green.png';
+import logo from '../../../assets/logosr-blue.png';
 import type { UserWithLadies } from '../../../types/user';
 
 const HomeLadiesPage = () => {

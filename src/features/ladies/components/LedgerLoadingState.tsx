@@ -1,4 +1,4 @@
-import logo from '../../../assets/logosr-green.png';
+import logo from '../../../assets/logosr-blue.png';
 
 type Props = {
   text: string;

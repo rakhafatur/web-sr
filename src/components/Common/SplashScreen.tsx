@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './SplashScreen.css';
-import logo from '../../assets/logosr-green.png';
+import logo from '../../assets/logosr-blue.png';
 
 const SplashScreen = ({ onFinish }: { onFinish: () => void }) => {
   const [isVisible, setIsVisible] = useState(true);
