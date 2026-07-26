@@ -13,7 +13,7 @@ const navButtonStyle = {
   width: 38,
   height: 38,
   borderRadius: 12,
-  background: '#f4f4f5',
+  background: 'var(--color-surface-2)',
 };
 
 const MonthNavigator = ({ selectedMonth, onChange, onPrev, onNext, nextDisabled }: Props) => (
@@ -37,7 +37,7 @@ const MonthNavigator = ({ selectedMonth, onChange, onPrev, onNext, nextDisabled 
         height: 38,
         fontSize: 13,
         fontWeight: 600,
-        border: '1px solid #e5e7eb',
+        border: '1px solid var(--color-gray-200)',
       }}
     />
 

@@ -59,7 +59,7 @@ const AddTransaksiPage = () => {
         className="mb-4 p-4 rounded-4 shadow-sm"
         style={{
           background:
-            'linear-gradient(135deg, var(--color-green), #7be0a9)',
+            'linear-gradient(135deg, var(--color-green), var(--color-accent))',
           color: 'white',
         }}
       >
@@ -118,7 +118,7 @@ const AddTransaksiPage = () => {
         <div
           className="px-4 py-3 border-bottom"
           style={{
-            background: '#fafafa',
+            background: 'var(--color-surface-2)',
           }}
         >
           <div className="d-flex align-items-center gap-2">
@@ -151,12 +151,12 @@ const AddTransaksiPage = () => {
               style={{
                 height: isMobile ? 50 : 58,
                 borderRadius: isMobile ? 14 : 18,
-                border: '2px solid #d8f3df',
+                border: '2px solid var(--color-green-light)',
                 paddingLeft: isMobile ? 14 : 18,
                 paddingRight: isMobile ? 40 : 48,
                 fontWeight: 600,
                 fontSize: isMobile ? '0.82rem' : '0.97rem',
-                backgroundColor: '#fff',
+                backgroundColor: 'var(--color-surface)',
                 color: 'var(--color-dark)',
                 appearance: 'none',
               }}
@@ -183,8 +183,8 @@ const AddTransaksiPage = () => {
             <div
               className="mt-4 p-4 rounded-4"
               style={{
-                background: '#fff8e7',
-                border: '1px solid #ffe2a8',
+                background: 'var(--color-warning)',
+                border: '1px solid var(--color-warning-hover)',
               }}
             >
               <div className="d-flex align-items-start gap-3">
@@ -200,7 +200,7 @@ const AddTransaksiPage = () => {
                   <div
                     style={{
                       fontSize: '0.92rem',
-                      color: '#666',
+                      color: 'var(--color-gray-500)',
                     }}
                   >
                     Pilih salah satu ladies untuk
@@ -217,7 +217,7 @@ const AddTransaksiPage = () => {
             <div
               className="d-flex align-items-center gap-3 mt-3"
               style={{
-                color: '#666',
+                color: 'var(--color-gray-500)',
               }}
             >
               <div
@@ -246,7 +246,7 @@ const AddTransaksiPage = () => {
                 className="px-4 py-3 border-bottom"
                 style={{
                   background:
-                    'linear-gradient(to right, #effff4, #ffffff)',
+                    'linear-gradient(to right, var(--color-green-lighter), var(--color-surface))',
                 }}
               >
                 <div className="d-flex justify-content-between align-items-start">
@@ -264,7 +264,7 @@ const AddTransaksiPage = () => {
                     <div
                       style={{
                         fontSize: '0.85rem',
-                        color: '#666',
+                        color: 'var(--color-gray-500)',
                       }}
                     >
                       {selectedLady.nama_ladies}
@@ -274,8 +274,8 @@ const AddTransaksiPage = () => {
                   <div
                     className="px-3 py-1 rounded-pill"
                     style={{
-                      background: '#dff7e7',
-                      color: '#159947',
+                      background: 'var(--color-income-soft)',
+                      color: 'var(--color-income)',
                       fontSize: '0.78rem',
                       fontWeight: 700,
                     }}
@@ -309,7 +309,7 @@ const AddTransaksiPage = () => {
                 className="px-4 py-3 border-bottom"
                 style={{
                   background:
-                    'linear-gradient(to right, #ffffff, #f5fff8)',
+                    'linear-gradient(to right, var(--color-surface), var(--color-green-lighter))',
                 }}
               >
                 <div className="d-flex align-items-center justify-content-between flex-wrap gap-2">
@@ -327,7 +327,7 @@ const AddTransaksiPage = () => {
                     <div
                       style={{
                         fontSize: '0.85rem',
-                        color: '#666',
+                        color: 'var(--color-gray-500)',
                       }}
                     >
                       Histori transaksi terbaru {selectedLady.nama_ladies}

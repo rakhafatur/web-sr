@@ -28,36 +28,36 @@ const getStatusStyle = (
   switch (status) {
     case 'KERJA':
       return {
-        bg: '#dcfce7',
-        text: '#15803d',
+        bg: 'var(--color-income-soft)',
+        text: 'var(--color-income)',
         label: 'Kerja',
       };
 
     case 'MENS':
       return {
-        bg: '#fee2e2',
-        text: '#dc2626',
+        bg: 'var(--color-expense-soft)',
+        text: 'var(--color-expense)',
         label: 'Mens',
       };
 
     case 'OFF':
       return {
-        bg: '#e5e7eb',
-        text: '#374151',
+        bg: 'var(--color-gray-200)',
+        text: 'var(--color-gray-700)',
         label: 'Off',
       };
 
     case 'SAKIT':
       return {
-        bg: '#fef3c7',
-        text: '#b45309',
+        bg: 'var(--color-voucher-soft)',
+        text: 'var(--color-voucher)',
         label: 'Sakit',
       };
 
     default:
       return {
-        bg: '#f3f4f6',
-        text: '#374151',
+        bg: 'var(--color-gray-200)',
+        text: 'var(--color-gray-700)',
         label: status,
       };
   }
@@ -126,10 +126,10 @@ const CardTableAbsensi = ({
               }
               style={{
                 background:
-                  '#fff',
+                  'var(--color-surface)',
 
                 border:
-                  '1px solid #f1f5f9',
+                  '1px solid var(--color-gray-200)',
 
                 borderRadius: 16,
 
@@ -172,7 +172,7 @@ const CardTableAbsensi = ({
                     <div
                       style={{
                         fontSize: 11,
-                        color: '#94a3b8',
+                        color: 'var(--color-gray-500)',
                         fontWeight: 600,
                       }}
                     >
@@ -186,7 +186,7 @@ const CardTableAbsensi = ({
                   <div
                     style={{
                       fontSize: 12,
-                      color: '#64748b',
+                      color: 'var(--color-gray-500)',
                       marginTop: 4,
                       lineHeight: 1.4,
                       whiteSpace: 'nowrap',
@@ -206,8 +206,8 @@ const CardTableAbsensi = ({
                     width: 34,
                     height: 34,
                     borderRadius: 12,
-                    background: '#fee2e2',
-                    color: '#dc2626',
+                    background: 'var(--color-expense-soft)',
+                    color: 'var(--color-expense)',
                     flexShrink: 0,
                     marginLeft: 10,
                   }}
@@ -234,7 +234,7 @@ const CardTableAbsensi = ({
             borderRadius: 12,
 
             background:
-              '#f1f5f9',
+              'var(--color-surface-2)',
           }}
           onClick={() =>
             page > 0 &&
@@ -255,7 +255,7 @@ const CardTableAbsensi = ({
 
             fontWeight: 700,
 
-            color: '#64748b',
+            color: 'var(--color-gray-500)',
 
             minWidth: 42,
 
@@ -275,7 +275,7 @@ const CardTableAbsensi = ({
             borderRadius: 12,
 
             background:
-              '#f1f5f9',
+              'var(--color-surface-2)',
           }}
           onClick={() =>
             page <

@@ -299,13 +299,12 @@ const HomeLadiesPage = () => {
           className="position-relative overflow-hidden"
           style={{
             background:
-              'linear-gradient(135deg,#22c55e,#16a34a)',
+              'linear-gradient(135deg, var(--color-green), var(--color-accent))',
             borderRadius: 28,
             padding:
               '24px 22px',
             color: '#fff',
-            boxShadow:
-              '0 12px 30px rgba(34,197,94,0.18)',
+            boxShadow: 'var(--shadow-brand)',
           }}
         >
           {/* BG */}
@@ -386,13 +385,13 @@ const HomeLadiesPage = () => {
           }}
           style={{
             background:
-              '#fff',
+              'var(--color-surface)',
             border:
-              '1px solid #f1f5f9',
+              '1px solid var(--color-gray-200)',
             borderRadius: 24,
             padding: 18,
             boxShadow:
-              '0 1px 6px rgba(0,0,0,0.04)',
+              '0 1px 6px rgba(0,0,0,0.2)',
           }}
         >
           <div className="d-flex align-items-center justify-content-between mb-3">
@@ -401,7 +400,7 @@ const HomeLadiesPage = () => {
                 style={{
                   fontSize: 12,
                   color:
-                    '#999',
+                    'var(--color-gray-500)',
                   fontWeight: 600,
                 }}
               >
@@ -414,7 +413,7 @@ const HomeLadiesPage = () => {
                   fontSize: 18,
                   fontWeight: 700,
                   color:
-                    '#111827',
+                    'var(--color-dark)',
                 }}
               >
                 {dayjs().format(
@@ -430,9 +429,9 @@ const HomeLadiesPage = () => {
                 height: 44,
                 borderRadius: 16,
                 background:
-                  '#dcfce7',
+                  'var(--color-income-soft)',
                 color:
-                  '#16a34a',
+                  'var(--color-income)',
               }}
             >
               <FiTarget size={20} />
@@ -456,7 +455,7 @@ const HomeLadiesPage = () => {
                   fontSize: 13,
                   fontWeight: 700,
                   color:
-                    '#16a34a',
+                    'var(--color-income)',
                 }}
               >
                 {hariMasuk}/18
@@ -469,7 +468,7 @@ const HomeLadiesPage = () => {
                 height: 10,
                 borderRadius: 999,
                 background:
-                  '#f3f4f6',
+                  'var(--color-surface-2)',
                 overflow:
                   'hidden',
               }}
@@ -481,7 +480,7 @@ const HomeLadiesPage = () => {
                     '100%',
                   borderRadius: 999,
                   background:
-                    'linear-gradient(90deg,#22c55e,#16a34a)',
+                    'linear-gradient(90deg, var(--color-income), var(--color-primary))',
                 }}
               />
             </div>
@@ -493,7 +492,7 @@ const HomeLadiesPage = () => {
               style={{
                 flex: 1,
                 background:
-                  '#f9fafb',
+                  'var(--color-surface-2)',
                 borderRadius: 18,
                 padding:
                   '14px 12px',
@@ -503,7 +502,7 @@ const HomeLadiesPage = () => {
                 className="d-flex align-items-center gap-2 mb-2"
                 style={{
                   color:
-                    '#d97706',
+                    'var(--color-voucher)',
                 }}
               >
                 <FiGift size={15} />
@@ -523,7 +522,7 @@ const HomeLadiesPage = () => {
                   fontSize: 18,
                   fontWeight: 800,
                   color:
-                    '#111827',
+                    'var(--color-dark)',
                 }}
               >
                 {voucherPcs}
@@ -533,7 +532,7 @@ const HomeLadiesPage = () => {
                 style={{
                   fontSize: 11,
                   color:
-                    '#999',
+                    'var(--color-gray-500)',
                 }}
               >
                 pcs
@@ -544,7 +543,7 @@ const HomeLadiesPage = () => {
               style={{
                 flex: 1,
                 background:
-                  '#f9fafb',
+                  'var(--color-surface-2)',
                 borderRadius: 18,
                 padding:
                   '14px 12px',
@@ -554,7 +553,7 @@ const HomeLadiesPage = () => {
                 className="d-flex align-items-center gap-2 mb-2"
                 style={{
                   color:
-                    '#dc2626',
+                    'var(--color-expense)',
                 }}
               >
                 <FiTrendingDown size={15} />
@@ -574,7 +573,7 @@ const HomeLadiesPage = () => {
                   fontSize: 18,
                   fontWeight: 800,
                   color:
-                    '#111827',
+                    'var(--color-dark)',
                 }}
               >
                 Rp
@@ -589,7 +588,7 @@ const HomeLadiesPage = () => {
                 style={{
                   fontSize: 11,
                   color:
-                    '#999',
+                    'var(--color-gray-500)',
                 }}
               >
                 bulan ini
@@ -614,12 +613,12 @@ const HomeLadiesPage = () => {
           style={{
             background:
               isOver
-                ? '#fef2f2'
-                : '#f0fdf4',
+                ? 'var(--color-expense-soft)'
+                : 'var(--color-income-soft)',
             border: `1px solid ${
               isOver
-                ? '#fecaca'
-                : '#bbf7d0'
+                ? '#452226'
+                : '#1f4a34'
             }`,
             borderRadius: 22,
             padding:
@@ -635,12 +634,12 @@ const HomeLadiesPage = () => {
                 borderRadius: 16,
                 background:
                   isOver
-                    ? '#fee2e2'
-                    : '#dcfce7',
+                    ? 'var(--color-expense-soft)'
+                    : 'var(--color-income-soft)',
                 color:
                   isOver
-                    ? '#dc2626'
-                    : '#16a34a',
+                    ? 'var(--color-expense)'
+                    : 'var(--color-income)',
                 flexShrink: 0,
               }}
             >
@@ -653,7 +652,7 @@ const HomeLadiesPage = () => {
                   fontSize: 12,
                   fontWeight: 700,
                   color:
-                    '#666',
+                    'var(--color-gray-500)',
                   marginBottom: 4,
                 }}
               >
@@ -667,7 +666,7 @@ const HomeLadiesPage = () => {
                   lineHeight: 1.6,
                   fontWeight: 600,
                   color:
-                    '#111827',
+                    'var(--color-dark)',
                 }}
               >
                 {getInsight()}
@@ -691,20 +690,20 @@ const HomeLadiesPage = () => {
           }}
           style={{
             background:
-              '#fff',
+              'var(--color-surface)',
             border:
-              '1px solid #f1f5f9',
+              '1px solid var(--color-gray-200)',
             borderRadius: 22,
             padding:
               '18px',
             boxShadow:
-              '0 1px 6px rgba(0,0,0,0.04)',
+              '0 1px 6px rgba(0,0,0,0.2)',
           }}
         >
           <div className="d-flex align-items-center gap-2 mb-2">
             <FiHeart
               size={18}
-              color="#16a34a"
+              color="var(--color-income)"
             />
 
             <div
@@ -723,7 +722,7 @@ const HomeLadiesPage = () => {
               fontSize: 28,
               fontWeight: 800,
               color:
-                '#16a34a',
+                'var(--color-income)',
               lineHeight: 1.2,
             }}
           >
@@ -736,7 +735,7 @@ const HomeLadiesPage = () => {
           <div
             style={{
               fontSize: 12,
-              color: '#888',
+              color: 'var(--color-gray-500)',
               marginTop: 6,
             }}
           >

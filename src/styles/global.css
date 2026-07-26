@@ -77,6 +77,24 @@
   --bs-tertiary-bg-rgb: 23, 24, 26;
   --bs-border-color: var(--color-gray-200);
   --bs-border-color-translucent: rgba(255, 255, 255, 0.1);
+
+  /* --bs-dark/--bs-light/--bs-secondary belum pernah dioverride sejak
+     Tahap 1 — ini dipakai .text-dark, .bg-light, .bg-dark, .border-secondary,
+     dll (banyak dipakai sebagai badge "bg-x bg-opacity-10 ... text-dark" di
+     berbagai halaman). Tanpa ini, .text-dark selalu HAMPIR HITAM literal,
+     jadi tak kebaca di atas badge yang sekarang gelap. */
+  --bs-dark: var(--color-dark);
+  --bs-dark-rgb: 237, 238, 240;
+  --bs-dark-text-emphasis: var(--color-dark);
+  --bs-dark-bg-subtle: var(--color-surface-2);
+  --bs-dark-border-subtle: var(--color-gray-300);
+  --bs-light: var(--color-surface);
+  --bs-light-rgb: 23, 24, 26;
+  --bs-light-text-emphasis: var(--color-gray-600);
+  --bs-light-bg-subtle: var(--color-surface);
+  --bs-light-border-subtle: var(--color-gray-200);
+  --bs-secondary: var(--color-gray-600);
+  --bs-secondary-rgb: 131, 134, 140;
 }
 
 /* .dropdown-menu membakukan warna aktif sebagai custom property sendiri

@@ -178,12 +178,12 @@ const RiwayatAbsensiPage =
         const statusColor =
           {
             KERJA:
-              '#22c55e',
+              'var(--color-income)',
             MENS:
-              '#ef4444',
-            OFF: '#9ca3af',
+              'var(--color-expense)',
+            OFF: 'var(--color-gray-500)',
             SAKIT:
-              '#f59e0b',
+              'var(--color-voucher)',
           }[
             status
           ];
@@ -240,7 +240,7 @@ const RiwayatAbsensiPage =
         <div
           style={{
             background:
-              'linear-gradient(135deg,#22c55e,#16a34a)',
+              'linear-gradient(135deg, var(--color-green), var(--color-accent))',
             borderRadius: 24,
             padding:
               '22px 20px',
@@ -249,8 +249,7 @@ const RiwayatAbsensiPage =
               'relative',
             overflow:
               'hidden',
-            boxShadow:
-              '0 10px 30px rgba(34,197,94,0.18)',
+            boxShadow: 'var(--shadow-brand)',
           }}
         >
           <div
@@ -335,9 +334,9 @@ const RiwayatAbsensiPage =
         <div
           style={{
             background:
-              '#fff',
+              'var(--color-surface)',
             border:
-              '1px solid #f1f5f9',
+              '1px solid var(--color-gray-200)',
             borderRadius: 24,
             padding: 14,
             boxShadow:
@@ -368,9 +367,9 @@ const RiwayatAbsensiPage =
           <div
             style={{
               background:
-                '#fff',
+                'var(--color-surface)',
               border:
-                '1px solid #f1f5f9',
+                '1px solid var(--color-gray-200)',
               borderRadius: 18,
               padding:
                 '14px 16px',
@@ -387,9 +386,9 @@ const RiwayatAbsensiPage =
                     height: 42,
                     borderRadius: 14,
                     background:
-                      '#dcfce7',
+                      'var(--color-income-soft)',
                     color:
-                      '#15803d',
+                      'var(--color-income)',
                   }}
                 >
                   <FiCheckCircle size={18} />
@@ -400,7 +399,7 @@ const RiwayatAbsensiPage =
                     style={{
                       fontSize: 11,
                       color:
-                        '#999',
+                        'var(--color-gray-500)',
                       fontWeight: 600,
                     }}
                   >
@@ -423,7 +422,7 @@ const RiwayatAbsensiPage =
                   fontSize: 20,
                   fontWeight: 700,
                   color:
-                    '#16a34a',
+                    'var(--color-income)',
                 }}
               >
                 {
@@ -437,9 +436,9 @@ const RiwayatAbsensiPage =
           <div
             style={{
               background:
-                '#fff',
+                'var(--color-surface)',
               border:
-                '1px solid #f1f5f9',
+                '1px solid var(--color-gray-200)',
               borderRadius: 18,
               padding:
                 '14px 16px',
@@ -456,9 +455,9 @@ const RiwayatAbsensiPage =
                     height: 42,
                     borderRadius: 14,
                     background:
-                      '#fee2e2',
+                      'var(--color-expense-soft)',
                     color:
-                      '#dc2626',
+                      'var(--color-expense)',
                   }}
                 >
                   <FiHeart size={18} />
@@ -469,7 +468,7 @@ const RiwayatAbsensiPage =
                     style={{
                       fontSize: 11,
                       color:
-                        '#999',
+                        'var(--color-gray-500)',
                       fontWeight: 600,
                     }}
                   >
@@ -492,7 +491,7 @@ const RiwayatAbsensiPage =
                   fontSize: 20,
                   fontWeight: 700,
                   color:
-                    '#dc2626',
+                    'var(--color-expense)',
                 }}
               >
                 {
@@ -506,9 +505,9 @@ const RiwayatAbsensiPage =
           <div
             style={{
               background:
-                '#fff',
+                'var(--color-surface)',
               border:
-                '1px solid #f1f5f9',
+                '1px solid var(--color-gray-200)',
               borderRadius: 18,
               padding:
                 '14px 16px',
@@ -525,9 +524,9 @@ const RiwayatAbsensiPage =
                     height: 42,
                     borderRadius: 14,
                     background:
-                      '#f3f4f6',
+                      'var(--color-gray-200)',
                     color:
-                      '#6b7280',
+                      'var(--color-gray-700)',
                   }}
                 >
                   <FiMoon size={18} />
@@ -538,7 +537,7 @@ const RiwayatAbsensiPage =
                     style={{
                       fontSize: 11,
                       color:
-                        '#999',
+                        'var(--color-gray-500)',
                       fontWeight: 600,
                     }}
                   >
@@ -561,7 +560,7 @@ const RiwayatAbsensiPage =
                   fontSize: 20,
                   fontWeight: 700,
                   color:
-                    '#6b7280',
+                    'var(--color-gray-700)',
                 }}
               >
                 {
@@ -575,9 +574,9 @@ const RiwayatAbsensiPage =
           <div
             style={{
               background:
-                '#fff',
+                'var(--color-surface)',
               border:
-                '1px solid #f1f5f9',
+                '1px solid var(--color-gray-200)',
               borderRadius: 18,
               padding:
                 '14px 16px',
@@ -594,9 +593,9 @@ const RiwayatAbsensiPage =
                     height: 42,
                     borderRadius: 14,
                     background:
-                      '#fef3c7',
+                      'var(--color-voucher-soft)',
                     color:
-                      '#d97706',
+                      'var(--color-voucher)',
                   }}
                 >
                   <FiCoffee size={18} />
@@ -607,7 +606,7 @@ const RiwayatAbsensiPage =
                     style={{
                       fontSize: 11,
                       color:
-                        '#999',
+                        'var(--color-gray-500)',
                       fontWeight: 600,
                     }}
                   >
@@ -630,7 +629,7 @@ const RiwayatAbsensiPage =
                   fontSize: 20,
                   fontWeight: 700,
                   color:
-                    '#d97706',
+                    'var(--color-voucher)',
                 }}
               >
                 {
@@ -648,7 +647,7 @@ const RiwayatAbsensiPage =
               textAlign:
                 'center',
               fontSize: 12,
-              color: '#777',
+              color: 'var(--color-gray-500)',
               marginTop: 4,
             }}
           >

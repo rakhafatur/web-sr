@@ -196,32 +196,32 @@ const TransaksiForm = ({
       value: 'voucher',
       label: 'Voucher',
       icon: <FiGift />,
-      color: '#16a34a',
-      bg: '#dcfce7',
+      color: 'var(--color-income)',
+      bg: 'var(--color-income-soft)',
     },
 
     {
       value: 'pemasukan_lain',
       label: 'Pemasukan',
       icon: <FiTrendingUp />,
-      color: '#ca8a04',
-      bg: '#fef9c3',
+      color: 'var(--color-voucher)',
+      bg: 'var(--color-voucher-soft)',
     },
 
     {
       value: 'kasbon',
       label: 'Kasbon',
       icon: <FiTrendingDown />,
-      color: '#dc2626',
-      bg: '#fee2e2',
+      color: 'var(--color-expense)',
+      bg: 'var(--color-expense-soft)',
     },
 
     {
       value: 'dokter',
       label: 'Dokter',
       icon: <FiFileText />,
-      color: '#2563eb',
-      bg: '#dbeafe',
+      color: 'var(--color-medical)',
+      bg: 'var(--color-medical-soft)',
     },
   ];
 
@@ -273,11 +273,11 @@ const TransaksiForm = ({
                     background:
                       active
                         ? item.bg
-                        : '#fff',
+                        : 'var(--color-surface)',
 
                     border: active
                       ? `1.5px solid ${item.color}`
-                      : '1px solid #eee',
+                      : '1px solid var(--color-gray-200)',
 
                     transition:
                       'all 0.2s ease',
@@ -355,11 +355,11 @@ const TransaksiForm = ({
               background:
                 isMobile
                   ? 'transparent'
-                  : '#fafafa',
+                  : 'var(--color-surface-2)',
 
               border: isMobile
                 ? 'none'
-                : '1px solid #eee',
+                : '1px solid var(--color-gray-200)',
             }}
           >
             <FormField
@@ -389,12 +389,12 @@ const TransaksiForm = ({
                   background:
                     isMobile
                       ? 'transparent'
-                      : '#fafafa',
+                      : 'var(--color-surface-2)',
 
                   border:
                     isMobile
                       ? 'none'
-                      : '1px solid #eee',
+                      : '1px solid var(--color-gray-200)',
                 }}
               >
                 <FormField
@@ -422,10 +422,10 @@ const TransaksiForm = ({
                   style={{
                     background: isMobile
                       ? 'transparent'
-                      : '#fafafa',
+                      : 'var(--color-surface-2)',
                     border: isMobile
                       ? 'none'
-                      : '1px solid #eee',
+                      : '1px solid var(--color-gray-200)',
                   }}
                 >
                   <label
@@ -449,7 +449,7 @@ const TransaksiForm = ({
                     style={{
                       height: isMobile ? 46 : 52,
                       borderRadius: isMobile ? 12 : 16,
-                      border: '1px solid #d8f3df',
+                      border: '1px solid var(--color-green-light)',
                     }}
                   >
                     <option value="Single">Single</option>
@@ -474,10 +474,10 @@ const TransaksiForm = ({
                       : '20px',
 
                   background:
-                    'linear-gradient(135deg, #dcfce7, #f0fdf4)',
+                    'linear-gradient(135deg, var(--color-income-soft), var(--color-surface-2))',
 
                   border:
-                    '1px solid #bbf7d0',
+                    '1px solid #1f4a34',
                 }}
               >
                 <div
@@ -487,7 +487,7 @@ const TransaksiForm = ({
                         ? '0.72rem'
                         : '0.85rem',
 
-                    color: '#166534',
+                    color: 'var(--color-income)',
 
                     marginBottom: 4,
                   }}
@@ -503,7 +503,7 @@ const TransaksiForm = ({
                         ? '1.15rem'
                         : '1.8rem',
 
-                    color: '#15803d',
+                    color: 'var(--color-income)',
 
                     lineHeight: 1.2,
                   }}
@@ -521,7 +521,7 @@ const TransaksiForm = ({
                         ? '0.7rem'
                         : '0.82rem',
 
-                    color: '#166534',
+                    color: 'var(--color-income)',
 
                     marginTop: 4,
                   }}
@@ -569,7 +569,7 @@ const TransaksiForm = ({
             className="btn w-100 border-0"
             style={{
               background:
-                'linear-gradient(135deg, var(--color-green), #65d68d)',
+                'linear-gradient(135deg, var(--color-green), var(--color-accent))',
 
               color: '#fff',
 
@@ -582,7 +582,7 @@ const TransaksiForm = ({
               fontSize: '1rem',
 
               boxShadow:
-                '0 10px 24px rgba(34,197,94,0.25)',
+                '0 10px 24px rgba(var(--color-primary-rgb),0.3)',
             }}
             onClick={
               handleSubmit
@@ -620,13 +620,13 @@ const TransaksiForm = ({
             left: 0,
             right: 0,
 
-            background: '#fff',
+            background: 'var(--color-surface)',
 
             padding:
               '12px 16px',
 
             borderTop:
-              '1px solid #eee',
+              '1px solid var(--color-gray-200)',
 
             zIndex: 999,
           }}
@@ -635,7 +635,7 @@ const TransaksiForm = ({
             className="btn w-100 border-0"
             style={{
               background:
-                'linear-gradient(135deg, var(--color-green), #65d68d)',
+                'linear-gradient(135deg, var(--color-green), var(--color-accent))',
 
               color: '#fff',
 

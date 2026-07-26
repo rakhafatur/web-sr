@@ -58,9 +58,6 @@ function MainLayout({ children }: { children: React.ReactNode }) {
             </div>
           ) : (
             <Sidebar
-              isOpen={sidebarOpen}
-              onClose={() => setSidebarOpen(false)}
-              isMobile={false}
               isCollapsed={isCollapsed}
               onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
             />
@@ -70,7 +67,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
         <div
           className="flex-grow-1 d-flex flex-column"
           style={{
-            marginLeft: isHomePage ? 0 : !isMobile && sidebarOpen ? sidebarWidth : 0,
+            marginLeft: !isMobile && sidebarOpen ? sidebarWidth : 0,
             transition: 'margin 0.3s ease',
             width: '100%',
           }}

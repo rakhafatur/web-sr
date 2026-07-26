@@ -53,7 +53,7 @@ const AddTransaksiPagePengawas = () => {
       <div
         className="mb-4 p-4 rounded-4 shadow-sm"
         style={{
-          background: 'linear-gradient(135deg, var(--color-green), #7be0a9)',
+          background: 'linear-gradient(135deg, var(--color-green), var(--color-accent))',
           color: 'white',
         }}
       >
@@ -105,7 +105,7 @@ const AddTransaksiPagePengawas = () => {
       >
         <div
           className="px-4 py-3 border-bottom"
-          style={{ background: '#fafafa' }}
+          style={{ background: 'var(--color-surface-2)' }}
         >
           <div className="d-flex align-items-center gap-2">
             <FiUsers size={18} style={{ color: 'var(--color-green)' }} />
@@ -126,11 +126,11 @@ const AddTransaksiPagePengawas = () => {
             style={{
               height: isMobile ? 50 : 58,
               borderRadius: isMobile ? 14 : 18,
-              border: '2px solid #d8f3df',
+              border: '2px solid var(--color-green-light)',
               fontWeight: 600,
               fontSize: isMobile ? '0.82rem' : '0.97rem',
 
-              backgroundColor: '#fff',
+              backgroundColor: 'var(--color-surface)',
               color: 'var(--color-dark)',
 
               paddingLeft: isMobile ? 14 : 18,
@@ -154,8 +154,8 @@ const AddTransaksiPagePengawas = () => {
             <div
               className="mt-4 p-4 rounded-4"
               style={{
-                background: '#fff8e7',
-                border: '1px solid #ffe2a8',
+                background: 'var(--color-warning)',
+                border: '1px solid var(--color-warning-hover)',
               }}
             >
               <div className="d-flex align-items-start gap-3">
@@ -165,7 +165,7 @@ const AddTransaksiPagePengawas = () => {
                   <div className="fw-bold mb-1">
                     Pengawas belum dipilih
                   </div>
-                  <div style={{ fontSize: '0.9rem', color: '#666' }}>
+                  <div style={{ fontSize: '0.9rem', color: 'var(--color-gray-500)' }}>
                     Pilih pengawas untuk menampilkan form transaksi dan riwayat.
                   </div>
                 </div>
@@ -177,7 +177,7 @@ const AddTransaksiPagePengawas = () => {
           {loading && (
             <div
               className="d-flex align-items-center gap-2 mt-3"
-              style={{ color: '#666' }}
+              style={{ color: 'var(--color-gray-500)' }}
             >
               <div className="spinner-border spinner-border-sm" />
               <span>Memuat data pengawas...</span>
@@ -196,7 +196,7 @@ const AddTransaksiPagePengawas = () => {
                 className="px-4 py-3 border-bottom"
                 style={{
                   background:
-                    'linear-gradient(to right, #effff4, #ffffff)',
+                    'linear-gradient(to right, var(--color-green-lighter), var(--color-surface))',
                 }}
               >
                 <div>
@@ -207,7 +207,7 @@ const AddTransaksiPagePengawas = () => {
                     Tambah Transaksi
                   </div>
 
-                  <div style={{ fontSize: '0.85rem', color: '#666' }}>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--color-gray-500)' }}>
                     {selectedPengawas.nama_lengkap}
                   </div>
                 </div>
@@ -229,7 +229,7 @@ const AddTransaksiPagePengawas = () => {
                 className="px-4 py-3 border-bottom"
                 style={{
                   background:
-                    'linear-gradient(to right, #ffffff, #f5fff8)',
+                    'linear-gradient(to right, var(--color-surface), var(--color-green-lighter))',
                 }}
               >
                 <div className="d-flex align-items-center gap-2">
@@ -241,7 +241,7 @@ const AddTransaksiPagePengawas = () => {
                     >
                       Riwayat Transaksi
                     </div>
-                    <div style={{ fontSize: '0.85rem', color: '#666' }}>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--color-gray-500)' }}>
                       Histori transaksi {selectedPengawas.nama_lengkap}
                     </div>
                   </div>

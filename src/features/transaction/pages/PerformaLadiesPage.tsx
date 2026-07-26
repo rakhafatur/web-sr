@@ -174,19 +174,19 @@ const PerformaLadiesPage = () => {
       <div style={{ width: '100%', height: 400, background: 'var(--color-green-light)' }} className="mb-4 rounded">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="nama_ladies" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-gray-200)" />
+            <XAxis dataKey="nama_ladies" tick={{ fill: 'var(--color-gray-500)' }} />
+            <YAxis tick={{ fill: 'var(--color-gray-500)' }} />
+            <Tooltip contentStyle={{ background: 'var(--color-surface)', border: '1px solid var(--color-gray-200)', color: 'var(--color-dark)' }} />
+            <Legend wrapperStyle={{ color: 'var(--color-dark)' }} />
             <Bar
               dataKey={mode === 'aktivitas' ? 'voucherTotal' : 'pendapatanVoucher'}
-              fill="#38b000"
+              fill="var(--color-green)"
               name={mode === 'aktivitas' ? 'Voucher (pcs)' : 'Pendapatan Voucher'}
             />
-            {mode === 'aktivitas' && <Bar dataKey="masuk" fill="#a3e635" name="Hari Masuk" />}
-            {mode === 'pendapatan' && <Bar dataKey="pemasukan" fill="#66bb6a" name="Pemasukan Lain" />}
-            {mode === 'pendapatan' && <Bar dataKey="kasbon" fill="#ef4444" name="Kasbon (Pengeluaran)" />}
+            {mode === 'aktivitas' && <Bar dataKey="masuk" fill="var(--color-income)" name="Hari Masuk" />}
+            {mode === 'pendapatan' && <Bar dataKey="pemasukan" fill="var(--color-voucher)" name="Pemasukan Lain" />}
+            {mode === 'pendapatan' && <Bar dataKey="kasbon" fill="var(--color-expense)" name="Kasbon (Pengeluaran)" />}
           </BarChart>
         </ResponsiveContainer>
       </div>

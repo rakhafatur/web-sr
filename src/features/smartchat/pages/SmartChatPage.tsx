@@ -347,7 +347,7 @@ ${formatList(minLadies, totals)}
         className="mb-4 p-4 rounded-4 shadow-sm"
         style={{
           background:
-            "linear-gradient(135deg, var(--color-green), #7be0a9)",
+            "linear-gradient(135deg, var(--color-green), var(--color-accent))",
           color: "white",
         }}
       >
@@ -410,7 +410,7 @@ ${formatList(minLadies, totals)}
           className="px-4 py-3 border-bottom"
           style={{
             background:
-              "linear-gradient(to right, #effff4, #ffffff)",
+              "linear-gradient(to right, var(--color-green-lighter), var(--color-surface))",
           }}
         >
           <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -428,7 +428,7 @@ ${formatList(minLadies, totals)}
               <div
                 style={{
                   fontSize: "0.85rem",
-                  color: "#666",
+                  color: "var(--color-gray-500)",
                 }}
               >
                 Tanya statistik dan insight secara cepat
@@ -438,8 +438,8 @@ ${formatList(minLadies, totals)}
             <div
               className="px-3 py-1 rounded-pill d-flex align-items-center gap-2"
               style={{
-                background: "#dff7e7",
-                color: "#159947",
+                background: "var(--color-income-soft)",
+                color: "var(--color-income)",
                 fontSize: "0.78rem",
                 fontWeight: 700,
               }}
@@ -458,7 +458,7 @@ ${formatList(minLadies, totals)}
             height: isMobile ? "60vh" : "68vh",
             overflowY: "auto",
             background:
-              "linear-gradient(to bottom, #fcfffd, #f8fff9)",
+              "linear-gradient(to bottom, var(--color-bg), var(--color-green-lighter))",
           }}
         >
           {messages.map((msg, idx) => (
@@ -480,12 +480,12 @@ ${formatList(minLadies, totals)}
             <div className="d-flex justify-content-start mb-3">
               <div
                 style={{
-                  background: "rgba(255,255,255,0.85)",
+                  background: "rgba(var(--color-bg-rgb),0.85)",
                   backdropFilter: "blur(14px)",
-                  border: "1px solid rgba(255,255,255,0.7)",
+                  border: "1px solid var(--color-gray-200)",
                   padding: "14px 18px",
                   borderRadius: "24px 24px 24px 8px",
-                  boxShadow: "0 10px 30px rgba(0,0,0,0.06)",
+                  boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
                 }}
               >
                 <div className="d-flex align-items-center gap-2">
@@ -493,7 +493,7 @@ ${formatList(minLadies, totals)}
                     className="spinner-border spinner-border-sm"
                     role="status"
                     style={{
-                      color: "#22c55e",
+                      color: "var(--color-green)",
                       width: 18,
                       height: 18,
                     }}
@@ -502,7 +502,7 @@ ${formatList(minLadies, totals)}
                   <span
                     style={{
                       fontSize: "0.92rem",
-                      color: "#4b5563",
+                      color: "var(--color-gray-600)",
                       fontWeight: 500,
                     }}
                   >
@@ -520,7 +520,7 @@ ${formatList(minLadies, totals)}
         <div
           className="p-3 p-md-4 border-top"
           style={{
-            background: "#fff",
+            background: "var(--color-surface)",
           }}
         >
           <div className="mb-2">
@@ -548,14 +548,14 @@ ${formatList(minLadies, totals)}
                 style={{
                   height: 58,
                   borderRadius: 18,
-                  border: "2px solid #d8f3df",
+                  border: "2px solid var(--color-green-light)",
                   paddingLeft: 18,
                   paddingRight: 48,
                   fontWeight: 600,
                   fontSize: isMobile
                     ? "0.9rem"
                     : "0.97rem",
-                  backgroundColor: "#fff",
+                  backgroundColor: "var(--color-surface)",
                   color: "var(--color-dark)",
                   appearance: "none",
                 }}
@@ -582,7 +582,7 @@ ${formatList(minLadies, totals)}
                   right: 18,
                   transform: "translateY(-50%)",
                   pointerEvents: "none",
-                  color: "#666",
+                  color: "var(--color-gray-500)",
                 }}
               />
             </div>
@@ -598,8 +598,8 @@ ${formatList(minLadies, totals)}
                 }
                 className="border-0"
                 style={{
-                  background: "#f3fff7",
-                  color: "#159947",
+                  background: "var(--color-income-soft)",
+                  color: "var(--color-income)",
                   borderRadius: 14,
                   padding: isMobile
                     ? "10px 12px"

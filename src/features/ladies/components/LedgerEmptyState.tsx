@@ -7,12 +7,12 @@ type Props = {
 const LedgerEmptyState = ({ message }: Props) => (
   <div
     style={{
-      background: '#fff',
-      border: '1px solid #f1f5f9',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-gray-200)',
       borderRadius: 16,
       padding: '30px 20px',
       textAlign: 'center',
-      color: '#777',
+      color: 'var(--color-gray-500)',
       fontSize: 13,
     }}
   >

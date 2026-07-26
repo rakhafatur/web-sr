@@ -168,13 +168,13 @@ const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
   const renderBadge = (tipe: string) => {
     const styles: any = {
       gaji_pengawas: {
-        bg: '#dcfce7',
-        color: '#15803d',
+        bg: 'var(--color-income-soft)',
+        color: 'var(--color-income)',
         label: 'Gaji',
       },
       kasbon_pengawas: {
-        bg: '#fee2e2',
-        color: '#b91c1c',
+        bg: 'var(--color-expense-soft)',
+        color: 'var(--color-expense)',
         label: 'Kasbon',
       },
     };
@@ -207,25 +207,25 @@ const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
             {
               title: 'Total Gaji',
               value: summary.pemasukan,
-              color: '#16a34a',
+              color: 'var(--color-income)',
               icon: <FiTrendingUp />,
             },
             {
               title: 'Total Kasbon',
               value: summary.pengeluaran,
-              color: '#dc2626',
+              color: 'var(--color-expense)',
               icon: <FiTrendingDown />,
             },
             {
               title: 'Saldo',
               value: summary.saldo,
-              color: summary.saldo >= 0 ? '#2563eb' : '#dc2626',
+              color: summary.saldo >= 0 ? 'var(--color-medical)' : 'var(--color-expense)',
               icon: <FiLayers />,
             },
             {
               title: 'Transaksi',
               value: summary.transaksi,
-              color: '#111',
+              color: 'var(--color-dark)',
               icon: <FiLayers />,
             },
           ].map((item) => (
@@ -233,7 +233,7 @@ const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
               <div className="card border-0 shadow-sm rounded-4 p-3 h-100">
                 <div className="d-flex justify-content-between">
                   <div>
-                    <div style={{ fontSize: '0.85rem', color: '#666' }}>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--color-gray-500)' }}>
                       {item.title}
                     </div>
                     <div
@@ -276,10 +276,10 @@ const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
                   style={{
                     borderRadius: 999,
                     padding: '8px 18px',
-                    border: filterTipe === item.value ? 'none' : '1px solid #ddd',
+                    border: filterTipe === item.value ? 'none' : '1px solid var(--color-gray-200)',
                     background:
-                      filterTipe === item.value ? 'var(--color-green)' : '#fff',
-                    color: filterTipe === item.value ? '#fff' : '#444',
+                      filterTipe === item.value ? 'var(--color-green)' : 'var(--color-surface)',
+                    color: filterTipe === item.value ? '#fff' : 'var(--color-gray-700)',
                     fontWeight: 600,
                   }}
                 >
@@ -295,7 +295,7 @@ const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
                   left: 14,
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  color: '#888',
+                  color: 'var(--color-gray-500)',
                 }}
               />
               <input
@@ -309,7 +309,7 @@ const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
                 }}
                 style={{
                   borderRadius: 999,
-                  background: '#f5f5f5',
+                  background: 'var(--color-surface-2)',
                   paddingLeft: 40,
                   height: 45,
                 }}
@@ -346,7 +346,7 @@ const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
                     <span
                       style={{
                         fontWeight: 700,
-                        color: row.tipe === 'kasbon_pengawas' ? '#dc2626' : '#16a34a',
+                        color: row.tipe === 'kasbon_pengawas' ? 'var(--color-expense)' : 'var(--color-income)',
                       }}
                     >
                       {row.tipe === 'kasbon_pengawas' ? '- ' : '+ '}
@@ -381,7 +381,7 @@ const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
           </div>
 
           {!loading && data.length === 0 && (
-            <div className="text-center py-5" style={{ color: '#666' }}>
+            <div className="text-center py-5" style={{ color: 'var(--color-gray-500)' }}>
               <div style={{ fontSize: 60 }}>📭</div>
               <h5 className="fw-bold mt-3">Belum ada transaksi</h5>
               <div>Tambah transaksi pertama untuk pengawas ini</div>
@@ -398,7 +398,7 @@ const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
                 <FiChevronLeft />
               </button>
 
-              <div className="fw-semibold" style={{ color: '#555' }}>
+              <div className="fw-semibold" style={{ color: 'var(--color-gray-600)' }}>
                 Halaman {page} dari {totalPages}
               </div>
 

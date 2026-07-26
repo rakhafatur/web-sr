@@ -10,7 +10,7 @@ import {
   FiSave,
 } from 'react-icons/fi';
 
-const HEADER_GRADIENT = 'linear-gradient(135deg,var(--color-green),#7be0a9)';
+const HEADER_GRADIENT = 'linear-gradient(135deg,var(--color-green),var(--color-accent))';
 
 type Absensi = {
   status: string;
@@ -172,15 +172,15 @@ const AddAbsensiModal = ({
                   border:
                     active
                       ? 'none'
-                      : '1px solid #dfeee4',
+                      : '1px solid var(--color-gray-200)',
                   background:
                     active
-                      ? 'linear-gradient(135deg,#22c55e,#4ade80)'
-                      : '#fff',
+                      ? 'linear-gradient(135deg, var(--color-green), var(--color-accent))'
+                      : 'var(--color-surface)',
                   color:
                     active
                       ? 'white'
-                      : '#444',
+                      : 'var(--color-gray-700)',
                   opacity:
                     readonly &&
                     !active
@@ -219,9 +219,9 @@ const AddAbsensiModal = ({
           className="mt-4 p-3 rounded-4"
           style={{
             background:
-              '#fff8e7',
+              'var(--color-warning)',
             border:
-              '1px solid #ffe2a8',
+              '1px solid var(--color-warning-hover)',
           }}
         >
           <div className="d-flex gap-3">
@@ -244,7 +244,7 @@ const AddAbsensiModal = ({
                   fontSize:
                     '0.9rem',
                   color:
-                    '#666',
+                    'var(--color-gray-500)',
                 }}
               >
                 Klik tombol edit

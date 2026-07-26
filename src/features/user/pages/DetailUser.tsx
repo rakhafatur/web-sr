@@ -185,7 +185,7 @@ const DetailUser = () => {
         className="mb-4 p-4 rounded-4 shadow-sm position-relative overflow-hidden"
         style={{
           background:
-            'linear-gradient(135deg, var(--color-green), #7be0a9)',
+            'linear-gradient(135deg, var(--color-green), var(--color-accent))',
           color: 'white',
         }}
       >
@@ -335,7 +335,7 @@ const DetailUser = () => {
                   height: 62,
                   borderRadius: 18,
                   background:
-                    '#effff4',
+                    'var(--color-green-lighter)',
                   display: 'flex',
                   alignItems:
                     'center',
@@ -365,7 +365,7 @@ const DetailUser = () => {
                 <div
                   style={{
                     fontSize: '0.9rem',
-                    color: '#666',
+                    color: 'var(--color-gray-500)',
                     marginTop: 2,
                   }}
                 >
@@ -388,7 +388,7 @@ const DetailUser = () => {
           className="px-4 py-3 border-bottom"
           style={{
             background:
-              'linear-gradient(to right, #fafafa, #ffffff)',
+              'linear-gradient(to right, var(--color-surface-2), var(--color-surface))',
           }}
         >
           <div
@@ -404,7 +404,7 @@ const DetailUser = () => {
           <div
             style={{
               fontSize: '0.84rem',
-              color: '#666',
+              color: 'var(--color-gray-500)',
             }}
           >
             Detail dan informasi akun
@@ -481,7 +481,7 @@ const DetailUser = () => {
               <div
                 style={{
                   fontSize: '0.76rem',
-                  color: '#888',
+                  color: 'var(--color-gray-500)',
                   marginTop: 6,
                 }}
               >

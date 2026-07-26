@@ -29,36 +29,36 @@ const getTypeStyle = (
   switch (tipe) {
     case 'voucher':
       return {
-        bg: '#dcfce7',
-        text: '#15803d',
+        bg: 'var(--color-income-soft)',
+        text: 'var(--color-income)',
         label: 'Voucher',
       };
 
     case 'kasbon':
       return {
-        bg: '#fee2e2',
-        text: '#dc2626',
+        bg: 'var(--color-expense-soft)',
+        text: 'var(--color-expense)',
         label: 'Kasbon',
       };
 
     case 'pemasukan_lain':
       return {
-        bg: '#fef3c7',
-        text: '#b45309',
+        bg: 'var(--color-voucher-soft)',
+        text: 'var(--color-voucher)',
         label: 'Pemasukan',
       };
 
     case 'dokter':
       return {
-        bg: '#dbeafe',
-        text: '#2563eb',
+        bg: 'var(--color-medical-soft)',
+        text: 'var(--color-medical)',
         label: 'Dokter',
       };
 
     default:
       return {
-        bg: '#f3f4f6',
-        text: '#374151',
+        bg: 'var(--color-gray-200)',
+        text: 'var(--color-gray-700)',
         label: 'Lainnya',
       };
   }
@@ -117,10 +117,10 @@ const CardTableRiwayatTransaksi = ({
             key={row.id}
             style={{
               background:
-                '#fff',
+                'var(--color-surface)',
 
               border:
-                '1px solid #f4f4f5',
+                '1px solid var(--color-gray-200)',
 
               borderRadius: 12,
 
@@ -167,7 +167,7 @@ const CardTableRiwayatTransaksi = ({
                   <div
                     style={{
                       fontSize: 10,
-                      color: '#999',
+                      color: 'var(--color-gray-500)',
                       fontWeight: 500,
                     }}
                   >
@@ -206,7 +206,7 @@ const CardTableRiwayatTransaksi = ({
                 <div
                   style={{
                     fontSize: 11,
-                    color: '#777',
+                    color: 'var(--color-gray-500)',
                     marginTop: 2,
 
                     whiteSpace:
@@ -240,10 +240,10 @@ const CardTableRiwayatTransaksi = ({
                   borderRadius: 10,
 
                   background:
-                    '#fee2e2',
+                    'var(--color-expense-soft)',
 
                   color:
-                    '#dc2626',
+                    'var(--color-expense)',
 
                   flexShrink: 0,
                 }}
@@ -273,7 +273,7 @@ const CardTableRiwayatTransaksi = ({
             borderRadius: 10,
 
             background:
-              '#f4f4f5',
+              'var(--color-surface-2)',
           }}
           onClick={() =>
             page > 0 &&
@@ -290,7 +290,7 @@ const CardTableRiwayatTransaksi = ({
           style={{
             fontSize: 11,
             fontWeight: 600,
-            color: '#666',
+            color: 'var(--color-gray-500)',
             minWidth: 42,
             textAlign: 'center',
           }}
@@ -307,7 +307,7 @@ const CardTableRiwayatTransaksi = ({
             borderRadius: 10,
 
             background:
-              '#f4f4f5',
+              'var(--color-surface-2)',
           }}
           onClick={() =>
             page <

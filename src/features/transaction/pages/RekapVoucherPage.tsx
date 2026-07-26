@@ -296,7 +296,7 @@ const RekapVoucherPage = () => {
         className="mb-4 p-4 rounded-4 shadow-sm"
         style={{
           background:
-            'linear-gradient(135deg, var(--color-green), #7be0a9)',
+            'linear-gradient(135deg, var(--color-green), var(--color-accent))',
           color: 'white',
         }}
       >
@@ -375,7 +375,7 @@ const RekapVoucherPage = () => {
           className="px-4 py-3 border-bottom"
           style={{
             background:
-              'linear-gradient(to right,#effff4,#ffffff)',
+              'linear-gradient(to right, var(--color-green-lighter), var(--color-surface))',
           }}
         >
           <div className="d-flex align-items-center gap-2">
@@ -395,7 +395,7 @@ const RekapVoucherPage = () => {
                 style={{
                   fontSize:
                     '0.82rem',
-                  color: '#666',
+                  color: 'var(--color-gray-500)',
                 }}
               >
                 Pilih periode
@@ -429,7 +429,7 @@ const RekapVoucherPage = () => {
                   borderRadius: 16,
 
                   border:
-                    '2px solid #d8f3df',
+                    '2px solid var(--color-green-light)',
 
                   paddingInline: 16,
 
@@ -462,7 +462,7 @@ const RekapVoucherPage = () => {
                   borderRadius: 16,
 
                   border:
-                    '2px solid #d8f3df',
+                    '2px solid var(--color-green-light)',
 
                   paddingInline: 16,
 
@@ -489,14 +489,14 @@ const RekapVoucherPage = () => {
                   border: 'none',
 
                   background:
-                    'linear-gradient(135deg,#22c55e,#4ade80)',
+                    'linear-gradient(135deg, var(--color-green), var(--color-accent))',
 
                   color: 'white',
 
                   fontWeight: 700,
 
                   boxShadow:
-                    '0 10px 25px rgba(34,197,94,0.18)',
+                    '0 10px 25px rgba(var(--color-primary-rgb),0.3)',
                 }}
               >
                 <FiRefreshCw className="me-2" />
@@ -520,12 +520,12 @@ const RekapVoucherPage = () => {
                       borderRadius: 16,
 
                       border:
-                        '2px solid #22c55e',
+                        '2px solid var(--color-green)',
 
                       background:
-                        'white',
+                        'var(--color-surface)',
 
-                      color: '#16a34a',
+                      color: 'var(--color-income)',
 
                       fontWeight: 700,
                     }}
@@ -552,8 +552,8 @@ const RekapVoucherPage = () => {
                     0
                   )} pcs`,
                   icon: <FiGift />,
-                  bg: '#dcfce7',
-                  color: '#166534',
+                  bg: 'var(--color-income-soft)',
+                  color: 'var(--color-income)',
                 },
 
                 {
@@ -566,8 +566,8 @@ const RekapVoucherPage = () => {
                   icon: (
                     <FiDollarSign />
                   ),
-                  bg: '#dbeafe',
-                  color: '#1d4ed8',
+                  bg: 'var(--color-medical-soft)',
+                  color: 'var(--color-medical)',
                 },
 
                 {
@@ -581,8 +581,8 @@ const RekapVoucherPage = () => {
                   icon: (
                     <FiTrendingUp />
                   ),
-                  bg: '#fef3c7',
-                  color: '#92400e',
+                  bg: 'var(--color-voucher-soft)',
+                  color: 'var(--color-voucher)',
                 },
 
                 {
@@ -594,8 +594,8 @@ const RekapVoucherPage = () => {
                       225000
                     ),
                   icon: <FiUsers />,
-                  bg: '#ede9fe',
-                  color: '#6d28d9',
+                  bg: '#2a2340',
+                  color: '#a78bfa',
                 },
               ].map((item) => (
                 <div
@@ -734,7 +734,7 @@ const RekapVoucherPage = () => {
                       className="px-4 py-3 border-bottom"
                       style={{
                         background:
-                          'linear-gradient(to right,#ffffff,#f5fff8)',
+                          'linear-gradient(to right, var(--color-surface), var(--color-green-lighter))',
                       }}
                     >
                       <div className="d-flex justify-content-between align-items-center">
@@ -762,7 +762,7 @@ const RekapVoucherPage = () => {
                                 '0.78rem',
 
                               color:
-                                '#777',
+                                'var(--color-gray-500)',
                             }}
                           >
                             {
@@ -778,10 +778,10 @@ const RekapVoucherPage = () => {
                           className="badge"
                           style={{
                             background:
-                              '#dcfce7',
+                              'var(--color-income-soft)',
 
                             color:
-                              '#166534',
+                              'var(--color-income)',
 
                             fontSize:
                               '0.72rem',
@@ -813,14 +813,14 @@ const RekapVoucherPage = () => {
                               className="mb-2"
                               style={{
                                 border:
-                                  '1px solid #edf2f7',
+                                  '1px solid var(--color-gray-200)',
 
                                 borderRadius: 18,
 
                                 padding: 14,
 
                                 background:
-                                  'white',
+                                  'var(--color-surface)',
                               }}
                             >
                               <div className="d-flex justify-content-between align-items-start gap-2">
@@ -850,7 +850,7 @@ const RekapVoucherPage = () => {
                                         '0.72rem',
 
                                       color:
-                                        '#666',
+                                        'var(--color-gray-500)',
 
                                       marginTop: 2,
                                     }}
@@ -867,10 +867,10 @@ const RekapVoucherPage = () => {
                                   className="badge"
                                   style={{
                                     background:
-                                      '#dcfce7',
+                                      'var(--color-income-soft)',
 
                                     color:
-                                      '#166534',
+                                      'var(--color-income)',
 
                                     borderRadius: 999,
 
@@ -892,7 +892,7 @@ const RekapVoucherPage = () => {
                                   <div
                                     style={{
                                       background:
-                                        '#f8fafc',
+                                        'var(--color-surface-2)',
 
                                       borderRadius: 12,
 
@@ -906,7 +906,7 @@ const RekapVoucherPage = () => {
                                           '0.65rem',
 
                                         color:
-                                          '#777',
+                                          'var(--color-gray-500)',
                                       }}
                                     >
                                       Total Ladies
@@ -930,7 +930,7 @@ const RekapVoucherPage = () => {
                                   <div
                                     style={{
                                       background:
-                                        '#f8fafc',
+                                        'var(--color-surface-2)',
 
                                       borderRadius: 12,
 
@@ -944,7 +944,7 @@ const RekapVoucherPage = () => {
                                           '0.65rem',
 
                                         color:
-                                          '#777',
+                                          'var(--color-gray-500)',
                                       }}
                                     >
                                       Total Hasil
@@ -1067,7 +1067,7 @@ const RekapVoucherPage = () => {
                       className="px-4 py-3 border-top"
                       style={{
                         background:
-                          '#fafafa',
+                          'var(--color-surface-2)',
                       }}
                     >
                       <div className="row g-2">
@@ -1116,10 +1116,10 @@ const RekapVoucherPage = () => {
                             <div
                               style={{
                                 background:
-                                  'white',
+                                  'var(--color-surface)',
 
                                 border:
-                                  '1px solid #eee',
+                                  '1px solid var(--color-gray-200)',
 
                                 borderRadius: 14,
 
@@ -1137,7 +1137,7 @@ const RekapVoucherPage = () => {
                                       : '0.75rem',
 
                                   color:
-                                    '#777',
+                                    'var(--color-gray-500)',
                                 }}
                               >
                                 {

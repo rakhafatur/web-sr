@@ -367,7 +367,7 @@ const AbsensiPage = () => {
         className="mb-4 p-4 rounded-4 shadow-sm"
         style={{
           background:
-            'linear-gradient(135deg, var(--color-green), #7be0a9)',
+            'linear-gradient(135deg, var(--color-green), var(--color-accent))',
           color: 'white',
         }}
       >
@@ -433,7 +433,7 @@ const AbsensiPage = () => {
           className="px-4 py-3 border-bottom"
           style={{
             background:
-              'linear-gradient(to right, #effff4, #ffffff)',
+              'linear-gradient(to right, var(--color-green-lighter), var(--color-surface))',
           }}
         >
           <div className="d-flex align-items-center gap-2">
@@ -454,7 +454,7 @@ const AbsensiPage = () => {
                 style={{
                   fontSize:
                     '0.85rem',
-                  color: '#666',
+                  color: 'var(--color-gray-500)',
                 }}
               >
                 Isi data absensi
@@ -501,7 +501,7 @@ const AbsensiPage = () => {
                     : 18,
 
                   border:
-                    '2px solid #d8f3df',
+                    '2px solid var(--color-green-light)',
 
                   paddingLeft: isMobile
                     ? 14
@@ -563,7 +563,7 @@ const AbsensiPage = () => {
                     : 18,
 
                   border:
-                    '2px solid #d8f3df',
+                    '2px solid var(--color-green-light)',
 
                   paddingInline: isMobile
                     ? 14
@@ -628,20 +628,20 @@ const AbsensiPage = () => {
 
                         border: active
                           ? 'none'
-                          : '1px solid #dfeee4',
+                          : '1px solid var(--color-gray-200)',
 
                         background: active
-                          ? 'linear-gradient(135deg,#22c55e,#4ade80)'
-                          : '#fff',
+                          ? 'linear-gradient(135deg, var(--color-green), var(--color-accent))'
+                          : 'var(--color-surface)',
 
                         color: active
                           ? 'white'
-                          : '#444',
+                          : 'var(--color-gray-700)',
 
                         whiteSpace: 'nowrap',
 
                         boxShadow: active
-                          ? '0 8px 18px rgba(34,197,94,0.18)'
+                          ? '0 8px 18px rgba(var(--color-primary-rgb),0.3)'
                           : 'none',
                       }}
                     >
@@ -671,7 +671,7 @@ const AbsensiPage = () => {
                 style={{
                   borderRadius: 16,
                   border:
-                    '2px solid #d8f3df',
+                    '2px solid var(--color-green-light)',
 
                   padding: isMobile
                     ? '12px 14px'
@@ -705,7 +705,7 @@ const AbsensiPage = () => {
               onClick={handleSubmit}
               style={{
                 background:
-                  'linear-gradient(135deg,#22c55e,#4ade80)',
+                  'linear-gradient(135deg, var(--color-green), var(--color-accent))',
 
                 color: 'white',
 
@@ -742,7 +742,7 @@ const AbsensiPage = () => {
                 justifyContent: 'center',
 
                 boxShadow:
-                  '0 10px 25px rgba(34,197,94,0.25)',
+                  '0 10px 25px rgba(var(--color-primary-rgb),0.3)',
               }}
             >
               <FiPlus
@@ -793,7 +793,7 @@ const AbsensiPage = () => {
                     ? '0.72rem'
                     : '0.9rem',
 
-                  color: '#777',
+                  color: 'var(--color-gray-500)',
 
                   marginTop: 2,
                 }}
@@ -832,7 +832,7 @@ const AbsensiPage = () => {
                   borderRadius: 12,
 
                   background:
-                    '#f4f4f5',
+                    'var(--color-surface-2)',
 
                   padding: 0,
 
@@ -861,7 +861,7 @@ const AbsensiPage = () => {
                   borderRadius: 12,
 
                   background:
-                    '#f4f4f5',
+                    'var(--color-surface-2)',
 
                   padding: 0,
 
@@ -883,26 +883,26 @@ const AbsensiPage = () => {
               {
                 label: 'Kerja',
                 total: totalKERJA,
-                bg: '#dcfce7',
-                color: '#166534',
+                bg: 'var(--color-income-soft)',
+                color: 'var(--color-income)',
               },
               {
                 label: 'Mens',
                 total: totalMENS,
-                bg: '#fee2e2',
-                color: '#991b1b',
+                bg: 'var(--color-expense-soft)',
+                color: 'var(--color-expense)',
               },
               {
                 label: 'Off',
                 total: totalOFF,
-                bg: '#e5e7eb',
-                color: '#374151',
+                bg: 'var(--color-gray-200)',
+                color: 'var(--color-gray-700)',
               },
               {
                 label: 'Sakit',
                 total: totalSAKIT,
-                bg: '#fef3c7',
-                color: '#92400e',
+                bg: 'var(--color-voucher-soft)',
+                color: 'var(--color-voucher)',
               },
             ].map((item) => (
               <div
@@ -980,7 +980,7 @@ const AbsensiPage = () => {
               className="px-4 py-3 border-bottom"
               style={{
                 background:
-                  'linear-gradient(to right,#ffffff,#f5fff8)',
+                  'linear-gradient(to right, var(--color-surface), var(--color-green-lighter))',
               }}
             >
               <div className="fw-bold">
@@ -991,7 +991,7 @@ const AbsensiPage = () => {
                 style={{
                   fontSize:
                     '0.85rem',
-                  color: '#666',
+                  color: 'var(--color-gray-500)',
                 }}
               >
                 Histori absensi{' '}
@@ -1111,7 +1111,7 @@ const AbsensiPage = () => {
                     <div
                       style={{
                         color:
-                          '#666',
+                          'var(--color-gray-500)',
                       }}
                     >
                       Halaman {page}{' '}

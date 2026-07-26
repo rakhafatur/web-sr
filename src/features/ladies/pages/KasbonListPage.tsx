@@ -64,8 +64,8 @@ const KasbonListPage = () => {
       />
 
       <LedgerSummaryCard
-        gradient="linear-gradient(135deg,#ef4444,#dc2626)"
-        shadowColor="rgba(239,68,68,0.18)"
+        gradient="linear-gradient(135deg, var(--color-expense), #b91c1c)"
+        shadowColor="rgba(var(--color-danger-solid-rgb),0.3)"
         icon={<FiCreditCard size={18} />}
         label="Total Kasbon"
         value={<>Rp {totalJumlah.toLocaleString('id-ID')}</>}
@@ -87,16 +87,16 @@ const KasbonListPage = () => {
           renderItem={(item) => (
             <div className="d-flex justify-content-between align-items-start">
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 11, color: '#999', fontWeight: 600, marginBottom: 6 }}>
+                <div style={{ fontSize: 11, color: 'var(--color-gray-500)', fontWeight: 600, marginBottom: 6 }}>
                   {dayjs(item.tanggal).format('DD MMM YYYY')}
                 </div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: '#dc2626', lineHeight: 1.1 }}>
+                <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-expense)', lineHeight: 1.1 }}>
                   - Rp {item.jumlah.toLocaleString('id-ID')}
                 </div>
                 <div
                   style={{
                     fontSize: 11,
-                    color: '#777',
+                    color: 'var(--color-gray-500)',
                     marginTop: 6,
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',

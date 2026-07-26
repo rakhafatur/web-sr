@@ -86,7 +86,7 @@ const UserListPage = () => {
         className="mb-3 p-3 p-md-4 rounded-4 shadow-sm position-relative overflow-hidden"
         style={{
           background:
-            'linear-gradient(135deg, var(--color-green), #7be0a9)',
+            'linear-gradient(135deg, var(--color-green), var(--color-accent))',
           color: 'white',
         }}
       >
@@ -159,9 +159,9 @@ const UserListPage = () => {
         <div className="col-6">
           <div
             className="card border-0 shadow-sm rounded-4 p-2 p-md-3"
-            style={{ background: '#fff' }}
+            style={{ background: 'var(--color-surface)' }}
           >
-            <div style={{ fontSize: isMobile ? '0.7rem' : '0.82rem', color: '#666' }}>
+            <div style={{ fontSize: isMobile ? '0.7rem' : '0.82rem', color: 'var(--color-gray-500)' }}>
               Total User
             </div>
             <div
@@ -178,9 +178,9 @@ const UserListPage = () => {
         <div className="col-6">
           <div
             className="card border-0 shadow-sm rounded-4 p-2 p-md-3"
-            style={{ background: '#fff' }}
+            style={{ background: 'var(--color-surface)' }}
           >
-            <div style={{ fontSize: isMobile ? '0.7rem' : '0.82rem', color: '#666' }}>
+            <div style={{ fontSize: isMobile ? '0.7rem' : '0.82rem', color: 'var(--color-gray-500)' }}>
               Status
             </div>
             <div
@@ -202,7 +202,7 @@ const UserListPage = () => {
           <div className="d-flex justify-content-between align-items-center gap-2 flex-wrap">
             <div>
               <div className="fw-bold">List User</div>
-              <div style={{ fontSize: '0.8rem', color: '#666' }}>
+              <div style={{ fontSize: '0.8rem', color: 'var(--color-gray-500)' }}>
                 Data user aktif
               </div>
             </div>
@@ -214,7 +214,7 @@ const UserListPage = () => {
                     position: 'absolute',
                     top: 12,
                     left: 12,
-                    color: '#888',
+                    color: 'var(--color-gray-500)',
                   }}
                 />
                 <input

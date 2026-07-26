@@ -67,8 +67,8 @@ const VoucherListPage = () => {
       />
 
       <LedgerSummaryCard
-        gradient="linear-gradient(135deg,#22c55e,#16a34a)"
-        shadowColor="rgba(34,197,94,0.18)"
+        gradient="linear-gradient(135deg, var(--color-green), var(--color-accent))"
+        shadowColor="rgba(var(--color-primary-rgb),0.3)"
         icon={<FiGift size={18} />}
         label="Total Voucher"
         value={<>{totalPcs} pcs</>}
@@ -93,19 +93,19 @@ const VoucherListPage = () => {
           renderItem={(row) => (
             <div className="d-flex justify-content-between align-items-start">
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 11, color: '#999', fontWeight: 600, marginBottom: 6 }}>
+                <div style={{ fontSize: 11, color: 'var(--color-gray-500)', fontWeight: 600, marginBottom: 6 }}>
                   {dayjs(row.tanggal).format('DD MMM YYYY')}
                 </div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: '#16a34a', lineHeight: 1.1 }}>
+                <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-income)', lineHeight: 1.1 }}>
                   {row.jumlah_voucher} pcs
                 </div>
-                <div style={{ fontSize: 12, color: '#444', marginTop: 3, fontWeight: 600 }}>
+                <div style={{ fontSize: 12, color: 'var(--color-gray-700)', marginTop: 3, fontWeight: 600 }}>
                   Rp {(row.jumlah_voucher * HARGA_PER_VOUCHER).toLocaleString('id-ID')}
                 </div>
                 <div
                   style={{
                     fontSize: 11,
-                    color: '#777',
+                    color: 'var(--color-gray-500)',
                     marginTop: 6,
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',

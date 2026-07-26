@@ -24,8 +24,8 @@ const ruleSections: RuleSection[] =
       icon: (
         <FiShield size={18} />
       ),
-      color: '#2563eb',
-      bg: '#dbeafe',
+      color: 'var(--color-medical)',
+      bg: 'var(--color-medical-soft)',
       rules: [
         'Wajib kerja minimal 18 hari dalam sebulan.',
       ],
@@ -36,8 +36,8 @@ const ruleSections: RuleSection[] =
       icon: (
         <FiCalendar size={18} />
       ),
-      color: '#16a34a',
-      bg: '#dcfce7',
+      color: 'var(--color-income)',
+      bg: 'var(--color-income-soft)',
       rules: [
         'Wajib melakukan absensi setiap hari melalui polling yang dibagikan di grup WhatsApp.',
 
@@ -52,8 +52,8 @@ const ruleSections: RuleSection[] =
       icon: (
         <FiGift size={18} />
       ),
-      color: '#d97706',
-      bg: '#fef3c7',
+      color: 'var(--color-voucher)',
+      bg: 'var(--color-voucher-soft)',
       rules: [
         'Voucher direkap secara harian.',
 
@@ -68,8 +68,8 @@ const ruleSections: RuleSection[] =
       icon: (
         <FiCreditCard size={18} />
       ),
-      color: '#dc2626',
-      bg: '#fee2e2',
+      color: 'var(--color-expense)',
+      bg: 'var(--color-expense-soft)',
       rules: [
         'Jumlah kasbon disesuaikan dengan total voucher yang diterima setiap bulan.',
 
@@ -106,7 +106,7 @@ const PeraturanPage = () => {
       <div
         style={{
           background:
-            'linear-gradient(135deg,#22c55e,#16a34a)',
+            'linear-gradient(135deg, var(--color-green), var(--color-accent))',
           borderRadius: 24,
           padding:
             '22px 20px',
@@ -115,8 +115,7 @@ const PeraturanPage = () => {
             'relative',
           overflow:
             'hidden',
-          boxShadow:
-            '0 10px 30px rgba(34,197,94,0.18)',
+          boxShadow: 'var(--shadow-brand)',
         }}
       >
         {/* BG */}
@@ -211,11 +210,11 @@ const PeraturanPage = () => {
                 key={index}
                 style={{
                   background:
-                    '#fff',
+                    'var(--color-surface)',
                   border:
                     isOpen
                       ? `1px solid ${section.bg}`
-                      : '1px solid #f1f5f9',
+                      : '1px solid var(--color-gray-200)',
                   borderRadius: 20,
                   overflow:
                     'hidden',
@@ -265,7 +264,7 @@ const PeraturanPage = () => {
                           fontSize: 15,
                           fontWeight: 700,
                           color:
-                            '#111827',
+                            'var(--color-dark)',
                         }}
                       >
                         {
@@ -277,7 +276,7 @@ const PeraturanPage = () => {
                         style={{
                           fontSize: 11,
                           color:
-                            '#999',
+                            'var(--color-gray-500)',
                           marginTop: 2,
                         }}
                       >
@@ -294,7 +293,7 @@ const PeraturanPage = () => {
                   <div
                     style={{
                       color:
-                        '#666',
+                        'var(--color-gray-500)',
                     }}
                   >
                     {isOpen ? (
@@ -324,9 +323,9 @@ const PeraturanPage = () => {
                             className="d-flex align-items-start gap-2"
                             style={{
                               background:
-                                '#fafafa',
+                                'var(--color-surface-2)',
                               border:
-                                '1px solid #f3f4f6',
+                                '1px solid var(--color-gray-200)',
                               borderRadius: 14,
                               padding:
                                 '12px 13px',
@@ -349,7 +348,7 @@ const PeraturanPage = () => {
                               style={{
                                 fontSize: 13,
                                 color:
-                                  '#444',
+                                  'var(--color-gray-700)',
                                 lineHeight: 1.6,
                               }}
                             >

@@ -106,22 +106,22 @@ const TransaksiFormPengawas = ({
       value: 'kasbon_pengawas',
       label: 'Kasbon',
       icon: <FiTrendingDown />,
-      color: '#dc2626',
-      bg: '#fee2e2',
+      color: 'var(--color-expense)',
+      bg: 'var(--color-expense-soft)',
     },
     {
       value: 'gaji_pengawas',
       label: 'Gaji',
       icon: <FiTrendingUp />,
-      color: '#16a34a',
-      bg: '#dcfce7',
+      color: 'var(--color-income)',
+      bg: 'var(--color-income-soft)',
     },
     {
       value: 'lainnya_pengawas',
       label: 'Lainnya',
       icon: <FiFileText />,
-      color: '#2563eb',
-      bg: '#dbeafe',
+      color: 'var(--color-medical)',
+      bg: 'var(--color-medical-soft)',
     },
   ];
 
@@ -150,10 +150,10 @@ const TransaksiFormPengawas = ({
                 style={{
                   borderRadius: isMobile ? 12 : 20,
                   padding: isMobile ? '10px 8px' : '16px 14px',
-                  background: active ? item.bg : '#fff',
+                  background: active ? item.bg : 'var(--color-surface)',
                   border: active
                     ? `1.5px solid ${item.color}`
-                    : '1px solid #eee',
+                    : '1px solid var(--color-gray-200)',
                   minHeight: isMobile ? 70 : 90,
                   boxShadow: active
                     ? `0 4px 12px ${item.bg}`
@@ -231,7 +231,7 @@ const TransaksiFormPengawas = ({
             className="btn w-100 border-0"
             style={{
               background:
-                'linear-gradient(135deg, var(--color-green), #65d68d)',
+                'linear-gradient(135deg, var(--color-green), var(--color-accent))',
               color: '#fff',
               borderRadius: 18,
               height: 56,
@@ -264,9 +264,9 @@ const TransaksiFormPengawas = ({
             bottom: 0,
             left: 0,
             right: 0,
-            background: '#fff',
+            background: 'var(--color-surface)',
             padding: '12px 16px',
-            borderTop: '1px solid #eee',
+            borderTop: '1px solid var(--color-gray-200)',
             zIndex: 999,
           }}
         >
@@ -274,7 +274,7 @@ const TransaksiFormPengawas = ({
             className="btn w-100 border-0"
             style={{
               background:
-                'linear-gradient(135deg, var(--color-green), #65d68d)',
+                'linear-gradient(135deg, var(--color-green), var(--color-accent))',
               color: '#fff',
               borderRadius: 14,
               height: 48,

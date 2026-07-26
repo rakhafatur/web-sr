@@ -3,7 +3,6 @@ import { RootState } from '../../../app/store';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import './HomePage.css';
-import bgImage from '../../../assets/bg-home.png';
 import heroImage from '../../../assets/sr-home-char2.png';
 
 function HomePageDesktop() {

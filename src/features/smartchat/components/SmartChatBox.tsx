@@ -39,8 +39,8 @@ const SmartChatBox: React.FC<SmartChatBoxProps> = ({
             minWidth: 38,
             borderRadius: 14,
             background: isAI
-              ? "linear-gradient(135deg, #22c55e, #86efac)"
-              : "linear-gradient(135deg, #3b82f6, #60a5fa)",
+              ? "linear-gradient(135deg, var(--color-green), var(--color-accent))"
+              : "linear-gradient(135deg, var(--color-medical), var(--color-accent))",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -66,16 +66,16 @@ const SmartChatBox: React.FC<SmartChatBoxProps> = ({
               ? "24px 24px 24px 8px"
               : "24px 24px 8px 24px",
             background: isAI
-              ? "rgba(255,255,255,0.82)"
-              : "linear-gradient(135deg, #16a34a, #22c55e)",
-            color: isAI ? "#1f2937" : "white",
+              ? "rgba(var(--color-bg-rgb),0.82)"
+              : "linear-gradient(135deg, var(--color-income), var(--color-primary))",
+            color: isAI ? "var(--color-dark)" : "white",
             backdropFilter: "blur(16px)",
             border: isAI
-              ? "1px solid rgba(255,255,255,0.8)"
+              ? "1px solid var(--color-gray-200)"
               : "none",
             boxShadow: isAI
-              ? "0 10px 30px rgba(0,0,0,0.06)"
-              : "0 12px 30px rgba(34,197,94,0.25)",
+              ? "0 10px 30px rgba(0,0,0,0.3)"
+              : "0 12px 30px rgba(var(--color-primary-rgb),0.3)",
             overflow: "hidden",
           }}
         >
@@ -85,7 +85,7 @@ const SmartChatBox: React.FC<SmartChatBoxProps> = ({
               position: "absolute",
               inset: 0,
               background: isAI
-                ? "linear-gradient(to bottom right, rgba(255,255,255,0.7), transparent)"
+                ? "linear-gradient(to bottom right, rgba(255,255,255,0.06), transparent)"
                 : "linear-gradient(to bottom right, rgba(255,255,255,0.18), transparent)",
               pointerEvents: "none",
             }}

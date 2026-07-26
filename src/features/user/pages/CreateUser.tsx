@@ -69,7 +69,7 @@ const CreateUser = () => {
       <div
         className="mb-4 p-4 rounded-4 shadow-sm position-relative overflow-hidden"
         style={{
-          background: 'linear-gradient(135deg, var(--color-green), #7be0a9)',
+          background: 'linear-gradient(135deg, var(--color-green), var(--color-accent))',
           color: 'white',
         }}
       >
@@ -126,8 +126,8 @@ const CreateUser = () => {
             style={{
               padding: 22,
               borderRadius: 24,
-              background: 'linear-gradient(135deg, #f4fff7, #ffffff)',
-              border: '1px solid #e8f4ec',
+              background: 'linear-gradient(135deg, var(--color-green-lighter), var(--color-surface))',
+              border: '1px solid var(--color-green-light)',
             }}
           >
             <div
@@ -135,7 +135,7 @@ const CreateUser = () => {
                 width: 62,
                 height: 62,
                 borderRadius: 18,
-                background: 'linear-gradient(135deg, var(--color-green), #7be0a9)',
+                background: 'linear-gradient(135deg, var(--color-green), var(--color-accent))',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -149,7 +149,7 @@ const CreateUser = () => {
 
             <div>
               <div className="fw-bold">User Management</div>
-              <div style={{ fontSize: '0.85rem', color: '#666' }}>
+              <div style={{ fontSize: '0.85rem', color: 'var(--color-gray-500)' }}>
                 Lengkapi informasi user dengan benar sebelum menyimpan data
               </div>
             </div>
@@ -185,7 +185,7 @@ const CreateUser = () => {
                 onChange={handleChange}
               />
 
-              <div style={{ fontSize: '0.75rem', color: '#888', marginTop: 6 }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--color-gray-500)', marginTop: 6 }}>
                 Password akan disimpan ke sistem
               </div>
             </div>
@@ -202,7 +202,7 @@ const CreateUser = () => {
           style={{
             border: 'none',
             borderRadius: 18,
-            background: 'linear-gradient(135deg, var(--color-green), #67d492)',
+            background: 'linear-gradient(135deg, var(--color-green), var(--color-accent))',
             color: 'white',
             fontWeight: 700,
             padding: 16,

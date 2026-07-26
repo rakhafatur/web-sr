@@ -370,27 +370,27 @@ const RiwayatTransaksi = ({
   ) => {
     const styles: any = {
       voucher: {
-        bg: '#dcfce7',
-        color: '#15803d',
+        bg: 'var(--color-income-soft)',
+        color: 'var(--color-income)',
         label: 'Voucher',
       },
 
       pemasukan_lain: {
-        bg: '#fef3c7',
-        color: '#b45309',
+        bg: 'var(--color-voucher-soft)',
+        color: 'var(--color-voucher)',
         label:
           'Pemasukan Lain',
       },
 
       kasbon: {
-        bg: '#fee2e2',
-        color: '#b91c1c',
+        bg: 'var(--color-expense-soft)',
+        color: 'var(--color-expense)',
         label: 'Kasbon',
       },
 
       dokter: {
-        bg: '#dbeafe',
-        color: '#2563eb',
+        bg: 'var(--color-medical-soft)',
+        color: 'var(--color-medical)',
         label:
           'Dokter',
       },
@@ -437,7 +437,7 @@ const RiwayatTransaksi = ({
                 summary.pemasukan,
 
               color:
-                '#16a34a',
+                'var(--color-income)',
 
               icon: (
                 <FiTrendingUp />
@@ -452,7 +452,7 @@ const RiwayatTransaksi = ({
                 summary.pengeluaran,
 
               color:
-                '#dc2626',
+                'var(--color-expense)',
 
               icon: (
                 <FiTrendingDown />
@@ -468,8 +468,8 @@ const RiwayatTransaksi = ({
               color:
                 summary.saldo >=
                 0
-                  ? '#2563eb'
-                  : '#dc2626',
+                  ? 'var(--color-medical)'
+                  : 'var(--color-expense)',
 
               icon: (
                 <FiLayers />
@@ -483,7 +483,7 @@ const RiwayatTransaksi = ({
               value:
                 summary.transaksi,
 
-              color: '#111',
+              color: 'var(--color-dark)',
 
               icon: (
                 <FiLayers />
@@ -500,7 +500,7 @@ const RiwayatTransaksi = ({
                     <div
                       style={{
                         color:
-                          '#666',
+                          'var(--color-gray-500)',
                         fontSize:
                           '0.85rem',
                       }}
@@ -601,19 +601,19 @@ const RiwayatTransaksi = ({
                       filterTipe ===
                       item.value
                         ? 'none'
-                        : '1px solid #ddd',
+                        : '1px solid var(--color-gray-200)',
 
                     background:
                       filterTipe ===
                       item.value
                         ? 'var(--color-green)'
-                        : '#fff',
+                        : 'var(--color-surface)',
 
                     color:
                       filterTipe ===
                       item.value
                         ? '#fff'
-                        : '#444',
+                        : 'var(--color-gray-700)',
 
                     fontWeight: 600,
                   }}
@@ -643,7 +643,7 @@ const RiwayatTransaksi = ({
                   transform:
                     'translateY(-50%)',
 
-                  color: '#888',
+                  color: 'var(--color-gray-500)',
                 }}
               />
 
@@ -663,7 +663,7 @@ const RiwayatTransaksi = ({
                   borderRadius: 999,
 
                   background:
-                    '#f5f5f5',
+                    'var(--color-surface-2)',
 
                   paddingLeft: 40,
 
@@ -727,11 +727,11 @@ const RiwayatTransaksi = ({
                         color:
                           row.tipe ===
                           'kasbon'
-                            ? '#dc2626'
+                            ? 'var(--color-expense)'
                             : row.tipe ===
                               'dokter'
-                            ? '#2563eb'
-                            : '#16a34a',
+                            ? 'var(--color-medical)'
+                            : 'var(--color-income)',
                       }}
                     >
                       {row.tipe ===
@@ -763,7 +763,7 @@ const RiwayatTransaksi = ({
                       <span
                         style={{
                           color:
-                            '#666',
+                            'var(--color-gray-500)',
                         }}
                       >
                         Voucher{' '}
@@ -824,7 +824,7 @@ const RiwayatTransaksi = ({
                 className="text-center py-5"
                 style={{
                   color:
-                    '#666',
+                    'var(--color-gray-500)',
                 }}
               >
                 <div
@@ -870,7 +870,7 @@ const RiwayatTransaksi = ({
                 className="fw-semibold"
                 style={{
                   color:
-                    '#555',
+                    'var(--color-gray-600)',
                 }}
               >
                 Halaman {page}{' '}

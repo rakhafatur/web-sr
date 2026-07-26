@@ -64,8 +64,8 @@ const PemasukanLainListPage = () => {
       />
 
       <LedgerSummaryCard
-        gradient="linear-gradient(135deg,#f59e0b,#d97706)"
-        shadowColor="rgba(245,158,11,0.18)"
+        gradient="linear-gradient(135deg, var(--color-voucher), #a16207)"
+        shadowColor="rgba(var(--color-warning-solid-rgb),0.3)"
         icon={<FiDollarSign size={18} />}
         label="Total Pemasukan"
         value={<>Rp {totalJumlah.toLocaleString('id-ID')}</>}
@@ -87,16 +87,16 @@ const PemasukanLainListPage = () => {
           renderItem={(item) => (
             <div className="d-flex justify-content-between align-items-start">
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 11, color: '#999', fontWeight: 600, marginBottom: 6 }}>
+                <div style={{ fontSize: 11, color: 'var(--color-gray-500)', fontWeight: 600, marginBottom: 6 }}>
                   {dayjs(item.tanggal).format('DD MMM YYYY')}
                 </div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: '#d97706', lineHeight: 1.1 }}>
+                <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-voucher)', lineHeight: 1.1 }}>
                   + Rp {item.jumlah.toLocaleString('id-ID')}
                 </div>
                 <div
                   style={{
                     fontSize: 11,
-                    color: '#777',
+                    color: 'var(--color-gray-500)',
                     marginTop: 6,
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
