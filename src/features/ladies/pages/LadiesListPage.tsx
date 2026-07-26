@@ -6,8 +6,8 @@ import { useEntityList } from '../../../hooks/useEntityList';
 import DataTable from '../../../components/DataTable';
 import ActionIconButton from '../../../components/ActionIconButton';
 import Pagination from '../../../components/Pagination';
-import ListToolbar from '../../../components/ListToolBar';
 import ListPageHeader from '../../../components/ListPageHeader';
+import HeaderActionButton from '../../../components/HeaderActionButton';
 import LadiesCardList from '../components/LadiesCardList';
 
 export type Lady = {
@@ -57,6 +57,13 @@ const LadiesListPage = () => {
         icon={<FiUser />}
         title="Management Ladies"
         description="Kelola data ladies SR Agency"
+        actions={
+          !isMobile && (
+            <HeaderActionButton icon={<FiPlus />} onClick={() => navigate('/ladies-create')}>
+              Tambah Ladies
+            </HeaderActionButton>
+          )
+        }
       />
 
       {isMobile && (
@@ -92,20 +99,19 @@ const LadiesListPage = () => {
         </>
       ) : (
         <>
-          <ListToolbar
-            keyword={keyword}
-            onKeywordChange={(val) => {
-              setPage(1);
-              setKeyword(val);
-            }}
-            onAddClick={() => navigate('/ladies-create')}
-            addLabel={
-              <span className="d-flex align-items-center">
-                <FiPlus className="me-2" /> Tambah Ladies
-              </span>
-            }
-            buttonColor="btn-success"
-          />
+          <div className="d-flex justify-content-end align-items-stretch mb-3 gap-2">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="🔍 Cari ladies..."
+              value={keyword}
+              onChange={(e) => {
+                setPage(1);
+                setKeyword(e.target.value);
+              }}
+              style={{ maxWidth: 300 }}
+            />
+          </div>
 
           <DataTable
             columns={[

@@ -6,6 +6,8 @@ import { supabase } from '../../../lib/supabaseClient';
 import DataTable from '../../../components/DataTable';
 import ActionIconButton from '../../../components/ActionIconButton';
 import Pagination from '../../../components/Pagination';
+import ListPageHeader from '../../../components/ListPageHeader';
+import HeaderActionButton from '../../../components/HeaderActionButton';
 import UserCardList from '../components/UserCardList';
 
 import { useMediaQuery } from 'react-responsive';
@@ -13,9 +15,7 @@ import { useMediaQuery } from 'react-responsive';
 import {
   FiPlus,
   FiUsers,
-  FiRefreshCw,
   FiSearch,
-  FiShield,
   FiEdit2,
   FiTrash2,
 } from 'react-icons/fi';
@@ -85,119 +85,16 @@ const UserListPage = () => {
 
   return (
     <div className="page-shell py-4 px-3 px-md-4">
-      {/* HEADER */}
-      <div
-        className="mb-3 p-3 p-md-4 rounded-4 shadow-sm position-relative overflow-hidden"
-        style={{
-          background:
-            'linear-gradient(135deg, var(--color-green), var(--color-accent))',
-          color: 'white',
-        }}
-      >
-        <div className="d-flex gap-3 align-items-center">
-          <div
-            style={{
-              width: isMobile ? 48 : 62,
-              height: isMobile ? 48 : 62,
-              borderRadius: 18,
-              background: 'rgba(255,255,255,0.18)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: isMobile ? 20 : 26,
-            }}
-          >
-            <FiUsers />
-          </div>
-
-          <div className="flex-grow-1">
-            <div
-              className="fw-bold"
-              style={{
-                fontSize: isMobile ? '1rem' : '1.6rem',
-              }}
-            >
-              Management User
-            </div>
-
-            <div
-              style={{
-                fontSize: isMobile ? '0.72rem' : '0.9rem',
-                opacity: 0.85,
-              }}
-            >
-              Kelola user dan akses sistem SR Agency
-            </div>
-
-            {/* 🔥 BUTTON COMPACT DI BAWAH JUDUL */}
-            <div className="mt-2 d-flex gap-2 flex-wrap">
-              <button
-                onClick={() => navigate('/user-create')}
-                className="btn btn-light btn-sm d-flex align-items-center gap-1"
-                style={{
-                  borderRadius: 12,
-                  fontWeight: 600,
-                }}
-              >
-                <FiPlus size={14} />
-                Tambah User
-              </button>
-
-              <button
-                onClick={fetchUsers}
-                className="btn btn-outline-light btn-sm d-flex align-items-center gap-1"
-                style={{
-                  borderRadius: 12,
-                }}
-              >
-                <FiRefreshCw size={14} />
-                Refresh
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* SUMMARY (COMPACT MOBILE) */}
-      <div className="row g-2 mb-3">
-        <div className="col-6">
-          <div
-            className="card border-0 shadow-sm rounded-4 p-2 p-md-3"
-            style={{ background: 'var(--color-surface)' }}
-          >
-            <div style={{ fontSize: isMobile ? '0.7rem' : '0.82rem', color: 'var(--color-gray-500)' }}>
-              Total User
-            </div>
-            <div
-              className="fw-bold"
-              style={{
-                fontSize: isMobile ? '1.2rem' : '1.6rem',
-              }}
-            >
-              {total}
-            </div>
-          </div>
-        </div>
-
-        <div className="col-6">
-          <div
-            className="card border-0 shadow-sm rounded-4 p-2 p-md-3"
-            style={{ background: 'var(--color-surface)' }}
-          >
-            <div style={{ fontSize: isMobile ? '0.7rem' : '0.82rem', color: 'var(--color-gray-500)' }}>
-              Status
-            </div>
-            <div
-              className="fw-bold"
-              style={{
-                fontSize: isMobile ? '0.9rem' : '1.1rem',
-              }}
-            >
-              Active
-            </div>
-          </div>
-        </div>
-      </div>
+      <ListPageHeader
+        icon={<FiUsers />}
+        title="Management User"
+        description="Kelola user dan akses sistem SR Agency"
+        actions={
+          <HeaderActionButton icon={<FiPlus />} onClick={() => navigate('/user-create')}>
+            Tambah User
+          </HeaderActionButton>
+        }
+      />
 
       {/* CONTENT */}
       <div className="card border-0 shadow-sm rounded-4 overflow-hidden">

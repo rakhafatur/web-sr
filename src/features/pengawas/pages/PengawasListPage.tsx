@@ -8,6 +8,7 @@ import PengawasCardList from '../components/PengawasCardList';
 import { useMediaQuery } from 'react-responsive';
 import { FiPlus, FiEdit2, FiTrash2, FiUser } from 'react-icons/fi';
 import ListPageHeader from '../../../components/ListPageHeader';
+import HeaderActionButton from '../../../components/HeaderActionButton';
 
 type Pengawas = {
   id: string;
@@ -60,6 +61,13 @@ const PengawasListPage = () => {
         icon={<FiUser />}
         title="Management Pengawas"
         description="Kelola data pengawas SR Agency"
+        actions={
+          !isMobile && (
+            <HeaderActionButton icon={<FiPlus />} onClick={() => navigate('/pengawas-create')}>
+              Tambah Pengawas
+            </HeaderActionButton>
+          )
+        }
       />
 
       {isMobile && (
@@ -98,13 +106,7 @@ const PengawasListPage = () => {
         </>
       ) : (
         <>
-          <div className="d-flex justify-content-between align-items-stretch mb-3 gap-2">
-            <button
-              className="btn btn-success fw-bold"
-              onClick={() => navigate('/pengawas-create')}
-            >
-              <FiPlus className="me-2" /> Tambah Pengawas
-            </button>
+          <div className="d-flex justify-content-end align-items-stretch mb-3 gap-2">
             <input
               type="text"
               className="form-control"

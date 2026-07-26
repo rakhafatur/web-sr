@@ -8,6 +8,7 @@ import AgentCardList from '../components/AgentCardList';
 import { useMediaQuery } from 'react-responsive';
 import { FiPlus, FiEdit2, FiTrash2, FiUser } from 'react-icons/fi';
 import ListPageHeader from '../../../components/ListPageHeader';
+import HeaderActionButton from '../../../components/HeaderActionButton';
 
 export type Agent = {
   id: string;
@@ -55,6 +56,13 @@ const AgentListPage = () => {
         icon={<FiUser />}
         title="Management Agent"
         description="Kelola data agent SR Agency"
+        actions={
+          !isMobile && (
+            <HeaderActionButton icon={<FiPlus />} onClick={() => navigate('/agent-create')}>
+              Tambah Agent
+            </HeaderActionButton>
+          )
+        }
       />
 
       {isMobile && (
@@ -93,10 +101,7 @@ const AgentListPage = () => {
         </>
       ) : (
         <>
-          <div className="d-flex justify-content-between align-items-stretch mb-3 gap-2">
-            <button className="btn btn-success fw-bold" onClick={() => navigate('/agent-create')}>
-              <FiPlus className="me-2" /> Tambah Agent
-            </button>
+          <div className="d-flex justify-content-end align-items-stretch mb-3 gap-2">
             <input
               type="text"
               className="form-control"

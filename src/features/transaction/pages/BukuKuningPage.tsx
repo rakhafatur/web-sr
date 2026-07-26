@@ -965,7 +965,7 @@ const BukuKuningPage = () => {
             }}
           >
             <button
-              className="btn btn-sm btn-success fw-semibold d-flex align-items-center justify-content-center gap-2"
+              className="btn btn-sm btn-primary fw-semibold d-flex align-items-center justify-content-center gap-2"
               onClick={
                 handleTutupBuku
               }
@@ -994,7 +994,7 @@ const BukuKuningPage = () => {
             </button>
 
             <button
-              className="btn btn-sm btn-outline-success fw-semibold d-flex align-items-center justify-content-center gap-2"
+              className="btn btn-sm btn-outline-primary fw-semibold d-flex align-items-center justify-content-center gap-2"
               onClick={
                 handleExportPDF
               }

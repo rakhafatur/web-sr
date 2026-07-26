@@ -236,7 +236,7 @@ const BukuKuningPengawasPage = () => {
           style={{ alignItems: 'center' }}
         >
           <button
-            className="btn btn-sm btn-success fw-semibold d-flex align-items-center justify-content-center gap-2"
+            className="btn btn-sm btn-primary fw-semibold d-flex align-items-center justify-content-center gap-2"
             onClick={handleTutupBuku}
             title={isSmallMobile ? 'Tutup Buku' : ''}
             style={{
@@ -249,7 +249,7 @@ const BukuKuningPengawasPage = () => {
             {isSmallMobile ? null : 'Tutup Buku'}
           </button>
           <button
-            className="btn btn-sm btn-outline-success fw-semibold d-flex align-items-center justify-content-center gap-2"
+            className="btn btn-sm btn-outline-primary fw-semibold d-flex align-items-center justify-content-center gap-2"
             onClick={handleExportPDF}
             title={isSmallMobile ? 'Cetak PDF' : ''}
             style={{
