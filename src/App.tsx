@@ -43,6 +43,7 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from './layout/MainLayout';
 import SplashScreen from './components/Common/SplashScreen';
+import RouteLoader from './components/Common/RouteLoader';
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -61,7 +62,7 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Suspense fallback={<div>Loading halaman...</div>}>
+        <Suspense fallback={<RouteLoader />}>
           <Routes>
             {/* Public routes */}
             <Route path="/login" element={<LoginPage />} />

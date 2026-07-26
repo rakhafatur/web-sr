@@ -12,8 +12,8 @@ export default defineConfig({
         short_name: 'SR Agent',
         start_url: '/',
         display: 'standalone',
-        background_color: '#1a102b',
-        theme_color: '#1a102b',
+        background_color: '#0e0e10',
+        theme_color: '#0e0e10',
         icons: [
           {
             src: '/icons/sr-green.png',
