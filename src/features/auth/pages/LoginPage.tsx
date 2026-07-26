@@ -44,7 +44,7 @@ function LoginPage() {
       <div className="auth-container">
         {/* Ilustrasi kiri (desktop only) */}
         <div className="auth-illustration d-none d-md-flex">
-          <img src="/assets/bg-home.png" alt="SR Login Illustration" className="img-fluid" style={{ maxWidth: '90%' }} />
+          <img src="/assets/bg-login.png" alt="SR Login Illustration" className="img-fluid" style={{ maxWidth: '90%' }} />
         </div>
 
         {/* Form kanan */}
