@@ -1,9 +1,7 @@
 import dayjs from 'dayjs';
-import {
-  FiTrash2,
-  FiChevronLeft,
-  FiChevronRight,
-} from 'react-icons/fi';
+import ActionIconButton from '../../../components/ActionIconButton';
+import Pagination from '../../../components/Pagination';
+import { FiTrash2 } from 'react-icons/fi';
 
 type Transaksi = {
   id: string;
@@ -231,100 +229,19 @@ const CardTableRiwayatTransaksi = ({
               </div>
 
               {/* DELETE */}
-              <button
-                className="btn border-0 d-flex align-items-center justify-content-center"
-                style={{
-                  width: 32,
-                  height: 32,
-
-                  borderRadius: 10,
-
-                  background:
-                    'var(--color-expense-soft)',
-
-                  color:
-                    'var(--color-expense)',
-
-                  flexShrink: 0,
-                }}
-                onClick={() =>
-                  onDelete?.(
-                    row
-                  )
-                }
-              >
-                <FiTrash2
-                  size={13}
-                />
-              </button>
+              <ActionIconButton
+                icon={<FiTrash2 size={13} />}
+                variant="danger"
+                title="Hapus"
+                onClick={() => onDelete?.(row)}
+              />
             </div>
           </div>
         );
       })}
 
       {/* PAGINATION */}
-      <div className="d-flex justify-content-center align-items-center gap-2 mt-1">
-        <button
-          className="btn border-0 d-flex align-items-center justify-content-center"
-          style={{
-            width: 32,
-            height: 32,
-
-            borderRadius: 10,
-
-            background:
-              'var(--color-surface-2)',
-          }}
-          onClick={() =>
-            page > 0 &&
-            onPageChange(
-              page - 1
-            )
-          }
-          disabled={page === 0}
-        >
-          <FiChevronLeft size={15} />
-        </button>
-
-        <div
-          style={{
-            fontSize: 11,
-            fontWeight: 600,
-            color: 'var(--color-gray-500)',
-            minWidth: 42,
-            textAlign: 'center',
-          }}
-        >
-          {page + 1}/{totalPages}
-        </div>
-
-        <button
-          className="btn border-0 d-flex align-items-center justify-content-center"
-          style={{
-            width: 32,
-            height: 32,
-
-            borderRadius: 10,
-
-            background:
-              'var(--color-surface-2)',
-          }}
-          onClick={() =>
-            page <
-              totalPages -
-                1 &&
-            onPageChange(
-              page + 1
-            )
-          }
-          disabled={
-            page >=
-            totalPages - 1
-          }
-        >
-          <FiChevronRight size={15} />
-        </button>
-      </div>
+      <Pagination page={page} totalPages={totalPages} onPageChange={onPageChange} />
     </div>
   );
 };

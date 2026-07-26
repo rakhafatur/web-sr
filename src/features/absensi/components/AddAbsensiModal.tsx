@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import FormField from '../../../components/FormField';
 import ModalWrapper from '../../../components/ModalWrapper';
 import ModalHeading from '../../../components/ModalHeading';
-import ModalButton from '../../../components/ModalButton';
+import Button from '../../../components/Button';
 
 import {
   FiCalendar,
@@ -94,17 +94,17 @@ const AddAbsensiModal = ({
 
   const footer = (
     <div className="d-flex justify-content-end gap-2 flex-wrap">
-      <ModalButton variant="secondary" onClick={onClose}>
+      <Button variant="secondary" onClick={onClose}>
         Tutup
-      </ModalButton>
+      </Button>
       {readonly ? (
-        <ModalButton variant="warning" icon={<FiEdit2 />} onClick={() => setReadonly(false)}>
+        <Button variant="warning" icon={<FiEdit2 />} onClick={() => setReadonly(false)}>
           Edit Form
-        </ModalButton>
+        </Button>
       ) : (
-        <ModalButton variant="primary" icon={<FiSave />} onClick={handleSubmit}>
+        <Button variant="primary" icon={<FiSave />} onClick={handleSubmit}>
           Simpan
-        </ModalButton>
+        </Button>
       )}
     </div>
   );

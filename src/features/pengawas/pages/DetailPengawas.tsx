@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FiUser, FiCheckCircle, FiEdit2, FiX } from 'react-icons/fi';
+import { FiUser } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 
@@ -8,6 +8,7 @@ import FormField from '../../../components/FormField';
 import EntityPageHeader from '../../../components/EntityPageHeader';
 import EntityHeroCard from '../../../components/EntityHeroCard';
 import EntityFormCard from '../../../components/EntityFormCard';
+import EntityDetailActions from '../../../components/EntityDetailActions';
 import { supabase } from '../../../lib/supabaseClient';
 
 type FormType = {
@@ -121,49 +122,17 @@ const DetailPengawas = () => {
         description="Kelola informasi pengawas"
         onBack={() => navigate('/pengawas')}
         actions={
-          readonly ? (
-            <button
-              className="btn btn-light fw-bold d-flex align-items-center gap-2"
-              style={{ borderRadius: 14, color: 'var(--color-green)' }}
-              onClick={() => setReadonly(false)}
-            >
-              <FiEdit2 />
-              Edit Pengawas
-            </button>
-          ) : (
-            <div className="d-flex align-items-center gap-2">
-              <button
-                className="btn btn-light fw-semibold d-flex align-items-center gap-2"
-                style={{ borderRadius: 14 }}
-                onClick={() => {
-                  setReadonly(true);
-                  fetchPengawas();
-                }}
-              >
-                <FiX />
-                Batal
-              </button>
-
-              <button
-                className="btn btn-success fw-bold d-flex align-items-center gap-2"
-                style={{ borderRadius: 14 }}
-                onClick={handleSave}
-                disabled={saving}
-              >
-                {saving ? (
-                  <>
-                    <div className="spinner-border spinner-border-sm" role="status" />
-                    Menyimpan...
-                  </>
-                ) : (
-                  <>
-                    <FiCheckCircle />
-                    Simpan
-                  </>
-                )}
-              </button>
-            </div>
-          )
+          <EntityDetailActions
+            readonly={readonly}
+            editLabel="Edit Pengawas"
+            saving={saving}
+            onEdit={() => setReadonly(false)}
+            onCancel={() => {
+              setReadonly(true);
+              fetchPengawas();
+            }}
+            onSave={handleSave}
+          />
         }
       />
 

@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEntityList } from '../../../hooks/useEntityList';
 import DataTable from '../../../components/DataTable';
+import ActionIconButton from '../../../components/ActionIconButton';
+import Pagination from '../../../components/Pagination';
 import AgentCardList from '../components/AgentCardList';
 import { useMediaQuery } from 'react-responsive';
 import { FiPlus, FiEdit2, FiTrash2, FiUser } from 'react-icons/fi';
@@ -79,22 +81,7 @@ const AgentListPage = () => {
           />
 
           {totalPages > 1 && (
-            <div className="d-flex justify-content-between align-items-center mt-4">
-              <button
-                className="btn btn-outline-success"
-                onClick={() => setPage(page - 1)}
-                disabled={page <= 1}
-              >
-                ← Sebelumnya
-              </button>
-              <button
-                className="btn btn-outline-success"
-                onClick={() => setPage(page + 1)}
-                disabled={page >= totalPages}
-              >
-                Selanjutnya →
-              </button>
-            </div>
+            <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
           )}
 
           {/* FAB */}
@@ -131,20 +118,18 @@ const AgentListPage = () => {
                 label: 'Aksi',
                 render: (a: Agent) => (
                   <div className="d-flex gap-2">
-                    <button
-                      className="btn btn-sm btn-outline-warning me-2"
-                      onClick={() => navigate(`/agent-detail/${a.id}`)}
+                    <ActionIconButton
+                      icon={<FiEdit2 />}
+                      variant="warning"
                       title="Edit"
-                    >
-                      <FiEdit2 />
-                    </button>
-                    <button
-                      className="btn btn-sm btn-outline-danger"
-                      onClick={() => handleDelete(a.id)}
+                      onClick={() => navigate(`/agent-detail/${a.id}`)}
+                    />
+                    <ActionIconButton
+                      icon={<FiTrash2 />}
+                      variant="danger"
                       title="Hapus"
-                    >
-                      <FiTrash2 />
-                    </button>
+                      onClick={() => handleDelete(a.id)}
+                    />
                   </div>
                 ),
               },
@@ -153,22 +138,7 @@ const AgentListPage = () => {
           />
 
           {totalPages > 1 && (
-            <div className="d-flex justify-content-between align-items-center mt-4">
-              <button
-                className="btn btn-outline-success"
-                onClick={() => setPage(page - 1)}
-                disabled={page <= 1}
-              >
-                ← Sebelumnya
-              </button>
-              <button
-                className="btn btn-outline-success"
-                onClick={() => setPage(page + 1)}
-                disabled={page >= totalPages}
-              >
-                Selanjutnya →
-              </button>
-            </div>
+            <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
           )}
         </>
       )}

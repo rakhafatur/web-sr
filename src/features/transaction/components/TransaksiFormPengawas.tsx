@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { supabase } from '../../../lib/supabaseClient';
 import FormField from '../../../components/FormField';
+import Button from '../../../components/Button';
 
 import {
   FiTrendingDown,
@@ -227,32 +228,15 @@ const TransaksiFormPengawas = ({
       {/* DESKTOP BUTTON */}
       {!isMobile && (
         <div className="mt-4">
-          <button
-            className="btn w-100 border-0"
-            style={{
-              background:
-                'linear-gradient(135deg, var(--color-green), var(--color-accent))',
-              color: '#fff',
-              borderRadius: 18,
-              height: 56,
-              fontWeight: 700,
-              fontSize: '1rem',
-            }}
+          <Button
+            variant="primary"
+            fullWidth
             onClick={handleSubmit}
             disabled={loading}
+            icon={loading ? <div className="spinner-border spinner-border-sm" role="status" /> : <FiPlus />}
           >
-            {loading ? (
-              <>
-                <div className="spinner-border spinner-border-sm me-2" />
-                Menyimpan...
-              </>
-            ) : (
-              <>
-                <FiPlus className="me-2" />
-                Tambah Transaksi
-              </>
-            )}
-          </button>
+            {loading ? 'Menyimpan...' : 'Tambah Transaksi'}
+          </Button>
         </div>
       )}
 
@@ -270,32 +254,15 @@ const TransaksiFormPengawas = ({
             zIndex: 999,
           }}
         >
-          <button
-            className="btn w-100 border-0"
-            style={{
-              background:
-                'linear-gradient(135deg, var(--color-green), var(--color-accent))',
-              color: '#fff',
-              borderRadius: 14,
-              height: 48,
-              fontWeight: 700,
-              fontSize: '0.92rem',
-            }}
+          <Button
+            variant="primary"
+            fullWidth
             onClick={handleSubmit}
             disabled={loading}
+            icon={loading ? <div className="spinner-border spinner-border-sm" role="status" /> : <FiPlus />}
           >
-            {loading ? (
-              <>
-                <div className="spinner-border spinner-border-sm me-2" />
-                Menyimpan...
-              </>
-            ) : (
-              <>
-                <FiPlus className="me-2" />
-                Tambah Transaksi
-              </>
-            )}
-          </button>
+            {loading ? 'Menyimpan...' : 'Tambah Transaksi'}
+          </Button>
         </div>
       )}
     </div>

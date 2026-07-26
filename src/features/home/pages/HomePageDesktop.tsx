@@ -43,9 +43,9 @@ function HomePageDesktop() {
             >
               <p className="home-action-label">Hari ini mau cek apa dulu?</p>
               <div className="home-pills">
-                <span className="pill" onClick={() => navigate('/add-transaksi')}>🎟️ Transaksi Ladies</span>
-                <span className="pill" onClick={() => navigate('/absensi')}>📅 Absensi</span>
-                <span className="pill" onClick={() => navigate('/rekap-voucher')}>📊 Rekap Voucher</span>
+                <button className="pill" onClick={() => navigate('/add-transaksi')}>🎟️ Transaksi Ladies</button>
+                <button className="pill" onClick={() => navigate('/absensi')}>📅 Absensi</button>
+                <button className="pill" onClick={() => navigate('/rekap-voucher')}>📊 Rekap Voucher</button>
               </div>
             </motion.div>
           </div>

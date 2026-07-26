@@ -4,6 +4,7 @@ import { useMediaQuery } from 'react-responsive';
 
 import { supabase } from '../../../lib/supabaseClient';
 import DataTable from '../../../components/DataTable';
+import Button from '../../../components/Button';
 
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -474,67 +475,18 @@ const RekapVoucherPage = () => {
             </div>
 
             <div className="col-12 col-md-2">
-              <button
-                className="btn"
-                onClick={fetchData}
-                style={{
-                  width: '100%',
-
-                  height: isMobile
-                    ? 48
-                    : 56,
-
-                  borderRadius: 16,
-
-                  border: 'none',
-
-                  background:
-                    'linear-gradient(135deg, var(--color-green), var(--color-accent))',
-
-                  color: 'white',
-
-                  fontWeight: 700,
-
-                  boxShadow:
-                    '0 10px 25px rgba(var(--color-primary-rgb),0.3)',
-                }}
-              >
-                <FiRefreshCw className="me-2" />
+              <Button variant="primary" fullWidth onClick={fetchData} icon={<FiRefreshCw />}>
                 Tampilkan
-              </button>
+              </Button>
             </div>
 
-            {dataPerOutlet.length >
-              0 && (
-                <div className="col-12 col-md-2">
-                  <button
-                    className="btn"
-                    onClick={handleExportPDF}
-                    style={{
-                      width: '100%',
-
-                      height: isMobile
-                        ? 48
-                        : 56,
-
-                      borderRadius: 16,
-
-                      border:
-                        '2px solid var(--color-green)',
-
-                      background:
-                        'var(--color-surface)',
-
-                      color: 'var(--color-income)',
-
-                      fontWeight: 700,
-                    }}
-                  >
-                    <FiDownload className="me-2" />
-                    PDF
-                  </button>
-                </div>
-              )}
+            {dataPerOutlet.length > 0 && (
+              <div className="col-12 col-md-2">
+                <Button variant="secondary" fullWidth onClick={handleExportPDF} icon={<FiDownload />}>
+                  PDF
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>

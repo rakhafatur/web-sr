@@ -13,7 +13,8 @@ const pillButtonStyle = {
   background: 'var(--color-surface-2)',
 };
 
-const CardPagination = ({ page, totalPages, onPageChange }: Props) => (
+/** Pagination pill compact — standar untuk semua data table (desktop) & card list (mobile). */
+const Pagination = ({ page, totalPages, onPageChange }: Props) => (
   <div className="d-flex justify-content-center align-items-center gap-2 mt-1">
     <button
       className="btn border-0 d-flex align-items-center justify-content-center"
@@ -39,4 +40,4 @@ const CardPagination = ({ page, totalPages, onPageChange }: Props) => (
   </div>
 );
 
-export default CardPagination;
+export default Pagination;

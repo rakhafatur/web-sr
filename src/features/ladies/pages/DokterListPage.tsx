@@ -5,7 +5,6 @@ import dayjs from 'dayjs';
 import { FiHeart } from 'react-icons/fi';
 import type { UserWithLadies } from '../../../types/user';
 import CardTable from '../../../components/CardTable';
-import CardPagination from '../../../components/CardPagination';
 import MonthNavigator from '../components/MonthNavigator';
 import LedgerSummaryCard from '../components/LedgerSummaryCard';
 import LedgerEmptyState from '../components/LedgerEmptyState';
@@ -107,9 +106,6 @@ const DokterListPage = () => {
                 </div>
               </div>
             </div>
-          )}
-          renderFooter={({ page, totalPages, onPageChange }) => (
-            <CardPagination page={page} totalPages={totalPages} onPageChange={onPageChange} />
           )}
         />
       )}

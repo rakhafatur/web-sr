@@ -1,4 +1,5 @@
 import React from 'react';
+import Pagination from './Pagination';
 
 type FooterContext = {
   page: number;
@@ -40,22 +41,7 @@ function CardTable<T>({ data, page, rowsPerPage, onPageChange, renderItem, rende
       {renderFooter ? (
         renderFooter({ page, totalPages, onPageChange })
       ) : (
-        <div className="d-flex justify-content-between align-items-center mt-3 px-1">
-          <button
-            className="btn btn-outline-success"
-            disabled={page === 0}
-            onClick={() => onPageChange(page - 1)}
-          >
-            ← Sebelumnya
-          </button>
-          <button
-            className="btn btn-outline-success"
-            disabled={(page + 1) * rowsPerPage >= data.length}
-            onClick={() => onPageChange(page + 1)}
-          >
-            Selanjutnya →
-          </button>
-        </div>
+        <Pagination page={page} totalPages={totalPages} onPageChange={onPageChange} />
       )}
     </>
   );

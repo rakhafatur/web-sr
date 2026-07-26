@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import dayjs from 'dayjs';
+import ActionIconButton from '../../../components/ActionIconButton';
+import Pagination from '../../../components/Pagination';
 
 import {
   FiTrash2,
-  FiChevronLeft,
-  FiChevronRight,
   FiMoreVertical,
 } from 'react-icons/fi';
 
@@ -200,23 +200,14 @@ const CardTableAbsensi = ({
                 </div>
 
                 {/* DELETE */}
-                <button
-                  className="btn border-0 d-flex align-items-center justify-content-center"
-                  style={{
-                    width: 34,
-                    height: 34,
-                    borderRadius: 12,
-                    background: 'var(--color-expense-soft)',
-                    color: 'var(--color-expense)',
-                    flexShrink: 0,
-                    marginLeft: 10,
-                  }}
-                  onClick={() =>
-                    onDelete?.(row.tanggal)
-                  }
-                >
-                  <FiTrash2 size={14} />
-                </button>
+                <div style={{ flexShrink: 0, marginLeft: 10 }}>
+                  <ActionIconButton
+                    icon={<FiTrash2 size={14} />}
+                    variant="danger"
+                    title="Hapus"
+                    onClick={() => onDelete?.(row.tanggal)}
+                  />
+                </div>
               </div>
             </div>
           );
@@ -224,77 +215,7 @@ const CardTableAbsensi = ({
       )}
 
       {/* PAGINATION */}
-      <div className="d-flex justify-content-center align-items-center gap-2 mt-1">
-        <button
-          className="btn border-0 d-flex align-items-center justify-content-center"
-          style={{
-            width: 34,
-            height: 34,
-
-            borderRadius: 12,
-
-            background:
-              'var(--color-surface-2)',
-          }}
-          onClick={() =>
-            page > 0 &&
-            onPageChange(
-              page - 1
-            )
-          }
-          disabled={page === 0}
-        >
-          <FiChevronLeft
-            size={15}
-          />
-        </button>
-
-        <div
-          style={{
-            fontSize: 11,
-
-            fontWeight: 700,
-
-            color: 'var(--color-gray-500)',
-
-            minWidth: 42,
-
-            textAlign: 'center',
-          }}
-        >
-          {page + 1}/
-          {totalPages}
-        </div>
-
-        <button
-          className="btn border-0 d-flex align-items-center justify-content-center"
-          style={{
-            width: 34,
-            height: 34,
-
-            borderRadius: 12,
-
-            background:
-              'var(--color-surface-2)',
-          }}
-          onClick={() =>
-            page <
-            totalPages -
-            1 &&
-            onPageChange(
-              page + 1
-            )
-          }
-          disabled={
-            page >=
-            totalPages - 1
-          }
-        >
-          <FiChevronRight
-            size={15}
-          />
-        </button>
-      </div>
+      <Pagination page={page} totalPages={totalPages} onPageChange={onPageChange} />
     </div>
   );
 };

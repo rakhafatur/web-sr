@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../../lib/supabaseClient';
 
 import DataTable from '../../../components/DataTable';
+import ActionIconButton from '../../../components/ActionIconButton';
+import Pagination from '../../../components/Pagination';
 import UserCardList from '../components/UserCardList';
 
 import { useMediaQuery } from 'react-responsive';
@@ -14,6 +16,8 @@ import {
   FiRefreshCw,
   FiSearch,
   FiShield,
+  FiEdit2,
+  FiTrash2,
 } from 'react-icons/fi';
 
 type User = {
@@ -267,18 +271,18 @@ const UserListPage = () => {
                   label: 'Aksi',
                   render: (u: User) => (
                     <div className="d-flex gap-2">
-                      <button
-                        className="btn btn-sm btn-outline-warning"
+                      <ActionIconButton
+                        icon={<FiEdit2 />}
+                        variant="warning"
+                        title="Edit"
                         onClick={() => navigate(`/user-detail/${u.id}`)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="btn btn-sm btn-outline-danger"
+                      />
+                      <ActionIconButton
+                        icon={<FiTrash2 />}
+                        variant="danger"
+                        title="Hapus"
                         onClick={() => handleDelete(u.id)}
-                      >
-                        Delete
-                      </button>
+                      />
                     </div>
                   ),
                 },
@@ -289,27 +293,7 @@ const UserListPage = () => {
 
           {/* PAGINATION */}
           {totalPages > 1 && (
-            <div className="d-flex justify-content-between mt-3">
-              <button
-                className="btn btn-sm btn-outline-success"
-                disabled={page <= 1}
-                onClick={() => setPage(page - 1)}
-              >
-                Prev
-              </button>
-
-              <div className="small">
-                {page} / {totalPages}
-              </div>
-
-              <button
-                className="btn btn-sm btn-outline-success"
-                disabled={page >= totalPages}
-                onClick={() => setPage(page + 1)}
-              >
-                Next
-              </button>
-            </div>
+            <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
           )}
         </div>
       </div>

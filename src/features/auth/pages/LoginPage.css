@@ -78,17 +78,6 @@
   }
 }
 
-.btn-green {
-  background-color: #38b000;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-}
-
-.btn-green:hover {
-  background-color: #70e000;
-}
-
 .text-green {
   color: #38b000;
   text-decoration: none;

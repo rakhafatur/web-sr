@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../../../lib/supabaseClient';
 import { useMediaQuery } from 'react-responsive';
 import DataTable from '../../../components/DataTable';
+import Pagination from '../../../components/Pagination';
+import Button from '../../../components/Button';
 import { FiCheck } from 'react-icons/fi';
 import UserApprovalCardList from '../components/UserApprovalCardList';
 
@@ -192,22 +194,7 @@ const UserApprovalPage = () => {
       )}
 
       {totalPages > 1 && (
-        <div className="d-flex justify-content-between align-items-center mt-4">
-          <button
-            className="btn btn-outline-success"
-            onClick={() => setPage(page - 1)}
-            disabled={page <= 1}
-          >
-            ← Sebelumnya
-          </button>
-          <button
-            className="btn btn-outline-success"
-            onClick={() => setPage(page + 1)}
-            disabled={page >= totalPages}
-          >
-            Selanjutnya →
-          </button>
-        </div>
+        <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
       )}
 
       {assignModal.show && (
@@ -264,19 +251,12 @@ const UserApprovalPage = () => {
                 )}
               </div>
               <div className="modal-footer">
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => setAssignModal({ id: '', show: false })}
-                >
+                <Button variant="secondary" onClick={() => setAssignModal({ id: '', show: false })}>
                   Batal
-                </button>
-                <button
-                  className="btn btn-primary"
-                  disabled={!selectedAssignId}
-                  onClick={handleAssign}
-                >
+                </Button>
+                <Button variant="primary" disabled={!selectedAssignId} onClick={handleAssign}>
                   Aktifkan
-                </button>
+                </Button>
               </div>
             </div>
           </div>

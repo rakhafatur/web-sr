@@ -6,6 +6,9 @@ import { useMediaQuery } from 'react-responsive';
 import AddAbsensiModal from '../components/AddAbsensiModal';
 import CardTableAbsensi from '../components/CardTableAbsensi';
 import DataTable from '../../../components/DataTable';
+import ActionIconButton from '../../../components/ActionIconButton';
+import Pagination from '../../../components/Pagination';
+import Button from '../../../components/Button';
 
 import {
   FiPlus,
@@ -608,41 +611,11 @@ const AbsensiPage = () => {
                       onClick={() =>
                         setStatus(opt)
                       }
-                      className="btn"
+                      className={`btn segmented-chip${active ? ' active' : ''}`}
                       style={{
-                        borderRadius: 14,
-
-                        height: isMobile
-                          ? 42
-                          : 46,
-
-                        padding: isMobile
-                          ? '0 6px'
-                          : '0 16px',
-
-                        fontWeight: 700,
-
-                        fontSize: isMobile
-                          ? '0.7rem'
-                          : '0.88rem',
-
-                        border: active
-                          ? 'none'
-                          : '1px solid var(--color-gray-200)',
-
-                        background: active
-                          ? 'linear-gradient(135deg, var(--color-green), var(--color-accent))'
-                          : 'var(--color-surface)',
-
-                        color: active
-                          ? 'white'
-                          : 'var(--color-gray-700)',
-
-                        whiteSpace: 'nowrap',
-
-                        boxShadow: active
-                          ? '0 8px 18px rgba(var(--color-primary-rgb),0.3)'
-                          : 'none',
+                        height: isMobile ? 42 : 46,
+                        padding: isMobile ? '0 6px' : '0 16px',
+                        fontSize: isMobile ? '0.7rem' : '0.88rem',
                       }}
                     >
                       {opt}
@@ -700,57 +673,14 @@ const AbsensiPage = () => {
                 : 'flex-start',
             }}
           >
-            <button
-              className="btn"
+            <Button
+              variant="primary"
+              icon={<FiPlus size={18} />}
               onClick={handleSubmit}
-              style={{
-                background:
-                  'linear-gradient(135deg, var(--color-green), var(--color-accent))',
-
-                color: 'white',
-
-                border: 'none',
-
-                borderRadius: isMobile
-                  ? 14
-                  : 16,
-
-                height: isMobile
-                  ? 48
-                  : 54,
-
-                width: isMobile
-                  ? '100%'
-                  : 'auto',
-
-                maxWidth: isMobile
-                  ? 260
-                  : 'unset',
-
-                paddingInline: isMobile
-                  ? 20
-                  : 28,
-
-                fontWeight: 700,
-
-                fontSize: isMobile
-                  ? '0.84rem'
-                  : '0.95rem',
-
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-
-                boxShadow:
-                  '0 10px 25px rgba(var(--color-primary-rgb),0.3)',
-              }}
+              fullWidth={isMobile}
             >
-              <FiPlus
-                size={18}
-                className="me-2"
-              />
               Simpan Absensi
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -1062,27 +992,18 @@ const AbsensiPage = () => {
                           a
                         ) => (
                           <div className="d-flex gap-2">
-                            <button
-                              className="btn btn-sm btn-light border"
-                              onClick={() =>
-                                handleEdit(
-                                  a
-                                )
-                              }
-                            >
-                              <FiEdit2 />
-                            </button>
-
-                            <button
-                              className="btn btn-sm btn-light border text-danger"
-                              onClick={() =>
-                                handleDelete(
-                                  a.tanggal
-                                )
-                              }
-                            >
-                              <FiTrash2 />
-                            </button>
+                            <ActionIconButton
+                              icon={<FiEdit2 />}
+                              variant="warning"
+                              title="Edit"
+                              onClick={() => handleEdit(a)}
+                            />
+                            <ActionIconButton
+                              icon={<FiTrash2 />}
+                              variant="danger"
+                              title="Hapus"
+                              onClick={() => handleDelete(a.tanggal)}
+                            />
                           </div>
                         ),
                       },
@@ -1093,49 +1014,9 @@ const AbsensiPage = () => {
                   />
 
                   {/* PAGINATION */}
-                  <div className="d-flex justify-content-between align-items-center mt-4">
-                    <button
-                      className="btn btn-outline-success rounded-pill px-4"
-                      disabled={
-                        page <= 1
-                      }
-                      onClick={() =>
-                        setPage(
-                          page - 1
-                        )
-                      }
-                    >
-                      ← Sebelumnya
-                    </button>
-
-                    <div
-                      style={{
-                        color:
-                          'var(--color-gray-500)',
-                      }}
-                    >
-                      Halaman {page}{' '}
-                      dari{' '}
-                      {
-                        totalPages
-                      }
-                    </div>
-
-                    <button
-                      className="btn btn-outline-success rounded-pill px-4"
-                      disabled={
-                        page >=
-                        totalPages
-                      }
-                      onClick={() =>
-                        setPage(
-                          page + 1
-                        )
-                      }
-                    >
-                      Selanjutnya →
-                    </button>
-                  </div>
+                  {totalPages > 1 && (
+                    <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
+                  )}
                 </>
               ) : (
                 <CardTableAbsensi

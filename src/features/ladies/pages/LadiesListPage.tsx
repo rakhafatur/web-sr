@@ -4,6 +4,8 @@ import { useMediaQuery } from 'react-responsive';
 import { FiPlus, FiEdit2, FiTrash2, FiUser } from 'react-icons/fi';
 import { useEntityList } from '../../../hooks/useEntityList';
 import DataTable from '../../../components/DataTable';
+import ActionIconButton from '../../../components/ActionIconButton';
+import Pagination from '../../../components/Pagination';
 import ListToolbar from '../../../components/ListToolBar';
 import ListPageHeader from '../../../components/ListPageHeader';
 import LadiesCardList from '../components/LadiesCardList';
@@ -80,14 +82,7 @@ const LadiesListPage = () => {
             onDelete={handleDelete}
           />
           {totalPages > 1 && (
-            <div className="d-flex justify-content-between align-items-center mt-4">
-              <button className="btn btn-outline-success" onClick={() => setPage(page - 1)} disabled={page <= 1}>
-                ← Sebelumnya
-              </button>
-              <button className="btn btn-outline-success" onClick={() => setPage(page + 1)} disabled={page >= totalPages}>
-                Selanjutnya →
-              </button>
-            </div>
+            <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
           )}
           {!isSidebarOpen && (
             <button onClick={() => navigate('/ladies-create')} className="fab-button">
@@ -154,32 +149,18 @@ const LadiesListPage = () => {
                 label: 'Aksi',
                 render: (lady: Lady) => (
                   <div className="d-flex gap-2">
-                    <button
-                      className="btn btn-sm btn-outline-warning d-flex align-items-center justify-content-center"
-                      style={{
-                        width: 32,
-                        height: 32,
-                        padding: 0,
-                        borderRadius: 6,
-                      }}
-                      onClick={() => navigate(`/ladies-detail/${lady.id}`)}
+                    <ActionIconButton
+                      icon={<FiEdit2 size={16} />}
+                      variant="warning"
                       title="Edit"
-                    >
-                      <FiEdit2 size={16} />
-                    </button>
-                    <button
-                      className="btn btn-sm btn-outline-danger d-flex align-items-center justify-content-center"
-                      style={{
-                        width: 32,
-                        height: 32,
-                        padding: 0,
-                        borderRadius: 6,
-                      }}
-                      onClick={() => handleDelete(lady.id)}
+                      onClick={() => navigate(`/ladies-detail/${lady.id}`)}
+                    />
+                    <ActionIconButton
+                      icon={<FiTrash2 size={16} />}
+                      variant="danger"
                       title="Hapus"
-                    >
-                      <FiTrash2 size={16} />
-                    </button>
+                      onClick={() => handleDelete(lady.id)}
+                    />
                   </div>
                 ),
               },
@@ -188,14 +169,7 @@ const LadiesListPage = () => {
           />
 
           {totalPages > 1 && (
-            <div className="d-flex justify-content-between align-items-center mt-4">
-              <button className="btn btn-outline-success" onClick={() => setPage(page - 1)} disabled={page <= 1}>
-                ← Sebelumnya
-              </button>
-              <button className="btn btn-outline-success" onClick={() => setPage(page + 1)} disabled={page >= totalPages}>
-                Selanjutnya →
-              </button>
-            </div>
+            <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
           )}
         </>
       )}

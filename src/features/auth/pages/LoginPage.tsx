@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { useState } from 'react';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
+import Button from '../../../components/Button';
 import './LoginPage.css';
 
 type LoginFormData = {
@@ -99,9 +100,9 @@ function LoginPage() {
                 {errors.password && <div className="invalid-feedback">Password wajib diisi</div>}
               </div>
 
-              <button type="submit" className="btn btn-green w-100 fw-bold">
+              <Button type="submit" variant="primary" fullWidth>
                 Masuk
-              </button>
+              </Button>
             </form>
 
             <div className="text-center mt-3">

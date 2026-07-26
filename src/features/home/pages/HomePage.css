@@ -113,30 +113,6 @@
     width: 100%;
     max-width: 100%;
     height: auto;
-    /* Foto sumber berlatar putih & tone hangat — didesaturasi lalu
-       di-duotone-kan ke warna aksen tema (bukan generate gambar baru,
-       karena tidak ada tool image-gen tersedia) supaya menyatu dengan
-       kartu gelap di sekelilingnya. */
-    filter: grayscale(1) brightness(0.75) contrast(1.1);
-  }
-
-  /* Lapisan duotone: tint foto abu-abu dengan warna aksen brand */
-  .home-image::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(155deg, var(--color-green) 0%, var(--color-accent) 100%);
-    mix-blend-mode: color;
-    opacity: 0.9;
-  }
-
-  /* Fade halus di bawah supaya foto melebur ke permukaan kartu */
-  .home-image::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    background: linear-gradient(to top, var(--color-surface) 0%, transparent 45%);
   }
 
   .home-title {
@@ -174,6 +150,7 @@
     color: var(--color-dark);
     padding: 0.5rem 1rem;
     border-radius: var(--radius-full);
+    font-family: inherit;
     font-weight: 500;
     font-size: 0.95rem;
     cursor: pointer;

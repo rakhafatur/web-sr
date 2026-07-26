@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../../../lib/supabaseClient';
 import DataTable from '../../../components/DataTable';
+import ActionIconButton from '../../../components/ActionIconButton';
+import Pagination from '../../../components/Pagination';
 import { useMediaQuery } from 'react-responsive';
 import CardTableRiwayatTransaksi from './CardTableRiwayatTransaksi';
 import dayjs from 'dayjs';
@@ -11,8 +13,6 @@ import {
   FiTrendingDown,
   FiLayers,
   FiTrash2,
-  FiChevronLeft,
-  FiChevronRight,
 } from 'react-icons/fi';
 
 type Props = {
@@ -787,20 +787,12 @@ const RiwayatTransaksi = ({
                   render: (
                     row
                   ) => (
-                    <button
-                      className="btn btn-danger btn-sm rounded-circle"
-                      onClick={() =>
-                        handleDelete(
-                          row
-                        )
-                      }
-                      style={{
-                        width: 36,
-                        height: 36,
-                      }}
-                    >
-                      <FiTrash2 />
-                    </button>
+                    <ActionIconButton
+                      icon={<FiTrash2 />}
+                      variant="danger"
+                      title="Hapus"
+                      onClick={() => handleDelete(row)}
+                    />
                   ),
                 },
               ]}
@@ -849,52 +841,8 @@ const RiwayatTransaksi = ({
               </div>
             )}
 
-          {data.length >
-            0 && (
-            <div className="d-flex justify-content-between align-items-center mt-4">
-              <button
-                className="btn btn-light border rounded-pill px-4"
-                onClick={() =>
-                  setPage(
-                    page - 1
-                  )
-                }
-                disabled={
-                  page <= 1
-                }
-              >
-                <FiChevronLeft />
-              </button>
-
-              <div
-                className="fw-semibold"
-                style={{
-                  color:
-                    'var(--color-gray-600)',
-                }}
-              >
-                Halaman {page}{' '}
-                dari{' '}
-                {
-                  totalPages
-                }
-              </div>
-
-              <button
-                className="btn btn-light border rounded-pill px-4"
-                onClick={() =>
-                  setPage(
-                    page + 1
-                  )
-                }
-                disabled={
-                  page >=
-                  totalPages
-                }
-              >
-                <FiChevronRight />
-              </button>
-            </div>
+          {data.length > 0 && (
+            <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
           )}
         </>
       )}
