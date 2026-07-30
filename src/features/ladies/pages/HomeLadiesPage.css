@@ -234,9 +234,15 @@
 
 /* =========================
    WRAPPER
+   Semua class di file ini diberi prefix "ladies-home-" supaya tidak
+   pernah bentrok nama dengan class generik di file CSS halaman lain
+   (mis. .home-wrapper juga dipakai HomePage.css untuk home admin,
+   .loading-state/.loading-content/.loading-logo/.loading-text juga
+   dipakai VoucherListPage.css — karena semua import CSS di sini bersifat
+   global/tidak ter-scope, class bernama sama akan saling menimpa).
 ========================= */
 
-.home-wrapper {
+.ladies-home-wrapper {
   position: relative;
   width: 100%;
   min-height: 100vh;
@@ -287,12 +293,12 @@
    MOBILE BG
 ========================= */
 
-.mobile-only {
+.ladies-home-bg {
   display: none;
 }
 
 @media (max-width: 768px) {
-  .mobile-only {
+  .ladies-home-bg {
     display: block;
 
     /* absolute (bukan fixed) supaya background ikut scroll bareng
@@ -317,7 +323,7 @@
 
   /* Fade halus ke warna background supaya foto menyatu dengan konten
      di bawahnya, bukan terpotong tegas. */
-  .home-wrapper::before {
+  .ladies-home-wrapper::before {
     content: '';
     position: absolute;
     top: 0;
@@ -340,7 +346,7 @@
    LOADING
 ========================= */
 
-.loading-state {
+.ladies-home-loading {
   min-height: 100vh;
 
   display: flex;
@@ -350,20 +356,20 @@
   background: var(--color-bg);
 }
 
-.loading-content {
+.ladies-home-loading-content {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.loading-logo {
+.ladies-home-loading-logo {
   width: 90px;
   margin-bottom: 14px;
 
   opacity: 0.9;
 }
 
-.loading-text {
+.ladies-home-loading-text {
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--color-income);

@@ -262,15 +262,15 @@ const HomeLadiesPage = () => {
 
   if (loading) {
     return (
-      <div className="home-wrapper loading-state">
-        <div className="loading-content">
+      <div className="ladies-home-wrapper ladies-home-loading">
+        <div className="ladies-home-loading-content">
           <img
             src={logo}
             alt="Loading..."
-            className="loading-logo"
+            className="ladies-home-loading-logo"
           />
 
-          <p>
+          <p className="ladies-home-loading-text">
             Memuat
             data...
           </p>
@@ -280,11 +280,11 @@ const HomeLadiesPage = () => {
   }
 
   return (
-    <div className="home-wrapper">
+    <div className="ladies-home-wrapper">
       <img
         src={bgImage}
         alt="bg"
-        className="mobile-only"
+        className="ladies-home-bg"
       />
 
       <div className="content-container d-flex flex-column gap-3">

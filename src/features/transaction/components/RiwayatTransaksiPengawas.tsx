@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../../../lib/supabaseClient';
 import DataTable from '../../../components/DataTable';
 import ActionIconButton from '../../../components/ActionIconButton';
@@ -30,7 +30,7 @@ type Transaksi = {
 const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
-  const [data, setData] = useState<Transaksi[]>([]);
+  const [rawData, setRawData] = useState<Transaksi[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
@@ -76,9 +76,16 @@ const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
       })),
     ];
 
+    setRawData(combined);
+    setLoading(false);
+  };
+
+  // Filter + sort dilakukan di client dari data yang sudah ada — filterTipe,
+  // searchText, dan sortKey/sortOrder TIDAK perlu fetch ulang ke Supabase.
+  const data = useMemo(() => {
     const search = searchText.toLowerCase();
 
-    const filtered = combined.filter((d) =>
+    const filtered = rawData.filter((d) =>
       (filterTipe ? d.tipe === filterTipe : true) &&
       (
         d.tanggal.includes(search) ||
@@ -86,7 +93,7 @@ const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
       )
     );
 
-    const sorted = isMobile
+    return isMobile
       ? filtered.sort(
           (a, b) =>
             dayjs(b.tanggal).valueOf() -
@@ -110,10 +117,7 @@ const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
 
           return 0;
         });
-
-    setData(sorted);
-    setLoading(false);
-  };
+  }, [rawData, filterTipe, searchText, isMobile, sortKey, sortOrder]);
 
   const handleSort = (key: keyof Transaksi) => {
     if (sortKey === key) {
@@ -137,7 +141,7 @@ const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line
-  }, [pengawasId, refresh, filterTipe, searchText, sortKey, sortOrder, isMobile]);
+  }, [pengawasId, refresh]);
 
   const paginatedData = isMobile
     ? data

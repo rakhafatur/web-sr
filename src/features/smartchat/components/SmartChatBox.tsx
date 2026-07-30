@@ -196,7 +196,11 @@ const SmartChatBox: React.FC<SmartChatBoxProps> = ({
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(2, minmax(120px, 1fr))",
+                    // minmax(0, 1fr) — bukan minmax(120px, 1fr) — supaya kolom
+                    // boleh menyusut mengikuti lebar bubble yang tersedia,
+                    // bukan malah memaksa grid lebih lebar dari bubble lalu
+                    // kepotong oleh overflow:hidden di bubble pada layar sempit.
+                    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
                     gap: 8,
                     marginBottom: report.groups ? 14 : 0,
                   }}
@@ -209,6 +213,7 @@ const SmartChatBox: React.FC<SmartChatBoxProps> = ({
                         border: "1px solid var(--color-gray-200)",
                         borderRadius: 14,
                         padding: "10px 12px",
+                        minWidth: 0,
                       }}
                     >
                       <div
@@ -220,6 +225,8 @@ const SmartChatBox: React.FC<SmartChatBoxProps> = ({
                           marginBottom: 4,
                           textTransform: "uppercase",
                           letterSpacing: 0.2,
+                          minWidth: 0,
+                          overflowWrap: "anywhere",
                         }}
                       >
                         {stat.icon}

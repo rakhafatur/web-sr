@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../../../lib/supabaseClient';
 import DataTable from '../../../components/DataTable';
 import ActionIconButton from '../../../components/ActionIconButton';
@@ -35,7 +35,7 @@ const RiwayatTransaksi = ({
     maxWidth: 768,
   });
 
-  const [data, setData] = useState<
+  const [rawData, setRawData] = useState<
     Transaksi[]
   >([]);
 
@@ -169,11 +169,19 @@ const RiwayatTransaksi = ({
       })),
     ];
 
+    setRawData(combined);
+
+    setLoading(false);
+  };
+
+  // Filter + sort dilakukan di client dari data yang sudah ada — filterTipe,
+  // searchText, dan sortKey/sortOrder TIDAK perlu fetch ulang ke Supabase.
+  const data = useMemo(() => {
     const search =
       searchText.toLowerCase();
 
     const filtered =
-      combined.filter(
+      rawData.filter(
         (d) =>
           (filterTipe
             ? d.tipe ===
@@ -191,10 +199,8 @@ const RiwayatTransaksi = ({
           )
       );
 
-    let sorted: Transaksi[] = [];
-
     if (isMobile) {
-      sorted = filtered.sort(
+      return filtered.sort(
         (a, b) =>
           dayjs(
             b.tanggal
@@ -203,52 +209,55 @@ const RiwayatTransaksi = ({
             a.tanggal
           ).valueOf()
       );
-    } else {
-      sorted = filtered.sort(
-        (a, b) => {
-          const aVal =
-            a[sortKey];
-
-          const bVal =
-            b[sortKey];
-
-          if (
-            typeof aVal ===
-              'string' &&
-            typeof bVal ===
-              'string'
-          ) {
-            return sortOrder ===
-              'asc'
-              ? aVal.localeCompare(
-                  bVal
-                )
-              : bVal.localeCompare(
-                  aVal
-                );
-          }
-
-          if (
-            typeof aVal ===
-              'number' &&
-            typeof bVal ===
-              'number'
-          ) {
-            return sortOrder ===
-              'asc'
-              ? aVal - bVal
-              : bVal - aVal;
-          }
-
-          return 0;
-        }
-      );
     }
 
-    setData(sorted);
+    return filtered.sort(
+      (a, b) => {
+        const aVal =
+          a[sortKey];
 
-    setLoading(false);
-  };
+        const bVal =
+          b[sortKey];
+
+        if (
+          typeof aVal ===
+            'string' &&
+          typeof bVal ===
+            'string'
+        ) {
+          return sortOrder ===
+            'asc'
+            ? aVal.localeCompare(
+                bVal
+              )
+            : bVal.localeCompare(
+                aVal
+              );
+        }
+
+        if (
+          typeof aVal ===
+            'number' &&
+          typeof bVal ===
+            'number'
+        ) {
+          return sortOrder ===
+            'asc'
+            ? aVal - bVal
+            : bVal - aVal;
+        }
+
+        return 0;
+      }
+    );
+  }, [
+    rawData,
+    filterTipe,
+    searchText,
+    isMobile,
+    sortKey,
+    sortOrder,
+  ]);
 
   const handleSort = (
     key: keyof Transaksi
@@ -302,11 +311,6 @@ const RiwayatTransaksi = ({
   }, [
     ladiesId,
     refresh,
-    filterTipe,
-    searchText,
-    sortKey,
-    sortOrder,
-    isMobile,
   ]);
 
   const paginatedData = isMobile
