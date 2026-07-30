@@ -191,54 +191,71 @@ const SmartChatBox: React.FC<SmartChatBoxProps> = ({
                 </div>
               </div>
 
-              {/* STAT GRID */}
+              {/* STAT LIST — satu baris per statistik (bukan grid 2 kolom)
+                  supaya tidak pernah butuh menyusut/wrap aneh di bubble
+                  sempit; label+ikon kiri, nilai kanan, sama seperti baris
+                  RANK GROUPS di bawah supaya satu bahasa visual. */}
               {report.stats && (
                 <div
+                  className="d-flex flex-column gap-2"
                   style={{
-                    display: "grid",
-                    // minmax(0, 1fr) — bukan minmax(120px, 1fr) — supaya kolom
-                    // boleh menyusut mengikuti lebar bubble yang tersedia,
-                    // bukan malah memaksa grid lebih lebar dari bubble lalu
-                    // kepotong oleh overflow:hidden di bubble pada layar sempit.
-                    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-                    gap: 8,
                     marginBottom: report.groups ? 14 : 0,
                   }}
                 >
                   {report.stats.map((stat, i) => (
                     <div
                       key={i}
+                      className="d-flex align-items-center justify-content-between gap-2"
                       style={{
                         background: "var(--color-surface-2)",
                         border: "1px solid var(--color-gray-200)",
-                        borderRadius: 14,
-                        padding: "10px 12px",
-                        minWidth: 0,
+                        borderRadius: 12,
+                        padding: "9px 12px",
                       }}
                     >
                       <div
-                        className="d-flex align-items-center gap-1"
-                        style={{
-                          fontSize: "0.68rem",
-                          fontWeight: 600,
-                          color: "var(--color-gray-500)",
-                          marginBottom: 4,
-                          textTransform: "uppercase",
-                          letterSpacing: 0.2,
-                          minWidth: 0,
-                          overflowWrap: "anywhere",
-                        }}
+                        className="d-flex align-items-center gap-2"
+                        style={{ minWidth: 0 }}
                       >
-                        {stat.icon}
-                        <span>{stat.label}</span>
+                        {stat.icon && (
+                          <div
+                            style={{
+                              width: 22,
+                              height: 22,
+                              borderRadius: 7,
+                              background: "rgba(var(--color-primary-rgb), 0.16)",
+                              color: "var(--color-green)",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              flexShrink: 0,
+                            }}
+                          >
+                            {stat.icon}
+                          </div>
+                        )}
+
+                        <span
+                          style={{
+                            fontSize: "0.78rem",
+                            fontWeight: 600,
+                            color: "var(--color-gray-500)",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {stat.label}
+                        </span>
                       </div>
 
                       <div
                         style={{
-                          fontSize: "0.92rem",
+                          fontSize: "0.88rem",
                           fontWeight: 700,
                           color: "var(--color-dark)",
-                          wordBreak: "break-word",
+                          whiteSpace: "nowrap",
+                          flexShrink: 0,
                         }}
                       >
                         {stat.value}
