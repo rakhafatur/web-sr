@@ -3,20 +3,25 @@ import {
   FiMessageCircle,
   FiChevronDown,
   FiTrendingUp,
+  FiTrendingDown,
   FiAward,
   FiCalendar,
   FiActivity,
   FiClock,
   FiCpu,
+  FiGift,
+  FiUsers,
+  FiBriefcase,
 } from "react-icons/fi";
 import { useMediaQuery } from "react-responsive";
-import SmartChatBox from "../components/SmartChatBox";
+import SmartChatBox, { ChatReport } from "../components/SmartChatBox";
 import dayjs from "dayjs";
 import { supabase } from "../../../lib/supabaseClient";
 
 type Message = {
   sender: "ai" | "user";
   message: string;
+  report?: ChatReport;
 };
 
 const SmartChatPage: React.FC = () => {
@@ -39,7 +44,7 @@ const SmartChatPage: React.FC = () => {
   // =========================================================
   // JUMLAH VOUCHER BULAN INI
   // =========================================================
-  const getJumlahVoucherBulanIni = async (): Promise<string> => {
+  const getJumlahVoucherBulanIni = async (): Promise<ChatReport | string> => {
     const startOfMonth = dayjs().startOf("month").format("YYYY-MM-DD");
     const endOfMonth = dayjs().endOf("month").format("YYYY-MM-DD");
 
@@ -60,30 +65,39 @@ const SmartChatPage: React.FC = () => {
     const totalKeuntungan = totalVoucher * 75000;
     const totalKeseluruhan = totalVoucher * 225000;
 
-    return `
-📊 VOUCHER BULAN INI
-──────────────────
-
-🧾 Total Voucher
-${totalVoucher.toFixed(0)} pcs
-
-💃 Total Ladies
-Rp${totalLadies.toLocaleString("id-ID")}
-
-💰 Total Keuntungan
-Rp${totalKeuntungan.toLocaleString("id-ID")}
-
-🏦 Total Keseluruhan
-Rp${totalKeseluruhan.toLocaleString("id-ID")}
-
-──────────────────
-`;
+    return {
+      title: "Voucher Bulan Ini",
+      subtitle: dayjs().format("MMMM YYYY"),
+      icon: <FiCalendar />,
+      stats: [
+        {
+          icon: <FiGift size={12} />,
+          label: "Total Voucher",
+          value: `${totalVoucher.toFixed(0)} pcs`,
+        },
+        {
+          icon: <FiUsers size={12} />,
+          label: "Total Ladies",
+          value: `Rp${totalLadies.toLocaleString("id-ID")}`,
+        },
+        {
+          icon: <FiTrendingUp size={12} />,
+          label: "Total Keuntungan",
+          value: `Rp${totalKeuntungan.toLocaleString("id-ID")}`,
+        },
+        {
+          icon: <FiBriefcase size={12} />,
+          label: "Total Keseluruhan",
+          value: `Rp${totalKeseluruhan.toLocaleString("id-ID")}`,
+        },
+      ],
+    };
   };
 
   // =========================================================
   // JUMLAH VOUCHER MINGGU INI
   // =========================================================
-  const getJumlahVoucherMingguIni = async (): Promise<string> => {
+  const getJumlahVoucherMingguIni = async (): Promise<ChatReport | string> => {
     const today = dayjs();
     const weekday = today.day();
 
@@ -109,32 +123,39 @@ Rp${totalKeseluruhan.toLocaleString("id-ID")}
     const totalKeuntungan = totalVoucher * 75000;
     const totalKeseluruhan = totalVoucher * 225000;
 
-    return `
-📅 VOUCHER MINGGU INI
-──────────────────
-
-${startOfWeek.format("DD MMM")} • ${endOfWeek.format("DD MMM")}
-
-🧾 Total Voucher
-${totalVoucher.toFixed(0)} pcs
-
-💃 Total Ladies
-Rp${totalLadies.toLocaleString("id-ID")}
-
-💰 Total Keuntungan
-Rp${totalKeuntungan.toLocaleString("id-ID")}
-
-🏦 Total Keseluruhan
-Rp${totalKeseluruhan.toLocaleString("id-ID")}
-
-──────────────────
-`;
+    return {
+      title: "Voucher Minggu Ini",
+      subtitle: `${startOfWeek.format("DD MMM")} • ${endOfWeek.format("DD MMM")}`,
+      icon: <FiTrendingUp />,
+      stats: [
+        {
+          icon: <FiGift size={12} />,
+          label: "Total Voucher",
+          value: `${totalVoucher.toFixed(0)} pcs`,
+        },
+        {
+          icon: <FiUsers size={12} />,
+          label: "Total Ladies",
+          value: `Rp${totalLadies.toLocaleString("id-ID")}`,
+        },
+        {
+          icon: <FiTrendingUp size={12} />,
+          label: "Total Keuntungan",
+          value: `Rp${totalKeuntungan.toLocaleString("id-ID")}`,
+        },
+        {
+          icon: <FiBriefcase size={12} />,
+          label: "Total Keseluruhan",
+          value: `Rp${totalKeseluruhan.toLocaleString("id-ID")}`,
+        },
+      ],
+    };
   };
 
   // =========================================================
   // STAT VOUCHER BULAN INI
   // =========================================================
-  const getLadiesVoucherStatBulanIni = async (): Promise<string> => {
+  const getLadiesVoucherStatBulanIni = async (): Promise<ChatReport | string> => {
     const startOfMonth = dayjs().startOf("month").format("YYYY-MM-DD");
     const endOfMonth = dayjs().endOf("month").format("YYYY-MM-DD");
 
@@ -175,34 +196,39 @@ Rp${totalKeseluruhan.toLocaleString("id-ID")}
       (l) => totals[l.id] === minVal
     );
 
-    const formatList = (
+    const toItems = (
       arr: typeof maxLadies,
       totalsMap: Record<string, number>
     ) =>
-      arr
-        .map(
-          (l) =>
-            `• ${l.nama_ladies} (${l.nama_outlet}) — ${totalsMap[
-              l.id
-            ].toFixed(0)} pcs`
-        )
-        .join("\n");
+      arr.map((l) => ({
+        name: l.nama_ladies,
+        sub: l.nama_outlet,
+        value: `${totalsMap[l.id].toFixed(0)} pcs`,
+      }));
 
-    return `
-🏆 Voucher Terbanyak Bulan Ini
-
-${formatList(maxLadies, totals)}
-
-🎖️ Voucher Paling Sedikit Bulan Ini
-
-${formatList(minLadies, totals)}
-`;
+    return {
+      title: "Statistik Voucher Ladies",
+      subtitle: dayjs().format("MMMM YYYY"),
+      icon: <FiAward />,
+      groups: [
+        {
+          icon: <FiAward size={13} />,
+          heading: "Terbanyak",
+          items: toItems(maxLadies, totals),
+        },
+        {
+          icon: <FiTrendingDown size={13} />,
+          heading: "Paling Sedikit",
+          items: toItems(minLadies, totals),
+        },
+      ],
+    };
   };
 
   // =========================================================
   // STAT ABSENSI BULAN INI
   // =========================================================
-  const getLadiesAbsenStatBulanIni = async (): Promise<string> => {
+  const getLadiesAbsenStatBulanIni = async (): Promise<ChatReport | string> => {
     const startOfMonth = dayjs().startOf("month").format("YYYY-MM-DD");
     const endOfMonth = dayjs().endOf("month").format("YYYY-MM-DD");
 
@@ -247,26 +273,33 @@ ${formatList(minLadies, totals)}
       (l) => totals[l.id] === minVal
     );
 
-    const formatList = (
+    const toItems = (
       arr: typeof maxLadies,
       totalsMap: Record<string, number>
     ) =>
-      arr
-        .map(
-          (l) =>
-            `• ${l.nama_ladies} (${l.nama_outlet}) — ${totalsMap[l.id]} hari`
-        )
-        .join("\n");
+      arr.map((l) => ({
+        name: l.nama_ladies,
+        sub: l.nama_outlet,
+        value: `${totalsMap[l.id]} hari`,
+      }));
 
-    return `
-🏆 Absensi Terbanyak Bulan Ini
-
-${formatList(maxLadies, totals)}
-
-🎖️ Absensi Paling Sedikit Bulan Ini
-
-${formatList(minLadies, totals)}
-`;
+    return {
+      title: "Statistik Absensi Ladies",
+      subtitle: dayjs().format("MMMM YYYY"),
+      icon: <FiActivity />,
+      groups: [
+        {
+          icon: <FiAward size={13} />,
+          heading: "Terbanyak",
+          items: toItems(maxLadies, totals),
+        },
+        {
+          icon: <FiTrendingDown size={13} />,
+          heading: "Paling Sedikit",
+          items: toItems(minLadies, totals),
+        },
+      ],
+    };
   };
 
   // =========================================================
@@ -276,23 +309,27 @@ ${formatList(minLadies, totals)}
     {
       icon: <FiTrendingUp />,
       label: "Berapa jumlah voucher minggu ini?",
+      short: "Voucher Minggu Ini",
       answer: getJumlahVoucherMingguIni,
     },
     {
       icon: <FiCalendar />,
       label: "Berapa jumlah voucher bulan ini?",
+      short: "Voucher Bulan Ini",
       answer: getJumlahVoucherBulanIni,
     },
     {
       icon: <FiAward />,
       label:
         "Siapa ladies dengan voucher terbanyak & paling sedikit bulan ini?",
+      short: "Top Voucher Ladies",
       answer: getLadiesVoucherStatBulanIni,
     },
     {
       icon: <FiActivity />,
       label:
         "Siapa ladies dengan absen terbanyak & paling sedikit bulan ini?",
+      short: "Top Absensi Ladies",
       answer: getLadiesAbsenStatBulanIni,
     },
   ];
@@ -324,14 +361,13 @@ ${formatList(minLadies, totals)}
 
     setLoading(true);
 
-    const answerText = await question.answer();
+    const result = await question.answer();
 
     setMessages((prev) => [
       ...prev,
-      {
-        sender: "ai",
-        message: answerText,
-      },
+      typeof result === "string"
+        ? { sender: "ai", message: result }
+        : { sender: "ai", message: result.title, report: result },
     ]);
 
     setLoading(false);
@@ -438,8 +474,8 @@ ${formatList(minLadies, totals)}
             <div
               className="px-3 py-1 rounded-pill d-flex align-items-center gap-2"
               style={{
-                background: "var(--color-income-soft)",
-                color: "var(--color-income)",
+                background: "rgba(var(--color-primary-rgb), 0.14)",
+                color: "var(--color-green)",
                 fontSize: "0.78rem",
                 fontWeight: 700,
               }}
@@ -472,6 +508,7 @@ ${formatList(minLadies, totals)}
               <SmartChatBox
                 sender={msg.sender}
                 message={msg.message}
+                report={msg.report}
               />
             </div>
           ))}
@@ -589,32 +626,48 @@ ${formatList(minLadies, totals)}
           </div>
 
           {/* QUICK BUTTONS */}
-          <div className="d-flex flex-wrap gap-2 mt-3">
+          <div
+            style={{
+              display: isMobile ? "grid" : "flex",
+              gridTemplateColumns: isMobile
+                ? "repeat(2, 1fr)"
+                : undefined,
+              flexWrap: isMobile ? undefined : "wrap",
+              gap: isMobile ? 8 : 10,
+              marginTop: 12,
+            }}
+          >
             {questions.map((q) => (
               <button
                 key={q.label}
                 onClick={() =>
                   handlePickQuestion(q.label)
                 }
+                title={q.label}
                 className="border-0"
                 style={{
-                  background: "var(--color-income-soft)",
-                  color: "var(--color-income)",
+                  background: "rgba(var(--color-primary-rgb), 0.14)",
+                  color: "var(--color-green)",
                   borderRadius: 14,
                   padding: isMobile
                     ? "10px 12px"
                     : "11px 15px",
                   fontSize: isMobile
-                    ? "0.78rem"
+                    ? "0.76rem"
                     : "0.84rem",
                   fontWeight: 600,
                   display: "flex",
                   alignItems: "center",
                   gap: 7,
+                  textAlign: "left",
+                  lineHeight: 1.25,
                   transition: "0.2s",
                 }}
               >
-                {q.icon}
+                <span style={{ display: "flex", flexShrink: 0 }}>
+                  {q.icon}
+                </span>
+                <span>{q.short}</span>
               </button>
             ))}
           </div>

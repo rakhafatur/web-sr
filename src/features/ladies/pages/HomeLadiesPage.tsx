@@ -3,13 +3,13 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
 import { supabase } from '../../../lib/supabaseClient';
 import dayjs from 'dayjs';
+import { useMediaQuery } from 'react-responsive';
 import './HomeLadiesPage.css';
 
 import {
   FiCalendar,
   FiGift,
   FiTrendingDown,
-  FiTarget,
   FiZap,
   FiHeart,
 } from 'react-icons/fi';
@@ -31,6 +31,8 @@ const HomeLadiesPage = () => {
         state.user
           .currentUser
     ) as UserWithLadies;
+
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const [
     hariMasuk,
@@ -282,7 +284,7 @@ const HomeLadiesPage = () => {
       <img
         src={bgImage}
         alt="bg"
-        className="home-background-image mobile-only"
+        className="mobile-only"
       />
 
       <div className="content-container d-flex flex-column gap-3">
@@ -301,8 +303,9 @@ const HomeLadiesPage = () => {
             background:
               'linear-gradient(135deg, var(--color-green), var(--color-accent))',
             borderRadius: 28,
-            padding:
-              '24px 22px',
+            padding: isMobile
+              ? '24px 22px'
+              : '32px 34px',
             color: '#fff',
             boxShadow: 'var(--shadow-brand)',
           }}
@@ -312,14 +315,14 @@ const HomeLadiesPage = () => {
             style={{
               position:
                 'absolute',
-              width: 180,
-              height: 180,
+              width: isMobile ? 180 : 240,
+              height: isMobile ? 180 : 240,
               borderRadius:
                 '50%',
               background:
                 'rgba(255,255,255,0.08)',
-              top: -70,
-              right: -70,
+              top: isMobile ? -70 : -90,
+              right: isMobile ? -70 : -90,
             }}
           />
 
@@ -346,7 +349,7 @@ const HomeLadiesPage = () => {
 
             <div
               style={{
-                fontSize: 28,
+                fontSize: isMobile ? 28 : 34,
                 fontWeight: 800,
                 lineHeight: 1.2,
               }}
@@ -358,7 +361,7 @@ const HomeLadiesPage = () => {
 
             <div
               style={{
-                fontSize: 14,
+                fontSize: isMobile ? 14 : 15,
                 opacity: 0.92,
                 marginTop: 10,
                 lineHeight: 1.6,
@@ -370,7 +373,7 @@ const HomeLadiesPage = () => {
           </div>
         </motion.div>
 
-        {/* PROGRESS */}
+        {/* INSIGHT */}
         <motion.div
           initial={{
             opacity: 0,
@@ -382,6 +385,86 @@ const HomeLadiesPage = () => {
           }}
           transition={{
             delay: 0.05,
+          }}
+          style={{
+            background:
+              isOver
+                ? 'var(--color-expense-soft)'
+                : 'var(--color-income-soft)',
+            border: `1px solid ${
+              isOver
+                ? '#452226'
+                : '#1f4a34'
+            }`,
+            borderRadius: 22,
+            padding:
+              '18px 18px',
+          }}
+        >
+          <div className="d-flex align-items-center gap-3">
+            <div
+              className="d-flex align-items-center justify-content-center"
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: 16,
+                background:
+                  isOver
+                    ? 'var(--color-expense-soft)'
+                    : 'var(--color-income-soft)',
+                color:
+                  isOver
+                    ? 'var(--color-expense)'
+                    : 'var(--color-income)',
+                flexShrink: 0,
+              }}
+            >
+              <FiZap size={18} />
+            </div>
+
+            <div>
+              <div
+                style={{
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color:
+                    'var(--color-gray-500)',
+                  marginBottom: 4,
+                }}
+              >
+                Insight
+                Bulan Ini
+              </div>
+
+              <div
+                style={{
+                  fontSize: 14,
+                  lineHeight: 1.6,
+                  fontWeight: 600,
+                  color:
+                    'var(--color-dark)',
+                }}
+              >
+                {getInsight()}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* PROGRESS + ESTIMASI — berdampingan di layar lebar */}
+        <div className="secondary-grid">
+        {/* PROGRESS */}
+        <motion.div
+          initial={{
+            opacity: 0,
+            y: 20,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+          transition={{
+            delay: 0.1,
           }}
           style={{
             background:
@@ -434,7 +517,7 @@ const HomeLadiesPage = () => {
                   'var(--color-income)',
               }}
             >
-              <FiTarget size={20} />
+              <FiCalendar size={20} />
             </div>
           </div>
 
@@ -597,84 +680,6 @@ const HomeLadiesPage = () => {
           </div>
         </motion.div>
 
-        {/* INSIGHT */}
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 20,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          transition={{
-            delay: 0.1,
-          }}
-          style={{
-            background:
-              isOver
-                ? 'var(--color-expense-soft)'
-                : 'var(--color-income-soft)',
-            border: `1px solid ${
-              isOver
-                ? '#452226'
-                : '#1f4a34'
-            }`,
-            borderRadius: 22,
-            padding:
-              '18px 18px',
-          }}
-        >
-          <div className="d-flex align-items-center gap-3">
-            <div
-              className="d-flex align-items-center justify-content-center"
-              style={{
-                width: 44,
-                height: 44,
-                borderRadius: 16,
-                background:
-                  isOver
-                    ? 'var(--color-expense-soft)'
-                    : 'var(--color-income-soft)',
-                color:
-                  isOver
-                    ? 'var(--color-expense)'
-                    : 'var(--color-income)',
-                flexShrink: 0,
-              }}
-            >
-              <FiZap size={18} />
-            </div>
-
-            <div>
-              <div
-                style={{
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color:
-                    'var(--color-gray-500)',
-                  marginBottom: 4,
-                }}
-              >
-                Insight
-                Bulan Ini
-              </div>
-
-              <div
-                style={{
-                  fontSize: 14,
-                  lineHeight: 1.6,
-                  fontWeight: 600,
-                  color:
-                    'var(--color-dark)',
-                }}
-              >
-                {getInsight()}
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
         {/* ESTIMASI */}
         <motion.div
           initial={{
@@ -744,6 +749,7 @@ const HomeLadiesPage = () => {
             ini ✨
           </div>
         </motion.div>
+        </div>
       </div>
     </div>
   );

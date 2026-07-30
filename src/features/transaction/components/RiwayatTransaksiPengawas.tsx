@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '../../../lib/supabaseClient';
 import DataTable from '../../../components/DataTable';
 import ActionIconButton from '../../../components/ActionIconButton';
@@ -9,9 +9,6 @@ import dayjs from 'dayjs';
 
 import {
   FiSearch,
-  FiTrendingUp,
-  FiTrendingDown,
-  FiLayers,
   FiTrash2,
 } from 'react-icons/fi';
 
@@ -142,23 +139,6 @@ const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
     // eslint-disable-next-line
   }, [pengawasId, refresh, filterTipe, searchText, sortKey, sortOrder, isMobile]);
 
-  const summary = useMemo(() => {
-    const pemasukan = data
-      .filter((d) => d.tipe === 'gaji_pengawas')
-      .reduce((acc, cur) => acc + Number(cur.jumlah), 0);
-
-    const pengeluaran = data
-      .filter((d) => d.tipe === 'kasbon_pengawas')
-      .reduce((acc, cur) => acc + Number(cur.jumlah), 0);
-
-    return {
-      pemasukan,
-      pengeluaran,
-      saldo: pemasukan - pengeluaran,
-      transaksi: data.length,
-    };
-  }, [data]);
-
   const paginatedData = isMobile
     ? data
     : data.slice((page - 1) * limit, page * limit);
@@ -199,61 +179,6 @@ const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
 
   return (
     <div className="mt-3">
-
-      {/* SUMMARY */}
-      {!isMobile && (
-        <div className="row g-3 mb-4">
-          {[
-            {
-              title: 'Total Gaji',
-              value: summary.pemasukan,
-              color: 'var(--color-income)',
-              icon: <FiTrendingUp />,
-            },
-            {
-              title: 'Total Kasbon',
-              value: summary.pengeluaran,
-              color: 'var(--color-expense)',
-              icon: <FiTrendingDown />,
-            },
-            {
-              title: 'Saldo',
-              value: summary.saldo,
-              color: summary.saldo >= 0 ? 'var(--color-medical)' : 'var(--color-expense)',
-              icon: <FiLayers />,
-            },
-            {
-              title: 'Transaksi',
-              value: summary.transaksi,
-              color: 'var(--color-dark)',
-              icon: <FiLayers />,
-            },
-          ].map((item) => (
-            <div key={item.title} className="col-md-3">
-              <div className="card border-0 shadow-sm rounded-4 p-3 h-100">
-                <div className="d-flex justify-content-between">
-                  <div>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--color-gray-500)' }}>
-                      {item.title}
-                    </div>
-                    <div
-                      className="fw-bold mt-1"
-                      style={{ color: item.color, fontSize: '1.3rem' }}
-                    >
-                      {item.title === 'Transaksi'
-                        ? item.value
-                        : `Rp${Number(item.value).toLocaleString()}`}
-                    </div>
-                  </div>
-                  <div style={{ fontSize: 22, color: item.color }}>
-                    {item.icon}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
 
       {/* FILTER + SEARCH */}
       {!isMobile && (

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '../../../lib/supabaseClient';
 import DataTable from '../../../components/DataTable';
 import ActionIconButton from '../../../components/ActionIconButton';
@@ -9,9 +9,6 @@ import dayjs from 'dayjs';
 
 import {
   FiSearch,
-  FiTrendingUp,
-  FiTrendingDown,
-  FiLayers,
   FiTrash2,
 } from 'react-icons/fi';
 
@@ -323,48 +320,6 @@ const RiwayatTransaksi = ({
     data.length / limit
   );
 
-  const summary = useMemo(() => {
-    const pemasukan = data
-      .filter(
-        (d) =>
-          d.tipe ===
-            'voucher' ||
-          d.tipe ===
-            'pemasukan_lain'
-      )
-      .reduce(
-        (acc, curr) =>
-          acc +
-          Number(curr.jumlah),
-        0
-      );
-
-    const pengeluaran = data
-      .filter(
-        (d) =>
-          d.tipe === 'kasbon' ||
-          d.tipe ===
-            'dokter'
-      )
-      .reduce(
-        (acc, curr) =>
-          acc +
-          Number(curr.jumlah),
-        0
-      );
-
-    return {
-      pemasukan,
-      pengeluaran,
-
-      saldo:
-        pemasukan -
-        pengeluaran,
-
-      transaksi: data.length,
-    };
-  }, [data]);
-
   const renderBadge = (
     tipe: string
   ) => {
@@ -427,122 +382,6 @@ const RiwayatTransaksi = ({
   return (
     <div className="mt-3">
       {!isMobile && (
-        <div className="row g-3 mb-4">
-          {[
-            {
-              title:
-                'Total Pemasukan',
-
-              value:
-                summary.pemasukan,
-
-              color:
-                'var(--color-income)',
-
-              icon: (
-                <FiTrendingUp />
-              ),
-            },
-
-            {
-              title:
-                'Total Pengeluaran',
-
-              value:
-                summary.pengeluaran,
-
-              color:
-                'var(--color-expense)',
-
-              icon: (
-                <FiTrendingDown />
-              ),
-            },
-
-            {
-              title: 'Saldo',
-
-              value:
-                summary.saldo,
-
-              color:
-                summary.saldo >=
-                0
-                  ? 'var(--color-medical)'
-                  : 'var(--color-expense)',
-
-              icon: (
-                <FiLayers />
-              ),
-            },
-
-            {
-              title:
-                'Total Transaksi',
-
-              value:
-                summary.transaksi,
-
-              color: 'var(--color-dark)',
-
-              icon: (
-                <FiLayers />
-              ),
-            },
-          ].map((item) => (
-            <div
-              key={item.title}
-              className="col-md-3"
-            >
-              <div className="card border-0 shadow-sm rounded-4 p-3 h-100">
-                <div className="d-flex justify-content-between align-items-start">
-                  <div>
-                    <div
-                      style={{
-                        color:
-                          'var(--color-gray-500)',
-                        fontSize:
-                          '0.85rem',
-                      }}
-                    >
-                      {item.title}
-                    </div>
-
-                    <div
-                      className="fw-bold mt-1"
-                      style={{
-                        color:
-                          item.color,
-                        fontSize:
-                          '1.3rem',
-                      }}
-                    >
-                      {item.title ===
-                      'Total Transaksi'
-                        ? item.value
-                        : `Rp${Number(
-                            item.value
-                          ).toLocaleString()}`}
-                    </div>
-                  </div>
-
-                  <div
-                    style={{
-                      color:
-                        item.color,
-                      fontSize: 22,
-                    }}
-                  >
-                    {item.icon}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {!isMobile && (
         <div className="card border-0 shadow-sm rounded-4 mb-4">
           <div className="p-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div className="d-flex gap-2 flex-wrap">
@@ -576,7 +415,7 @@ const RiwayatTransaksi = ({
 
                 {
                   value:
-                    'Dokter',
+                    'dokter',
                   label:
                     'Dokter',
                 },
