@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEntityList } from '../../../hooks/useEntityList';
 import DataTable from '../../../components/DataTable';
@@ -30,18 +29,6 @@ const AgentListPage = () => {
     remove,
   } = useEntityList<Agent>('agent', ['nama_agent'], limit);
 
-  // Deteksi sidebar terbuka
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      const backdrop = document.querySelector('.sidebar-backdrop');
-      setIsSidebarOpen(!!backdrop);
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-    return () => observer.disconnect();
-  }, []);
-
   const handleDelete = (id: string) => remove(id, 'Yakin ingin hapus agent ini?');
 
   return (
@@ -49,7 +36,6 @@ const AgentListPage = () => {
       className="page-shell p-4"
       style={{
         color: 'var(--color-dark)',
-        paddingBottom: isMobile ? '100px' : undefined,
       }}
     >
       <ListPageHeader
@@ -57,11 +43,13 @@ const AgentListPage = () => {
         title="Management Agent"
         description="Kelola data agent SR Agency"
         actions={
-          !isMobile && (
-            <HeaderActionButton icon={<FiPlus />} onClick={() => navigate('/agent-create')}>
-              Tambah Agent
-            </HeaderActionButton>
-          )
+          <HeaderActionButton
+            icon={<FiPlus />}
+            onClick={() => navigate('/agent-create')}
+            fullWidth={isMobile}
+          >
+            Tambah Agent
+          </HeaderActionButton>
         }
       />
 
@@ -90,13 +78,6 @@ const AgentListPage = () => {
 
           {totalPages > 1 && (
             <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
-          )}
-
-          {/* FAB */}
-          {!isSidebarOpen && (
-            <button onClick={() => navigate('/agent-create')} className="fab-button">
-              <FiPlus />
-            </button>
           )}
         </>
       ) : (

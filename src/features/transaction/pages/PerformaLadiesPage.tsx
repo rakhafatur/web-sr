@@ -267,11 +267,17 @@ const PerformaLadiesPage = () => {
             Mode Tampilan
           </label>
 
-          <div className="d-flex gap-2 flex-wrap">
+          <div
+            className={isMobile ? 'd-flex gap-2' : 'd-flex gap-2 flex-wrap'}
+          >
             {modeOptions.map((opt) => (
               <button
                 key={opt.value}
-                className="btn d-flex align-items-center gap-2"
+                className={
+                  isMobile
+                    ? 'btn d-flex align-items-center justify-content-center gap-2 flex-fill'
+                    : 'btn d-flex align-items-center gap-2'
+                }
                 onClick={() => setMode(opt.value)}
                 style={{
                   borderRadius: 999,
@@ -403,7 +409,7 @@ const PerformaLadiesPage = () => {
                   >
                     {(mode === 'aktivitas'
                       ? [
-                          { icon: <FiCalendar size={12} />, label: 'Hari Masuk', value: `${row.masuk}`, bg: 'var(--color-income-soft)', color: 'var(--color-income)' },
+                          { icon: <FiCalendar size={12} />, label: 'Masuk', value: `${row.masuk}`, bg: 'var(--color-income-soft)', color: 'var(--color-income)' },
                           { icon: <FiGift size={12} />, label: 'Voucher', value: `${row.voucherTotal.toFixed(0)} pcs`, bg: 'var(--color-voucher-soft)', color: 'var(--color-voucher)' },
                           { icon: <FiTrendingUp size={12} />, label: 'Voucher/Hari', value: row.voucherAvg.toFixed(2), bg: 'var(--color-medical-soft)', color: 'var(--color-medical)' },
                         ]

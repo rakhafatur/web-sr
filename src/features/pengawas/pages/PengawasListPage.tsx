@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEntityList } from '../../../hooks/useEntityList';
 import DataTable from '../../../components/DataTable';
@@ -35,18 +34,6 @@ const PengawasListPage = () => {
     remove,
   } = useEntityList<Pengawas>('pengawas', ['nama_lengkap', 'nama_panggilan'], limit);
 
-  // ⬇️ Tambahan: untuk deteksi sidebar terbuka
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      const backdrop = document.querySelector('.sidebar-backdrop');
-      setIsSidebarOpen(!!backdrop);
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-    return () => observer.disconnect();
-  }, []);
-
   const handleDelete = (id: string) => remove(id, 'Yakin ingin hapus pengawas ini?');
 
   return (
@@ -54,7 +41,6 @@ const PengawasListPage = () => {
       className="page-shell p-4"
       style={{
         color: 'var(--color-dark)',
-        paddingBottom: isMobile ? '100px' : undefined,
       }}
     >
       <ListPageHeader
@@ -62,11 +48,13 @@ const PengawasListPage = () => {
         title="Management Pengawas"
         description="Kelola data pengawas SR Agency"
         actions={
-          !isMobile && (
-            <HeaderActionButton icon={<FiPlus />} onClick={() => navigate('/pengawas-create')}>
-              Tambah Pengawas
-            </HeaderActionButton>
-          )
+          <HeaderActionButton
+            icon={<FiPlus />}
+            onClick={() => navigate('/pengawas-create')}
+            fullWidth={isMobile}
+          >
+            Tambah Pengawas
+          </HeaderActionButton>
         }
       />
 
@@ -95,13 +83,6 @@ const PengawasListPage = () => {
 
           {totalPages > 1 && (
             <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
-          )}
-
-          {/* ⬇️ FAB tidak tampil jika sidebar sedang terbuka */}
-          {!isSidebarOpen && (
-            <button onClick={() => navigate('/pengawas-create')} className="fab-button">
-              <FiPlus />
-            </button>
           )}
         </>
       ) : (

@@ -90,7 +90,11 @@ const UserListPage = () => {
         title="Management User"
         description="Kelola user dan akses sistem SR Agency"
         actions={
-          <HeaderActionButton icon={<FiPlus />} onClick={() => navigate('/user-create')}>
+          <HeaderActionButton
+            icon={<FiPlus />}
+            onClick={() => navigate('/user-create')}
+            fullWidth={isMobile}
+          >
             Tambah User
           </HeaderActionButton>
         }

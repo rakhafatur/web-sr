@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import { FiPlus, FiEdit2, FiTrash2, FiUser } from 'react-icons/fi';
@@ -38,31 +37,22 @@ const LadiesListPage = () => {
     remove,
   } = useEntityList<Lady>('ladies', ['nama_lengkap', 'nama_ladies', 'nama_outlet'], limit);
 
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      const backdrop = document.querySelector('.sidebar-backdrop');
-      setIsSidebarOpen(!!backdrop);
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-    return () => observer.disconnect();
-  }, []);
-
   const handleDelete = (id: string) => remove(id, '❗ Yakin ingin hapus data ladies ini?');
 
   return (
-    <div className="page-shell p-4" style={{ color: 'var(--color-dark)', paddingBottom: isMobile ? '100px' : undefined }}>
+    <div className="page-shell p-4" style={{ color: 'var(--color-dark)' }}>
       <ListPageHeader
         icon={<FiUser />}
         title="Management Ladies"
         description="Kelola data ladies SR Agency"
         actions={
-          !isMobile && (
-            <HeaderActionButton icon={<FiPlus />} onClick={() => navigate('/ladies-create')}>
-              Tambah Ladies
-            </HeaderActionButton>
-          )
+          <HeaderActionButton
+            icon={<FiPlus />}
+            onClick={() => navigate('/ladies-create')}
+            fullWidth={isMobile}
+          >
+            Tambah Ladies
+          </HeaderActionButton>
         }
       />
 
@@ -90,11 +80,6 @@ const LadiesListPage = () => {
           />
           {totalPages > 1 && (
             <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
-          )}
-          {!isSidebarOpen && (
-            <button onClick={() => navigate('/ladies-create')} className="fab-button">
-              <FiPlus />
-            </button>
           )}
         </>
       ) : (
