@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../../lib/supabaseClient';
 import DataTable from '../../../components/DataTable';
-import CardTable from '../../../components/CardTable';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import dayjs from 'dayjs';
 import logo from '../../../assets/logosr-black.png';
 import { useMediaQuery } from 'react-responsive';
 import { FiBook, FiPrinter } from 'react-icons/fi';
@@ -76,9 +74,6 @@ const BukuKuningPage = () => {
   const [tahun, setTahun] = useState(new Date().getFullYear());
   const [rows, setRows] = useState<Row[]>([]);
   const isMobile = useMediaQuery({ maxWidth: 768 });
-  const isSmallMobile = useMediaQuery({ maxWidth: 480 });
-  const [page, setPage] = useState(0);
-  const rowsPerPage = 5;
 
   const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -312,9 +307,9 @@ const BukuKuningPage = () => {
       (l) => l.id === selectedLadyId
     );
 
-    const namaLabel = selectedLady
-      ? `${selectedLady.nama_ladies} - ${selectedLady.nama_outlet} (${selectedLady.pin})`
-      : 'Nama tidak ditemukan';
+    const namaFile = selectedLady
+      ? `Totalan ${selectedLady.nama_ladies} - ${monthNames[bulan - 1]} ${tahun}`
+      : `Totalan - ${monthNames[bulan - 1]} ${tahun}`;
 
     const totalVoucher = rows.reduce(
       (sum, r) =>
@@ -717,7 +712,7 @@ const BukuKuningPage = () => {
 
       drawPageBadges(doc, C);
 
-      doc.save(`Buku-Kuning-${namaLabel}-${bulan}-${tahun}.pdf`);
+      doc.save(`${namaFile}.pdf`);
     };
   };
 
@@ -815,69 +810,63 @@ const BukuKuningPage = () => {
       {selectedLadyId &&
         rows.length > 0 && (
           <div
-            className="d-flex gap-2 mb-3 justify-content-start flex-wrap"
-            style={{
-              alignItems: 'center',
-            }}
+            className={
+              isMobile
+                ? 'd-flex gap-3 mb-4'
+                : 'd-flex gap-2 mb-3 justify-content-start flex-wrap'
+            }
+            style={
+              isMobile
+                ? undefined
+                : { alignItems: 'center' }
+            }
           >
             <button
-              className="btn btn-sm btn-primary fw-semibold d-flex align-items-center justify-content-center gap-2"
-              onClick={
-                handleTutupBuku
+              className={
+                isMobile
+                  ? 'btn btn-primary fw-semibold d-flex align-items-center justify-content-center gap-2 flex-fill'
+                  : 'btn btn-sm btn-primary fw-semibold d-flex align-items-center justify-content-center gap-2'
               }
-              title={
-                isSmallMobile
-                  ? 'Tutup Buku'
-                  : ''
+              onClick={handleTutupBuku}
+              style={
+                isMobile
+                  ? {
+                      height: 52,
+                      borderRadius: 14,
+                      fontSize: '0.95rem',
+                    }
+                  : {
+                      height: 36,
+                      padding: '0.4rem 0.75rem',
+                    }
               }
-              style={{
-                minWidth:
-                  isSmallMobile
-                    ? 44
-                    : 'auto',
-                height: 36,
-                padding:
-                  isSmallMobile
-                    ? '0.4rem'
-                    : '0.4rem 0.75rem',
-              }}
             >
-              <FiBook size={16} />
-
-              {isSmallMobile
-                ? null
-                : 'Tutup Buku'}
+              <FiBook size={isMobile ? 18 : 16} />
+              Tutup Buku
             </button>
 
             <button
-              className="btn btn-sm btn-outline-primary fw-semibold d-flex align-items-center justify-content-center gap-2"
-              onClick={
-                handleExportPDF
+              className={
+                isMobile
+                  ? 'btn btn-outline-primary fw-semibold d-flex align-items-center justify-content-center gap-2 flex-fill'
+                  : 'btn btn-sm btn-outline-primary fw-semibold d-flex align-items-center justify-content-center gap-2'
               }
-              title={
-                isSmallMobile
-                  ? 'Cetak PDF'
-                  : ''
+              onClick={handleExportPDF}
+              style={
+                isMobile
+                  ? {
+                      height: 52,
+                      borderRadius: 14,
+                      fontSize: '0.95rem',
+                    }
+                  : {
+                      height: 36,
+                      padding: '0.4rem 0.75rem',
+                    }
               }
-              style={{
-                minWidth:
-                  isSmallMobile
-                    ? 44
-                    : 'auto',
-                height: 36,
-                padding:
-                  isSmallMobile
-                    ? '0.4rem'
-                    : '0.4rem 0.75rem',
-              }}
             >
-              <FiPrinter
-                size={16}
-              />
-
-              {isSmallMobile
-                ? null
-                : 'Cetak'}
+              <FiPrinter size={isMobile ? 18 : 16} />
+              Cetak
             </button>
           </div>
         )}
@@ -892,42 +881,7 @@ const BukuKuningPage = () => {
       {selectedLadyId && (
         <>
           {rows.length > 0 ? (
-            isMobile ? (
-              <CardTable
-                data={rows
-                  .filter(
-                    (r) =>
-                      r.tanggal !==
-                      'Sisa Kasbon'
-                  )
-                  .sort(
-                    (a, b) =>
-                      dayjs(
-                        b.tanggal
-                      ).unix() -
-                      dayjs(
-                        a.tanggal
-                      ).unix()
-                  )}
-                page={page}
-                rowsPerPage={
-                  rowsPerPage
-                }
-                onPageChange={
-                  setPage
-                }
-                renderItem={(row) => (
-                  <>
-                    <div><strong>📅 Tanggal:</strong> {dayjs(row.tanggal).format('YYYY-MM-DD')}</div>
-                    <div><strong>📋 Keterangan:</strong> {row.keterangan}</div>
-                    {row.voucher && <div><strong>🎫 Voucher:</strong> {row.voucher}</div>}
-                    {row.pemasukan && <div><strong>💰 Pemasukan:</strong> Rp{Number(row.pemasukan).toLocaleString()}</div>}
-                    {row.pengeluaran && <div><strong>💸 Pengeluaran:</strong> Rp{Number(row.pengeluaran).toLocaleString()}</div>}
-                    <div><strong>🧾 Saldo:</strong> Rp{Number(row.saldo).toLocaleString()}</div>
-                  </>
-                )}
-              />
-            ) : (
+            !isMobile && (
               <DataTable
                 columns={[
                   {
