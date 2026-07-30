@@ -191,15 +191,14 @@ const SmartChatBox: React.FC<SmartChatBoxProps> = ({
                 </div>
               </div>
 
-              {/* STAT LIST — satu baris per statistik (bukan grid 2 kolom)
-                  supaya tidak pernah butuh menyusut/wrap aneh di bubble
-                  sempit; label+ikon kiri, nilai kanan, sama seperti baris
-                  RANK GROUPS di bawah supaya satu bahasa visual. */}
+              {/* STAT LIST — daftar rata, bukan kartu di dalam kartu.
+                  Bubble sendiri sudah berfungsi sebagai "card"; baris di
+                  dalamnya cukup dipisah garis tipis, tanpa background/border
+                  sendiri-sendiri, supaya tidak berasa sempit di layar kecil. */}
               {report.stats && (
                 <div
-                  className="d-flex flex-column gap-2"
                   style={{
-                    marginBottom: report.groups ? 14 : 0,
+                    marginBottom: report.groups ? 10 : 0,
                   }}
                 >
                   {report.stats.map((stat, i) => (
@@ -207,10 +206,11 @@ const SmartChatBox: React.FC<SmartChatBoxProps> = ({
                       key={i}
                       className="d-flex align-items-center justify-content-between gap-2"
                       style={{
-                        background: "var(--color-surface-2)",
-                        border: "1px solid var(--color-gray-200)",
-                        borderRadius: 12,
-                        padding: "9px 12px",
+                        padding: "8px 0",
+                        borderBottom:
+                          i < report.stats!.length - 1
+                            ? "1px solid var(--color-gray-200)"
+                            : "none",
                       }}
                     >
                       <div
@@ -220,14 +220,8 @@ const SmartChatBox: React.FC<SmartChatBoxProps> = ({
                         {stat.icon && (
                           <div
                             style={{
-                              width: 22,
-                              height: 22,
-                              borderRadius: 7,
-                              background: "rgba(var(--color-primary-rgb), 0.16)",
                               color: "var(--color-green)",
                               display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
                               flexShrink: 0,
                             }}
                           >
@@ -237,7 +231,7 @@ const SmartChatBox: React.FC<SmartChatBoxProps> = ({
 
                         <span
                           style={{
-                            fontSize: "0.78rem",
+                            fontSize: "0.8rem",
                             fontWeight: 600,
                             color: "var(--color-gray-500)",
                             whiteSpace: "nowrap",
@@ -251,7 +245,7 @@ const SmartChatBox: React.FC<SmartChatBoxProps> = ({
 
                       <div
                         style={{
-                          fontSize: "0.88rem",
+                          fontSize: "0.92rem",
                           fontWeight: 700,
                           color: "var(--color-dark)",
                           whiteSpace: "nowrap",
@@ -276,23 +270,24 @@ const SmartChatBox: React.FC<SmartChatBoxProps> = ({
                           fontSize: "0.76rem",
                           fontWeight: 700,
                           color: "var(--color-green)",
-                          marginBottom: 6,
+                          marginBottom: 4,
                         }}
                       >
                         {group.icon}
                         <span>{group.heading}</span>
                       </div>
 
-                      <div className="d-flex flex-column gap-1">
+                      <div>
                         {group.items.map((item, ii) => (
                           <div
                             key={ii}
                             className="d-flex align-items-center justify-content-between gap-2"
                             style={{
-                              background: "var(--color-surface-2)",
-                              border: "1px solid var(--color-gray-200)",
-                              borderRadius: 12,
-                              padding: "8px 12px",
+                              padding: "7px 0",
+                              borderBottom:
+                                ii < group.items.length - 1
+                                  ? "1px solid var(--color-gray-200)"
+                                  : "none",
                             }}
                           >
                             <div style={{ minWidth: 0 }}>
