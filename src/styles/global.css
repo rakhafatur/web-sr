@@ -235,13 +235,14 @@ body {
 }
 
 /* ========= PAGE CONTAINER ==========
-   Lebar konten seragam untuk halaman non-home di dalam MainLayout, supaya
-   tidak melebar penuh di layar besar. Background & minHeight SENGAJA tidak
-   diatur di sini — itu tanggung jawab shell (MainLayout `<main>`), halaman
-   individual tidak boleh menimpanya lagi. */
+   Lebar konten seragam untuk halaman non-home di dalam MainLayout. Batas
+   max-width dinaikkan supaya konten lebih memenuhi layar besar/ultra-wide,
+   tapi tetap ada batas atas supaya baris teks/tabel tidak melebar berlebihan.
+   Background & minHeight SENGAJA tidak diatur di sini — itu tanggung jawab
+   shell (MainLayout `<main>`), halaman individual tidak boleh menimpanya lagi. */
 .page-shell {
   width: 100%;
-  max-width: 1280px;
+  max-width: 1920px;
   margin: 0 auto;
 }
 
