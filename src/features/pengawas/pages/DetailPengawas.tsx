@@ -115,7 +115,7 @@ const DetailPengawas = () => {
   }
 
   return (
-    <div className="page-shell py-4 px-md-4 px-3">
+    <div className="page-shell py-4 px-md-4 px-3" style={{ maxWidth: 760 }}>
       <EntityPageHeader
         icon={<FiUser />}
         title="Detail Pengawas"

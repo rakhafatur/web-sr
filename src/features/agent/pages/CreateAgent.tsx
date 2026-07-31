@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiUser, FiCheckCircle } from 'react-icons/fi';
+import { FiUser } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 
 import FormField from '../../../components/FormField';
 import EntityPageHeader from '../../../components/EntityPageHeader';
 import EntityHeroCard from '../../../components/EntityHeroCard';
 import EntityFormCard from '../../../components/EntityFormCard';
+import EntitySubmitButton from '../../../components/EntitySubmitButton';
 import { supabase } from '../../../lib/supabaseClient';
 
 const CreateAgent = () => {
@@ -42,32 +43,12 @@ const CreateAgent = () => {
   };
 
   return (
-    <div className="page-shell py-4 px-md-4 px-3">
+    <div className="page-shell py-4 px-md-4 px-3" style={{ maxWidth: 760 }}>
       <EntityPageHeader
         icon={<FiUser />}
         title="Tambah Agent"
         description="Tambahkan agent baru ke sistem SR Agency"
         onBack={() => navigate('/agent')}
-        actions={
-          <button
-            className="btn btn-light fw-bold d-flex align-items-center gap-2"
-            style={{ borderRadius: 14, color: 'var(--color-green)' }}
-            onClick={handleSubmit}
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <div className="spinner-border spinner-border-sm" role="status" />
-                Menyimpan...
-              </>
-            ) : (
-              <>
-                <FiCheckCircle />
-                Simpan
-              </>
-            )}
-          </button>
-        }
       />
 
       <EntityHeroCard
@@ -84,6 +65,10 @@ const CreateAgent = () => {
           onChange={handleChange}
         />
       </EntityFormCard>
+
+      <EntitySubmitButton onClick={handleSubmit} loading={loading}>
+        Simpan Agent
+      </EntitySubmitButton>
     </div>
   );
 };
