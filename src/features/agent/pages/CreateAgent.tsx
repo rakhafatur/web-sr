@@ -48,7 +48,6 @@ const CreateAgent = () => {
         icon={<FiUser />}
         title="Tambah Agent"
         description="Tambahkan agent baru ke sistem SR Agency"
-        onBack={() => navigate('/agent')}
       />
 
       <EntityHeroCard

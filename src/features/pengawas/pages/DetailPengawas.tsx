@@ -120,7 +120,6 @@ const DetailPengawas = () => {
         icon={<FiUser />}
         title="Detail Pengawas"
         description="Kelola informasi pengawas"
-        onBack={() => navigate('/pengawas')}
         actions={
           <EntityDetailActions
             readonly={readonly}

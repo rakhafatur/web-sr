@@ -92,7 +92,6 @@ const DetailAgent = () => {
         icon={<FiUser />}
         title="Detail Agent"
         description="Kelola informasi agent"
-        onBack={() => navigate('/agent')}
         actions={
           <EntityDetailActions
             readonly={readonly}

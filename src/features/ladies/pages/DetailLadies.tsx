@@ -131,7 +131,6 @@ const DetailLadies = () => {
         icon={<FiUser />}
         title="Detail Ladies"
         description="Kelola informasi ladies"
-        onBack={() => navigate('/ladies')}
         actions={
           <EntityDetailActions
             readonly={readonly}

@@ -100,6 +100,7 @@ const PeraturanPage = () => {
       className="page-shell d-flex flex-column gap-3"
       style={{
         paddingBottom: 24,
+        maxWidth: 560,
       }}
     >
       {/* HERO */}

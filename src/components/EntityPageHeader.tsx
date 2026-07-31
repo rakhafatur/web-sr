@@ -1,16 +1,15 @@
 import { ReactNode } from 'react';
-import { FiArrowLeft } from 'react-icons/fi';
 
 type Props = {
   icon: ReactNode;
   title: string;
   description: string;
-  onBack: () => void;
   actions?: ReactNode;
 };
 
-/** Banner atas halaman Tambah/Detail entitas (Agent/Pengawas/Ladies/User) — dipakai seragam di semua. */
-const EntityPageHeader = ({ icon, title, description, onBack, actions }: Props) => (
+/** Banner atas halaman Tambah/Detail entitas (Agent/Pengawas/Ladies/User) — dipakai seragam di semua.
+    Tanpa tombol back — navigasi kembali sudah lewat swipe/gesture bawaan browser. */
+const EntityPageHeader = ({ icon, title, description, actions }: Props) => (
   <div
     className="mb-4 p-4 rounded-4 shadow-sm position-relative overflow-hidden"
     style={{
@@ -32,14 +31,6 @@ const EntityPageHeader = ({ icon, title, description, onBack, actions }: Props) 
 
     <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 position-relative">
       <div className="d-flex align-items-center gap-3">
-        <button
-          onClick={onBack}
-          className="btn btn-light d-flex align-items-center justify-content-center"
-          style={{ width: 48, height: 48, borderRadius: 14 }}
-        >
-          <FiArrowLeft />
-        </button>
-
         <div
           style={{
             width: 64,

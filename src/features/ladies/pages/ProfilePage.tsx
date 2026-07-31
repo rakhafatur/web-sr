@@ -86,7 +86,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="page-shell d-flex flex-column gap-3" style={{ paddingBottom: 24 }}>
+    <div className="page-shell d-flex flex-column gap-3" style={{ paddingBottom: 24, maxWidth: 560 }}>
       <ProfileHeroCard
         avatarIcon={<FiUser size={34} />}
         name={ladies?.nama_ladies || '-'}

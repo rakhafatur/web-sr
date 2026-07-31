@@ -68,7 +68,6 @@ const CreateUser = () => {
         icon={<FiUsers />}
         title="Tambah User"
         description="Tambahkan user baru ke sistem SR Agency"
-        onBack={() => navigate('/users')}
       />
 
       <EntityHeroCard

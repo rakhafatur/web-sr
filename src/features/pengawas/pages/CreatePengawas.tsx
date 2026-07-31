@@ -71,7 +71,6 @@ const CreatePengawas = () => {
         icon={<FiUser />}
         title="Tambah Pengawas"
         description="Tambahkan pengawas baru ke sistem SR Agency"
-        onBack={() => navigate('/pengawas')}
       />
 
       <EntityHeroCard

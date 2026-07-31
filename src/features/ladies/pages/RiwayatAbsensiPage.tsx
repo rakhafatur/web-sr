@@ -234,6 +234,7 @@ const RiwayatAbsensiPage =
         className="page-shell d-flex flex-column gap-3"
         style={{
           paddingBottom: 24,
+          maxWidth: 560,
         }}
       >
         {/* HERO */}
@@ -394,26 +395,14 @@ const RiwayatAbsensiPage =
                   <FiCheckCircle size={18} />
                 </div>
 
-                <div>
-                  <div
-                    style={{
-                      fontSize: 11,
-                      color:
-                        'var(--color-gray-500)',
-                      fontWeight: 600,
-                    }}
-                  >
-                    Hari Kerja
-                  </div>
-
-                  <div
-                    style={{
-                      fontSize: 15,
-                      fontWeight: 700,
-                    }}
-                  >
-                    KERJA
-                  </div>
+                <div
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: 'var(--color-dark)',
+                  }}
+                >
+                  Hari Kerja
                 </div>
               </div>
 
@@ -463,26 +452,14 @@ const RiwayatAbsensiPage =
                   <FiHeart size={18} />
                 </div>
 
-                <div>
-                  <div
-                    style={{
-                      fontSize: 11,
-                      color:
-                        'var(--color-gray-500)',
-                      fontWeight: 600,
-                    }}
-                  >
-                    Mens
-                  </div>
-
-                  <div
-                    style={{
-                      fontSize: 15,
-                      fontWeight: 700,
-                    }}
-                  >
-                    MENS
-                  </div>
+                <div
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: 'var(--color-dark)',
+                  }}
+                >
+                  Mens
                 </div>
               </div>
 
@@ -532,26 +509,14 @@ const RiwayatAbsensiPage =
                   <FiMoon size={18} />
                 </div>
 
-                <div>
-                  <div
-                    style={{
-                      fontSize: 11,
-                      color:
-                        'var(--color-gray-500)',
-                      fontWeight: 600,
-                    }}
-                  >
-                    Libur
-                  </div>
-
-                  <div
-                    style={{
-                      fontSize: 15,
-                      fontWeight: 700,
-                    }}
-                  >
-                    OFF
-                  </div>
+                <div
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: 'var(--color-dark)',
+                  }}
+                >
+                  Libur
                 </div>
               </div>
 
@@ -601,26 +566,14 @@ const RiwayatAbsensiPage =
                   <FiCoffee size={18} />
                 </div>
 
-                <div>
-                  <div
-                    style={{
-                      fontSize: 11,
-                      color:
-                        'var(--color-gray-500)',
-                      fontWeight: 600,
-                    }}
-                  >
-                    Sakit
-                  </div>
-
-                  <div
-                    style={{
-                      fontSize: 15,
-                      fontWeight: 700,
-                    }}
-                  >
-                    SAKIT
-                  </div>
+                <div
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: 'var(--color-dark)',
+                  }}
+                >
+                  Sakit
                 </div>
               </div>
 

@@ -81,7 +81,6 @@ const CreateLadies = () => {
         icon={<FiUser />}
         title="Tambah Ladies"
         description="Tambahkan ladies baru ke sistem SR Agency"
-        onBack={() => navigate('/ladies')}
       />
 
       <EntityHeroCard

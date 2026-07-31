@@ -184,7 +184,6 @@ const DetailUser = () => {
         icon={<FiUsers />}
         title="Detail User"
         description="Kelola informasi user dan akses sistem"
-        onBack={() => navigate('/users')}
         actions={
           <EntityDetailActions
             readonly={readonly}
