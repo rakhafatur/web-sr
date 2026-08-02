@@ -7,7 +7,6 @@ import dayjs from 'dayjs';
 import './HomeLadiesPage.css';
 
 import {
-  FiZap,
   FiEye,
   FiEyeOff,
   FiMessageCircle,
@@ -23,7 +22,6 @@ import {
 
 import { motion } from 'framer-motion';
 
-import bgImage from '../../../assets/bg-home.png';
 import logo from '../../../assets/logosr-blue.png';
 import type { UserWithLadies } from '../../../types/user';
 
@@ -91,26 +89,6 @@ const HomeLadiesPage = () => {
   };
 
   const persenHadir = Math.min(100, Math.round((hariMasuk / 18) * 100));
-
-  const biayaTetap = 500000 + 185000 + 250000;
-  const batasWajar = Math.max(0, voucherNominal - biayaTetap);
-  const isOver = batasWajar > 0 && pengeluaran > batasWajar;
-
-  const getInsight = () => {
-    if (hariMasuk >= 18) {
-      return '🔥 Target kehadiran bulan ini sudah tercapai!';
-    }
-    if (voucherPcs >= 20) {
-      return '💸 Voucher bulan ini sudah sangat bagus, pertahankan ya!';
-    }
-    if (isOver) {
-      return '⚠️ Pengeluaran mulai melewati batas aman.';
-    }
-    if (hariMasuk >= 10) {
-      return '✨ Progress kerja bulan ini sudah bagus!';
-    }
-    return '💚 Tetap semangat dan jaga performa ya!';
-  };
 
   const formatRp = (n: number) =>
     hideAmount ? '••••••••' : `Rp${n.toLocaleString('id-ID')}`;
@@ -180,8 +158,6 @@ const HomeLadiesPage = () => {
 
   return (
     <div className="ladies-home-wrapper">
-      <img src={bgImage} alt="bg" className="ladies-home-bg" />
-
       <div className="content-container d-flex flex-column gap-3">
         {/* GREETING */}
         <motion.div
@@ -189,15 +165,9 @@ const HomeLadiesPage = () => {
           animate={{ opacity: 1, y: 0 }}
           className="ladies-home-greeting"
         >
-          <div className="ladies-home-greeting-date">
-            {dayjs().format('dddd, DD MMMM YYYY')}
-          </div>
           <h1 className="ladies-home-greeting-title">
             Halo, {user?.nama_ladies} 👋
           </h1>
-          <div className="ladies-home-greeting-subtitle">
-            Semangat kerja hari ini ya 💚
-          </div>
         </motion.div>
 
         {/* HERO */}
@@ -298,21 +268,6 @@ const HomeLadiesPage = () => {
           </div>
         </motion.div>
 
-        {/* INSIGHT */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className={`ladies-home-insight ${isOver ? 'is-over' : ''}`}
-        >
-          <div className="ladies-home-insight-icon">
-            <FiZap size={18} />
-          </div>
-          <div>
-            <div className="ladies-home-insight-label">Insight Bulan Ini</div>
-            <div className="ladies-home-insight-text">{getInsight()}</div>
-          </div>
-        </motion.div>
       </div>
     </div>
   );

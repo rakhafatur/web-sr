@@ -40,26 +40,12 @@
   padding: 4px 4px 0;
 }
 
-.ladies-home-greeting-date {
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  color: var(--color-gray-500);
-  margin-bottom: 4px;
-}
-
 .ladies-home-greeting-title {
   font-size: 1.7rem;
   font-weight: 800;
   color: var(--color-dark);
   line-height: 1.2;
   margin: 0;
-}
-
-.ladies-home-greeting-subtitle {
-  font-size: var(--font-size-sm);
-  color: var(--color-gray-500);
-  font-weight: 500;
-  margin-top: 4px;
 }
 
 /* =========================
@@ -303,109 +289,6 @@
   color: var(--color-gray-600);
   text-align: center;
   line-height: 1.2;
-}
-
-/* =========================
-   INSIGHT
-========================= */
-
-.ladies-home-insight {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: var(--color-income-soft);
-  border: 1px solid #1f4a34;
-  border-radius: var(--radius-lg);
-  padding: 16px;
-}
-
-.ladies-home-insight.is-over {
-  background: var(--color-expense-soft);
-  border-color: #452226;
-}
-
-.ladies-home-insight-icon {
-  flex-shrink: 0;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--color-income-soft);
-  color: var(--color-income);
-}
-
-.ladies-home-insight.is-over .ladies-home-insight-icon {
-  background: var(--color-expense-soft);
-  color: var(--color-expense);
-}
-
-.ladies-home-insight-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--color-gray-500);
-  margin-bottom: 3px;
-}
-
-.ladies-home-insight-text {
-  font-size: var(--font-size-sm);
-  line-height: 1.5;
-  font-weight: 600;
-  color: var(--color-dark);
-}
-
-/* =========================
-   MOBILE BG
-========================= */
-
-.ladies-home-bg {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .ladies-home-bg {
-    display: block;
-
-    /* absolute (bukan fixed) supaya background ikut scroll bareng
-       konten, bukan "mengambang"/nempel di atas viewport. */
-    position: absolute;
-    top: 0;
-    left: 0;
-
-    width: 100%;
-    height: 420px;
-
-    object-fit: cover;
-    object-position: center top;
-
-    z-index: 0;
-
-    opacity: 0.5;
-    filter: brightness(0.5) saturate(0.8) contrast(1.05);
-
-    pointer-events: none;
-  }
-
-  /* Fade halus ke warna background supaya foto menyatu dengan konten
-     di bawahnya, bukan terpotong tegas. */
-  .ladies-home-wrapper::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 420px;
-
-    background: linear-gradient(
-      to bottom,
-      rgba(var(--color-bg-rgb), 0.25) 0%,
-      var(--color-bg) 92%
-    );
-
-    z-index: 1;
-    pointer-events: none;
-  }
 }
 
 /* =========================
