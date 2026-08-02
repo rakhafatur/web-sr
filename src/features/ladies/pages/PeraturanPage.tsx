@@ -232,7 +232,7 @@ const PeraturanPage = () => {
                       index
                     )
                   }
-                  className="d-flex align-items-center justify-content-between"
+                  className="d-flex align-items-center justify-content-between tap-scale"
                   style={{
                     padding:
                       '16px',

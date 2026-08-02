@@ -49,8 +49,8 @@ const variantStyles: Record<Variant, React.CSSProperties> = {
 };
 
 const sizeStyles: Record<Size, React.CSSProperties> = {
-  lg: { height: 48, borderRadius: 14, paddingInline: 22 },
-  md: { height: 36, borderRadius: 10, paddingInline: 16, fontSize: '0.9rem' },
+  lg: { height: 48, borderRadius: 'var(--radius-lg)', paddingInline: 'var(--space-6)' },
+  md: { height: 36, borderRadius: 'var(--radius-md)', paddingInline: 'var(--space-4)', fontSize: 'var(--font-size-sm)' },
 };
 
 /** Tombol "kaya" (gradient + shadow) yang jadi standar semua CTA/modal/form-submit di app. */

@@ -20,15 +20,15 @@ const EntitySubmitButton = ({ onClick, loading, loadingLabel = 'Menyimpan...', c
       className="w-100"
       style={{
         border: 'none',
-        borderRadius: 18,
+        borderRadius: 'var(--radius-lg)',
         background: 'linear-gradient(135deg, var(--color-green), var(--color-accent))',
         color: 'white',
         fontWeight: 700,
-        padding: 16,
+        padding: 'var(--space-4)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 10,
+        gap: 'var(--space-2)',
       }}
     >
       {loading ? (

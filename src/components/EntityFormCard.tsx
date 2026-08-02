@@ -16,7 +16,7 @@ const EntityFormCard = ({ title, description, children }: Props) => (
       <div className="fw-bold" style={{ color: 'var(--color-dark)' }}>
         {title}
       </div>
-      <div style={{ fontSize: '0.84rem', color: 'var(--color-gray-500)' }}>{description}</div>
+      <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)' }}>{description}</div>
     </div>
 
     <div className="p-4 d-flex flex-column gap-4">{children}</div>

@@ -9,7 +9,7 @@ type Props = {
 const pillButtonStyle = {
   width: 34,
   height: 34,
-  borderRadius: 10,
+  borderRadius: 'var(--radius-md)',
   background: 'var(--color-surface-2)',
 };
 
@@ -25,7 +25,7 @@ const Pagination = ({ page, totalPages, onPageChange }: Props) => (
       <FiChevronLeft size={15} />
     </button>
 
-    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-gray-500)', minWidth: 42, textAlign: 'center' }}>
+    <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 600, color: 'var(--color-gray-500)', minWidth: 42, textAlign: 'center' }}>
       {page + 1}/{totalPages}
     </div>
 

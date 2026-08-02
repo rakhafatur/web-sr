@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import dayjs from 'dayjs';
 import { useMediaQuery } from 'react-responsive';
+import { toast } from 'react-toastify';
 
 import { supabase } from '../../../lib/supabaseClient';
 import DataTable from '../../../components/DataTable';
@@ -88,7 +89,7 @@ const RekapVoucherPage = () => {
       .not('ladies_id', 'is', null);
 
     if (error || !data || !Array.isArray(data)) {
-      alert('❌ Gagal ambil data voucher');
+      toast.error('Gagal ambil data voucher');
       return;
     }
 

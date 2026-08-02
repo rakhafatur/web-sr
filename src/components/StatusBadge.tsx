@@ -29,7 +29,7 @@ const StatusBadge = ({ label, variant = 'neutral', tone = 'soft' }: Props) => {
         display: 'inline-block',
         padding: tone === 'onDark' ? '6px 14px' : '4px 12px',
         borderRadius: 'var(--radius-full)',
-        fontSize: 12,
+        fontSize: 'var(--font-size-xs)',
         fontWeight: 700,
         ...style,
       }}

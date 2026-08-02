@@ -417,8 +417,26 @@ body {
   transition: transform 0.2s ease;
 }
 
-.card:hover {
-  transform: translateY(-2px);
+/* (hover: hover) — cuma device dengan mouse/trackpad sungguhan. Tanpa ini,
+   tap di layar sentuh bisa nyangkut di state hover (card kelihatan "terangkat"
+   terus sampai ada tap lain), karena browser mobile mensimulasikan hover
+   setelah tap. */
+@media (hover: hover) {
+  .card:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* ========= TAP FEEDBACK (mobile) ==========
+   Untuk elemen yang bisa diklik/tap tapi bukan <button>/.btn (mis. baris
+   accordion, kartu custom dengan onClick) — kasih feedback tekan seperti
+   native app, bukan :hover yang di touchscreen palsu/nyangkut. */
+.tap-scale {
+  transition: transform 0.15s ease;
+}
+
+.tap-scale:active {
+  transform: scale(0.97);
 }
 
 /* ========= TEXT STYLES ========== */

@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import { FiEye, FiEyeOff, FiUser, FiLock } from 'react-icons/fi';
 import Button from '../../../components/Button';
 import '../../../styles/auth.css';
@@ -29,13 +30,13 @@ function LoginPage() {
         navigate('/');
       }
     } else if (result === 'inactive') {
-      alert('⚠️ Akunmu belum aktif. Menunggu persetujuan admin.');
+      toast.warning('Akunmu belum aktif. Menunggu persetujuan admin.');
     } else if (result === 'wrong_password') {
-      alert('❌ Password salah.');
+      toast.error('Password salah.');
     } else if (result === 'not_found') {
-      alert('❌ Username tidak ditemukan.');
+      toast.error('Username tidak ditemukan.');
     } else {
-      alert('❌ Terjadi kesalahan saat login.');
+      toast.error('Terjadi kesalahan saat login.');
     }
   };
 

@@ -14,7 +14,7 @@ const HeaderActionButton = ({ icon, onClick, children, fullWidth }: Props) => (
     type="button"
     className="btn btn-light fw-bold d-flex align-items-center gap-2"
     style={{
-      borderRadius: 14,
+      borderRadius: 'var(--radius-md)',
       color: 'var(--color-green)',
       width: fullWidth ? '100%' : undefined,
       justifyContent: fullWidth ? 'center' : undefined,

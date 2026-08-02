@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
+import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
 import FormField from '../../../components/FormField';
 import Button from '../../../components/Button';
@@ -95,9 +96,10 @@ const TransaksiForm = ({
       (!form.jumlah &&
         !form.jumlah_voucher)
     ) {
-      return alert(
-        '🛑 Harap isi tanggal dan jumlah.'
+      toast.error(
+        'Harap isi tanggal dan jumlah.'
       );
+      return;
     }
 
     setLoading(true);
@@ -151,13 +153,13 @@ const TransaksiForm = ({
     setLoading(false);
 
     if (error) {
-      alert(
-        '❌ Gagal menambahkan transaksi: ' +
+      toast.error(
+        'Gagal menambahkan transaksi: ' +
         error.message
       );
     } else {
-      alert(
-        '✅ Transaksi berhasil ditambahkan!'
+      toast.success(
+        'Transaksi berhasil ditambahkan!'
       );
 
       setForm({
@@ -590,7 +592,7 @@ const TransaksiForm = ({
             background: 'var(--color-surface)',
 
             padding:
-              '12px 16px',
+              '12px 16px calc(12px + env(safe-area-inset-bottom))',
 
             borderTop:
               '1px solid var(--color-gray-200)',

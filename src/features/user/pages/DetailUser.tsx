@@ -3,6 +3,7 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import bcrypt from 'bcryptjs';
 
@@ -66,7 +67,7 @@ const DetailUser = () => {
         password: '',
       });
     } catch (err: any) {
-      alert(
+      toast.error(
         err.message ||
           'Gagal mengambil data user'
       );
@@ -101,9 +102,10 @@ const DetailUser = () => {
       !form.username ||
       !form.nama
     ) {
-      return alert(
+      toast.error(
         'Username dan nama wajib diisi'
       );
+      return;
     }
 
     try {
@@ -141,7 +143,7 @@ const DetailUser = () => {
 
       if (error) throw error;
 
-      alert(
+      toast.success(
         'User berhasil diperbarui'
       );
 
@@ -152,7 +154,7 @@ const DetailUser = () => {
         password: '',
       }));
     } catch (err: any) {
-      alert(
+      toast.error(
         err.message ||
           'Gagal update user'
       );

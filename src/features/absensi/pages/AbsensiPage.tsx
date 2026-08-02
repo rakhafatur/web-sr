@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../../../lib/supabaseClient';
 import dayjs from 'dayjs';
 import { useMediaQuery } from 'react-responsive';
+import { toast } from 'react-toastify';
 
 import AddAbsensiModal from '../components/AddAbsensiModal';
 import CardTableAbsensi from '../components/CardTableAbsensi';
@@ -129,9 +130,10 @@ const AbsensiPage = () => {
       !tanggal ||
       !status
     ) {
-      return alert(
+      toast.error(
         'Lengkapi semua data!'
       );
+      return;
     }
 
     const today = dayjs().format(
@@ -139,9 +141,10 @@ const AbsensiPage = () => {
     );
 
     if (tanggal > today) {
-      return alert(
-        '🛑 Tanggal tidak boleh di masa depan!'
+      toast.error(
+        'Tanggal tidak boleh di masa depan!'
       );
+      return;
     }
 
     const { data: existing } =
@@ -158,9 +161,10 @@ const AbsensiPage = () => {
       existing &&
       existing.length > 0
     ) {
-      return alert(
-        '⚠️ Absensi untuk tanggal ini sudah ada!'
+      toast.error(
+        'Absensi untuk tanggal ini sudah ada!'
       );
+      return;
     }
 
     const { error } =
@@ -175,12 +179,12 @@ const AbsensiPage = () => {
         });
 
     if (error) {
-      alert(
-        '❌ Gagal menyimpan absensi'
+      toast.error(
+        'Gagal menyimpan absensi'
       );
     } else {
-      alert(
-        '✅ Absensi berhasil disimpan!'
+      toast.success(
+        'Absensi berhasil disimpan!'
       );
 
       setKeterangan('');
@@ -325,8 +329,8 @@ const AbsensiPage = () => {
         .eq('tanggal', tanggal);
 
     if (error) {
-      alert(
-        '❌ Gagal hapus data: ' +
+      toast.error(
+        'Gagal hapus data: ' +
         error.message
       );
     } else {
@@ -1084,8 +1088,8 @@ const AbsensiPage = () => {
               );
 
           if (error) {
-            alert(
-              '❌ Gagal update data: ' +
+            toast.error(
+              'Gagal update data: ' +
               error.message
             );
           }

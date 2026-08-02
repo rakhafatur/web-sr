@@ -30,8 +30,8 @@ function CardTable<T>({ data, page, rowsPerPage, onPageChange, renderItem, rende
           style={{
             backgroundColor: 'var(--color-surface)',
             border: '1px solid var(--color-gray-200)',
-            borderRadius: '0.75rem',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+            borderRadius: 'var(--radius-md)',
+            boxShadow: 'var(--shadow)',
           }}
         >
           {renderItem(item, index)}

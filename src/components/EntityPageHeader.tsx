@@ -35,7 +35,7 @@ const EntityPageHeader = ({ icon, title, description, actions }: Props) => (
           style={{
             width: 64,
             height: 64,
-            borderRadius: 22,
+            borderRadius: 'var(--radius-xl)',
             background: 'rgba(255,255,255,0.18)',
             display: 'flex',
             alignItems: 'center',
@@ -48,10 +48,10 @@ const EntityPageHeader = ({ icon, title, description, actions }: Props) => (
         </div>
 
         <div>
-          <h2 className="fw-bold mb-1" style={{ fontSize: '1.8rem' }}>
+          <h2 className="fw-bold mb-1" style={{ fontSize: 'var(--font-size-3xl)' }}>
             {title}
           </h2>
-          <div style={{ opacity: 0.82, fontSize: '0.92rem' }}>{description}</div>
+          <div style={{ opacity: 0.82, fontSize: 'var(--font-size-sm)' }}>{description}</div>
         </div>
       </div>
 

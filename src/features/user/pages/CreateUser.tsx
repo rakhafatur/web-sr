@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import { FiUsers } from 'react-icons/fi';
 
@@ -35,7 +36,8 @@ const CreateUser = () => {
 
   const handleSubmit = async () => {
     if (!form.username || !form.nama || !form.password) {
-      return alert('Semua field wajib diisi');
+      toast.error('Semua field wajib diisi');
+      return;
     }
 
     try {
@@ -53,10 +55,10 @@ const CreateUser = () => {
 
       if (error) throw error;
 
-      alert('User berhasil ditambahkan');
+      toast.success('User berhasil ditambahkan');
       navigate('/users');
     } catch (err: any) {
-      alert(err.message || 'Gagal menambahkan user');
+      toast.error(err.message || 'Gagal menambahkan user');
     } finally {
       setLoading(false);
     }

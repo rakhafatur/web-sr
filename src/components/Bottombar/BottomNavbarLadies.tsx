@@ -10,6 +10,7 @@ import {
   FiBookOpen,
   FiCreditCard,
   FiActivity,
+  FiMessageCircle,
 } from 'react-icons/fi';
 
 import {
@@ -17,7 +18,7 @@ import {
   useNavigate,
 } from 'react-router-dom';
 
-import './BottomNavbarLadies.css';
+import './BottomNavbar.css';
 
 function BottomNavbarLadies() {
   const location = useLocation();
@@ -144,6 +145,12 @@ function BottomNavbarLadies() {
                 <FiUser />,
                 'Profile',
                 '/ladies/profile'
+              )}
+
+              {renderMenuItem(
+                <FiMessageCircle />,
+                'Smart Chat',
+                '/smart-chat-ladies'
               )}
 
               {renderMenuItem(

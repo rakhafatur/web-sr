@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import FormField from '../../../components/FormField';
 import ModalWrapper from '../../../components/ModalWrapper';
 import ModalHeading from '../../../components/ModalHeading';
@@ -78,7 +79,7 @@ const AddAbsensiModal = ({
 
   const handleSubmit = async () => {
     if (!form.status) {
-      alert('Status wajib diisi');
+      toast.error('Status wajib diisi');
       return;
     }
 

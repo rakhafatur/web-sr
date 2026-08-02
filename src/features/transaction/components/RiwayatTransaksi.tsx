@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
 import DataTable from '../../../components/DataTable';
 import ActionIconButton from '../../../components/ActionIconButton';
@@ -295,8 +296,8 @@ const RiwayatTransaksi = ({
         .eq('id', row.id);
 
     if (error) {
-      alert(
-        '❌ Gagal hapus data: ' +
+      toast.error(
+        'Gagal hapus data: ' +
           error.message
       );
     } else {

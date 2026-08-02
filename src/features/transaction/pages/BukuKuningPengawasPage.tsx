@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
 import DataTable from '../../../components/DataTable';
 import jsPDF from 'jspdf';
@@ -128,7 +129,10 @@ const BukuKuningPengawasPage = () => {
 
   // === Perubahan hanya di sini: logic tutup buku ===
   const handleTutupBuku = async () => {
-    if (rows.length === 0) return alert('❌ Tidak ada data transaksi.');
+    if (rows.length === 0) {
+      toast.error('Tidak ada data transaksi.');
+      return;
+    }
 
     const selected = pengawasList.find((l) => l.id === selectedId);
     const nama = selected ? selected.nama_panggilan : 'Unknown';
@@ -145,8 +149,8 @@ const BukuKuningPengawasPage = () => {
       // created_at otomatis by default
     }, { onConflict: 'pengawas_id,bulan,tahun' });
 
-    if (error) alert('❌ Gagal menyimpan saldo: ' + error.message);
-    else alert('✅ Buku bulan ini ditutup dan saldo disimpan.');
+    if (error) toast.error('Gagal menyimpan saldo: ' + error.message);
+    else toast.success('Buku bulan ini ditutup dan saldo disimpan.');
   };
 
   const handleExportPDF = () => {

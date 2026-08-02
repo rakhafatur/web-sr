@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
 import DataTable from '../../../components/DataTable';
 import ActionIconButton from '../../../components/ActionIconButton';
@@ -134,7 +135,7 @@ const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
     const table = getTableName(row.tipe);
     const { error } = await supabase.from(table).delete().eq('id', row.id);
 
-    if (error) alert('❌ Gagal hapus data: ' + error.message);
+    if (error) toast.error('Gagal hapus data: ' + error.message);
     else fetchData();
   };
 

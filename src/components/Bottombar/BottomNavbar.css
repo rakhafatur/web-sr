@@ -1,3 +1,9 @@
+/* Dipakai bareng oleh BottomNavbarAdmin.tsx DAN BottomNavbarLadies.tsx —
+   dulu masing-masing punya file CSS sendiri dengan nama class yang sama
+   persis, dan diam-diam diverge (warna ikon aktif & warna panah beda tanpa
+   ada yang sadar). Sekarang cuma satu file ini yang jadi sumber kebenaran;
+   jangan bikin file CSS terpisah lagi untuk salah satu varian. */
+
 /* =========================================================
    WRAPPER
 ========================================================= */
@@ -96,7 +102,7 @@
 }
 
 .nav-item.active .nav-icon-wrapper {
-  background: rgba(21, 153, 71, 0.12);
+  background: rgba(var(--color-primary-rgb), 0.2);
 }
 
 .nav-item.active .nav-icon {
@@ -145,7 +151,7 @@
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
 
-  padding: 10px 16px 90px;
+  padding: 10px 16px calc(90px + env(safe-area-inset-bottom));
 
   animation: slideUp 0.24s ease;
 

@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
 import DataTable from '../../../components/DataTable';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import logo from '../../../assets/logosr-black.png';
 import { useMediaQuery } from 'react-responsive';
-import { FiBook, FiPrinter } from 'react-icons/fi';
+import { FiBook, FiPrinter, FiRepeat } from 'react-icons/fi';
 import ListPageHeader from '../../../components/ListPageHeader';
 import {
   PDF_COLORS,
@@ -56,6 +57,10 @@ const monthNames = [
   'Desember',
 ];
 
+const BIAYA_BULANAN_OUTLETS = ['Royal', 'SA', 'MTR'];
+const KASBON_ADMIN_JUMLAH = 500000;
+const DOKTER_SPEKULO_JUMLAH = 185000;
+
 const formatRupiah = (value: number | string) => {
   const num = typeof value === 'string'
     ? parseFloat(value)
@@ -73,6 +78,8 @@ const BukuKuningPage = () => {
   const [bulan, setBulan] = useState(new Date().getMonth() + 1);
   const [tahun, setTahun] = useState(new Date().getFullYear());
   const [rows, setRows] = useState<Row[]>([]);
+  const [generating, setGenerating] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const pad = (n: number) => String(n).padStart(2, '0');
@@ -248,11 +255,128 @@ const BukuKuningPage = () => {
     };
 
     fetchData();
-  }, [selectedLadyId, bulan, tahun]);
+  }, [selectedLadyId, bulan, tahun, refreshKey]);
+
+  const handleGenerateBiayaBulanan = async () => {
+    const monthLabel = monthNames[bulan - 1];
+    const keteranganKasbon = `Admin ${monthLabel} ${tahun}`;
+    const keteranganDokter = `Spekulo ${monthLabel} ${tahun}`;
+    const tanggalInput = `${tahun}-${pad(bulan)}-01`;
+
+    const confirm = window.confirm(
+      `❗ Generate Kasbon Admin (${formatRupiah(KASBON_ADMIN_JUMLAH)}) & Dokter (${formatRupiah(
+        DOKTER_SPEKULO_JUMLAH
+      )}) untuk semua ladies aktif outlet ${BIAYA_BULANAN_OUTLETS.join('/')} — ${monthLabel} ${tahun}?`
+    );
+
+    if (!confirm) return;
+
+    setGenerating(true);
+
+    const { data: eligibleLadies, error: ladiesError } = await supabase
+      .from('ladies')
+      .select('id')
+      .eq('status', 'active')
+      .in('nama_outlet', BIAYA_BULANAN_OUTLETS);
+
+    if (ladiesError || !eligibleLadies) {
+      toast.error('Gagal mengambil data ladies: ' + (ladiesError?.message || ''));
+      setGenerating(false);
+      return;
+    }
+
+    if (eligibleLadies.length === 0) {
+      toast.info('Tidak ada ladies aktif di outlet Royal/SA/MTR.');
+      setGenerating(false);
+      return;
+    }
+
+    const ladiesIds = eligibleLadies.map((l) => l.id);
+    const from = `${tahun}-${pad(bulan)}-01`;
+    const to = `${tahun}-${pad(bulan)}-${pad(getLastDay(tahun, bulan))}`;
+
+    const [existingKasbon, existingDokter] = await Promise.all([
+      supabase
+        .from('kasbon')
+        .select('ladies_id')
+        .eq('keterangan', keteranganKasbon)
+        .in('ladies_id', ladiesIds)
+        .gte('tanggal', from)
+        .lte('tanggal', to),
+
+      supabase
+        .from('dokter')
+        .select('ladies_id')
+        .eq('keterangan', keteranganDokter)
+        .in('ladies_id', ladiesIds)
+        .gte('tanggal', from)
+        .lte('tanggal', to),
+    ]);
+
+    const existingKasbonIds = new Set(
+      (existingKasbon.data || []).map((r) => r.ladies_id)
+    );
+
+    const existingDokterIds = new Set(
+      (existingDokter.data || []).map((r) => r.ladies_id)
+    );
+
+    const kasbonPayload = ladiesIds
+      .filter((id) => !existingKasbonIds.has(id))
+      .map((id) => ({
+        ladies_id: id,
+        tanggal: tanggalInput,
+        jumlah: KASBON_ADMIN_JUMLAH,
+        keterangan: keteranganKasbon,
+      }));
+
+    const dokterPayload = ladiesIds
+      .filter((id) => !existingDokterIds.has(id))
+      .map((id) => ({
+        ladies_id: id,
+        tanggal: tanggalInput,
+        jumlah: DOKTER_SPEKULO_JUMLAH,
+        keterangan: keteranganDokter,
+      }));
+
+    const [kasbonResult, dokterResult] = await Promise.all([
+      kasbonPayload.length > 0
+        ? supabase.from('kasbon').insert(kasbonPayload)
+        : Promise.resolve({ error: null }),
+
+      dokterPayload.length > 0
+        ? supabase.from('dokter').insert(dokterPayload)
+        : Promise.resolve({ error: null }),
+    ]);
+
+    setGenerating(false);
+
+    if (kasbonResult.error || dokterResult.error) {
+      toast.error(
+        'Gagal generate biaya bulanan: ' +
+          (kasbonResult.error?.message || dokterResult.error?.message)
+      );
+      return;
+    }
+
+    toast.success(
+      <div>
+        Generate biaya bulanan {monthLabel} {tahun} selesai.
+        <br />
+        Kasbon Admin: {kasbonPayload.length} ditambahkan, {existingKasbonIds.size} sudah ada (dilewati)
+        <br />
+        Dokter: {dokterPayload.length} ditambahkan, {existingDokterIds.size} sudah ada (dilewati)
+      </div>
+    );
+
+    setRefreshKey((k) => k + 1);
+  };
 
   const handleTutupBuku = async () => {
-    if (rows.length === 0)
-      return alert('❌ Tidak ada data transaksi.');
+    if (rows.length === 0) {
+      toast.error('Tidak ada data transaksi.');
+      return;
+    }
 
     const lady = ladiesList.find(
       (l) => l.id === selectedLadyId
@@ -287,13 +411,13 @@ const BukuKuningPage = () => {
       );
 
     if (error)
-      alert(
-        '❌ Gagal menyimpan saldo: ' +
+      toast.error(
+        'Gagal menyimpan saldo: ' +
         error.message
       );
     else
-      alert(
-        '✅ Buku bulan ini ditutup dan saldo disimpan.'
+      toast.success(
+        'Buku bulan ini ditutup dan saldo disimpan.'
       );
   };
 
@@ -804,6 +928,71 @@ const BukuKuningPage = () => {
               )
             }
           />
+        </div>
+      </div>
+
+      <div
+        className="card border-0 shadow-sm rounded-4 mb-4"
+        style={{ overflow: 'hidden' }}
+      >
+        <div
+          className={
+            isMobile
+              ? 'p-3 d-flex flex-column gap-3'
+              : 'p-3 p-md-4 d-flex align-items-center justify-content-between flex-wrap gap-3'
+          }
+        >
+          <div className="d-flex align-items-center gap-3">
+            <div
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: 14,
+                background: 'var(--color-voucher-soft)',
+                color: 'var(--color-voucher)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <FiRepeat size={20} />
+            </div>
+
+            <div>
+              <div className="fw-bold" style={{ color: 'var(--color-dark)' }}>
+                Generate Biaya Bulanan
+              </div>
+
+              <div style={{ fontSize: '0.82rem', color: 'var(--color-gray-500)' }}>
+                Kasbon Admin {formatRupiah(KASBON_ADMIN_JUMLAH)} & Dokter{' '}
+                {formatRupiah(DOKTER_SPEKULO_JUMLAH)} untuk semua ladies aktif outlet{' '}
+                {BIAYA_BULANAN_OUTLETS.join('/')} — {monthNames[bulan - 1]} {tahun}
+              </div>
+            </div>
+          </div>
+
+          <button
+            className={
+              isMobile
+                ? 'btn btn-primary fw-semibold d-flex align-items-center justify-content-center gap-2 w-100'
+                : 'btn btn-sm btn-primary fw-semibold d-flex align-items-center gap-2'
+            }
+            onClick={handleGenerateBiayaBulanan}
+            disabled={generating}
+            style={{
+              height: isMobile ? 48 : 40,
+              padding: isMobile ? undefined : '0 16px',
+              flexShrink: 0,
+            }}
+          >
+            {generating ? (
+              <div className="spinner-border spinner-border-sm" role="status" />
+            ) : (
+              <FiRepeat size={16} />
+            )}
+            {generating ? 'Memproses...' : 'Generate'}
+          </button>
         </div>
       </div>
 

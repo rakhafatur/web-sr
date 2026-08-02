@@ -15,7 +15,7 @@ const EntityHeroCard = ({ icon, title, subtitle }: Props) => (
           style={{
             width: 62,
             height: 62,
-            borderRadius: 18,
+            borderRadius: 'var(--radius-lg)',
             background: 'var(--color-green-lighter)',
             display: 'flex',
             alignItems: 'center',
@@ -29,10 +29,10 @@ const EntityHeroCard = ({ icon, title, subtitle }: Props) => (
         </div>
 
         <div>
-          <div className="fw-bold" style={{ fontSize: '1.1rem', color: 'var(--color-dark)' }}>
+          <div className="fw-bold" style={{ fontSize: 'var(--font-size-lg)', color: 'var(--color-dark)' }}>
             {title}
           </div>
-          <div style={{ fontSize: '0.9rem', color: 'var(--color-gray-500)', marginTop: 2 }}>{subtitle}</div>
+          <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)', marginTop: 2 }}>{subtitle}</div>
         </div>
       </div>
     </div>

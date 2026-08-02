@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import { supabase } from '../lib/supabaseClient';
 import bcrypt from 'bcryptjs';
 import { Link, useNavigate } from 'react-router-dom';
@@ -54,11 +55,11 @@ function SignUpForm() {
     setSaving(false);
 
     if (error) {
-      alert('❌ Gagal daftar: ' + error.message);
+      toast.error('Gagal daftar: ' + error.message);
       return;
     }
 
-    alert('✅ Registrasi berhasil! Akunmu sedang menunggu persetujuan admin.');
+    toast.success('Registrasi berhasil! Akunmu sedang menunggu persetujuan admin.');
     navigate('/login');
   };
 

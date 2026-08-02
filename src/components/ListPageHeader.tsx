@@ -32,7 +32,7 @@ const ListPageHeader = ({ icon, title, description, actions }: Props) => {
             style={{
               width: 56,
               height: 56,
-              borderRadius: 18,
+              borderRadius: 'var(--radius-lg)',
               background: 'rgba(255,255,255,0.18)',
               display: 'flex',
               alignItems: 'center',
@@ -45,10 +45,10 @@ const ListPageHeader = ({ icon, title, description, actions }: Props) => {
           </div>
 
           <div>
-            <div className="fw-bold" style={{ fontSize: '1.25rem' }}>
+            <div className="fw-bold" style={{ fontSize: 'var(--font-size-xl)' }}>
               {title}
             </div>
-            <div style={{ fontSize: '0.85rem', opacity: 0.85 }}>{description}</div>
+            <div style={{ fontSize: 'var(--font-size-sm)', opacity: 0.85 }}>{description}</div>
           </div>
         </div>
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../../lib/supabaseClient';
 import { useMediaQuery } from 'react-responsive';
+import { toast } from 'react-toastify';
 import DataTable from '../../../components/DataTable';
 import Pagination from '../../../components/Pagination';
 import Button from '../../../components/Button';
@@ -114,7 +115,7 @@ const UserApprovalPage = () => {
       .eq('id', assignModal.id);
 
     if (error) {
-      alert('❌ Gagal assign: ' + error.message);
+      toast.error('Gagal assign: ' + error.message);
     } else {
       setSuccessMessage(`✅ User berhasil di-assign & diaktifkan!`);
       fetchUsers();
