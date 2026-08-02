@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import { useMediaQuery } from 'react-responsive';
 import DataTable from '../../../components/DataTable';
 import FeaturePageHeader from '../../../components/FeaturePageHeader';
+import EmptyState from '../../../components/EmptyState';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from 'recharts';
@@ -260,9 +261,11 @@ const PerformaLadiesPage = () => {
 
       {/* EMPTY STATE */}
       {!loading && data.length === 0 && (
-        <div className="alert alert-info">
-          ℹ️ Belum ada data ladies aktif untuk ditampilkan.
-        </div>
+        <EmptyState
+          icon="ℹ️"
+          title="Belum ada data ladies aktif"
+          description="Tambahkan data ladies untuk melihat performa di halaman ini"
+        />
       )}
 
       {data.length > 0 && (

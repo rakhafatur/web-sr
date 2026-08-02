@@ -1,279 +1,178 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { RootState } from '../../../app/store';
 import { supabase } from '../../../lib/supabaseClient';
 import dayjs from 'dayjs';
-import { useMediaQuery } from 'react-responsive';
 import './HomeLadiesPage.css';
 
 import {
-  FiCalendar,
-  FiGift,
-  FiTrendingDown,
   FiZap,
+  FiEye,
+  FiEyeOff,
+  FiMessageCircle,
+  FiChevronRight,
+  FiGift,
+  FiCreditCard,
   FiHeart,
+  FiDollarSign,
+  FiCalendar,
+  FiUser,
+  FiBookOpen,
 } from 'react-icons/fi';
 
-import {
-  motion,
-} from 'framer-motion';
+import { motion } from 'framer-motion';
 
 import bgImage from '../../../assets/bg-home.png';
 import logo from '../../../assets/logosr-blue.png';
 import type { UserWithLadies } from '../../../types/user';
 
 const HomeLadiesPage = () => {
-  const user =
-    useSelector(
-      (
-        state: RootState
-      ) =>
-        state.user
-          .currentUser
-    ) as UserWithLadies;
+  const user = useSelector(
+    (state: RootState) => state.user.currentUser
+  ) as UserWithLadies;
 
-  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const navigate = useNavigate();
 
-  const [
-    hariMasuk,
-    setHariMasuk,
-  ] = useState(0);
+  const [hariMasuk, setHariMasuk] = useState(0);
+  const [voucherPcs, setVoucherPcs] = useState(0);
+  const [pengeluaran, setPengeluaran] = useState(0);
+  const [voucherNominal, setVoucherNominal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [hideAmount, setHideAmount] = useState(false);
 
-  const [
-    voucherPcs,
-    setVoucherPcs,
-  ] = useState(0);
-
-  const [
-    pengeluaran,
-    setPengeluaran,
-  ] = useState(0);
-
-  const [
-    voucherNominal,
-    setVoucherNominal,
-  ] = useState(0);
-
-  const [
-    loading,
-    setLoading,
-  ] = useState(true);
-
-  const bulanIni =
-    dayjs().format('MM');
-
-  const tahunIni =
-    dayjs().format(
-      'YYYY'
-    );
+  const bulanIni = dayjs().format('MM');
+  const tahunIni = dayjs().format('YYYY');
 
   useEffect(() => {
-    if (
-      !user?.ladies_id
-    )
-      return;
-
-    fetchData(
-      user.ladies_id
-    );
+    if (!user?.ladies_id) return;
+    fetchData(user.ladies_id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  const fetchData =
-    async (
-      ladiesId: string
-    ) => {
-      const tanggalAwal = `${tahunIni}-${bulanIni}-01`;
+  const fetchData = async (ladiesId: string) => {
+    const tanggalAwal = `${tahunIni}-${bulanIni}-01`;
+    const tanggalAkhir = dayjs().endOf('month').format('YYYY-MM-DD');
 
-      const tanggalAkhir =
-        dayjs()
-          .endOf(
-            'month'
-          )
-          .format(
-            'YYYY-MM-DD'
-          );
+    const { data: absensi } = await supabase
+      .from('absensi')
+      .select('id')
+      .eq('ladies_id', ladiesId)
+      .ilike('status', 'kerja')
+      .gte('tanggal', tanggalAwal)
+      .lte('tanggal', tanggalAkhir);
 
-      const {
-        data: absensi,
-      } = await supabase
-        .from(
-          'absensi'
-        )
-        .select('id')
-        .eq(
-          'ladies_id',
-          ladiesId
-        )
-        .ilike(
-          'status',
-          'kerja'
-        )
-        .gte(
-          'tanggal',
-          tanggalAwal
-        )
-        .lte(
-          'tanggal',
-          tanggalAkhir
-        );
+    const { data: vouchers } = await supabase
+      .from('vouchers')
+      .select('jumlah_voucher')
+      .eq('ladies_id', ladiesId)
+      .gte('tanggal', tanggalAwal)
+      .lte('tanggal', tanggalAkhir);
 
-      const {
-        data: vouchers,
-      } = await supabase
-        .from(
-          'vouchers'
-        )
-        .select(
-          'jumlah_voucher'
-        )
-        .eq(
-          'ladies_id',
-          ladiesId
-        )
-        .gte(
-          'tanggal',
-          tanggalAwal
-        )
-        .lte(
-          'tanggal',
-          tanggalAkhir
-        );
+    const { data: kasbon } = await supabase
+      .from('kasbon')
+      .select('jumlah')
+      .eq('ladies_id', ladiesId)
+      .gte('tanggal', tanggalAwal)
+      .lte('tanggal', tanggalAkhir);
 
-      const {
-        data: kasbon,
-      } = await supabase
-        .from('kasbon')
-        .select('jumlah')
-        .eq(
-          'ladies_id',
-          ladiesId
-        )
-        .gte(
-          'tanggal',
-          tanggalAwal
-        )
-        .lte(
-          'tanggal',
-          tanggalAkhir
-        );
+    const totalVoucherPcs =
+      vouchers?.reduce((sum, v) => sum + (v.jumlah_voucher || 0), 0) || 0;
 
-      const totalVoucherPcs =
-        vouchers?.reduce(
-          (
-            sum,
-            v
-          ) =>
-            sum +
-            (v.jumlah_voucher ||
-              0),
-          0
-        ) || 0;
+    const totalVoucherNominal = totalVoucherPcs * 150000;
 
-      const totalVoucherNominal =
-        totalVoucherPcs *
-        150000;
+    const totalKasbon = kasbon?.reduce((sum, k) => sum + k.jumlah, 0) || 0;
 
-      const totalKasbon =
-        kasbon?.reduce(
-          (
-            sum,
-            k
-          ) =>
-            sum +
-            k.jumlah,
-          0
-        ) || 0;
+    setHariMasuk(absensi?.length || 0);
+    setVoucherPcs(totalVoucherPcs);
+    setVoucherNominal(totalVoucherNominal);
+    setPengeluaran(totalKasbon);
+    setLoading(false);
+  };
 
-      setHariMasuk(
-        absensi?.length ||
-          0
-      );
+  const persenHadir = Math.min(100, Math.round((hariMasuk / 18) * 100));
 
-      setVoucherPcs(
-        totalVoucherPcs
-      );
+  const biayaTetap = 500000 + 185000 + 250000;
+  const batasWajar = Math.max(0, voucherNominal - biayaTetap);
+  const isOver = batasWajar > 0 && pengeluaran > batasWajar;
 
-      setVoucherNominal(
-        totalVoucherNominal
-      );
+  const getInsight = () => {
+    if (hariMasuk >= 18) {
+      return '🔥 Target kehadiran bulan ini sudah tercapai!';
+    }
+    if (voucherPcs >= 20) {
+      return '💸 Voucher bulan ini sudah sangat bagus, pertahankan ya!';
+    }
+    if (isOver) {
+      return '⚠️ Pengeluaran mulai melewati batas aman.';
+    }
+    if (hariMasuk >= 10) {
+      return '✨ Progress kerja bulan ini sudah bagus!';
+    }
+    return '💚 Tetap semangat dan jaga performa ya!';
+  };
 
-      setPengeluaran(
-        totalKasbon
-      );
+  const formatRp = (n: number) =>
+    hideAmount ? '••••••••' : `Rp${n.toLocaleString('id-ID')}`;
 
-      setLoading(false);
-    };
-
-  const persenHadir =
-    Math.min(
-      100,
-      Math.round(
-        (hariMasuk /
-          18) *
-          100
-      )
-    );
-
-  const biayaTetap =
-    500000 +
-    185000 +
-    250000;
-
-  const batasWajar =
-    Math.max(
-      0,
-      voucherNominal -
-        biayaTetap
-    );
-
-  const isOver =
-    batasWajar > 0 &&
-    pengeluaran >
-      batasWajar;
-
-  const getInsight =
-    () => {
-      if (
-        hariMasuk >= 18
-      ) {
-        return '🔥 Target kehadiran bulan ini sudah tercapai!';
-      }
-
-      if (
-        voucherPcs >= 20
-      ) {
-        return '💸 Voucher bulan ini sudah sangat bagus, pertahankan ya!';
-      }
-
-      if (
-        isOver
-      ) {
-        return '⚠️ Pengeluaran mulai melewati batas aman.';
-      }
-
-      if (
-        hariMasuk >= 10
-      ) {
-        return '✨ Progress kerja bulan ini sudah bagus!';
-      }
-
-      return '💚 Tetap semangat dan jaga performa ya!';
-    };
+  const menuItems = [
+    {
+      label: 'Voucher',
+      icon: <FiGift />,
+      color: 'var(--color-voucher)',
+      bg: 'var(--color-voucher-soft)',
+      path: '/ladies/voucher',
+    },
+    {
+      label: 'Kasbon',
+      icon: <FiCreditCard />,
+      color: 'var(--color-expense)',
+      bg: 'var(--color-expense-soft)',
+      path: '/ladies/kasbon',
+    },
+    {
+      label: 'Dokter',
+      icon: <FiHeart />,
+      color: 'var(--color-medical)',
+      bg: 'var(--color-medical-soft)',
+      path: '/ladies/dokter',
+    },
+    {
+      label: 'Pemasukan',
+      icon: <FiDollarSign />,
+      color: 'var(--color-income)',
+      bg: 'var(--color-income-soft)',
+      path: '/ladies/pemasukan_lain',
+    },
+    {
+      label: 'Absensi',
+      icon: <FiCalendar />,
+      color: 'var(--color-green)',
+      bg: 'var(--color-green-light)',
+      path: '/ladies/absensi',
+    },
+    {
+      label: 'Profil',
+      icon: <FiUser />,
+      color: 'var(--color-gray-500)',
+      bg: 'var(--color-gray-100)',
+      path: '/ladies/profile',
+    },
+    {
+      label: 'Peraturan',
+      icon: <FiBookOpen />,
+      color: 'var(--color-gray-500)',
+      bg: 'var(--color-gray-100)',
+      path: '/ladies/peraturan',
+    },
+  ];
 
   if (loading) {
     return (
       <div className="ladies-home-wrapper ladies-home-loading">
         <div className="ladies-home-loading-content">
-          <img
-            src={logo}
-            alt="Loading..."
-            className="ladies-home-loading-logo"
-          />
-
-          <p className="ladies-home-loading-text">
-            Memuat
-            data...
-          </p>
+          <img src={logo} alt="Loading..." className="ladies-home-loading-logo" />
+          <p className="ladies-home-loading-text">Memuat data...</p>
         </div>
       </div>
     );
@@ -281,475 +180,139 @@ const HomeLadiesPage = () => {
 
   return (
     <div className="ladies-home-wrapper">
-      <img
-        src={bgImage}
-        alt="bg"
-        className="ladies-home-bg"
-      />
+      <img src={bgImage} alt="bg" className="ladies-home-bg" />
 
       <div className="content-container d-flex flex-column gap-3">
+        {/* GREETING */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="ladies-home-greeting"
+        >
+          <div className="ladies-home-greeting-date">
+            {dayjs().format('dddd, DD MMMM YYYY')}
+          </div>
+          <h1 className="ladies-home-greeting-title">
+            Halo, {user?.nama_ladies} 👋
+          </h1>
+          <div className="ladies-home-greeting-subtitle">
+            Semangat kerja hari ini ya 💚
+          </div>
+        </motion.div>
+
         {/* HERO */}
         <motion.div
-          initial={{
-            opacity: 0,
-            y: 20,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          className="position-relative overflow-hidden"
-          style={{
-            background:
-              'linear-gradient(135deg, var(--color-green), var(--color-accent))',
-            borderRadius: 28,
-            padding: isMobile
-              ? '24px 22px'
-              : '32px 34px',
-            color: '#fff',
-            boxShadow: 'var(--shadow-brand)',
-          }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="ladies-home-hero"
         >
-          {/* BG */}
-          <div
-            style={{
-              position:
-                'absolute',
-              width: isMobile ? 180 : 240,
-              height: isMobile ? 180 : 240,
-              borderRadius:
-                '50%',
-              background:
-                'rgba(255,255,255,0.08)',
-              top: isMobile ? -70 : -90,
-              right: isMobile ? -70 : -90,
-            }}
-          />
+          <div className="ladies-home-hero-circle" />
 
-          <div
-            style={{
-              position:
-                'relative',
-              zIndex: 2,
-            }}
-          >
-            <div
-              style={{
-                fontSize: 13,
-                opacity: 0.9,
-                marginBottom: 6,
-              }}
+          <div className="ladies-home-hero-top">
+            <span className="ladies-home-hero-label">Estimasi Pendapatan</span>
+            <button
+              type="button"
+              className="ladies-home-eye-btn tap-scale"
+              onClick={() => setHideAmount((v) => !v)}
+              aria-label={hideAmount ? 'Tampilkan nominal' : 'Sembunyikan nominal'}
             >
-              {
-                dayjs().format(
-                  'dddd, DD MMMM YYYY'
-                )
-              }
-            </div>
+              {hideAmount ? <FiEyeOff /> : <FiEye />}
+            </button>
+          </div>
 
-            <div
-              style={{
-                fontSize: isMobile ? 28 : 34,
-                fontWeight: 800,
-                lineHeight: 1.2,
-              }}
-            >
-              Halo{' '}
-              {user?.nama_ladies}{' '}
-              ✨
-            </div>
+          <div className="ladies-home-hero-amount">{formatRp(voucherNominal)}</div>
+          <div className="ladies-home-hero-sub">dari voucher bulan ini ✨</div>
 
-            <div
-              style={{
-                fontSize: isMobile ? 14 : 15,
-                opacity: 0.92,
-                marginTop: 10,
-                lineHeight: 1.6,
-              }}
-            >
-              Semangat kerja
-              hari ini ya 💚
+          <div className="ladies-home-hero-progress">
+            <div className="ladies-home-hero-progress-labels">
+              <span>Kehadiran</span>
+              <span>{hariMasuk}/18 hari</span>
             </div>
+            <div className="ladies-home-hero-progress-bar">
+              <div
+                className="ladies-home-hero-progress-fill"
+                style={{ width: `${persenHadir}%` }}
+              />
+            </div>
+          </div>
+
+          <div className="ladies-home-hero-divider" />
+
+          <div className="ladies-home-hero-breakdown">
+            <div className="ladies-home-hero-breakdown-item">
+              <span className="ladies-home-hero-breakdown-label">Voucher</span>
+              <span className="ladies-home-hero-breakdown-value">{voucherPcs} pcs</span>
+            </div>
+            <div className="ladies-home-hero-breakdown-sep" />
+            <div className="ladies-home-hero-breakdown-item">
+              <span className="ladies-home-hero-breakdown-label">Kasbon</span>
+              <span className="ladies-home-hero-breakdown-value">{formatRp(pengeluaran)}</span>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* SMART CHAT CTA */}
+        <motion.button
+          type="button"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="ladies-home-cta tap-scale"
+          onClick={() => navigate('/smart-chat-ladies')}
+        >
+          <div className="ladies-home-cta-icon">
+            <FiMessageCircle />
+          </div>
+          <div className="ladies-home-cta-text">
+            <div className="ladies-home-cta-title">Tanya Smart Assistant</div>
+            <div className="ladies-home-cta-subtitle">Cek voucher & absensi kamu ✨</div>
+          </div>
+          <FiChevronRight className="ladies-home-cta-chevron" />
+        </motion.button>
+
+        {/* MENU GRID */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+        >
+          <div className="ladies-home-section-label">Menu Cepat</div>
+          <div className="ladies-home-menu-grid">
+            {menuItems.map((item) => (
+              <button
+                key={item.label}
+                type="button"
+                className="ladies-home-menu-item tap-scale"
+                onClick={() => navigate(item.path)}
+              >
+                <div
+                  className="ladies-home-menu-icon"
+                  style={{ background: item.bg, color: item.color }}
+                >
+                  {item.icon}
+                </div>
+                <span className="ladies-home-menu-label">{item.label}</span>
+              </button>
+            ))}
           </div>
         </motion.div>
 
         {/* INSIGHT */}
         <motion.div
-          initial={{
-            opacity: 0,
-            y: 20,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          transition={{
-            delay: 0.05,
-          }}
-          style={{
-            background:
-              isOver
-                ? 'var(--color-expense-soft)'
-                : 'var(--color-income-soft)',
-            border: `1px solid ${
-              isOver
-                ? '#452226'
-                : '#1f4a34'
-            }`,
-            borderRadius: 22,
-            padding:
-              '18px 18px',
-          }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className={`ladies-home-insight ${isOver ? 'is-over' : ''}`}
         >
-          <div className="d-flex align-items-center gap-3">
-            <div
-              className="d-flex align-items-center justify-content-center"
-              style={{
-                width: 44,
-                height: 44,
-                borderRadius: 16,
-                background:
-                  isOver
-                    ? 'var(--color-expense-soft)'
-                    : 'var(--color-income-soft)',
-                color:
-                  isOver
-                    ? 'var(--color-expense)'
-                    : 'var(--color-income)',
-                flexShrink: 0,
-              }}
-            >
-              <FiZap size={18} />
-            </div>
-
-            <div>
-              <div
-                style={{
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color:
-                    'var(--color-gray-500)',
-                  marginBottom: 4,
-                }}
-              >
-                Insight
-                Bulan Ini
-              </div>
-
-              <div
-                style={{
-                  fontSize: 14,
-                  lineHeight: 1.6,
-                  fontWeight: 600,
-                  color:
-                    'var(--color-dark)',
-                }}
-              >
-                {getInsight()}
-              </div>
-            </div>
+          <div className="ladies-home-insight-icon">
+            <FiZap size={18} />
+          </div>
+          <div>
+            <div className="ladies-home-insight-label">Insight Bulan Ini</div>
+            <div className="ladies-home-insight-text">{getInsight()}</div>
           </div>
         </motion.div>
-
-        {/* PROGRESS + ESTIMASI — berdampingan di layar lebar */}
-        <div className="secondary-grid">
-        {/* PROGRESS */}
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 20,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          transition={{
-            delay: 0.1,
-          }}
-          style={{
-            background:
-              'var(--color-surface)',
-            border:
-              '1px solid var(--color-gray-200)',
-            borderRadius: 24,
-            padding: 18,
-            boxShadow:
-              '0 1px 6px rgba(0,0,0,0.2)',
-          }}
-        >
-          <div className="d-flex align-items-center justify-content-between mb-3">
-            <div>
-              <div
-                style={{
-                  fontSize: 12,
-                  color:
-                    'var(--color-gray-500)',
-                  fontWeight: 600,
-                }}
-              >
-                Progress
-                Bulan Ini
-              </div>
-
-              <div
-                style={{
-                  fontSize: 18,
-                  fontWeight: 700,
-                  color:
-                    'var(--color-dark)',
-                }}
-              >
-                {dayjs().format(
-                  'MMMM YYYY'
-                )}
-              </div>
-            </div>
-
-            <div
-              className="d-flex align-items-center justify-content-center"
-              style={{
-                width: 44,
-                height: 44,
-                borderRadius: 16,
-                background:
-                  'var(--color-income-soft)',
-                color:
-                  'var(--color-income)',
-              }}
-            >
-              <FiCalendar size={20} />
-            </div>
-          </div>
-
-          {/* HADIR */}
-          <div className="mb-3">
-            <div className="d-flex justify-content-between mb-1">
-              <span
-                style={{
-                  fontSize: 13,
-                  fontWeight: 600,
-                }}
-              >
-                Kehadiran
-              </span>
-
-              <span
-                style={{
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color:
-                    'var(--color-income)',
-                }}
-              >
-                {hariMasuk}/18
-              </span>
-            </div>
-
-            <div
-              style={{
-                width: '100%',
-                height: 10,
-                borderRadius: 999,
-                background:
-                  'var(--color-surface-2)',
-                overflow:
-                  'hidden',
-              }}
-            >
-              <div
-                style={{
-                  width: `${persenHadir}%`,
-                  height:
-                    '100%',
-                  borderRadius: 999,
-                  background:
-                    'linear-gradient(90deg, var(--color-income), var(--color-primary))',
-                }}
-              />
-            </div>
-          </div>
-
-          {/* STATS */}
-          <div className="d-flex gap-2">
-            <div
-              style={{
-                flex: 1,
-                background:
-                  'var(--color-surface-2)',
-                borderRadius: 18,
-                padding:
-                  '14px 12px',
-              }}
-            >
-              <div
-                className="d-flex align-items-center gap-2 mb-2"
-                style={{
-                  color:
-                    'var(--color-voucher)',
-                }}
-              >
-                <FiGift size={15} />
-
-                <span
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 700,
-                  }}
-                >
-                  Voucher
-                </span>
-              </div>
-
-              <div
-                style={{
-                  fontSize: 18,
-                  fontWeight: 800,
-                  color:
-                    'var(--color-dark)',
-                }}
-              >
-                {voucherPcs}
-              </div>
-
-              <div
-                style={{
-                  fontSize: 11,
-                  color:
-                    'var(--color-gray-500)',
-                }}
-              >
-                pcs
-              </div>
-            </div>
-
-            <div
-              style={{
-                flex: 1,
-                background:
-                  'var(--color-surface-2)',
-                borderRadius: 18,
-                padding:
-                  '14px 12px',
-              }}
-            >
-              <div
-                className="d-flex align-items-center gap-2 mb-2"
-                style={{
-                  color:
-                    'var(--color-expense)',
-                }}
-              >
-                <FiTrendingDown size={15} />
-
-                <span
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 700,
-                  }}
-                >
-                  Kasbon
-                </span>
-              </div>
-
-              <div
-                style={{
-                  fontSize: 18,
-                  fontWeight: 800,
-                  color:
-                    'var(--color-dark)',
-                }}
-              >
-                Rp
-                {(
-                  pengeluaran /
-                  1000
-                ).toFixed(0)}
-                k
-              </div>
-
-              <div
-                style={{
-                  fontSize: 11,
-                  color:
-                    'var(--color-gray-500)',
-                }}
-              >
-                bulan ini
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* ESTIMASI */}
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 20,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          transition={{
-            delay: 0.15,
-          }}
-          style={{
-            background:
-              'var(--color-surface)',
-            border:
-              '1px solid var(--color-gray-200)',
-            borderRadius: 22,
-            padding:
-              '18px',
-            boxShadow:
-              '0 1px 6px rgba(0,0,0,0.2)',
-          }}
-        >
-          <div className="d-flex align-items-center gap-2 mb-2">
-            <FiHeart
-              size={18}
-              color="var(--color-income)"
-            />
-
-            <div
-              style={{
-                fontSize: 15,
-                fontWeight: 700,
-              }}
-            >
-              Estimasi
-              Pendapatan
-            </div>
-          </div>
-
-          <div
-            style={{
-              fontSize: 28,
-              fontWeight: 800,
-              color:
-                'var(--color-income)',
-              lineHeight: 1.2,
-            }}
-          >
-            Rp
-            {voucherNominal.toLocaleString(
-              'id-ID'
-            )}
-          </div>
-
-          <div
-            style={{
-              fontSize: 12,
-              color: 'var(--color-gray-500)',
-              marginTop: 6,
-            }}
-          >
-            Berdasarkan
-            voucher bulan
-            ini ✨
-          </div>
-        </motion.div>
-        </div>
       </div>
     </div>
   );

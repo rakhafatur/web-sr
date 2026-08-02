@@ -1,238 +1,4 @@
 /* =========================
-   SUMMARY SECTION
-========================= */
-
-.summary-grid {
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-top: -36px;
-  position: relative;
-  z-index: 5;
-}
-
-.summary-card {
-  background: var(--color-surface);
-  border-radius: 22px;
-  padding: 16px 12px;
-  border: 1px solid var(--color-gray-200);
-  box-shadow:
-    0 10px 30px rgba(15, 23, 42, 0.06),
-    0 2px 8px rgba(15, 23, 42, 0.03);
-
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease;
-
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-.summary-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(
-      135deg,
-      rgba(var(--color-primary-rgb), 0.08),
-      transparent
-    );
-
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.summary-card:hover {
-  transform: translateY(-2px);
-
-  box-shadow:
-    0 16px 40px rgba(15, 23, 42, 0.09),
-    0 2px 10px rgba(15, 23, 42, 0.04);
-}
-
-.summary-card:hover::before {
-  opacity: 1;
-}
-
-.summary-card .icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  margin: 0 auto 12px;
-
-  font-size: 18px;
-
-  background: var(--color-income-soft);
-  color: var(--color-income);
-}
-
-.summary-card .value {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: var(--color-dark);
-  line-height: 1.2;
-  text-align: center;
-}
-
-.summary-card .label {
-  margin-top: 4px;
-  font-size: 0.76rem;
-  color: var(--color-gray-500);
-  text-align: center;
-  font-weight: 600;
-}
-
-/* =========================
-   REKAP BOX
-========================= */
-
-.rekap-wrapper {
-  width: 100%;
-  margin-top: 18px;
-}
-
-.rekap-box {
-  width: 100%;
-  background: var(--color-surface);
-
-  border-radius: 26px;
-
-  padding: 20px;
-
-  border: 1px solid var(--color-gray-200);
-
-  box-shadow:
-    0 12px 32px rgba(15, 23, 42, 0.05),
-    0 2px 8px rgba(15, 23, 42, 0.03);
-
-  position: relative;
-  overflow: hidden;
-}
-
-.rekap-box::before {
-  content: '';
-  position: absolute;
-
-  top: -80px;
-  right: -80px;
-
-  width: 180px;
-  height: 180px;
-
-  border-radius: 50%;
-
-  background:
-    radial-gradient(
-      rgba(34, 197, 94, 0.09),
-      transparent 70%
-    );
-}
-
-.rekap-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  margin-bottom: 16px;
-
-  position: relative;
-  z-index: 2;
-}
-
-.rekap-icon {
-  width: 42px;
-  height: 42px;
-
-  border-radius: 14px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: var(--color-income-soft);
-  color: var(--color-income);
-
-  font-size: 18px;
-}
-
-.rekap-label {
-  font-size: 0.82rem;
-  color: var(--color-gray-500);
-  font-weight: 700;
-}
-
-.rekap-value {
-  font-size: 1.9rem;
-  font-weight: 800;
-  color: var(--color-dark);
-
-  line-height: 1.2;
-
-  position: relative;
-  z-index: 2;
-}
-
-.rekap-note {
-  margin-top: 10px;
-
-  font-size: 0.88rem;
-  line-height: 1.5;
-
-  position: relative;
-  z-index: 2;
-}
-
-.text-green {
-  color: var(--color-income);
-}
-
-.text-red {
-  color: var(--color-expense);
-}
-
-/* =========================
-   PROGRESS
-========================= */
-
-.progress-bar {
-  width: 100%;
-  height: 10px;
-
-  border-radius: 999px;
-
-  overflow: hidden;
-
-  background: var(--color-surface-2);
-
-  margin-top: 14px;
-
-  position: relative;
-  z-index: 2;
-}
-
-.progress-fill {
-  height: 100%;
-  border-radius: 999px;
-
-  background:
-    linear-gradient(
-      90deg,
-      var(--color-income),
-      var(--color-primary)
-    );
-
-  transition: width 0.35s ease;
-}
-
-/* =========================
    WRAPPER
    Semua class di file ini diberi prefix "ladies-home-" supaya tidak
    pernah bentrok nama dengan class generik di file CSS halaman lain
@@ -252,41 +18,341 @@
 
 /* =========================
    CONTENT
+   Lebar dibatasi ke ukuran ponsel di semua ukuran layar (bukan melebar
+   di desktop) — halaman ini sengaja meniru tampilan aplikasi mobile,
+   konsisten dengan scope redesign yang mobile-only.
 ========================= */
 
 .content-container {
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
-
-  padding:
-    0 16px 40px;
-
+  padding: 20px 16px 40px;
   position: relative;
   z-index: 2;
 }
 
-/* Baris kedua (Progress + Estimasi) — bersebelahan di layar lebar
-   supaya tidak jadi kolom sempit yang memanjang ke bawah di tengah
-   layar kosong. */
-.secondary-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+/* =========================
+   GREETING
+========================= */
+
+.ladies-home-greeting {
+  padding: 4px 4px 0;
 }
 
-@media (min-width: 769px) {
-  .content-container {
-    max-width: 860px;
-    padding: 40px 24px 56px;
-  }
+.ladies-home-greeting-date {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-gray-500);
+  margin-bottom: 4px;
+}
 
-  .secondary-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    align-items: stretch;
-  }
+.ladies-home-greeting-title {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--color-dark);
+  line-height: 1.2;
+  margin: 0;
+}
+
+.ladies-home-greeting-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.ladies-home-hero {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--color-green), var(--color-accent));
+  border-radius: var(--radius-xl);
+  padding: 26px 24px;
+  color: #fff;
+  box-shadow: var(--shadow-brand);
+}
+
+.ladies-home-hero-circle {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  top: -90px;
+  right: -80px;
+  pointer-events: none;
+}
+
+.ladies-home-hero-top {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ladies-home-hero-label {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+}
+
+.ladies-home-eye-btn {
+  border: none;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.ladies-home-hero-amount {
+  position: relative;
+  z-index: 2;
+  font-size: 2.4rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin-top: 10px;
+}
+
+.ladies-home-hero-sub {
+  position: relative;
+  z-index: 2;
+  font-size: var(--font-size-sm);
+  color: #b9f2d3;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.ladies-home-hero-progress {
+  position: relative;
+  z-index: 2;
+  margin-top: 22px;
+}
+
+.ladies-home-hero-progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  opacity: 0.9;
+  margin-bottom: 6px;
+}
+
+.ladies-home-hero-progress-bar {
+  width: 100%;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.18);
+  overflow: hidden;
+}
+
+.ladies-home-hero-progress-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: #fff;
+  transition: width 0.35s ease;
+}
+
+.ladies-home-hero-divider {
+  position: relative;
+  z-index: 2;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.16);
+  margin: 20px 0 16px;
+}
+
+.ladies-home-hero-breakdown {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+}
+
+.ladies-home-hero-breakdown-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ladies-home-hero-breakdown-sep {
+  width: 1px;
+  height: 30px;
+  background: rgba(255, 255, 255, 0.16);
+  margin: 0 16px;
+}
+
+.ladies-home-hero-breakdown-label {
+  font-size: var(--font-size-xs);
+  opacity: 0.85;
+  font-weight: 600;
+}
+
+.ladies-home-hero-breakdown-value {
+  font-size: var(--font-size-lg);
+  font-weight: 800;
+}
+
+/* =========================
+   SMART CHAT CTA
+========================= */
+
+.ladies-home-cta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.ladies-home-cta-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-green-light);
+  color: var(--color-green);
+  font-size: 20px;
+}
+
+.ladies-home-cta-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.ladies-home-cta-title {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-dark);
+}
+
+.ladies-home-cta-subtitle {
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-500);
+  margin-top: 2px;
+}
+
+.ladies-home-cta-chevron {
+  flex-shrink: 0;
+  color: var(--color-gray-500);
+  font-size: 18px;
+}
+
+/* =========================
+   MENU GRID
+========================= */
+
+.ladies-home-section-label {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-dark);
+  margin: 4px 4px 10px;
+}
+
+.ladies-home-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px 8px;
+}
+
+.ladies-home-menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.ladies-home-menu-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.ladies-home-menu-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-gray-600);
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* =========================
+   INSIGHT
+========================= */
+
+.ladies-home-insight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--color-income-soft);
+  border: 1px solid #1f4a34;
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+
+.ladies-home-insight.is-over {
+  background: var(--color-expense-soft);
+  border-color: #452226;
+}
+
+.ladies-home-insight-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-income-soft);
+  color: var(--color-income);
+}
+
+.ladies-home-insight.is-over .ladies-home-insight-icon {
+  background: var(--color-expense-soft);
+  color: var(--color-expense);
+}
+
+.ladies-home-insight-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-gray-500);
+  margin-bottom: 3px;
+}
+
+.ladies-home-insight-text {
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  font-weight: 600;
+  color: var(--color-dark);
 }
 
 /* =========================
@@ -348,11 +414,9 @@
 
 .ladies-home-loading {
   min-height: 100vh;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   background: var(--color-bg);
 }
 
@@ -365,7 +429,6 @@
 .ladies-home-loading-logo {
   width: 90px;
   margin-bottom: 14px;
-
   opacity: 0.9;
 }
 
@@ -373,43 +436,4 @@
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--color-income);
-}
-
-/* =========================
-   RESPONSIVE
-========================= */
-
-@media (max-width: 480px) {
-  .summary-grid {
-    gap: 10px;
-  }
-
-  .summary-card {
-    padding: 14px 10px;
-    border-radius: 18px;
-  }
-
-  .summary-card .icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
-    font-size: 16px;
-  }
-
-  .summary-card .value {
-    font-size: 0.92rem;
-  }
-
-  .summary-card .label {
-    font-size: 0.68rem;
-  }
-
-  .rekap-box {
-    border-radius: 22px;
-    padding: 18px;
-  }
-
-  .rekap-value {
-    font-size: 1.6rem;
-  }
 }

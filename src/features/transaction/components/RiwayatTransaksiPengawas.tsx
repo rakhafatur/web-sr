@@ -4,6 +4,7 @@ import { supabase } from '../../../lib/supabaseClient';
 import DataTable from '../../../components/DataTable';
 import ActionIconButton from '../../../components/ActionIconButton';
 import Pagination from '../../../components/Pagination';
+import EmptyState from '../../../components/EmptyState';
 import { useMediaQuery } from 'react-responsive';
 import CardTableRiwayatTransaksi from './CardTableRiwayatTransaksi';
 import dayjs from 'dayjs';
@@ -310,11 +311,10 @@ const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
           </div>
 
           {!loading && data.length === 0 && (
-            <div className="text-center py-5" style={{ color: 'var(--color-gray-500)' }}>
-              <div style={{ fontSize: 60 }}>📭</div>
-              <h5 className="fw-bold mt-3">Belum ada transaksi</h5>
-              <div>Tambah transaksi pertama untuk pengawas ini</div>
-            </div>
+            <EmptyState
+              title="Belum ada transaksi"
+              description="Tambah transaksi pertama untuk pengawas ini"
+            />
           )}
 
           {data.length > 0 && (

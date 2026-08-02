@@ -122,13 +122,13 @@ const AgentListPage = () => {
                   render: (a: Agent) => (
                     <div className="d-flex gap-2">
                       <ActionIconButton
-                        icon={<FiEdit2 />}
+                        icon={<FiEdit2 size={16} />}
                         variant="warning"
                         title="Edit"
                         onClick={() => navigate(`/agent-detail/${a.id}`)}
                       />
                       <ActionIconButton
-                        icon={<FiTrash2 />}
+                        icon={<FiTrash2 size={16} />}
                         variant="danger"
                         title="Hapus"
                         onClick={() => handleDelete(a.id)}

@@ -173,13 +173,13 @@ const UserListPage = () => {
                   render: (u: User) => (
                     <div className="d-flex gap-2">
                       <ActionIconButton
-                        icon={<FiEdit2 />}
+                        icon={<FiEdit2 size={16} />}
                         variant="warning"
                         title="Edit"
                         onClick={() => navigate(`/user-detail/${u.id}`)}
                       />
                       <ActionIconButton
-                        icon={<FiTrash2 />}
+                        icon={<FiTrash2 size={16} />}
                         variant="danger"
                         title="Hapus"
                         onClick={() => handleDelete(u.id)}

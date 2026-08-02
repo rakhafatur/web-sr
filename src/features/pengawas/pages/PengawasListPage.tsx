@@ -128,13 +128,13 @@ const PengawasListPage = () => {
                   render: (p: Pengawas) => (
                     <div className="d-flex gap-2">
                       <ActionIconButton
-                        icon={<FiEdit2 />}
+                        icon={<FiEdit2 size={16} />}
                         variant="warning"
                         title="Edit"
                         onClick={() => navigate(`/pengawas-detail/${p.id}`)}
                       />
                       <ActionIconButton
-                        icon={<FiTrash2 />}
+                        icon={<FiTrash2 size={16} />}
                         variant="danger"
                         title="Hapus"
                         onClick={() => handleDelete(p.id)}

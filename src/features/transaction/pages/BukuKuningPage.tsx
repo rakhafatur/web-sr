@@ -8,6 +8,7 @@ import logo from '../../../assets/logosr-black.png';
 import { useMediaQuery } from 'react-responsive';
 import { FiBook, FiPrinter, FiRepeat } from 'react-icons/fi';
 import ListPageHeader from '../../../components/ListPageHeader';
+import EmptyState from '../../../components/EmptyState';
 import {
   PDF_COLORS,
   drawBackground,
@@ -1131,10 +1132,10 @@ const BukuKuningPage = () => {
               />
             )
           ) : (
-            <div className="alert alert-info">
-              ℹ️ Tidak ada transaksi
-              di bulan ini.
-            </div>
+            <EmptyState
+              icon="ℹ️"
+              title="Tidak ada transaksi di bulan ini"
+            />
           )}
         </>
       )}
