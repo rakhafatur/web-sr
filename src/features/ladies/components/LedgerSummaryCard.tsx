@@ -14,8 +14,8 @@ const LedgerSummaryCard = ({ gradient, shadowColor, icon, label, value, subtitle
   <div
     style={{
       background: gradient,
-      borderRadius: 18,
-      padding: '18px 16px',
+      borderRadius: 'var(--radius-lg)',
+      padding: 'var(--space-4)',
       color: '#fff',
       boxShadow: `0 6px 18px ${shadowColor}`,
     }}
@@ -26,7 +26,7 @@ const LedgerSummaryCard = ({ gradient, shadowColor, icon, label, value, subtitle
         style={{
           width: 36,
           height: 36,
-          borderRadius: 12,
+          borderRadius: 'var(--radius-md)',
           background: 'rgba(255,255,255,0.15)',
         }}
       >
@@ -34,8 +34,8 @@ const LedgerSummaryCard = ({ gradient, shadowColor, icon, label, value, subtitle
       </div>
 
       <div>
-        <div style={{ fontSize: 12, opacity: 0.9 }}>{label}</div>
-        <div style={{ fontSize: 22, fontWeight: 700, lineHeight: 1.1 }}>{value}</div>
+        <div style={{ fontSize: 'var(--font-size-xs)', opacity: 0.9 }}>{label}</div>
+        <div style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 700, lineHeight: 1.1 }}>{value}</div>
       </div>
     </div>
 

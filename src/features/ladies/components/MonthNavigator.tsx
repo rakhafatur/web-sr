@@ -12,14 +12,14 @@ type Props = {
 const navButtonStyle = {
   width: 38,
   height: 38,
-  borderRadius: 12,
+  borderRadius: 'var(--radius-md)',
   background: 'var(--color-surface-2)',
 };
 
 const MonthNavigator = ({ selectedMonth, onChange, onPrev, onNext, nextDisabled }: Props) => (
-  <div className="d-flex align-items-center justify-content-between" style={{ gap: 10 }}>
+  <div className="d-flex align-items-center justify-content-between" style={{ gap: 'var(--space-2)' }}>
     <button
-      className="btn border-0 d-flex align-items-center justify-content-center"
+      className="btn border-0 d-flex align-items-center justify-content-center tap-scale"
       style={navButtonStyle}
       onClick={onPrev}
     >
@@ -33,16 +33,16 @@ const MonthNavigator = ({ selectedMonth, onChange, onPrev, onNext, nextDisabled 
       max={dayjs().format('YYYY-MM')}
       className="form-control"
       style={{
-        borderRadius: 12,
+        borderRadius: 'var(--radius-md)',
         height: 38,
-        fontSize: 13,
+        fontSize: 'var(--font-size-sm)',
         fontWeight: 600,
         border: '1px solid var(--color-gray-200)',
       }}
     />
 
     <button
-      className="btn border-0 d-flex align-items-center justify-content-center"
+      className="btn border-0 d-flex align-items-center justify-content-center tap-scale"
       style={navButtonStyle}
       onClick={onNext}
       disabled={nextDisabled}

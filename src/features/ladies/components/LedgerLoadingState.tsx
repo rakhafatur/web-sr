@@ -12,10 +12,10 @@ const LedgerLoadingState = ({ text }: Props) => (
     <img
       src={logo}
       alt="loading"
-      style={{ width: 90, marginBottom: 14, animation: 'pulse 1.5s infinite' }}
+      style={{ width: 90, marginBottom: 'var(--space-3)', animation: 'pulse 1.5s infinite' }}
     />
 
-    <div style={{ fontSize: 14, color: '#666', fontWeight: 500 }}>{text}</div>
+    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)', fontWeight: 500 }}>{text}</div>
   </div>
 );
 

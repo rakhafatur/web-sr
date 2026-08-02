@@ -453,6 +453,13 @@ body {
   to { opacity: 1; transform: translate(-50%, -50%); }
 }
 
+/* Dipakai LedgerLoadingState — sebelumnya animation:'pulse' merujuk ke
+   keyframe yang tidak pernah didefinisikan di mana pun, jadi no-op diam. */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
 .sr-table th,
 .sr-table td {
   border-bottom: 1.5px solid var(--color-green-light, #c9ecd8) !important;

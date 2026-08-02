@@ -9,11 +9,11 @@ const LedgerEmptyState = ({ message }: Props) => (
     style={{
       background: 'var(--color-surface)',
       border: '1px solid var(--color-gray-200)',
-      borderRadius: 16,
-      padding: '30px 20px',
+      borderRadius: 'var(--radius-lg)',
+      padding: 'var(--space-8) var(--space-5)',
       textAlign: 'center',
       color: 'var(--color-gray-500)',
-      fontSize: 13,
+      fontSize: 'var(--font-size-sm)',
     }}
   >
     {message}

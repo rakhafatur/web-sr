@@ -108,9 +108,9 @@ const PeraturanPage = () => {
         style={{
           background:
             'linear-gradient(135deg, var(--color-green), var(--color-accent))',
-          borderRadius: 24,
+          borderRadius: 'var(--radius-xl)',
           padding:
-            '22px 20px',
+            'var(--space-5)',
           color: '#fff',
           position:
             'relative',
@@ -148,7 +148,7 @@ const PeraturanPage = () => {
               style={{
                 width: 44,
                 height: 44,
-                borderRadius: 14,
+                borderRadius: 'var(--radius-md)',
                 background:
                   'rgba(255,255,255,0.15)',
               }}
@@ -159,7 +159,7 @@ const PeraturanPage = () => {
             <div>
               <div
                 style={{
-                  fontSize: 12,
+                  fontSize: 'var(--font-size-xs)',
                   opacity: 0.9,
                 }}
               >
@@ -168,7 +168,7 @@ const PeraturanPage = () => {
 
               <div
                 style={{
-                  fontSize: 22,
+                  fontSize: 'var(--font-size-2xl)',
                   fontWeight: 700,
                   lineHeight: 1.2,
                 }}
@@ -180,7 +180,7 @@ const PeraturanPage = () => {
 
           <div
             style={{
-              fontSize: 13,
+              fontSize: 'var(--font-size-sm)',
               opacity: 0.92,
               marginTop: 8,
               lineHeight: 1.5,
@@ -216,11 +216,11 @@ const PeraturanPage = () => {
                     isOpen
                       ? `1px solid ${section.bg}`
                       : '1px solid var(--color-gray-200)',
-                  borderRadius: 20,
+                  borderRadius: 'var(--radius-lg)',
                   overflow:
                     'hidden',
                   boxShadow:
-                    '0 1px 5px rgba(0,0,0,0.03)',
+                    'var(--shadow-sm)',
                   transition:
                     'all 0.2s ease',
                 }}
@@ -235,7 +235,7 @@ const PeraturanPage = () => {
                   className="d-flex align-items-center justify-content-between tap-scale"
                   style={{
                     padding:
-                      '16px',
+                      'var(--space-4)',
                     cursor:
                       'pointer',
                   }}
@@ -246,7 +246,7 @@ const PeraturanPage = () => {
                       style={{
                         width: 42,
                         height: 42,
-                        borderRadius: 14,
+                        borderRadius: 'var(--radius-md)',
                         background:
                           section.bg,
                         color:
@@ -262,7 +262,7 @@ const PeraturanPage = () => {
                     <div>
                       <div
                         style={{
-                          fontSize: 15,
+                          fontSize: 'var(--font-size-base)',
                           fontWeight: 700,
                           color:
                             'var(--color-dark)',
@@ -275,7 +275,7 @@ const PeraturanPage = () => {
 
                       <div
                         style={{
-                          fontSize: 11,
+                          fontSize: 'var(--font-size-xs)',
                           color:
                             'var(--color-gray-500)',
                           marginTop: 2,
@@ -310,7 +310,7 @@ const PeraturanPage = () => {
                   <div
                     style={{
                       padding:
-                        '0 16px 16px 16px',
+                        '0 var(--space-4) var(--space-4) var(--space-4)',
                     }}
                   >
                     <div className="d-flex flex-column gap-2">
@@ -327,9 +327,9 @@ const PeraturanPage = () => {
                                 'var(--color-surface-2)',
                               border:
                                 '1px solid var(--color-gray-200)',
-                              borderRadius: 14,
+                              borderRadius: 'var(--radius-md)',
                               padding:
-                                '12px 13px',
+                                'var(--space-3)',
                             }}
                           >
                             <div
@@ -347,7 +347,7 @@ const PeraturanPage = () => {
 
                             <div
                               style={{
-                                fontSize: 13,
+                                fontSize: 'var(--font-size-sm)',
                                 color:
                                   'var(--color-gray-700)',
                                 lineHeight: 1.6,

@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
-import dayjs from 'dayjs';
 import { FiCreditCard } from 'react-icons/fi';
 import type { UserWithLadies } from '../../../types/user';
 import CardTable from '../../../components/CardTable';
@@ -9,6 +8,7 @@ import MonthNavigator from '../components/MonthNavigator';
 import LedgerSummaryCard from '../components/LedgerSummaryCard';
 import LedgerEmptyState from '../components/LedgerEmptyState';
 import LedgerLoadingState from '../components/LedgerLoadingState';
+import LedgerCardRow from '../components/LedgerCardRow';
 import { useMonthNavigation } from '../hooks/useMonthNavigation';
 import { useLedgerData } from '../hooks/useLedgerData';
 
@@ -69,7 +69,7 @@ const KasbonListPage = () => {
         label="Total Kasbon"
         value={<>Rp {totalJumlah.toLocaleString('id-ID')}</>}
         subtitle={
-          <div style={{ fontSize: 12, opacity: 0.9 }}>
+          <div style={{ fontSize: 'var(--font-size-xs)', opacity: 0.9 }}>
             Total pengambilan bulan ini
           </div>
         }
@@ -84,28 +84,12 @@ const KasbonListPage = () => {
           rowsPerPage={rowsPerPage}
           onPageChange={setPage}
           renderItem={(item) => (
-            <div className="d-flex justify-content-between align-items-start">
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 11, color: 'var(--color-gray-500)', fontWeight: 600, marginBottom: 6 }}>
-                  {dayjs(item.tanggal).format('DD MMM YYYY')}
-                </div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-expense)', lineHeight: 1.1 }}>
-                  - Rp {item.jumlah.toLocaleString('id-ID')}
-                </div>
-                <div
-                  style={{
-                    fontSize: 11,
-                    color: 'var(--color-gray-500)',
-                    marginTop: 6,
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
-                  {item.keterangan || 'Tidak ada catatan'}
-                </div>
-              </div>
-            </div>
+            <LedgerCardRow
+              tanggal={item.tanggal}
+              color="var(--color-expense)"
+              mainLine={<>- Rp {item.jumlah.toLocaleString('id-ID')}</>}
+              keterangan={item.keterangan}
+            />
           )}
         />
       )}

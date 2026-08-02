@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
-import dayjs from 'dayjs';
 import { FiGift } from 'react-icons/fi';
 import type { UserWithLadies } from '../../../types/user';
 import CardTable from '../../../components/CardTable';
@@ -9,6 +8,7 @@ import MonthNavigator from '../components/MonthNavigator';
 import LedgerSummaryCard from '../components/LedgerSummaryCard';
 import LedgerEmptyState from '../components/LedgerEmptyState';
 import LedgerLoadingState from '../components/LedgerLoadingState';
+import LedgerCardRow from '../components/LedgerCardRow';
 import { useMonthNavigation } from '../hooks/useMonthNavigation';
 import { useLedgerData } from '../hooks/useLedgerData';
 
@@ -73,8 +73,8 @@ const VoucherListPage = () => {
         value={<>{totalPcs} pcs</>}
         subtitle={
           <>
-            <div style={{ fontSize: 12, opacity: 0.9 }}>Estimasi Pendapatan</div>
-            <div style={{ fontSize: 20, fontWeight: 700, marginTop: 2 }}>
+            <div style={{ fontSize: 'var(--font-size-xs)', opacity: 0.9 }}>Estimasi Pendapatan</div>
+            <div style={{ fontSize: 'var(--font-size-xl)', fontWeight: 700, marginTop: 2 }}>
               Rp {totalRp.toLocaleString('id-ID')}
             </div>
           </>
@@ -90,31 +90,13 @@ const VoucherListPage = () => {
           rowsPerPage={rowsPerPage}
           onPageChange={setPage}
           renderItem={(row) => (
-            <div className="d-flex justify-content-between align-items-start">
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 11, color: 'var(--color-gray-500)', fontWeight: 600, marginBottom: 6 }}>
-                  {dayjs(row.tanggal).format('DD MMM YYYY')}
-                </div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-income)', lineHeight: 1.1 }}>
-                  {row.jumlah_voucher} pcs
-                </div>
-                <div style={{ fontSize: 12, color: 'var(--color-gray-700)', marginTop: 3, fontWeight: 600 }}>
-                  Rp {(row.jumlah_voucher * HARGA_PER_VOUCHER).toLocaleString('id-ID')}
-                </div>
-                <div
-                  style={{
-                    fontSize: 11,
-                    color: 'var(--color-gray-500)',
-                    marginTop: 6,
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
-                  {row.keterangan || 'Tidak ada catatan'}
-                </div>
-              </div>
-            </div>
+            <LedgerCardRow
+              tanggal={row.tanggal}
+              color="var(--color-income)"
+              mainLine={<>{row.jumlah_voucher} pcs</>}
+              extraLine={<>Rp {(row.jumlah_voucher * HARGA_PER_VOUCHER).toLocaleString('id-ID')}</>}
+              keterangan={row.keterangan}
+            />
           )}
         />
       )}
