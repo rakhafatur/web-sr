@@ -11,8 +11,6 @@ import {
   FiGift,
   FiCalendar,
   FiDollarSign,
-  FiTrendingUp,
-  FiBriefcase,
   FiCheckCircle,
   FiHeart,
   FiMoon,
@@ -65,8 +63,6 @@ const SmartChatLadiesPage: React.FC = () => {
       0
     );
     const totalRp = totalPcs * 150000;
-    const totalKeuntungan = totalPcs * 75000;
-    const totalKeseluruhan = totalPcs * 225000;
 
     return {
       title: "Voucher Bulan Ini",
@@ -82,16 +78,6 @@ const SmartChatLadiesPage: React.FC = () => {
           icon: <FiDollarSign size={12} />,
           label: "Total Nominal",
           value: `Rp${totalRp.toLocaleString("id-ID")}`,
-        },
-        {
-          icon: <FiTrendingUp size={12} />,
-          label: "Total Keuntungan",
-          value: `Rp${totalKeuntungan.toLocaleString("id-ID")}`,
-        },
-        {
-          icon: <FiBriefcase size={12} />,
-          label: "Total Keseluruhan",
-          value: `Rp${totalKeseluruhan.toLocaleString("id-ID")}`,
         },
       ],
     };
@@ -113,8 +99,8 @@ const SmartChatLadiesPage: React.FC = () => {
     if (error || !data) return "❌ Gagal mengambil data absen.";
 
     const totalHadir = data.filter((a) => a.status === "KERJA").length;
-    const totalSakit = data.filter((a) => a.status === "SAKIT").length;
-    const totalIzin = data.filter((a) => a.status === "IZIN").length;
+    const totalMens = data.filter((a) => a.status === "MENS").length;
+    const totalOff = data.filter((a) => a.status === "OFF").length;
 
     const detailHarian = [...data].sort((a, b) =>
       a.tanggal > b.tanggal ? 1 : -1
@@ -132,13 +118,13 @@ const SmartChatLadiesPage: React.FC = () => {
         },
         {
           icon: <FiHeart size={12} />,
-          label: "Sakit",
-          value: `${totalSakit} hari`,
+          label: "M",
+          value: `${totalMens} hari`,
         },
         {
           icon: <FiMoon size={12} />,
-          label: "Izin",
-          value: `${totalIzin} hari`,
+          label: "Off",
+          value: `${totalOff} hari`,
         },
       ],
       groups:

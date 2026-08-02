@@ -41,6 +41,7 @@ const ProfilePage = lazy(() => import('./features/ladies/pages/ProfilePage'));
 
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import RootRoute from './components/RootRoute';
 import MainLayout from './layout/MainLayout';
 import SplashScreen from './components/Common/SplashScreen';
 import RouteLoader from './components/Common/RouteLoader';
@@ -78,7 +79,7 @@ function App() {
                 </ProtectedRoute>
               }
             >
-              <Route path="/" element={<HomePage />} />
+              <Route path="/" element={<RootRoute><HomePage /></RootRoute>} />
               <Route path="/users" element={<UserListPage />} />
               <Route path="/user-create" element={<CreateUserPage />} />
               <Route path="/user-approval" element={<UserApprovalPage />} />

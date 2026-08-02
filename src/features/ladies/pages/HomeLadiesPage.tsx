@@ -13,11 +13,7 @@ import {
   FiChevronRight,
   FiGift,
   FiCreditCard,
-  FiHeart,
-  FiDollarSign,
   FiCalendar,
-  FiUser,
-  FiBookOpen,
 } from 'react-icons/fi';
 
 import { motion } from 'framer-motion';
@@ -109,39 +105,11 @@ const HomeLadiesPage = () => {
       path: '/ladies/kasbon',
     },
     {
-      label: 'Dokter',
-      icon: <FiHeart />,
-      color: 'var(--color-medical)',
-      bg: 'var(--color-medical-soft)',
-      path: '/ladies/dokter',
-    },
-    {
-      label: 'Pemasukan',
-      icon: <FiDollarSign />,
-      color: 'var(--color-income)',
-      bg: 'var(--color-income-soft)',
-      path: '/ladies/pemasukan_lain',
-    },
-    {
       label: 'Absensi',
       icon: <FiCalendar />,
       color: 'var(--color-green)',
       bg: 'var(--color-green-light)',
       path: '/ladies/absensi',
-    },
-    {
-      label: 'Profil',
-      icon: <FiUser />,
-      color: 'var(--color-gray-500)',
-      bg: 'var(--color-gray-100)',
-      path: '/ladies/profile',
-    },
-    {
-      label: 'Peraturan',
-      icon: <FiBookOpen />,
-      color: 'var(--color-gray-500)',
-      bg: 'var(--color-gray-100)',
-      path: '/ladies/peraturan',
     },
   ];
 
@@ -159,17 +127,6 @@ const HomeLadiesPage = () => {
   return (
     <div className="ladies-home-wrapper">
       <div className="content-container d-flex flex-column gap-3">
-        {/* GREETING */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="ladies-home-greeting"
-        >
-          <h1 className="ladies-home-greeting-title">
-            Halo, {user?.nama_ladies} 👋
-          </h1>
-        </motion.div>
-
         {/* HERO */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -33,22 +33,6 @@
 }
 
 /* =========================
-   GREETING
-========================= */
-
-.ladies-home-greeting {
-  padding: 4px 4px 0;
-}
-
-.ladies-home-greeting-title {
-  font-size: 1.7rem;
-  font-weight: 800;
-  color: var(--color-dark);
-  line-height: 1.2;
-  margin: 0;
-}
-
-/* =========================
    HERO
 ========================= */
 
@@ -258,7 +242,7 @@
 
 .ladies-home-menu-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 14px 8px;
 }
 
