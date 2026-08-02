@@ -460,6 +460,16 @@ body {
   50% { opacity: 0.5; }
 }
 
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spinner-icon {
+  animation: spin 0.7s linear infinite;
+  color: var(--color-primary);
+}
+
 .sr-table th,
 .sr-table td {
   border-bottom: 1.5px solid var(--color-green-light, #c9ecd8) !important;

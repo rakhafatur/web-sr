@@ -63,7 +63,7 @@ const PemasukanLainListPage = () => {
       />
 
       <LedgerSummaryCard
-        gradient="linear-gradient(135deg, var(--color-voucher), #a16207)"
+        gradient="linear-gradient(135deg, var(--color-voucher), var(--color-voucher-deep))"
         shadowColor="rgba(var(--color-warning-solid-rgb),0.3)"
         icon={<FiDollarSign size={18} />}
         label="Total Pemasukan"

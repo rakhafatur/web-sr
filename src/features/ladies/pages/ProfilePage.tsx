@@ -9,8 +9,8 @@ import {
   FiUser,
   FiCheckCircle,
   FiShield,
+  FiLoader,
 } from 'react-icons/fi';
-import logo from '../../../assets/logosr-blue.png';
 import type { UserWithLadies } from '../../../types/user';
 import ProfileHeroCard from '../../../components/ProfileHeroCard';
 import InfoRow from '../../../components/InfoRow';
@@ -70,17 +70,12 @@ const ProfilePage = () => {
   if (loading) {
     return (
       <div
-        className="d-flex flex-column justify-content-center align-items-center"
+        className="d-flex justify-content-center align-items-center"
         style={{ minHeight: '70vh' }}
+        role="status"
+        aria-label="Memuat profile"
       >
-        <img
-          src={logo}
-          alt="loading"
-          style={{ width: 90, marginBottom: 14, animation: 'pulse 1.5s infinite' }}
-        />
-        <div style={{ fontSize: 14, color: '#666', fontWeight: 500 }}>
-          Memuat profile...
-        </div>
+        <FiLoader size={28} className="spinner-icon" />
       </div>
     );
   }
@@ -139,7 +134,7 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        <div style={{ fontSize: 12, color: '#666', lineHeight: 1.6 }}>
+        <div style={{ fontSize: 12, color: 'var(--color-gray-500)', lineHeight: 1.6 }}>
           Jangan bagikan PIN akun kepada siapapun untuk menjaga keamanan data dan
           transaksi kamu.
         </div>

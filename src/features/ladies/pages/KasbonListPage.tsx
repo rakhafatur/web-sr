@@ -63,7 +63,7 @@ const KasbonListPage = () => {
       />
 
       <LedgerSummaryCard
-        gradient="linear-gradient(135deg, var(--color-expense), #b91c1c)"
+        gradient="linear-gradient(135deg, var(--color-expense), var(--color-expense-deep))"
         shadowColor="rgba(var(--color-danger-solid-rgb),0.3)"
         icon={<FiCreditCard size={18} />}
         label="Total Kasbon"

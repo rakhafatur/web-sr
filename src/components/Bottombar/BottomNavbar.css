@@ -53,6 +53,9 @@
 
   gap: 4px;
 
+  border: none;
+  background: transparent;
+
   cursor: pointer;
   transition: all 0.2s ease;
 

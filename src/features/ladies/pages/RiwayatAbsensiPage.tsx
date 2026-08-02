@@ -11,6 +11,7 @@ import {
   FiMoon,
   FiCoffee,
   FiHeart,
+  FiLoader,
 } from 'react-icons/fi';
 
 import 'react-calendar/dist/Calendar.css';
@@ -267,14 +268,12 @@ const RiwayatAbsensiPage = () => {
       {/* LOADING */}
       {loading && (
         <div
-          style={{
-            textAlign: 'center',
-            fontSize: 'var(--font-size-xs)',
-            color: 'var(--color-gray-500)',
-            marginTop: 4,
-          }}
+          className="d-flex justify-content-center"
+          style={{ marginTop: 4 }}
+          role="status"
+          aria-label="Memuat data"
         >
-          Memuat data...
+          <FiLoader size={18} className="spinner-icon" />
         </div>
       )}
     </div>

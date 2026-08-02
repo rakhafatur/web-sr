@@ -1,4 +1,4 @@
-import logo from '../../../assets/logosr-blue.png';
+import { FiLoader } from 'react-icons/fi';
 
 type Props = {
   text: string;
@@ -6,16 +6,12 @@ type Props = {
 
 const LedgerLoadingState = ({ text }: Props) => (
   <div
-    className="d-flex flex-column justify-content-center align-items-center"
+    className="d-flex justify-content-center align-items-center"
     style={{ minHeight: '70vh' }}
+    role="status"
+    aria-label={text}
   >
-    <img
-      src={logo}
-      alt="loading"
-      style={{ width: 90, marginBottom: 'var(--space-3)', animation: 'pulse 1.5s infinite' }}
-    />
-
-    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)', fontWeight: 500 }}>{text}</div>
+    <FiLoader size={28} className="spinner-icon" />
   </div>
 );
 

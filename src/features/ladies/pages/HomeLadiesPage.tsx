@@ -13,12 +13,13 @@ import {
   FiChevronRight,
   FiGift,
   FiCreditCard,
+  FiHeart,
   FiCalendar,
+  FiLoader,
 } from 'react-icons/fi';
 
 import { motion } from 'framer-motion';
 
-import logo from '../../../assets/logosr-blue.png';
 import type { UserWithLadies } from '../../../types/user';
 
 const HomeLadiesPage = () => {
@@ -105,6 +106,13 @@ const HomeLadiesPage = () => {
       path: '/ladies/kasbon',
     },
     {
+      label: 'Dokter',
+      icon: <FiHeart />,
+      color: 'var(--color-medical)',
+      bg: 'var(--color-medical-soft)',
+      path: '/ladies/dokter',
+    },
+    {
       label: 'Absensi',
       icon: <FiCalendar />,
       color: 'var(--color-green)',
@@ -115,11 +123,12 @@ const HomeLadiesPage = () => {
 
   if (loading) {
     return (
-      <div className="ladies-home-wrapper ladies-home-loading">
-        <div className="ladies-home-loading-content">
-          <img src={logo} alt="Loading..." className="ladies-home-loading-logo" />
-          <p className="ladies-home-loading-text">Memuat data...</p>
-        </div>
+      <div
+        className="ladies-home-wrapper ladies-home-loading"
+        role="status"
+        aria-label="Memuat data"
+      >
+        <FiLoader size={28} className="spinner-icon" />
       </div>
     );
   }

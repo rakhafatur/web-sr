@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FiUser } from 'react-icons/fi';
+import { FiUser, FiLoader } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 
@@ -105,11 +105,12 @@ const DetailPengawas = () => {
 
   if (loading) {
     return (
-      <div className="page-shell py-5">
-        <div className="d-flex align-items-center gap-3">
-          <div className="spinner-border spinner-border-sm" role="status" />
-          <span>Mengambil data pengawas...</span>
-        </div>
+      <div
+        className="page-shell d-flex justify-content-center align-items-center py-5"
+        role="status"
+        aria-label="Mengambil data pengawas"
+      >
+        <FiLoader size={24} className="spinner-icon" />
       </div>
     );
   }

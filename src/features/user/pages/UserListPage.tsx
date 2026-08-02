@@ -18,6 +18,7 @@ import {
   FiSearch,
   FiEdit2,
   FiTrash2,
+  FiLoader,
 } from 'react-icons/fi';
 
 type User = {
@@ -155,7 +156,13 @@ const UserListPage = () => {
         {/* BODY */}
         <div className="p-2 p-md-3">
           {loading ? (
-            <div className="p-3 text-muted">Loading...</div>
+            <div
+              className="d-flex justify-content-center p-3"
+              role="status"
+              aria-label="Loading"
+            >
+              <FiLoader size={20} className="spinner-icon" />
+            </div>
           ) : isMobile ? (
             <UserCardList
               users={userList}

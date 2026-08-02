@@ -6,7 +6,7 @@ import TransaksiFormPengawas from '../components/TransaksiFormPengawas';
 import RiwayatTransaksiPengawas from '../components/RiwayatTransaksiPengawas';
 import FeaturePageHeader from '../../../components/FeaturePageHeader';
 
-import { FiUsers, FiCreditCard, FiClock } from 'react-icons/fi';
+import { FiUsers, FiCreditCard, FiClock, FiLoader } from 'react-icons/fi';
 
 type Pengawas = {
   id: string;
@@ -134,11 +134,11 @@ const AddTransaksiPagePengawas = () => {
           {/* LOADING */}
           {loading && (
             <div
-              className="d-flex align-items-center gap-2 mt-3"
-              style={{ color: 'var(--color-gray-500)' }}
+              className="d-flex justify-content-center mt-3"
+              role="status"
+              aria-label="Memuat data pengawas"
             >
-              <div className="spinner-border spinner-border-sm" />
-              <span>Memuat data pengawas...</span>
+              <FiLoader size={20} className="spinner-icon" />
             </div>
           )}
         </div>
