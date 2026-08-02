@@ -4,6 +4,7 @@ import { supabase } from '../../../lib/supabaseClient';
 
 import TransaksiFormPengawas from '../components/TransaksiFormPengawas';
 import RiwayatTransaksiPengawas from '../components/RiwayatTransaksiPengawas';
+import FeaturePageHeader from '../../../components/FeaturePageHeader';
 
 import { FiUsers, FiCreditCard, FiClock } from 'react-icons/fi';
 
@@ -49,54 +50,11 @@ const AddTransaksiPagePengawas = () => {
 
   return (
     <div className="page-shell py-4 px-md-4 px-3">
-      {/* HEADER */}
-      <div
-        className="mb-4 p-4 rounded-4 shadow-sm"
-        style={{
-          background: 'linear-gradient(135deg, var(--color-green), var(--color-accent))',
-          color: 'white',
-        }}
-      >
-        <div className="d-flex align-items-center gap-3">
-          <div
-            style={{
-              width: 60,
-              height: 60,
-              borderRadius: 18,
-              background: 'rgba(255,255,255,0.2)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 26,
-              backdropFilter: 'blur(8px)',
-            }}
-          >
-            <FiCreditCard />
-          </div>
-
-          <div>
-            <h2
-              className="fw-semibold mb-0"
-              style={{
-                fontSize: isMobile ? '1rem' : '1.8rem',
-                lineHeight: 1.2,
-              }}
-            >
-              Transaksi Pengawas
-            </h2>
-
-            <div
-              style={{
-                opacity: 0.75,
-                fontSize: isMobile ? '0.72rem' : '0.92rem',
-                marginTop: 2,
-              }}
-            >
-              Kelola transaksi pengawas harian
-            </div>
-          </div>
-        </div>
-      </div>
+      <FeaturePageHeader
+        icon={<FiCreditCard />}
+        title="Transaksi Pengawas"
+        description="Kelola transaksi pengawas harian"
+      />
 
       {/* SELECT PENGAWAS */}
       <div

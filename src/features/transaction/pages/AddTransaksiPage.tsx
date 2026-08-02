@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import {
   FiUsers,
-  FiChevronDown,
   FiCreditCard,
   FiClock,
 } from 'react-icons/fi';
 import { supabase } from '../../../lib/supabaseClient';
 import TransaksiForm from '../components/TransaksiForm';
 import RiwayatTransaksi from '../components/RiwayatTransaksi';
+import FeaturePageHeader from '../../../components/FeaturePageHeader';
 
 type Lady = {
   id: string;
@@ -54,59 +54,11 @@ const AddTransaksiPage = () => {
 
   return (
     <div className="page-shell py-4 px-md-4 px-3">
-      {/* HEADER */}
-      <div
-        className="mb-4 p-4 rounded-4 shadow-sm"
-        style={{
-          background:
-            'linear-gradient(135deg, var(--color-green), var(--color-accent))',
-          color: 'white',
-        }}
-      >
-        <div className="d-flex align-items-center gap-3">
-          <div
-            style={{
-              width: 60,
-              height: 60,
-              borderRadius: 18,
-              background: 'rgba(255,255,255,0.2)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 26,
-              backdropFilter: 'blur(8px)',
-            }}
-          >
-            <FiCreditCard />
-          </div>
-
-          <div>
-            <h2
-              className="fw-semibold mb-0"
-              style={{
-                fontSize: isMobile
-                  ? '0.98rem'
-                  : '1.8rem',
-                lineHeight: 1.2,
-              }}
-            >
-              Transaksi Ladies
-            </h2>
-
-            <div
-              style={{
-                opacity: 0.7,
-                fontSize: isMobile
-                  ? '0.72rem'
-                  : '0.92rem',
-                marginTop: 2,
-              }}
-            >
-              Kelola transaksi harian
-            </div>
-          </div>
-        </div>
-      </div>
+      <FeaturePageHeader
+        icon={<FiCreditCard />}
+        title="Transaksi Ladies"
+        description="Kelola transaksi harian"
+      />
 
       {/* SELECT LADIES */}
       <div

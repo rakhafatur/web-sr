@@ -10,6 +10,7 @@ import DataTable from '../../../components/DataTable';
 import ActionIconButton from '../../../components/ActionIconButton';
 import Pagination from '../../../components/Pagination';
 import Button from '../../../components/Button';
+import FeaturePageHeader from '../../../components/FeaturePageHeader';
 
 import {
   FiPlus,
@@ -369,65 +370,11 @@ const AbsensiPage = () => {
 
   return (
     <div className="page-shell py-4 px-md-4 px-3">
-      {/* HERO */}
-      <div
-        className="mb-4 p-4 rounded-4 shadow-sm"
-        style={{
-          background:
-            'linear-gradient(135deg, var(--color-green), var(--color-accent))',
-          color: 'white',
-        }}
-      >
-        <div className="d-flex align-items-center gap-3">
-          <div
-            style={{
-              width: 60,
-              height: 60,
-              borderRadius: 18,
-              background:
-                'rgba(255,255,255,0.2)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent:
-                'center',
-              fontSize: 26,
-              backdropFilter:
-                'blur(8px)',
-            }}
-          >
-            <FiCalendar />
-          </div>
-
-          <div>
-            <h2
-              className="fw-semibold mb-0"
-              style={{
-                fontSize:
-                  isMobile
-                    ? '1rem'
-                    : '1.8rem',
-                lineHeight: 1.2,
-              }}
-            >
-              Absensi Harian
-            </h2>
-
-            <div
-              style={{
-                opacity: 0.75,
-                fontSize:
-                  isMobile
-                    ? '0.74rem'
-                    : '0.92rem',
-                marginTop: 2,
-              }}
-            >
-              Kelola absensi ladies
-              harian
-            </div>
-          </div>
-        </div>
-      </div>
+      <FeaturePageHeader
+        icon={<FiCalendar />}
+        title="Absensi Harian"
+        description="Kelola absensi ladies harian"
+      />
 
       {/* FORM CARD */}
       <div

@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
 import DataTable from '../../../components/DataTable';
 import Button from '../../../components/Button';
+import FeaturePageHeader from '../../../components/FeaturePageHeader';
 
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -293,78 +294,11 @@ const RekapVoucherPage = () => {
 
   return (
     <div className="page-shell py-4 px-md-4 px-3">
-      {/* HERO */}
-      <div
-        className="mb-4 p-4 rounded-4 shadow-sm"
-        style={{
-          background:
-            'linear-gradient(135deg, var(--color-green), var(--color-accent))',
-          color: 'white',
-        }}
-      >
-        <div className="d-flex align-items-center gap-3">
-          <div
-            style={{
-              width: isMobile
-                ? 54
-                : 64,
-
-              height: isMobile
-                ? 54
-                : 64,
-
-              borderRadius: 18,
-
-              background:
-                'rgba(255,255,255,0.2)',
-
-              display: 'flex',
-
-              alignItems: 'center',
-
-              justifyContent:
-                'center',
-
-              fontSize: isMobile
-                ? 22
-                : 28,
-
-              backdropFilter:
-                'blur(8px)',
-            }}
-          >
-            <FiGift />
-          </div>
-
-          <div>
-            <h2
-              className="fw-bold mb-0"
-              style={{
-                fontSize: isMobile
-                  ? '1rem'
-                  : '1.8rem',
-              }}
-            >
-              Rekap Voucher
-            </h2>
-
-            <div
-              style={{
-                opacity: 0.85,
-
-                fontSize: isMobile
-                  ? '0.72rem'
-                  : '0.92rem',
-
-                marginTop: 2,
-              }}
-            >
-              Monitoring voucher
-              per outlet & ladies
-            </div>
-          </div>
-        </div>
-      </div>
+      <FeaturePageHeader
+        icon={<FiGift />}
+        title="Rekap Voucher"
+        description="Monitoring voucher per outlet & ladies"
+      />
 
       {/* FILTER */}
       <div

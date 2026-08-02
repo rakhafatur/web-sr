@@ -5,7 +5,8 @@ import { toast } from 'react-toastify';
 import DataTable from '../../../components/DataTable';
 import Pagination from '../../../components/Pagination';
 import Button from '../../../components/Button';
-import { FiCheck } from 'react-icons/fi';
+import ListPageHeader from '../../../components/ListPageHeader';
+import { FiCheck, FiUserCheck, FiSearch } from 'react-icons/fi';
 import UserApprovalCardList from '../components/UserApprovalCardList';
 
 type User = {
@@ -31,7 +32,6 @@ const UserApprovalPage = () => {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [keyword, setKeyword] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
 
   const [assignModal, setAssignModal] = useState<{ id: string; show: boolean }>({ id: '', show: false });
   const [assignType, setAssignType] = useState<AssignType | null>(null);
@@ -117,13 +117,12 @@ const UserApprovalPage = () => {
     if (error) {
       toast.error('Gagal assign: ' + error.message);
     } else {
-      setSuccessMessage(`✅ User berhasil di-assign & diaktifkan!`);
+      toast.success('User berhasil di-assign & diaktifkan!');
       fetchUsers();
       setAssignModal({ id: '', show: false });
       setAssignList([]);
       setAssignType(null);
       setSelectedAssignId('');
-      setTimeout(() => setSuccessMessage(''), 3000);
     }
   };
 
@@ -146,57 +145,96 @@ const UserApprovalPage = () => {
       className="page-shell p-4"
       style={{
         color: 'var(--color-dark)',
-        paddingBottom: isMobile ? '100px' : undefined,
       }}
     >
-      {successMessage && (
-        <div className="alert alert-success alert-dismissible fade show" role="alert">
-          {successMessage}
-          <button type="button" className="btn-close" onClick={() => setSuccessMessage('')} />
+      <ListPageHeader
+        icon={<FiUserCheck />}
+        title="Persetujuan User"
+        description="Aktifkan & assign user baru sebelum bisa login"
+      />
+
+      <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
+        {/* TOPBAR */}
+        <div className="px-3 py-3 border-bottom bg-light">
+          <div className="d-flex justify-content-between align-items-center gap-2 flex-wrap">
+            <div>
+              <div className="fw-bold">Menunggu Persetujuan</div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--color-gray-500)' }}>
+                Data user belum aktif
+              </div>
+            </div>
+
+            {!isMobile && (
+              <div style={{ width: 300, position: 'relative' }}>
+                <FiSearch
+                  style={{
+                    position: 'absolute',
+                    top: 12,
+                    left: 12,
+                    color: 'var(--color-gray-500)',
+                  }}
+                />
+                <input
+                  className="form-control form-control-sm"
+                  style={{ paddingLeft: 35, borderRadius: 10 }}
+                  placeholder="Cari user..."
+                  value={keyword}
+                  onChange={(e) => {
+                    setPage(1);
+                    setKeyword(e.target.value);
+                  }}
+                />
+              </div>
+            )}
+          </div>
         </div>
-      )}
 
-      <div className="d-flex justify-content-end mb-3 gap-2">
-        <input
-          type="text"
-          className="form-control"
-          placeholder="🔍 Cari user..."
-          value={keyword}
-          onChange={(e) => {
-            setPage(1);
-            setKeyword(e.target.value);
-          }}
-          style={{ maxWidth: 300 }}
-        />
+        {/* MOBILE SEARCH */}
+        {isMobile && (
+          <div className="p-2 border-bottom">
+            <input
+              className="form-control form-control-sm"
+              placeholder="Cari user..."
+              value={keyword}
+              onChange={(e) => {
+                setPage(1);
+                setKeyword(e.target.value);
+              }}
+            />
+          </div>
+        )}
+
+        {/* BODY */}
+        <div className="p-2 p-md-3">
+          {isMobile ? (
+            <UserApprovalCardList users={userList} onApprove={handleApproveClick} />
+          ) : (
+            <DataTable
+              columns={[
+                { key: 'username', label: 'Username' },
+                { key: 'nama', label: 'Nama Lengkap' },
+                {
+                  key: 'id',
+                  label: 'Aksi',
+                  render: (u: User) => (
+                    <button
+                      className="btn btn-sm btn-outline-success d-flex align-items-center gap-1"
+                      onClick={() => handleApproveClick(u.id)}
+                    >
+                      <FiCheck /> Approve
+                    </button>
+                  ),
+                },
+              ]}
+              data={userList}
+            />
+          )}
+
+          {totalPages > 1 && (
+            <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
+          )}
+        </div>
       </div>
-
-      {isMobile ? (
-        <UserApprovalCardList users={userList} onApprove={handleApproveClick} />
-      ) : (
-        <DataTable
-          columns={[
-            { key: 'username', label: 'Username' },
-            { key: 'nama', label: 'Nama Lengkap' },
-            {
-              key: 'id',
-              label: 'Aksi',
-              render: (u: User) => (
-                <button
-                  className="btn btn-sm btn-outline-success d-flex align-items-center gap-1"
-                  onClick={() => handleApproveClick(u.id)}
-                >
-                  <FiCheck /> Approve
-                </button>
-              ),
-            },
-          ]}
-          data={userList}
-        />
-      )}
-
-      {totalPages > 1 && (
-        <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
-      )}
 
       {assignModal.show && (
         <div className="modal d-block" style={{ background: 'rgba(0,0,0,0.5)' }}>

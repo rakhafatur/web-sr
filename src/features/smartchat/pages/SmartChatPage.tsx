@@ -15,6 +15,7 @@ import {
 } from "react-icons/fi";
 import { useMediaQuery } from "react-responsive";
 import SmartChatBox, { ChatReport } from "../components/SmartChatBox";
+import FeaturePageHeader from "../../../components/FeaturePageHeader";
 import dayjs from "dayjs";
 import { supabase } from "../../../lib/supabaseClient";
 
@@ -376,61 +377,11 @@ const SmartChatPage: React.FC = () => {
 
   return (
     <div className="page-shell py-4 px-md-4 px-3">
-      {/* ===================================================== */}
-      {/* HEADER */}
-      {/* ===================================================== */}
-      <div
-        className="mb-4 p-4 rounded-4 shadow-sm"
-        style={{
-          background:
-            "linear-gradient(135deg, var(--color-green), var(--color-accent))",
-          color: "white",
-        }}
-      >
-        <div className="d-flex align-items-center gap-3">
-          <div
-            style={{
-              width: 60,
-              height: 60,
-              borderRadius: 18,
-              background: "rgba(255,255,255,0.2)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 26,
-              backdropFilter: "blur(8px)",
-            }}
-          >
-            <FiCpu />
-          </div>
-
-          <div>
-            <h2
-              className="fw-semibold mb-0"
-              style={{
-                fontSize: isMobile
-                  ? "1rem"
-                  : "1.8rem",
-                lineHeight: 1.2,
-              }}
-            >
-              Smart Assistant SR
-            </h2>
-
-            <div
-              style={{
-                opacity: 0.78,
-                fontSize: isMobile
-                  ? "0.72rem"
-                  : "0.92rem",
-                marginTop: 2,
-              }}
-            >
-              Insight voucher, absensi, dan performa ladies
-            </div>
-          </div>
-        </div>
-      </div>
+      <FeaturePageHeader
+        icon={<FiCpu />}
+        title="Smart Assistant SR"
+        description="Insight voucher, absensi, dan performa ladies"
+      />
 
       {/* ===================================================== */}
       {/* CHAT CARD */}

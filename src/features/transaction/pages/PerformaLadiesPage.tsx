@@ -3,6 +3,7 @@ import { supabase } from '../../../lib/supabaseClient';
 import dayjs from 'dayjs';
 import { useMediaQuery } from 'react-responsive';
 import DataTable from '../../../components/DataTable';
+import FeaturePageHeader from '../../../components/FeaturePageHeader';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from 'recharts';
@@ -146,51 +147,11 @@ const PerformaLadiesPage = () => {
 
   return (
     <div className="page-shell py-4 px-md-4 px-3">
-      {/* HERO */}
-      <div
-        className="mb-4 p-4 rounded-4 shadow-sm"
-        style={{
-          background: 'linear-gradient(135deg, var(--color-green), var(--color-accent))',
-          color: 'white',
-        }}
-      >
-        <div className="d-flex align-items-center gap-3">
-          <div
-            style={{
-              width: isMobile ? 54 : 60,
-              height: isMobile ? 54 : 60,
-              borderRadius: 18,
-              background: 'rgba(255,255,255,0.2)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: isMobile ? 22 : 26,
-              backdropFilter: 'blur(8px)',
-            }}
-          >
-            <FiBarChart2 />
-          </div>
-
-          <div>
-            <h2
-              className="fw-semibold mb-0"
-              style={{ fontSize: isMobile ? '1rem' : '1.8rem', lineHeight: 1.2 }}
-            >
-              Performa Ladies
-            </h2>
-
-            <div
-              style={{
-                opacity: 0.78,
-                fontSize: isMobile ? '0.72rem' : '0.92rem',
-                marginTop: 2,
-              }}
-            >
-              Analisis aktivitas & pendapatan ladies per bulan
-            </div>
-          </div>
-        </div>
-      </div>
+      <FeaturePageHeader
+        icon={<FiBarChart2 />}
+        title="Performa Ladies"
+        description="Analisis aktivitas & pendapatan ladies per bulan"
+      />
 
       {/* FILTER */}
       <div className="card border-0 shadow-sm rounded-4 mb-4" style={{ overflow: 'hidden' }}>
