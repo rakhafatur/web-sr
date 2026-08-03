@@ -131,7 +131,9 @@ const TransaksiFormPengawas = ({
   return (
     <div
       style={{
-        paddingBottom: isMobile ? 90 : 0,
+        paddingBottom: isMobile
+          ? 'calc(160px + env(safe-area-inset-bottom))'
+          : 0,
       }}
     >
       {/* TYPE SELECT (CARD STYLE LIKE LADIES) */}
@@ -247,11 +249,11 @@ const TransaksiFormPengawas = ({
         <div
           style={{
             position: 'fixed',
-            bottom: 0,
+            bottom: 'calc(68px + env(safe-area-inset-bottom))',
             left: 0,
             right: 0,
             background: 'var(--color-surface)',
-            padding: '12px 16px calc(12px + env(safe-area-inset-bottom))',
+            padding: '12px 16px',
             borderTop: '1px solid var(--color-gray-200)',
             zIndex: 999,
           }}
