@@ -129,11 +129,7 @@ const TransaksiFormPengawas = ({
   ];
 
   return (
-    <div
-      style={{
-        paddingBottom: isMobile ? 90 : 0,
-      }}
-    >
+    <div>
       {/* TYPE SELECT (CARD STYLE LIKE LADIES) */}
       <div className={`row ${isMobile ? 'g-2' : 'g-3'} mb-3`}>
         {transactionTypes.map((item) => {
@@ -227,46 +223,18 @@ const TransaksiFormPengawas = ({
         </div>
       </div>
 
-      {/* DESKTOP BUTTON */}
-      {!isMobile && (
-        <div className="mt-4">
-          <Button
-            variant="primary"
-            fullWidth
-            onClick={handleSubmit}
-            disabled={loading}
-            icon={loading ? <div className="spinner-border spinner-border-sm" role="status" /> : <FiPlus />}
-          >
-            {loading ? 'Menyimpan...' : 'Tambah Transaksi'}
-          </Button>
-        </div>
-      )}
-
-      {/* MOBILE STICKY BUTTON */}
-      {isMobile && (
-        <div
-          style={{
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            background: 'var(--color-surface)',
-            padding: '12px 16px calc(12px + env(safe-area-inset-bottom))',
-            borderTop: '1px solid var(--color-gray-200)',
-            zIndex: 1201,
-          }}
+      {/* BUTTON */}
+      <div className="mt-4">
+        <Button
+          variant="primary"
+          fullWidth
+          onClick={handleSubmit}
+          disabled={loading}
+          icon={loading ? <div className="spinner-border spinner-border-sm" role="status" /> : <FiPlus />}
         >
-          <Button
-            variant="primary"
-            fullWidth
-            onClick={handleSubmit}
-            disabled={loading}
-            icon={loading ? <div className="spinner-border spinner-border-sm" role="status" /> : <FiPlus />}
-          >
-            {loading ? 'Menyimpan...' : 'Tambah Transaksi'}
-          </Button>
-        </div>
-      )}
+          {loading ? 'Menyimpan...' : 'Tambah Transaksi'}
+        </Button>
+      </div>
     </div>
   );
 };
