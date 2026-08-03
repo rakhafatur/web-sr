@@ -45,6 +45,7 @@ import RootRoute from './components/RootRoute';
 import MainLayout from './layout/MainLayout';
 import SplashScreen from './components/Common/SplashScreen';
 import RouteLoader from './components/Common/RouteLoader';
+import OfflineBanner from './components/OfflineBanner';
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -62,6 +63,8 @@ function App() {
 
   return (
     <AuthProvider>
+      <OfflineBanner />
+
       <BrowserRouter>
         <Suspense fallback={<RouteLoader />}>
           <Routes>

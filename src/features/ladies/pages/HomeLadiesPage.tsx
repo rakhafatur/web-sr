@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { RootState } from '../../../app/store';
 import { supabase } from '../../../lib/supabaseClient';
+import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 import './HomeLadiesPage.css';
 
@@ -49,27 +50,37 @@ const HomeLadiesPage = () => {
     const tanggalAwal = `${tahunIni}-${bulanIni}-01`;
     const tanggalAkhir = dayjs().endOf('month').format('YYYY-MM-DD');
 
-    const { data: absensi } = await supabase
-      .from('absensi')
-      .select('id')
-      .eq('ladies_id', ladiesId)
-      .ilike('status', 'kerja')
-      .gte('tanggal', tanggalAwal)
-      .lte('tanggal', tanggalAkhir);
+    const [
+      { data: absensi, error: absensiError },
+      { data: vouchers, error: vouchersError },
+      { data: kasbon, error: kasbonError },
+    ] = await Promise.all([
+      supabase
+        .from('absensi')
+        .select('id')
+        .eq('ladies_id', ladiesId)
+        .ilike('status', 'kerja')
+        .gte('tanggal', tanggalAwal)
+        .lte('tanggal', tanggalAkhir),
 
-    const { data: vouchers } = await supabase
-      .from('vouchers')
-      .select('jumlah_voucher')
-      .eq('ladies_id', ladiesId)
-      .gte('tanggal', tanggalAwal)
-      .lte('tanggal', tanggalAkhir);
+      supabase
+        .from('vouchers')
+        .select('jumlah_voucher')
+        .eq('ladies_id', ladiesId)
+        .gte('tanggal', tanggalAwal)
+        .lte('tanggal', tanggalAkhir),
 
-    const { data: kasbon } = await supabase
-      .from('kasbon')
-      .select('jumlah')
-      .eq('ladies_id', ladiesId)
-      .gte('tanggal', tanggalAwal)
-      .lte('tanggal', tanggalAkhir);
+      supabase
+        .from('kasbon')
+        .select('jumlah')
+        .eq('ladies_id', ladiesId)
+        .gte('tanggal', tanggalAwal)
+        .lte('tanggal', tanggalAkhir),
+    ]);
+
+    if (absensiError || vouchersError || kasbonError) {
+      toast.error('Gagal memuat data terbaru. Coba lagi.');
+    }
 
     const totalVoucherPcs =
       vouchers?.reduce((sum, v) => sum + (v.jumlah_voucher || 0), 0) || 0;

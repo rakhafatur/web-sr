@@ -4,6 +4,7 @@ import { RootState } from "../../../app/store";
 import type { UserWithLadies } from "../../../types/user";
 import SmartChatBox, { ChatReport } from "../components/SmartChatBox";
 import dayjs from "dayjs";
+import { toast } from "react-toastify";
 import { supabase } from "../../../lib/supabaseClient";
 import {
   FiMessageCircle,
@@ -163,6 +164,8 @@ const SmartChatLadiesPage: React.FC = () => {
   }, [messages, loading]);
 
   const handlePickQuestion = async (label: string) => {
+    if (loading) return;
+
     const question = questions.find((q) => q.label === label);
     if (!question) return;
 
@@ -174,6 +177,10 @@ const SmartChatLadiesPage: React.FC = () => {
     setLoading(true);
 
     const result = await question.answer();
+
+    if (typeof result === "string") {
+      toast.error("Gagal mengambil data. Coba lagi.");
+    }
 
     setMessages((prev) => [
       ...prev,
@@ -328,6 +335,7 @@ const SmartChatLadiesPage: React.FC = () => {
               <select
                 value={selectedQuestion}
                 onChange={(e) => handlePickQuestion(e.target.value)}
+                disabled={loading}
                 className="form-select shadow-none"
                 style={{
                   height: 50,
@@ -340,6 +348,7 @@ const SmartChatLadiesPage: React.FC = () => {
                   backgroundColor: "var(--color-surface)",
                   color: "var(--color-dark)",
                   appearance: "none",
+                  opacity: loading ? 0.6 : 1,
                 }}
               >
                 <option value="" disabled>
@@ -379,8 +388,10 @@ const SmartChatLadiesPage: React.FC = () => {
             {questions.map((q) => (
               <button
                 key={q.label}
+                type="button"
                 onClick={() => handlePickQuestion(q.label)}
                 title={q.label}
+                disabled={loading}
                 className="border-0"
                 style={{
                   background: "rgba(var(--color-primary-rgb), 0.14)",
@@ -394,6 +405,8 @@ const SmartChatLadiesPage: React.FC = () => {
                   gap: 7,
                   textAlign: "left",
                   lineHeight: 1.25,
+                  opacity: loading ? 0.6 : 1,
+                  cursor: loading ? "not-allowed" : "pointer",
                 }}
               >
                 <span style={{ display: "flex", flexShrink: 0 }}>

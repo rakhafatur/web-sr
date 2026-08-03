@@ -1,0 +1,20 @@
+{
+  "name": "SR Agency",
+  "short_name": "SR Agency",
+  "description": "Aplikasi manajemen operasional SR Agency",
+  "lang": "id",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0e0e10",
+  "theme_color": "#0e0e10",
+  "icons": [
+    {
+      "src": "/icons/sr-blue.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
