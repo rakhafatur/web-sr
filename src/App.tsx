@@ -47,6 +47,7 @@ import SplashScreen from './components/Common/SplashScreen';
 import RouteLoader from './components/Common/RouteLoader';
 import OfflineBanner from './components/OfflineBanner';
 import ConfirmDialogHost from './components/ConfirmDialog';
+import SessionGuard from './components/SessionGuard';
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -67,6 +68,8 @@ function App() {
       <OfflineBanner />
 
       <BrowserRouter>
+        <SessionGuard />
+
         <Suspense fallback={<RouteLoader />}>
           <Routes>
             {/* Public routes */}
