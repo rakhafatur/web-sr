@@ -4,6 +4,7 @@ import { RootState } from '../../../app/store';
 import { FiGift } from 'react-icons/fi';
 import type { UserWithLadies } from '../../../types/user';
 import CardTable from '../../../components/CardTable';
+import PullToRefresh from '../../../components/PullToRefresh';
 import MonthNavigator from '../components/MonthNavigator';
 import LedgerSummaryCard from '../components/LedgerSummaryCard';
 import LedgerEmptyState from '../components/LedgerEmptyState';
@@ -37,7 +38,7 @@ const VoucherListPage = () => {
     isNextDisabled,
   } = useMonthNavigation();
 
-  const { list: vouchers, loading } = useLedgerData<Voucher>(
+  const { list: vouchers, loading, refetch } = useLedgerData<Voucher>(
     'vouchers',
     user?.ladies_id,
     selectedMonth,
@@ -56,51 +57,53 @@ const VoucherListPage = () => {
   }
 
   return (
-    <div className="page-shell d-flex flex-column gap-3" style={{ paddingBottom: 20, maxWidth: 560 }}>
-      <MonthNavigator
-        selectedMonth={selectedMonth}
-        onChange={handleMonthChange}
-        onPrev={prevMonth}
-        onNext={nextMonth}
-        nextDisabled={isNextDisabled}
-      />
-
-      <LedgerSummaryCard
-        gradient="linear-gradient(135deg, var(--color-green), var(--color-accent))"
-        shadowColor="rgba(var(--color-primary-rgb),0.3)"
-        icon={<FiGift size={18} />}
-        label="Total Voucher"
-        value={<>{totalPcs} pcs</>}
-        subtitle={
-          <>
-            <div style={{ fontSize: 'var(--font-size-xs)', opacity: 0.9 }}>Estimasi Pendapatan</div>
-            <div style={{ fontSize: 'var(--font-size-xl)', fontWeight: 700, marginTop: 2 }}>
-              Rp {totalRp.toLocaleString('id-ID')}
-            </div>
-          </>
-        }
-      />
-
-      {vouchers.length === 0 ? (
-        <LedgerEmptyState message="Belum ada voucher di bulan ini ✨" />
-      ) : (
-        <CardTable
-          data={vouchers}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          onPageChange={setPage}
-          renderItem={(row) => (
-            <LedgerCardRow
-              tanggal={row.tanggal}
-              color="var(--color-income)"
-              mainLine={<>{row.jumlah_voucher} pcs</>}
-              extraLine={<>Rp {(row.jumlah_voucher * HARGA_PER_VOUCHER).toLocaleString('id-ID')}</>}
-              keterangan={row.keterangan}
-            />
-          )}
+    <PullToRefresh onRefresh={refetch}>
+      <div className="page-shell d-flex flex-column gap-3" style={{ paddingBottom: 20, maxWidth: 560 }}>
+        <MonthNavigator
+          selectedMonth={selectedMonth}
+          onChange={handleMonthChange}
+          onPrev={prevMonth}
+          onNext={nextMonth}
+          nextDisabled={isNextDisabled}
         />
-      )}
-    </div>
+
+        <LedgerSummaryCard
+          gradient="linear-gradient(135deg, var(--color-green), var(--color-accent))"
+          shadowColor="rgba(var(--color-primary-rgb),0.3)"
+          icon={<FiGift size={18} />}
+          label="Total Voucher"
+          value={<>{totalPcs} pcs</>}
+          subtitle={
+            <>
+              <div style={{ fontSize: 'var(--font-size-xs)', opacity: 0.9 }}>Estimasi Pendapatan</div>
+              <div style={{ fontSize: 'var(--font-size-xl)', fontWeight: 700, marginTop: 2 }}>
+                Rp {totalRp.toLocaleString('id-ID')}
+              </div>
+            </>
+          }
+        />
+
+        {vouchers.length === 0 ? (
+          <LedgerEmptyState message="Belum ada voucher di bulan ini ✨" />
+        ) : (
+          <CardTable
+            data={vouchers}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={setPage}
+            renderItem={(row) => (
+              <LedgerCardRow
+                tanggal={row.tanggal}
+                color="var(--color-income)"
+                mainLine={<>{row.jumlah_voucher} pcs</>}
+                extraLine={<>Rp {(row.jumlah_voucher * HARGA_PER_VOUCHER).toLocaleString('id-ID')}</>}
+                keterangan={row.keterangan}
+              />
+            )}
+          />
+        )}
+      </div>
+    </PullToRefresh>
   );
 };
 

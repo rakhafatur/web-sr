@@ -4,6 +4,7 @@ import { RootState } from '../../../app/store';
 import { FiHeart } from 'react-icons/fi';
 import type { UserWithLadies } from '../../../types/user';
 import CardTable from '../../../components/CardTable';
+import PullToRefresh from '../../../components/PullToRefresh';
 import MonthNavigator from '../components/MonthNavigator';
 import LedgerSummaryCard from '../components/LedgerSummaryCard';
 import LedgerEmptyState from '../components/LedgerEmptyState';
@@ -36,7 +37,7 @@ const DokterListPage = () => {
     isNextDisabled,
   } = useMonthNavigation();
 
-  const { list: dokterList, loading } = useLedgerData<Dokter>(
+  const { list: dokterList, loading, refetch } = useLedgerData<Dokter>(
     'dokter',
     user?.ladies_id,
     selectedMonth,
@@ -53,47 +54,49 @@ const DokterListPage = () => {
   }
 
   return (
-    <div className="page-shell d-flex flex-column gap-3" style={{ paddingBottom: 20, maxWidth: 560 }}>
-      <MonthNavigator
-        selectedMonth={selectedMonth}
-        onChange={handleMonthChange}
-        onPrev={prevMonth}
-        onNext={nextMonth}
-        nextDisabled={isNextDisabled}
-      />
-
-      <LedgerSummaryCard
-        gradient="linear-gradient(135deg, var(--color-medical), var(--color-accent))"
-        shadowColor="rgba(139,147,246,0.3)"
-        icon={<FiHeart size={18} />}
-        label="Total Dokter"
-        value={<>Rp {totalJumlah.toLocaleString('id-ID')}</>}
-        subtitle={
-          <div style={{ fontSize: 'var(--font-size-xs)', opacity: 0.9 }}>
-            Total pengeluaran kesehatan bulan ini
-          </div>
-        }
-      />
-
-      {dokterList.length === 0 ? (
-        <LedgerEmptyState message="Belum ada data dokter di bulan ini ✨" />
-      ) : (
-        <CardTable
-          data={dokterList}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          onPageChange={setPage}
-          renderItem={(item) => (
-            <LedgerCardRow
-              tanggal={item.tanggal}
-              color="var(--color-medical)"
-              mainLine={<>- Rp {item.jumlah.toLocaleString('id-ID')}</>}
-              keterangan={item.keterangan}
-            />
-          )}
+    <PullToRefresh onRefresh={refetch}>
+      <div className="page-shell d-flex flex-column gap-3" style={{ paddingBottom: 20, maxWidth: 560 }}>
+        <MonthNavigator
+          selectedMonth={selectedMonth}
+          onChange={handleMonthChange}
+          onPrev={prevMonth}
+          onNext={nextMonth}
+          nextDisabled={isNextDisabled}
         />
-      )}
-    </div>
+
+        <LedgerSummaryCard
+          gradient="linear-gradient(135deg, var(--color-medical), var(--color-accent))"
+          shadowColor="rgba(139,147,246,0.3)"
+          icon={<FiHeart size={18} />}
+          label="Total Dokter"
+          value={<>Rp {totalJumlah.toLocaleString('id-ID')}</>}
+          subtitle={
+            <div style={{ fontSize: 'var(--font-size-xs)', opacity: 0.9 }}>
+              Total pengeluaran kesehatan bulan ini
+            </div>
+          }
+        />
+
+        {dokterList.length === 0 ? (
+          <LedgerEmptyState message="Belum ada data dokter di bulan ini ✨" />
+        ) : (
+          <CardTable
+            data={dokterList}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={setPage}
+            renderItem={(item) => (
+              <LedgerCardRow
+                tanggal={item.tanggal}
+                color="var(--color-medical)"
+                mainLine={<>- Rp {item.jumlah.toLocaleString('id-ID')}</>}
+                keterangan={item.keterangan}
+              />
+            )}
+          />
+        )}
+      </div>
+    </PullToRefresh>
   );
 };
 

@@ -16,12 +16,13 @@ import {
   FiCreditCard,
   FiHeart,
   FiCalendar,
-  FiLoader,
 } from 'react-icons/fi';
 
 import { motion } from 'framer-motion';
 
 import type { UserWithLadies } from '../../../types/user';
+import HomeLadiesSkeleton from '../components/HomeLadiesSkeleton';
+import PullToRefresh from '../../../components/PullToRefresh';
 
 const HomeLadiesPage = () => {
   const user = useSelector(
@@ -133,120 +134,113 @@ const HomeLadiesPage = () => {
   ];
 
   if (loading) {
-    return (
-      <div
-        className="ladies-home-wrapper ladies-home-loading"
-        role="status"
-        aria-label="Memuat data"
-      >
-        <FiLoader size={28} className="spinner-icon" />
-      </div>
-    );
+    return <HomeLadiesSkeleton />;
   }
 
   return (
-    <div className="ladies-home-wrapper">
-      <div className="content-container d-flex flex-column gap-3">
-        {/* HERO */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-          className="ladies-home-hero"
-        >
-          <div className="ladies-home-hero-circle" />
+    <PullToRefresh onRefresh={() => (user?.ladies_id ? fetchData(user.ladies_id) : undefined)}>
+      <div className="ladies-home-wrapper">
+        <div className="content-container d-flex flex-column gap-3">
+          {/* HERO */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="ladies-home-hero"
+          >
+            <div className="ladies-home-hero-circle" />
 
-          <div className="ladies-home-hero-top">
-            <span className="ladies-home-hero-label">Estimasi Pendapatan</span>
-            <button
-              type="button"
-              className="ladies-home-eye-btn tap-scale"
-              onClick={() => setHideAmount((v) => !v)}
-              aria-label={hideAmount ? 'Tampilkan nominal' : 'Sembunyikan nominal'}
-            >
-              {hideAmount ? <FiEyeOff /> : <FiEye />}
-            </button>
-          </div>
-
-          <div className="ladies-home-hero-amount">{formatRp(voucherNominal)}</div>
-          <div className="ladies-home-hero-sub">dari voucher bulan ini ✨</div>
-
-          <div className="ladies-home-hero-progress">
-            <div className="ladies-home-hero-progress-labels">
-              <span>Kehadiran</span>
-              <span>{hariMasuk}/18 hari</span>
-            </div>
-            <div className="ladies-home-hero-progress-bar">
-              <div
-                className="ladies-home-hero-progress-fill"
-                style={{ width: `${persenHadir}%` }}
-              />
-            </div>
-          </div>
-
-          <div className="ladies-home-hero-divider" />
-
-          <div className="ladies-home-hero-breakdown">
-            <div className="ladies-home-hero-breakdown-item">
-              <span className="ladies-home-hero-breakdown-label">Voucher</span>
-              <span className="ladies-home-hero-breakdown-value">{voucherPcs} pcs</span>
-            </div>
-            <div className="ladies-home-hero-breakdown-sep" />
-            <div className="ladies-home-hero-breakdown-item">
-              <span className="ladies-home-hero-breakdown-label">Kasbon</span>
-              <span className="ladies-home-hero-breakdown-value">{formatRp(pengeluaran)}</span>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* SMART CHAT CTA */}
-        <motion.button
-          type="button"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="ladies-home-cta tap-scale"
-          onClick={() => navigate('/smart-chat-ladies')}
-        >
-          <div className="ladies-home-cta-icon">
-            <FiMessageCircle />
-          </div>
-          <div className="ladies-home-cta-text">
-            <div className="ladies-home-cta-title">Tanya Smart Assistant</div>
-            <div className="ladies-home-cta-subtitle">Cek voucher & absensi kamu ✨</div>
-          </div>
-          <FiChevronRight className="ladies-home-cta-chevron" />
-        </motion.button>
-
-        {/* MENU GRID */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-        >
-          <div className="ladies-home-section-label">Menu Cepat</div>
-          <div className="ladies-home-menu-grid">
-            {menuItems.map((item) => (
+            <div className="ladies-home-hero-top">
+              <span className="ladies-home-hero-label">Estimasi Pendapatan</span>
               <button
-                key={item.label}
                 type="button"
-                className="ladies-home-menu-item tap-scale"
-                onClick={() => navigate(item.path)}
+                className="ladies-home-eye-btn tap-scale"
+                onClick={() => setHideAmount((v) => !v)}
+                aria-label={hideAmount ? 'Tampilkan nominal' : 'Sembunyikan nominal'}
               >
-                <div
-                  className="ladies-home-menu-icon"
-                  style={{ background: item.bg, color: item.color }}
-                >
-                  {item.icon}
-                </div>
-                <span className="ladies-home-menu-label">{item.label}</span>
+                {hideAmount ? <FiEyeOff /> : <FiEye />}
               </button>
-            ))}
-          </div>
-        </motion.div>
+            </div>
 
+            <div className="ladies-home-hero-amount">{formatRp(voucherNominal)}</div>
+            <div className="ladies-home-hero-sub">dari voucher bulan ini ✨</div>
+
+            <div className="ladies-home-hero-progress">
+              <div className="ladies-home-hero-progress-labels">
+                <span>Kehadiran</span>
+                <span>{hariMasuk}/18 hari</span>
+              </div>
+              <div className="ladies-home-hero-progress-bar">
+                <div
+                  className="ladies-home-hero-progress-fill"
+                  style={{ width: `${persenHadir}%` }}
+                />
+              </div>
+            </div>
+
+            <div className="ladies-home-hero-divider" />
+
+            <div className="ladies-home-hero-breakdown">
+              <div className="ladies-home-hero-breakdown-item">
+                <span className="ladies-home-hero-breakdown-label">Voucher</span>
+                <span className="ladies-home-hero-breakdown-value">{voucherPcs} pcs</span>
+              </div>
+              <div className="ladies-home-hero-breakdown-sep" />
+              <div className="ladies-home-hero-breakdown-item">
+                <span className="ladies-home-hero-breakdown-label">Kasbon</span>
+                <span className="ladies-home-hero-breakdown-value">{formatRp(pengeluaran)}</span>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* SMART CHAT CTA */}
+          <motion.button
+            type="button"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="ladies-home-cta tap-scale"
+            onClick={() => navigate('/smart-chat-ladies')}
+          >
+            <div className="ladies-home-cta-icon">
+              <FiMessageCircle />
+            </div>
+            <div className="ladies-home-cta-text">
+              <div className="ladies-home-cta-title">Tanya Smart Assistant</div>
+              <div className="ladies-home-cta-subtitle">Cek voucher & absensi kamu ✨</div>
+            </div>
+            <FiChevronRight className="ladies-home-cta-chevron" />
+          </motion.button>
+
+          {/* MENU GRID */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+          >
+            <div className="ladies-home-section-label">Menu Cepat</div>
+            <div className="ladies-home-menu-grid">
+              {menuItems.map((item) => (
+                <button
+                  key={item.label}
+                  type="button"
+                  className="ladies-home-menu-item tap-scale"
+                  onClick={() => navigate(item.path)}
+                >
+                  <div
+                    className="ladies-home-menu-icon"
+                    style={{ background: item.bg, color: item.color }}
+                  >
+                    {item.icon}
+                  </div>
+                  <span className="ladies-home-menu-label">{item.label}</span>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        </div>
       </div>
-    </div>
+    </PullToRefresh>
   );
 };
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Dayjs } from 'dayjs';
 import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
@@ -15,14 +15,13 @@ export function useLedgerData<T>(
 ) {
   const [list, setList] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
+  const cancelledRef = useRef(false);
 
-  useEffect(() => {
-    if (!ladiesId) return;
+  const fetchData = useCallback(
+    async (showLoading: boolean) => {
+      if (!ladiesId) return;
 
-    let cancelled = false;
-
-    const fetchData = async () => {
-      setLoading(true);
+      if (showLoading) setLoading(true);
 
       const bulanAwal = selectedMonth.startOf('month');
       const bulanAkhir = selectedMonth.endOf('month');
@@ -35,25 +34,32 @@ export function useLedgerData<T>(
         .lte('tanggal', bulanAkhir.format('YYYY-MM-DD'))
         .order('tanggal', { ascending: false });
 
-      if (cancelled) return;
+      if (cancelledRef.current) return;
 
       if (error || !data) {
         toast.error(`Gagal memuat data ${errorLabel}. Coba lagi.`);
         setList([]);
-        setLoading(false);
-        return;
+      } else {
+        setList(data as T[]);
       }
 
-      setList(data as T[]);
-      setLoading(false);
-    };
+      if (showLoading) setLoading(false);
+    },
+    [table, ladiesId, selectedMonth, errorLabel]
+  );
 
-    fetchData();
+  useEffect(() => {
+    cancelledRef.current = false;
+    fetchData(true);
 
     return () => {
-      cancelled = true;
+      cancelledRef.current = true;
     };
-  }, [table, ladiesId, selectedMonth, errorLabel]);
+  }, [fetchData]);
 
-  return { list, loading };
+  /** Refetch diam-diam (dipakai pull-to-refresh) — tidak toggle `loading`
+      supaya konten yang sudah tampil tidak diganti skeleton lagi. */
+  const refetch = useCallback(() => fetchData(false), [fetchData]);
+
+  return { list, loading, refetch };
 }
