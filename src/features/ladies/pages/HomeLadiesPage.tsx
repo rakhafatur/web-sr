@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { RootState } from '../../../app/store';
 import { supabase } from '../../../lib/supabaseClient';
-import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 import './HomeLadiesPage.css';
 
@@ -31,71 +31,67 @@ const HomeLadiesPage = () => {
 
   const navigate = useNavigate();
 
-  const [hariMasuk, setHariMasuk] = useState(0);
-  const [voucherPcs, setVoucherPcs] = useState(0);
-  const [pengeluaran, setPengeluaran] = useState(0);
-  const [voucherNominal, setVoucherNominal] = useState(0);
-  const [loading, setLoading] = useState(true);
   const [hideAmount, setHideAmount] = useState(false);
 
-  const bulanIni = dayjs().format('MM');
-  const tahunIni = dayjs().format('YYYY');
+  const ladiesId = user?.ladies_id;
 
-  useEffect(() => {
-    if (!user?.ladies_id) return;
-    fetchData(user.ladies_id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ['home-ladies', ladiesId],
+    queryFn: async () => {
+      const tanggalAwal = dayjs().startOf('month').format('YYYY-MM-DD');
+      const tanggalAkhir = dayjs().endOf('month').format('YYYY-MM-DD');
 
-  const fetchData = async (ladiesId: string) => {
-    const tanggalAwal = `${tahunIni}-${bulanIni}-01`;
-    const tanggalAkhir = dayjs().endOf('month').format('YYYY-MM-DD');
+      const [
+        { data: absensi, error: absensiError },
+        { data: vouchers, error: vouchersError },
+        { data: kasbon, error: kasbonError },
+      ] = await Promise.all([
+        supabase
+          .from('absensi')
+          .select('id')
+          .eq('ladies_id', ladiesId as string)
+          .ilike('status', 'kerja')
+          .gte('tanggal', tanggalAwal)
+          .lte('tanggal', tanggalAkhir),
 
-    const [
-      { data: absensi, error: absensiError },
-      { data: vouchers, error: vouchersError },
-      { data: kasbon, error: kasbonError },
-    ] = await Promise.all([
-      supabase
-        .from('absensi')
-        .select('id')
-        .eq('ladies_id', ladiesId)
-        .ilike('status', 'kerja')
-        .gte('tanggal', tanggalAwal)
-        .lte('tanggal', tanggalAkhir),
+        supabase
+          .from('vouchers')
+          .select('jumlah_voucher')
+          .eq('ladies_id', ladiesId as string)
+          .gte('tanggal', tanggalAwal)
+          .lte('tanggal', tanggalAkhir),
 
-      supabase
-        .from('vouchers')
-        .select('jumlah_voucher')
-        .eq('ladies_id', ladiesId)
-        .gte('tanggal', tanggalAwal)
-        .lte('tanggal', tanggalAkhir),
+        supabase
+          .from('kasbon')
+          .select('jumlah')
+          .eq('ladies_id', ladiesId as string)
+          .gte('tanggal', tanggalAwal)
+          .lte('tanggal', tanggalAkhir),
+      ]);
 
-      supabase
-        .from('kasbon')
-        .select('jumlah')
-        .eq('ladies_id', ladiesId)
-        .gte('tanggal', tanggalAwal)
-        .lte('tanggal', tanggalAkhir),
-    ]);
+      if (absensiError || vouchersError || kasbonError) {
+        throw absensiError || vouchersError || kasbonError;
+      }
 
-    if (absensiError || vouchersError || kasbonError) {
-      toast.error('Gagal memuat data terbaru. Coba lagi.');
-    }
+      const totalVoucherPcs =
+        vouchers?.reduce((sum, v) => sum + (v.jumlah_voucher || 0), 0) || 0;
 
-    const totalVoucherPcs =
-      vouchers?.reduce((sum, v) => sum + (v.jumlah_voucher || 0), 0) || 0;
+      return {
+        hariMasuk: absensi?.length || 0,
+        voucherPcs: totalVoucherPcs,
+        voucherNominal: totalVoucherPcs * 150000,
+        pengeluaran: kasbon?.reduce((sum, k) => sum + k.jumlah, 0) || 0,
+      };
+    },
+    enabled: !!ladiesId,
+    meta: { errorLabel: 'data terbaru' },
+  });
 
-    const totalVoucherNominal = totalVoucherPcs * 150000;
-
-    const totalKasbon = kasbon?.reduce((sum, k) => sum + k.jumlah, 0) || 0;
-
-    setHariMasuk(absensi?.length || 0);
-    setVoucherPcs(totalVoucherPcs);
-    setVoucherNominal(totalVoucherNominal);
-    setPengeluaran(totalKasbon);
-    setLoading(false);
-  };
+  const hariMasuk = data?.hariMasuk ?? 0;
+  const voucherPcs = data?.voucherPcs ?? 0;
+  const voucherNominal = data?.voucherNominal ?? 0;
+  const pengeluaran = data?.pengeluaran ?? 0;
+  const loading = isLoading;
 
   const persenHadir = Math.min(100, Math.round((hariMasuk / 18) * 100));
 
@@ -138,7 +134,7 @@ const HomeLadiesPage = () => {
   }
 
   return (
-    <PullToRefresh onRefresh={() => (user?.ladies_id ? fetchData(user.ladies_id) : undefined)}>
+    <PullToRefresh onRefresh={async () => { await refetch(); }}>
       <div className="ladies-home-wrapper">
         <div className="content-container d-flex flex-column gap-3">
           {/* HERO */}

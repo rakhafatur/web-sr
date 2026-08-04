@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { supabase } from '../lib/supabaseClient';
 import { confirmDialog } from '../components/ConfirmDialog';
@@ -8,57 +9,50 @@ import { confirmDialog } from '../components/ConfirmDialog';
  * (dipakai Agent/Pengawas/Ladies — sebelumnya masing-masing menulis ulang query
  * Supabase yang sama persis). Bungkus query Supabase di satu tempat supaya
  * error handling & pola fetch konsisten, dan halaman cukup deklarasikan
- * tabel + kolom pencarian.
+ * tabel + kolom pencarian. Di-cache per (table, page, pageSize, keyword) lewat
+ * React Query — balik ke halaman/pencarian yang sama langsung tampil dari cache.
  */
 export function useEntityList<T extends { id: string }>(
   table: string,
   searchColumns: string[],
   pageSize: number
 ) {
-  const [list, setList] = useState<T[]>([]);
   const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
   const [keyword, setKeyword] = useState('');
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  const fetchList = async () => {
-    setLoading(true);
+  const query = useQuery({
+    queryKey: ['entity-list', table, page, pageSize, keyword],
+    queryFn: async () => {
+      const from = (page - 1) * pageSize;
+      const to = from + pageSize - 1;
 
-    const from = (page - 1) * pageSize;
-    const to = from + pageSize - 1;
+      let q = supabase
+        .from(table)
+        .select('*', { count: 'exact' })
+        .range(from, to);
 
-    let query = supabase
-      .from(table)
-      .select('*', { count: 'exact' })
-      .range(from, to);
+      if (keyword.trim() && searchColumns.length > 0) {
+        const orFilter = searchColumns
+          .map((col) => `${col}.ilike.%${keyword}%`)
+          .join(',');
+        q = q.or(orFilter);
+      }
 
-    if (keyword.trim() && searchColumns.length > 0) {
-      const orFilter = searchColumns
-        .map((col) => `${col}.ilike.%${keyword}%`)
-        .join(',');
-      query = query.or(orFilter);
-    }
+      const { data, count, error } = await q;
 
-    const { data, count, error } = await query;
+      if (error) throw error;
 
-    if (error) {
-      toast.error('Gagal memuat data. Coba lagi.');
-      setList([]);
-      setTotal(0);
-    } else {
-      setList((data as T[]) || []);
-      setTotal(count || 0);
-    }
+      return { list: (data as T[]) || [], total: count || 0 };
+    },
+    meta: { errorLabel: 'data' },
+  });
 
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [table, page, pageSize, keyword]);
-
+  const total = query.data?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+  const invalidate = () =>
+    queryClient.invalidateQueries({ queryKey: ['entity-list', table] });
 
   const remove = async (id: string, confirmMessage: string) => {
     if (!(await confirmDialog(confirmMessage))) return;
@@ -68,7 +62,7 @@ export function useEntityList<T extends { id: string }>(
     if (error) {
       toast.error('Gagal menghapus data. Coba lagi.');
     } else {
-      fetchList();
+      invalidate();
     }
   };
 
@@ -82,20 +76,20 @@ export function useEntityList<T extends { id: string }>(
       return false;
     }
 
-    fetchList();
+    invalidate();
     return true;
   };
 
   return {
-    list,
+    list: query.data?.list ?? [],
     page,
     setPage,
     total,
     totalPages,
     keyword,
     setKeyword,
-    loading,
-    refetch: fetchList,
+    loading: query.isLoading,
+    refetch: () => query.refetch(),
     remove,
     save,
   };
