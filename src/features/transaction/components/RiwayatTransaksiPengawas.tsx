@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
 import { confirmDialog } from '../../../components/ConfirmDialog';
@@ -17,7 +18,6 @@ import {
 
 type Props = {
   pengawasId: string;
-  refresh?: number;
 };
 
 type Transaksi = {
@@ -30,12 +30,10 @@ type Transaksi = {
   priority: number;
 };
 
-const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
+const RiwayatTransaksiPengawas = ({ pengawasId }: Props) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
-  const [rawData, setRawData] = useState<Transaksi[]>([]);
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
 
   const [filterTipe, setFilterTipe] = useState('');
   const [searchText, setSearchText] = useState('');
@@ -56,32 +54,37 @@ const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
     }
   };
 
-  const fetchData = async () => {
-    setLoading(true);
+  const queryClient = useQueryClient();
+  const queryKey = ['riwayat-transaksi-pengawas', pengawasId];
 
-    const [kasbon, gaji] = await Promise.all([
-      supabase.from('kasbon_pengawas').select('*').eq('pengawas_id', pengawasId),
-      supabase.from('gaji_pengawas').select('*').eq('pengawas_id', pengawasId),
-    ]);
+  const { data: rawData = [], isLoading: loading, refetch } = useQuery({
+    queryKey,
+    queryFn: async () => {
+      const [kasbon, gaji] = await Promise.all([
+        supabase.from('kasbon_pengawas').select('*').eq('pengawas_id', pengawasId),
+        supabase.from('gaji_pengawas').select('*').eq('pengawas_id', pengawasId),
+      ]);
 
-    const combined = [
-      ...(gaji.data || []).map((p) => ({
-        ...p,
-        tipe: 'gaji_pengawas',
-        tipeLabel: 'Gaji',
-        priority: 1,
-      })),
-      ...(kasbon.data || []).map((k) => ({
-        ...k,
-        tipe: 'kasbon_pengawas',
-        tipeLabel: 'Kasbon',
-        priority: 2,
-      })),
-    ];
+      const combined: Transaksi[] = [
+        ...(gaji.data || []).map((p) => ({
+          ...p,
+          tipe: 'gaji_pengawas',
+          tipeLabel: 'Gaji',
+          priority: 1,
+        })),
+        ...(kasbon.data || []).map((k) => ({
+          ...k,
+          tipe: 'kasbon_pengawas',
+          tipeLabel: 'Kasbon',
+          priority: 2,
+        })),
+      ];
 
-    setRawData(combined);
-    setLoading(false);
-  };
+      return combined;
+    },
+    enabled: !!pengawasId,
+    meta: { errorLabel: 'riwayat transaksi' },
+  });
 
   // Filter + sort dilakukan di client dari data yang sudah ada — filterTipe,
   // searchText, dan sortKey/sortOrder TIDAK perlu fetch ulang ke Supabase.
@@ -135,16 +138,24 @@ const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
     if (!(await confirmDialog('❗ Yakin ingin menghapus transaksi ini?'))) return;
 
     const table = getTableName(row.tipe);
+
+    await queryClient.cancelQueries({ queryKey });
+
+    const previous = queryClient.getQueryData<Transaksi[]>(queryKey);
+
+    queryClient.setQueryData<Transaksi[]>(queryKey, (old) =>
+      (old || []).filter((item) => item.id !== row.id)
+    );
+
     const { error } = await supabase.from(table).delete().eq('id', row.id);
 
-    if (error) toast.error('Gagal hapus data: ' + error.message);
-    else fetchData();
+    if (error) {
+      queryClient.setQueryData(queryKey, previous);
+      toast.error('Gagal hapus data: ' + error.message);
+    } else {
+      refetch();
+    }
   };
-
-  useEffect(() => {
-    fetchData();
-    // eslint-disable-next-line
-  }, [pengawasId, refresh]);
 
   const paginatedData = isMobile
     ? data

@@ -23,6 +23,7 @@ import { motion } from 'framer-motion';
 import type { UserWithLadies } from '../../../types/user';
 import HomeLadiesSkeleton from '../components/HomeLadiesSkeleton';
 import PullToRefresh from '../../../components/PullToRefresh';
+import CountUp from '../../../components/CountUp';
 
 const HomeLadiesPage = () => {
   const user = useSelector(
@@ -95,8 +96,7 @@ const HomeLadiesPage = () => {
 
   const persenHadir = Math.min(100, Math.round((hariMasuk / 18) * 100));
 
-  const formatRp = (n: number) =>
-    hideAmount ? '••••••••' : `Rp${n.toLocaleString('id-ID')}`;
+  const formatRpNumber = (n: number) => `Rp${Math.round(n).toLocaleString('id-ID')}`;
 
   const menuItems = [
     {
@@ -158,13 +158,21 @@ const HomeLadiesPage = () => {
               </button>
             </div>
 
-            <div className="ladies-home-hero-amount">{formatRp(voucherNominal)}</div>
+            <div className="ladies-home-hero-amount">
+              {hideAmount ? (
+                '••••••••'
+              ) : (
+                <CountUp value={voucherNominal} formatter={formatRpNumber} />
+              )}
+            </div>
             <div className="ladies-home-hero-sub">dari voucher bulan ini ✨</div>
 
             <div className="ladies-home-hero-progress">
               <div className="ladies-home-hero-progress-labels">
                 <span>Kehadiran</span>
-                <span>{hariMasuk}/18 hari</span>
+                <span>
+                  <CountUp value={hariMasuk} formatter={(n) => `${Math.round(n)}/18 hari`} />
+                </span>
               </div>
               <div className="ladies-home-hero-progress-bar">
                 <div
@@ -179,12 +187,20 @@ const HomeLadiesPage = () => {
             <div className="ladies-home-hero-breakdown">
               <div className="ladies-home-hero-breakdown-item">
                 <span className="ladies-home-hero-breakdown-label">Voucher</span>
-                <span className="ladies-home-hero-breakdown-value">{voucherPcs} pcs</span>
+                <span className="ladies-home-hero-breakdown-value">
+                  <CountUp value={voucherPcs} formatter={(n) => `${Math.round(n)} pcs`} />
+                </span>
               </div>
               <div className="ladies-home-hero-breakdown-sep" />
               <div className="ladies-home-hero-breakdown-item">
                 <span className="ladies-home-hero-breakdown-label">Kasbon</span>
-                <span className="ladies-home-hero-breakdown-value">{formatRp(pengeluaran)}</span>
+                <span className="ladies-home-hero-breakdown-value">
+                  {hideAmount ? (
+                    '••••••••'
+                  ) : (
+                    <CountUp value={pengeluaran} formatter={formatRpNumber} />
+                  )}
+                </span>
               </div>
             </div>
           </motion.div>

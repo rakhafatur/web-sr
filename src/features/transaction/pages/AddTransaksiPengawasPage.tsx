@@ -18,7 +18,6 @@ type Pengawas = {
 const AddTransaksiPagePengawas = () => {
   const [pengawasList, setPengawasList] = useState<Pengawas[]>([]);
   const [selectedPengawasId, setSelectedPengawasId] = useState('');
-  const [refresh, setRefresh] = useState<number>(0);
   const [loading, setLoading] = useState(true);
 
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -174,7 +173,6 @@ const AddTransaksiPagePengawas = () => {
               <div className="p-3 p-md-4">
                 <TransaksiFormPengawas
                   pengawasId={selectedPengawasId}
-                  onSuccess={() => setRefresh((r) => r + 1)}
                 />
               </div>
             </div>
@@ -209,7 +207,6 @@ const AddTransaksiPagePengawas = () => {
               <div className={isMobile ? 'p-2' : 'p-3'}>
                 <RiwayatTransaksiPengawas
                   pengawasId={selectedPengawasId}
-                  refresh={refresh}
                 />
               </div>
             </div>

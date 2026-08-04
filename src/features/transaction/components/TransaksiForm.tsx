@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
 import FormField from '../../../components/FormField';
@@ -15,20 +16,50 @@ import {
 type Props = {
   ladiesId: string;
   outlet: string;
-  onSuccess?: () => void;
+};
+
+const TIPE_LABELS: Record<string, string> = {
+  voucher: 'Voucher',
+  pemasukan_lain: 'Pemasukan Lain',
+  kasbon: 'Kasbon',
+  dokter: 'Dokter',
+};
+
+const TIPE_PRIORITY: Record<string, number> = {
+  voucher: 1,
+  pemasukan_lain: 2,
+  kasbon: 3,
+  dokter: 4,
+};
+
+type RiwayatRow = {
+  id: string;
+  tanggal: string;
+  tipe: string;
+  tipeLabel: string;
+  jumlah: number;
+  keterangan: string;
+  priority: number;
+};
+
+type TransaksiPayload = {
+  tanggal: string;
+  ladies_id: string;
+  jumlah: number;
+  jumlah_voucher?: number;
+  keterangan?: string;
 };
 
 const TransaksiForm = ({
   ladiesId,
   outlet,
-  onSuccess,
 }: Props) => {
   const isMobile = useMediaQuery({
     maxWidth: 768,
   });
 
-  const [loading, setLoading] =
-    useState(false);
+  const queryClient = useQueryClient();
+  const riwayatKey = ['riwayat-transaksi', ladiesId];
 
   const [travelType, setTravelType] = useState<
     'Single' | 'Double'
@@ -90,7 +121,62 @@ const TransaksiForm = ({
     }
   };
 
-  const handleSubmit = async () => {
+  const mutation = useMutation({
+    mutationFn: async ({ table, payload }: { table: string; payload: TransaksiPayload }) => {
+      const { error } = await supabase.from(table).insert(payload);
+      if (error) throw error;
+    },
+    onMutate: async ({ table, payload }) => {
+      await queryClient.cancelQueries({ queryKey: riwayatKey });
+
+      const previous = queryClient.getQueryData<RiwayatRow[]>(riwayatKey);
+
+      const optimisticRow: RiwayatRow = {
+        id: `temp-${Date.now()}`,
+        tanggal: payload.tanggal,
+        tipe: form.tipe,
+        tipeLabel: TIPE_LABELS[form.tipe],
+        jumlah: payload.jumlah,
+        keterangan: payload.keterangan ?? '',
+        priority: TIPE_PRIORITY[form.tipe],
+      };
+
+      queryClient.setQueryData<RiwayatRow[]>(riwayatKey, (old = []) => [
+        optimisticRow,
+        ...old,
+      ]);
+
+      return { previous, table };
+    },
+    onError: (error, _vars, context) => {
+      if (context) {
+        queryClient.setQueryData(riwayatKey, context.previous);
+      }
+
+      toast.error(
+        'Gagal menambahkan transaksi: ' +
+          (error instanceof Error ? error.message : '')
+      );
+    },
+    onSuccess: () => {
+      toast.success('Transaksi berhasil ditambahkan!');
+
+      setForm({
+        tanggal: '',
+        jumlah: '',
+        jumlah_voucher: '',
+        keterangan: '',
+        tipe: 'voucher',
+      });
+    },
+    onSettled: (_data, _error, variables) => {
+      queryClient.invalidateQueries({ queryKey: riwayatKey });
+      queryClient.invalidateQueries({ queryKey: ['ledger', variables.table, ladiesId] });
+      queryClient.invalidateQueries({ queryKey: ['home-ladies', ladiesId] });
+    },
+  });
+
+  const handleSubmit = () => {
     if (
       !form.tanggal ||
       (!form.jumlah &&
@@ -102,16 +188,15 @@ const TransaksiForm = ({
       return;
     }
 
-    setLoading(true);
-
     const table =
       form.tipe === 'voucher'
         ? 'vouchers'
         : form.tipe;
 
-    const payload: any = {
+    const payload: TransaksiPayload = {
       tanggal: form.tanggal,
       ladies_id: ladiesId,
+      jumlah: 0,
     };
 
     if (form.tipe === 'voucher') {
@@ -145,33 +230,7 @@ const TransaksiForm = ({
         form.keterangan;
     }
 
-    const { error } =
-      await supabase
-        .from(table)
-        .insert(payload);
-
-    setLoading(false);
-
-    if (error) {
-      toast.error(
-        'Gagal menambahkan transaksi: ' +
-        error.message
-      );
-    } else {
-      toast.success(
-        'Transaksi berhasil ditambahkan!'
-      );
-
-      setForm({
-        tanggal: '',
-        jumlah: '',
-        jumlah_voucher: '',
-        keterangan: '',
-        tipe: 'voucher',
-      });
-
-      onSuccess?.();
-    }
+    mutation.mutate({ table, payload });
   };
 
   const jumlahVoucherRaw =
@@ -565,10 +624,10 @@ const TransaksiForm = ({
           variant="primary"
           fullWidth
           onClick={handleSubmit}
-          disabled={loading}
-          icon={loading ? <div className="spinner-border spinner-border-sm" role="status" /> : <FiPlus size={isMobile ? 16 : 18} />}
+          disabled={mutation.isPending}
+          icon={mutation.isPending ? <div className="spinner-border spinner-border-sm" role="status" /> : <FiPlus size={isMobile ? 16 : 18} />}
         >
-          {loading ? 'Menyimpan...' : 'Tambah Transaksi'}
+          {mutation.isPending ? 'Menyimpan...' : 'Tambah Transaksi'}
         </Button>
       </div>
     </div>

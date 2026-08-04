@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
 
 import { supabase } from '../../../lib/supabaseClient';
 import { confirmDialog } from '../../../components/ConfirmDialog';
@@ -33,54 +35,67 @@ const UserListPage = () => {
 
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
-  const [userList, setUserList] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
   const [keyword, setKeyword] = useState('');
 
   const limit = isMobile ? 5 : 10;
+  const queryClient = useQueryClient();
+  const queryKey = ['user-list', page, limit, keyword];
 
-  const fetchUsers = async () => {
-    setLoading(true);
+  const { data, isLoading: loading } = useQuery({
+    queryKey,
+    queryFn: async () => {
+      const from = (page - 1) * limit;
+      const to = from + limit - 1;
 
-    const from = (page - 1) * limit;
-    const to = from + limit - 1;
+      let query = supabase
+        .from('users')
+        .select('*', { count: 'exact' })
+        .eq('is_active', true)
+        .range(from, to);
 
-    let query = supabase
-      .from('users')
-      .select('*', { count: 'exact' })
-      .eq('is_active', true)
-      .range(from, to);
+      if (keyword.trim()) {
+        query = query.or(
+          `username.ilike.%${keyword}%,nama.ilike.%${keyword}%`
+        );
+      }
 
-    if (keyword.trim()) {
-      query = query.or(
-        `username.ilike.%${keyword}%,nama.ilike.%${keyword}%`
-      );
-    }
+      const { data, count, error } = await query;
 
-    const { data, count, error } = await query;
+      if (error) throw error;
 
-    if (error) {
-      console.error(error);
-    } else {
-      setUserList(data || []);
-      setTotal(count || 0);
-    }
+      return { list: (data as User[]) || [], total: count || 0 };
+    },
+    meta: { errorLabel: 'data user' },
+  });
 
-    setLoading(false);
-  };
+  const userList = data?.list ?? [];
+  const total = data?.total ?? 0;
 
-  useEffect(() => {
-    fetchUsers();
-  }, [page, keyword, isMobile]);
-
+  /** Optimistic delete — baris langsung hilang dari list, dikembalikan lagi
+      kalau ternyata gagal di server. */
   const handleDelete = async (id: string) => {
     const confirmDelete = await confirmDialog('Yakin ingin hapus user?');
     if (!confirmDelete) return;
 
-    await supabase.from('users').delete().eq('id', id);
-    fetchUsers();
+    await queryClient.cancelQueries({ queryKey });
+
+    const previous = queryClient.getQueryData<{ list: User[]; total: number }>(queryKey);
+
+    queryClient.setQueryData<{ list: User[]; total: number }>(queryKey, (old) =>
+      old
+        ? { list: old.list.filter((u) => u.id !== id), total: Math.max(0, old.total - 1) }
+        : old
+    );
+
+    const { error } = await supabase.from('users').delete().eq('id', id);
+
+    if (error) {
+      queryClient.setQueryData(queryKey, previous);
+      toast.error('Gagal menghapus data. Coba lagi.');
+    } else {
+      queryClient.invalidateQueries({ queryKey: ['user-list'] });
+    }
   };
 
   const totalPages = Math.ceil(total / limit);

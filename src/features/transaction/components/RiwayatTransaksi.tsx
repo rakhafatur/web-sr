@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
 import { confirmDialog } from '../../../components/ConfirmDialog';
@@ -17,7 +18,6 @@ import {
 
 type Props = {
   ladiesId: string;
-  refresh?: number;
 };
 
 type Transaksi = {
@@ -32,21 +32,13 @@ type Transaksi = {
 
 const RiwayatTransaksi = ({
   ladiesId,
-  refresh,
 }: Props) => {
   const isMobile = useMediaQuery({
     maxWidth: 768,
   });
 
-  const [rawData, setRawData] = useState<
-    Transaksi[]
-  >([]);
-
   const [page, setPage] =
     useState(1);
-
-  const [loading, setLoading] =
-    useState(false);
 
   const [filterTipe, setFilterTipe] =
     useState('');
@@ -87,95 +79,99 @@ const RiwayatTransaksi = ({
     }
   };
 
-  const fetchData = async () => {
-    setLoading(true);
+  const queryClient = useQueryClient();
+  const queryKey = ['riwayat-transaksi', ladiesId];
 
-    const [
-      voucher,
-      kasbon,
-      pemasukanLain,
-      riwayatDokter,
-    ] = await Promise.all([
-      supabase
-        .from('vouchers')
-        .select('*')
-        .eq(
-          'ladies_id',
-          ladiesId
+  const { data: rawData = [], isLoading: loading, refetch } = useQuery({
+    queryKey,
+    queryFn: async () => {
+      const [
+        voucher,
+        kasbon,
+        pemasukanLain,
+        riwayatDokter,
+      ] = await Promise.all([
+        supabase
+          .from('vouchers')
+          .select('*')
+          .eq(
+            'ladies_id',
+            ladiesId
+          ),
+
+        supabase
+          .from('kasbon')
+          .select('*')
+          .eq(
+            'ladies_id',
+            ladiesId
+          ),
+
+        supabase
+          .from('pemasukan_lain')
+          .select('*')
+          .eq(
+            'ladies_id',
+            ladiesId
+          ),
+
+        supabase
+          .from(
+            'dokter'
+          )
+          .select('*')
+          .eq(
+            'ladies_id',
+            ladiesId
+          ),
+      ]);
+
+      const combined: Transaksi[] = [
+        ...(voucher.data || []).map(
+          (v) => ({
+            ...v,
+            tipe: 'voucher',
+            tipeLabel: 'Voucher',
+            priority: 1,
+          })
         ),
 
-      supabase
-        .from('kasbon')
-        .select('*')
-        .eq(
-          'ladies_id',
-          ladiesId
+        ...(
+          pemasukanLain.data || []
+        ).map((p) => ({
+          ...p,
+          tipe: 'pemasukan_lain',
+          tipeLabel:
+            'Pemasukan Lain',
+          priority: 2,
+        })),
+
+        ...(kasbon.data || []).map(
+          (k) => ({
+            ...k,
+            tipe: 'kasbon',
+            tipeLabel: 'Kasbon',
+            priority: 3,
+          })
         ),
 
-      supabase
-        .from('pemasukan_lain')
-        .select('*')
-        .eq(
-          'ladies_id',
-          ladiesId
-        ),
+        ...(
+          riwayatDokter.data || []
+        ).map((r) => ({
+          ...r,
+          tipe:
+            'dokter',
+          tipeLabel:
+            'Dokter',
+          priority: 4,
+        })),
+      ];
 
-      supabase
-        .from(
-          'dokter'
-        )
-        .select('*')
-        .eq(
-          'ladies_id',
-          ladiesId
-        ),
-    ]);
-
-    const combined = [
-      ...(voucher.data || []).map(
-        (v) => ({
-          ...v,
-          tipe: 'voucher',
-          tipeLabel: 'Voucher',
-          priority: 1,
-        })
-      ),
-
-      ...(
-        pemasukanLain.data || []
-      ).map((p) => ({
-        ...p,
-        tipe: 'pemasukan_lain',
-        tipeLabel:
-          'Pemasukan Lain',
-        priority: 2,
-      })),
-
-      ...(kasbon.data || []).map(
-        (k) => ({
-          ...k,
-          tipe: 'kasbon',
-          tipeLabel: 'Kasbon',
-          priority: 3,
-        })
-      ),
-
-      ...(
-        riwayatDokter.data || []
-      ).map((r) => ({
-        ...r,
-        tipe:
-          'dokter',
-        tipeLabel:
-          'Dokter',
-        priority: 4,
-      })),
-    ];
-
-    setRawData(combined);
-
-    setLoading(false);
-  };
+      return combined;
+    },
+    enabled: !!ladiesId,
+    meta: { errorLabel: 'riwayat transaksi' },
+  });
 
   // Filter + sort dilakukan di client dari data yang sudah ada — filterTipe,
   // searchText, dan sortKey/sortOrder TIDAK perlu fetch ulang ke Supabase.
@@ -291,6 +287,14 @@ const RiwayatTransaksi = ({
       row.tipe
     );
 
+    await queryClient.cancelQueries({ queryKey });
+
+    const previous = queryClient.getQueryData<Transaksi[]>(queryKey);
+
+    queryClient.setQueryData<Transaksi[]>(queryKey, (old) =>
+      (old || []).filter((item) => item.id !== row.id)
+    );
+
     const { error } =
       await supabase
         .from(table)
@@ -298,23 +302,15 @@ const RiwayatTransaksi = ({
         .eq('id', row.id);
 
     if (error) {
+      queryClient.setQueryData(queryKey, previous);
       toast.error(
         'Gagal hapus data: ' +
           error.message
       );
     } else {
-      fetchData();
+      refetch();
     }
   };
-
-  useEffect(() => {
-    fetchData();
-
-    // eslint-disable-next-line
-  }, [
-    ladiesId,
-    refresh,
-  ]);
 
   const paginatedData = isMobile
     ? data

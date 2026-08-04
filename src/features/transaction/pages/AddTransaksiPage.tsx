@@ -21,7 +21,6 @@ type Lady = {
 const AddTransaksiPage = () => {
   const [ladiesList, setLadiesList] = useState<Lady[]>([]);
   const [selectedLadyId, setSelectedLadyId] = useState('');
-  const [refresh, setRefresh] = useState<number>(0);
   const [loading, setLoading] = useState(true);
 
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -241,9 +240,6 @@ const AddTransaksiPage = () => {
                 <TransaksiForm
                   ladiesId={selectedLadyId}
                   outlet={selectedLady.nama_outlet}
-                  onSuccess={() =>
-                    setRefresh((r) => r + 1)
-                  }
                 />
               </div>
             </div>
@@ -295,7 +291,6 @@ const AddTransaksiPage = () => {
               >
                 <RiwayatTransaksi
                   ladiesId={selectedLadyId}
-                  refresh={refresh}
                 />
               </div>
             </div>

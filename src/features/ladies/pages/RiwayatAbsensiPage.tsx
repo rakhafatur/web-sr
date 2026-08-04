@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import Calendar from 'react-calendar';
 import dayjs from 'dayjs';
 import { supabase } from '../../../lib/supabaseClient';
@@ -73,44 +74,34 @@ const RiwayatAbsensiPage = () => {
   ) as UserWithLadies;
 
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [absensi, setAbsensi] = useState<AbsensiData>({});
-  const [loading, setLoading] = useState(true);
+  const monthKey = dayjs(currentDate).format('YYYY-MM');
 
-  const fetchAbsensi = async () => {
-    if (!user?.ladies_id) return;
+  const { data: absensi = {}, isLoading: loading } = useQuery({
+    queryKey: ['absensi', user?.ladies_id, monthKey],
+    queryFn: async () => {
+      const start = dayjs(currentDate).startOf('month').format('YYYY-MM-DD');
+      const end = dayjs(currentDate).endOf('month').format('YYYY-MM-DD');
 
-    setLoading(true);
+      const { data, error } = await supabase
+        .from('absensi')
+        .select('tanggal, status')
+        .eq('ladies_id', user?.ladies_id as string)
+        .gte('tanggal', start)
+        .lte('tanggal', end);
 
-    const start = dayjs(currentDate).startOf('month').format('YYYY-MM-DD');
-    const end = dayjs(currentDate).endOf('month').format('YYYY-MM-DD');
+      if (error) throw error;
 
-    const { data, error } = await supabase
-      .from('absensi')
-      .select('tanggal, status')
-      .eq('ladies_id', user.ladies_id)
-      .gte('tanggal', start)
-      .lte('tanggal', end);
+      const mapped: AbsensiData = {};
 
-    if (error) {
-      console.error('Error fetching absensi:', error.message);
-      setLoading(false);
-      return;
-    }
+      data?.forEach((item) => {
+        mapped[dayjs(item.tanggal).format('YYYY-MM-DD')] = item.status;
+      });
 
-    const mapped: AbsensiData = {};
-
-    data?.forEach((item) => {
-      mapped[dayjs(item.tanggal).format('YYYY-MM-DD')] = item.status;
-    });
-
-    setAbsensi(mapped);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchAbsensi();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentDate]);
+      return mapped;
+    },
+    enabled: !!user?.ladies_id,
+    meta: { errorLabel: 'absensi' },
+  });
 
   const getTileContent = ({ date, view }: { date: Date; view: string }) => {
     if (view !== 'month') return null;

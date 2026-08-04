@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useQuery } from '@tanstack/react-query';
 import { RootState } from '../../../app/store';
 import { supabase } from '../../../lib/supabaseClient';
 import {
@@ -39,30 +39,22 @@ const ProfilePage = () => {
     (state: RootState) => state.user.currentUser
   ) as UserWithLadies;
 
-  const [ladies, setLadies] = useState<LadiesData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchLadies = async () => {
-      if (!user?.ladies_id) return;
-
-      setLoading(true);
-
+  const { data: ladies, isLoading: loading } = useQuery({
+    queryKey: ['profile-ladies', user?.ladies_id],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from('ladies')
         .select('nama_ladies, nama_outlet, pin, status')
-        .eq('id', user.ladies_id)
+        .eq('id', user?.ladies_id as string)
         .single();
 
-      if (!error) {
-        setLadies(data);
-      }
+      if (error) throw error;
 
-      setLoading(false);
-    };
-
-    fetchLadies();
-  }, [user?.ladies_id]);
+      return data as LadiesData;
+    },
+    enabled: !!user?.ladies_id,
+    meta: { errorLabel: 'profile' },
+  });
 
   const statusInfo = getStatusInfo(ladies?.status);
   const statusColors = STATUS_VARIANT_COLORS[statusInfo.variant];

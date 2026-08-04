@@ -54,12 +54,27 @@ export function useEntityList<T extends { id: string }>(
   const invalidate = () =>
     queryClient.invalidateQueries({ queryKey: ['entity-list', table] });
 
+  const currentKey = ['entity-list', table, page, pageSize, keyword];
+
+  /** Optimistic delete — baris langsung hilang dari list begitu dikonfirmasi,
+      dikembalikan lagi kalau ternyata gagal di server. */
   const remove = async (id: string, confirmMessage: string) => {
     if (!(await confirmDialog(confirmMessage))) return;
+
+    await queryClient.cancelQueries({ queryKey: currentKey });
+
+    const previous = queryClient.getQueryData<{ list: T[]; total: number }>(currentKey);
+
+    queryClient.setQueryData<{ list: T[]; total: number }>(currentKey, (old) =>
+      old
+        ? { list: old.list.filter((item) => item.id !== id), total: Math.max(0, old.total - 1) }
+        : old
+    );
 
     const { error } = await supabase.from(table).delete().eq('id', id);
 
     if (error) {
+      queryClient.setQueryData(currentKey, previous);
       toast.error('Gagal menghapus data. Coba lagi.');
     } else {
       invalidate();
