@@ -23,7 +23,6 @@ import { motion } from 'framer-motion';
 import type { UserWithLadies } from '../../../types/user';
 import HomeLadiesSkeleton from '../components/HomeLadiesSkeleton';
 import PullToRefresh from '../../../components/PullToRefresh';
-import CountUp from '../../../components/CountUp';
 
 const HomeLadiesPage = () => {
   const user = useSelector(
@@ -159,20 +158,14 @@ const HomeLadiesPage = () => {
             </div>
 
             <div className="ladies-home-hero-amount">
-              {hideAmount ? (
-                '••••••••'
-              ) : (
-                <CountUp value={voucherNominal} formatter={formatRpNumber} />
-              )}
+              {hideAmount ? '••••••••' : formatRpNumber(voucherNominal)}
             </div>
             <div className="ladies-home-hero-sub">dari voucher bulan ini ✨</div>
 
             <div className="ladies-home-hero-progress">
               <div className="ladies-home-hero-progress-labels">
                 <span>Kehadiran</span>
-                <span>
-                  <CountUp value={hariMasuk} formatter={(n) => `${Math.round(n)}/18 hari`} />
-                </span>
+                <span>{hariMasuk}/18 hari</span>
               </div>
               <div className="ladies-home-hero-progress-bar">
                 <div
@@ -187,19 +180,13 @@ const HomeLadiesPage = () => {
             <div className="ladies-home-hero-breakdown">
               <div className="ladies-home-hero-breakdown-item">
                 <span className="ladies-home-hero-breakdown-label">Voucher</span>
-                <span className="ladies-home-hero-breakdown-value">
-                  <CountUp value={voucherPcs} formatter={(n) => `${Math.round(n)} pcs`} />
-                </span>
+                <span className="ladies-home-hero-breakdown-value">{voucherPcs} pcs</span>
               </div>
               <div className="ladies-home-hero-breakdown-sep" />
               <div className="ladies-home-hero-breakdown-item">
                 <span className="ladies-home-hero-breakdown-label">Kasbon</span>
                 <span className="ladies-home-hero-breakdown-value">
-                  {hideAmount ? (
-                    '••••••••'
-                  ) : (
-                    <CountUp value={pengeluaran} formatter={formatRpNumber} />
-                  )}
+                  {hideAmount ? '••••••••' : formatRpNumber(pengeluaran)}
                 </span>
               </div>
             </div>
