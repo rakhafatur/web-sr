@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
+import { confirmDialog } from '../../../components/ConfirmDialog';
 import DataTable from '../../../components/DataTable';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -138,7 +139,7 @@ const BukuKuningPengawasPage = () => {
     const selected = pengawasList.find((l) => l.id === selectedId);
     const nama = selected ? selected.nama_panggilan : 'Unknown';
 
-    const confirm = window.confirm(`❗ Yakin tutup buku - ${nama} - ${monthNames[bulan - 1]} - ${tahun}?`);
+    const confirm = await confirmDialog(`❗ Yakin tutup buku - ${nama} - ${monthNames[bulan - 1]} - ${tahun}?`);
     if (!confirm) return;
 
     const lastSaldo = rows[rows.length - 1].saldo;

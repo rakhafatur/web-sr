@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { supabase } from '../../../lib/supabaseClient';
+import { confirmDialog } from '../../../components/ConfirmDialog';
 
 import DataTable from '../../../components/DataTable';
 import ActionIconButton from '../../../components/ActionIconButton';
@@ -75,7 +76,7 @@ const UserListPage = () => {
   }, [page, keyword, isMobile]);
 
   const handleDelete = async (id: string) => {
-    const confirmDelete = window.confirm('Yakin ingin hapus user?');
+    const confirmDelete = await confirmDialog('Yakin ingin hapus user?');
     if (!confirmDelete) return;
 
     await supabase.from('users').delete().eq('id', id);

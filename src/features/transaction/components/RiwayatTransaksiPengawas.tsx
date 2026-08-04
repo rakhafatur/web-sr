@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
+import { confirmDialog } from '../../../components/ConfirmDialog';
 import DataTable from '../../../components/DataTable';
 import ActionIconButton from '../../../components/ActionIconButton';
 import Pagination from '../../../components/Pagination';
@@ -131,7 +132,7 @@ const RiwayatTransaksiPengawas = ({ pengawasId, refresh }: Props) => {
   };
 
   const handleDelete = async (row: any) => {
-    if (!window.confirm('❗ Yakin ingin menghapus transaksi ini?')) return;
+    if (!(await confirmDialog('❗ Yakin ingin menghapus transaksi ini?'))) return;
 
     const table = getTableName(row.tipe);
     const { error } = await supabase.from(table).delete().eq('id', row.id);

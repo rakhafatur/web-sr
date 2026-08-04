@@ -48,7 +48,7 @@ const ModalWrapper = ({
         inset: 0,
         background:
           'rgba(0, 0, 0, 0.6)',
-        zIndex: 1050,
+        zIndex: 1300,
       }}
       onClick={onClose}
     >

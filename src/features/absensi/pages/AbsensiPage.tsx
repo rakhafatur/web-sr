@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../../lib/supabaseClient';
+import { confirmDialog } from '../../../components/ConfirmDialog';
 import dayjs from 'dayjs';
 import { useMediaQuery } from 'react-responsive';
 import { toast } from 'react-toastify';
@@ -309,7 +310,7 @@ const AbsensiPage = () => {
     tanggal: string
   ) => {
     const confirm =
-      window.confirm(
+      await confirmDialog(
         '❗ Yakin ingin menghapus absensi ini?'
       );
 

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
+import { confirmDialog } from '../../../components/ConfirmDialog';
 import DataTable from '../../../components/DataTable';
 import ActionIconButton from '../../../components/ActionIconButton';
 import Pagination from '../../../components/Pagination';
@@ -280,7 +281,7 @@ const RiwayatTransaksi = ({
     row: any
   ) => {
     const confirmDelete =
-      window.confirm(
+      await confirmDialog(
         '❗ Yakin ingin menghapus transaksi ini?'
       );
 

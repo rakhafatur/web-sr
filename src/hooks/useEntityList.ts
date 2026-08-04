@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { supabase } from '../lib/supabaseClient';
+import { confirmDialog } from '../components/ConfirmDialog';
 
 /**
  * Data layer generik untuk halaman admin list bergaya "paginated + search + CRUD"
@@ -60,7 +61,7 @@ export function useEntityList<T extends { id: string }>(
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
   const remove = async (id: string, confirmMessage: string) => {
-    if (!window.confirm(confirmMessage)) return;
+    if (!(await confirmDialog(confirmMessage))) return;
 
     const { error } = await supabase.from(table).delete().eq('id', id);
 

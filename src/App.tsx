@@ -46,6 +46,7 @@ import MainLayout from './layout/MainLayout';
 import SplashScreen from './components/Common/SplashScreen';
 import RouteLoader from './components/Common/RouteLoader';
 import OfflineBanner from './components/OfflineBanner';
+import ConfirmDialogHost from './components/ConfirmDialog';
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -124,6 +125,7 @@ function App() {
       </BrowserRouter>
 
       <ToastContainer position="top-right" autoClose={4000} newestOnTop />
+      <ConfirmDialogHost />
     </AuthProvider>
   );
 }

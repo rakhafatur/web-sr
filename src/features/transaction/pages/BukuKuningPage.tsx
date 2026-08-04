@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
+import { confirmDialog } from '../../../components/ConfirmDialog';
 import DataTable from '../../../components/DataTable';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -241,7 +242,7 @@ const BukuKuningPage = () => {
       ? lady.nama_ladies
       : 'Unknown';
 
-    const confirm = window.confirm(
+    const confirm = await confirmDialog(
       `❗ Yakin tutup buku - ${nama} - ${monthNames[bulan - 1]
       } - ${tahun}?`
     );
