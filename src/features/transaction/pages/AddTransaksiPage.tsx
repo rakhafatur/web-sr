@@ -22,6 +22,7 @@ const AddTransaksiPage = () => {
   const [ladiesList, setLadiesList] = useState<Lady[]>([]);
   const [selectedLadyId, setSelectedLadyId] = useState('');
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'tambah' | 'riwayat'>('tambah');
 
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
@@ -64,6 +65,9 @@ const AddTransaksiPage = () => {
         className="card border-0 shadow-sm rounded-4 mb-4"
         style={{
           overflow: 'hidden',
+          position: isMobile ? 'sticky' : undefined,
+          top: isMobile ? 64 : undefined,
+          zIndex: isMobile ? 10 : undefined,
         }}
       >
         <div
@@ -96,9 +100,10 @@ const AddTransaksiPage = () => {
             <select
               className="form-select shadow-none"
               value={selectedLadyId}
-              onChange={(e) =>
-                setSelectedLadyId(e.target.value)
-              }
+              onChange={(e) => {
+                setSelectedLadyId(e.target.value);
+                setActiveTab('tambah');
+              }}
               style={{
                 height: isMobile ? 50 : 58,
                 borderRadius: isMobile ? 14 : 18,
@@ -183,120 +188,168 @@ const AddTransaksiPage = () => {
       </div>
 
       {/* CONTENT */}
-      {selectedLady && (
-        <div className="row g-4">
-          {/* FORM */}
-          <div className="col-12 col-xl-4">
+      {selectedLady && (() => {
+        const formCard = (
+          <div
+            className="card border-0 shadow-sm rounded-4 h-100"
+            style={{
+              overflow: 'hidden',
+            }}
+          >
             <div
-              className="card border-0 shadow-sm rounded-4 h-100"
+              className="px-4 py-3 border-bottom"
               style={{
-                overflow: 'hidden',
+                background:
+                  'linear-gradient(to right, var(--color-green-lighter), var(--color-surface))',
               }}
             >
-              <div
-                className="px-4 py-3 border-bottom"
-                style={{
-                  background:
-                    'linear-gradient(to right, var(--color-green-lighter), var(--color-surface))',
-                }}
-              >
-                <div className="d-flex justify-content-between align-items-start">
-                  <div>
-                    <div
-                      className="fw-bold"
-                      style={{
-                        color: 'var(--color-dark)',
-                        fontSize: '1rem',
-                      }}
-                    >
-                      Tambah Transaksi
-                    </div>
-
-                    <div
-                      style={{
-                        fontSize: '0.85rem',
-                        color: 'var(--color-gray-500)',
-                      }}
-                    >
-                      {selectedLady.nama_ladies}
-                    </div>
+              <div className="d-flex justify-content-between align-items-start">
+                <div>
+                  <div
+                    className="fw-bold"
+                    style={{
+                      color: 'var(--color-dark)',
+                      fontSize: '1rem',
+                    }}
+                  >
+                    Tambah Transaksi
                   </div>
 
                   <div
-                    className="px-3 py-1 rounded-pill"
                     style={{
-                      background: 'var(--color-income-soft)',
-                      color: 'var(--color-income)',
-                      fontSize: '0.78rem',
-                      fontWeight: 700,
+                      fontSize: '0.85rem',
+                      color: 'var(--color-gray-500)',
                     }}
                   >
-                    {selectedLady.nama_outlet}
+                    {selectedLady.nama_ladies}
                   </div>
                 </div>
-              </div>
 
-              <div className="p-3 p-md-4">
-                <TransaksiForm
-                  ladiesId={selectedLadyId}
-                  outlet={selectedLady.nama_outlet}
-                />
+                <div
+                  className="px-3 py-1 rounded-pill"
+                  style={{
+                    background: 'var(--color-income-soft)',
+                    color: 'var(--color-income)',
+                    fontSize: '0.78rem',
+                    fontWeight: 700,
+                  }}
+                >
+                  {selectedLady.nama_outlet}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* RIWAYAT */}
-          <div className="col-12 col-xl-8">
+            <div className="p-3 p-md-4">
+              <TransaksiForm
+                ladiesId={selectedLadyId}
+                outlet={selectedLady.nama_outlet}
+              />
+            </div>
+          </div>
+        );
+
+        const riwayatCard = (
+          <div
+            className="card border-0 shadow-sm rounded-4"
+            style={{
+              overflow: 'hidden',
+            }}
+          >
             <div
-              className="card border-0 shadow-sm rounded-4"
+              className="px-4 py-3 border-bottom"
               style={{
-                overflow: 'hidden',
+                background:
+                  'linear-gradient(to right, var(--color-surface), var(--color-green-lighter))',
               }}
             >
-              <div
-                className="px-4 py-3 border-bottom"
-                style={{
-                  background:
-                    'linear-gradient(to right, var(--color-surface), var(--color-green-lighter))',
-                }}
-              >
-                <div className="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                  <div>
-                    <div
-                      className="fw-bold d-flex align-items-center gap-2"
-                      style={{
-                        color: 'var(--color-dark)',
-                      }}
-                    >
-                      <FiClock />
-                      Riwayat Transaksi
-                    </div>
+              <div className="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div>
+                  <div
+                    className="fw-bold d-flex align-items-center gap-2"
+                    style={{
+                      color: 'var(--color-dark)',
+                    }}
+                  >
+                    <FiClock />
+                    Riwayat Transaksi
+                  </div>
 
-                    <div
-                      style={{
-                        fontSize: '0.85rem',
-                        color: 'var(--color-gray-500)',
-                      }}
-                    >
-                      Histori transaksi terbaru {selectedLady.nama_ladies}
-                    </div>
+                  <div
+                    style={{
+                      fontSize: '0.85rem',
+                      color: 'var(--color-gray-500)',
+                    }}
+                  >
+                    Histori transaksi terbaru {selectedLady.nama_ladies}
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div
-                className={
-                  isMobile ? 'p-2' : 'p-3'
-                }
-              >
-                <RiwayatTransaksi
-                  ladiesId={selectedLadyId}
-                />
-              </div>
+            <div
+              className={
+                isMobile ? 'p-2' : 'p-3'
+              }
+            >
+              <RiwayatTransaksi
+                ladiesId={selectedLadyId}
+              />
             </div>
           </div>
-        </div>
-      )}
+        );
+
+        if (!isMobile) {
+          return (
+            <div className="row g-4">
+              <div className="col-12 col-xl-4">{formCard}</div>
+              <div className="col-12 col-xl-8">{riwayatCard}</div>
+            </div>
+          );
+        }
+
+        return (
+          <>
+            {/* TAB SWITCHER */}
+            <div className="d-flex gap-2 mb-3">
+              {[
+                { key: 'tambah' as const, label: 'Tambah Transaksi' },
+                { key: 'riwayat' as const, label: 'Riwayat' },
+              ].map((tab) => {
+                const active = activeTab === tab.key;
+
+                return (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    onClick={() => setActiveTab(tab.key)}
+                    className="flex-fill tap-scale"
+                    style={{
+                      border: 'none',
+                      borderRadius: 999,
+                      padding: '10px 12px',
+                      fontWeight: 700,
+                      fontSize: '0.85rem',
+                      background: active
+                        ? 'var(--color-green)'
+                        : 'var(--color-surface)',
+                      color: active
+                        ? '#fff'
+                        : 'var(--color-gray-700)',
+                      boxShadow: active
+                        ? 'var(--shadow-brand)'
+                        : '0 1px 4px rgba(0,0,0,0.04)',
+                    }}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {activeTab === 'tambah' ? formCard : riwayatCard}
+          </>
+        );
+      })()}
     </div>
   );
 };
