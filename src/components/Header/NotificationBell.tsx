@@ -81,7 +81,7 @@ const NotificationBell = ({ ladiesId }: Props) => {
         )}
       </button>
 
-      <div className={`notif-panel ${open ? 'show' : ''}`}>
+      <div className={`notif-panel ${open ? 'show' : ''}`} data-ptr-ignore>
         <div className="notif-panel-header">Notifikasi</div>
 
         <div className="notif-list">

@@ -103,6 +103,7 @@ function BottomNavbarLadies() {
           aria-label={title}
           tabIndex={-1}
           ref={modalRef}
+          data-ptr-ignore
           onClick={(e) => e.stopPropagation()}
         >
           {/* HANDLE */}

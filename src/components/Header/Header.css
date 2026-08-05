@@ -305,6 +305,7 @@
   width: 300px;
   max-height: 360px;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   background: var(--color-surface);
   border-radius: 18px;
   border: 1px solid var(--color-gray-200);

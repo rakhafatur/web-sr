@@ -11,66 +11,116 @@ const MAX_PULL = 90;
 
 /** Tarik-untuk-refresh ala aplikasi mobile — cuma aktif kalau halaman
     sedang di posisi paling atas (scrollY 0), supaya tidak konflik dengan
-    scroll konten biasa. */
+    scroll konten biasa.
+
+    Listener dipasang SEKALI saja (bukan re-attach tiap pullDistance
+    berubah) dan semua nilai yang dibaca di dalam handler pakai ref, bukan
+    closure state — sebelumnya effect bergantung ke [pullDistance,
+    refreshing] yang berubah puluhan kali/detik selama gesture aktif,
+    menyebabkan race condition antara render React dan event sentuh asli
+    (konten "nyangkut"/tidak kembali ke posisi awal yang tepat). touchcancel
+    juga ditangani — tanpa ini, gesture yang dibatalkan sistem (cukup umum
+    di mobile) bikin pullDistance nyangkut permanen karena touchend tidak
+    pernah terpanggil. */
 const PullToRefresh = ({ onRefresh, children }: Props) => {
   const [pullDistance, setPullDistance] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
+  const [isPulling, setIsPulling] = useState(false);
+
   const startY = useRef(0);
-  const pulling = useRef(false);
+  const pullingRef = useRef(false);
+  const pullDistanceRef = useRef(0);
+  const refreshingRef = useRef(false);
+  const onRefreshRef = useRef(onRefresh);
 
   useEffect(() => {
+    onRefreshRef.current = onRefresh;
+  }, [onRefresh]);
+
+  useEffect(() => {
+    const reset = () => {
+      pullingRef.current = false;
+      pullDistanceRef.current = 0;
+      setIsPulling(false);
+      setPullDistance(0);
+    };
+
     const handleTouchStart = (e: TouchEvent) => {
-      if (window.scrollY === 0 && !refreshing) {
+      // Abaikan gesture yang mulai di dalam area yang punya scroll sendiri
+      // (mis. panel notifikasi, bottom-sheet modal) — tanpa ini, listener
+      // touchmove global di sini bisa "mencuri" gesture scroll di area
+      // tersebut dan malah preventDefault-nya, bikin area itu jadi tidak
+      // bisa di-scroll secara konsisten.
+      const target = e.target as HTMLElement | null;
+      if (target?.closest('[data-ptr-ignore]')) return;
+
+      if (window.scrollY === 0 && !refreshingRef.current) {
         startY.current = e.touches[0].clientY;
-        pulling.current = true;
+        pullingRef.current = true;
+        setIsPulling(true);
       }
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (!pulling.current || refreshing) return;
+      if (!pullingRef.current || refreshingRef.current) return;
 
       const delta = e.touches[0].clientY - startY.current;
 
       if (delta <= 0 || window.scrollY > 0) {
-        pulling.current = false;
-        setPullDistance(0);
+        reset();
         return;
       }
 
       e.preventDefault();
-      setPullDistance(Math.min(MAX_PULL, delta * 0.5));
+      const next = Math.min(MAX_PULL, delta * 0.5);
+      pullDistanceRef.current = next;
+      setPullDistance(next);
     };
 
     const handleTouchEnd = async () => {
-      if (!pulling.current) return;
-      pulling.current = false;
+      if (!pullingRef.current) return;
 
-      if (pullDistance >= THRESHOLD) {
+      pullingRef.current = false;
+      setIsPulling(false);
+
+      const finalDistance = pullDistanceRef.current;
+
+      if (finalDistance >= THRESHOLD) {
+        refreshingRef.current = true;
         setRefreshing(true);
+        pullDistanceRef.current = THRESHOLD;
         setPullDistance(THRESHOLD);
 
         try {
-          await onRefresh();
+          await onRefreshRef.current();
         } finally {
+          refreshingRef.current = false;
           setRefreshing(false);
+          pullDistanceRef.current = 0;
           setPullDistance(0);
         }
       } else {
+        pullDistanceRef.current = 0;
         setPullDistance(0);
       }
+    };
+
+    const handleTouchCancel = () => {
+      reset();
     };
 
     window.addEventListener('touchstart', handleTouchStart, { passive: true });
     window.addEventListener('touchmove', handleTouchMove, { passive: false });
     window.addEventListener('touchend', handleTouchEnd);
+    window.addEventListener('touchcancel', handleTouchCancel);
 
     return () => {
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('touchcancel', handleTouchCancel);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pullDistance, refreshing]);
+  }, []);
 
   const indicatorHeight = refreshing ? THRESHOLD : pullDistance;
   const showIndicator = indicatorHeight > 0;
@@ -84,7 +134,7 @@ const PullToRefresh = ({ onRefresh, children }: Props) => {
           alignItems: 'center',
           justifyContent: 'center',
           overflow: 'hidden',
-          transition: pulling.current ? 'none' : 'height 0.25s ease',
+          transition: isPulling ? 'none' : 'height 0.25s ease',
         }}
       >
         {showIndicator && (

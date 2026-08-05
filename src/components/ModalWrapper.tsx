@@ -159,6 +159,7 @@ const ModalWrapper = ({
         {/* BODY */}
         <div
           className="flex-grow-1 overflow-auto"
+          data-ptr-ignore
           style={{
             padding: isMobile
               ? 20
