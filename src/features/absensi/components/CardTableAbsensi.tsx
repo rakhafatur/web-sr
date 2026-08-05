@@ -1,12 +1,6 @@
-import { useState } from 'react';
 import dayjs from 'dayjs';
-import ActionIconButton from '../../../components/ActionIconButton';
 import Pagination from '../../../components/Pagination';
-
-import {
-  FiTrash2,
-  FiMoreVertical,
-} from 'react-icons/fi';
+import SwipeToDelete from '../../../components/SwipeToDelete';
 
 type Absensi = {
   status: string;
@@ -103,27 +97,17 @@ const CardTableAbsensi = ({
       )
     );
 
-  const [
-    openMenuIndex,
-    setOpenMenuIndex,
-  ] = useState<
-    number | null
-  >(null);
-
   return (
     <div className="d-flex flex-column gap-2">
       {currentRows.map(
-        (row, index) => {
+        (row) => {
           const style =
             getStatusStyle(
               row.status
             );
 
-          return (
+          const rowContent = (
             <div
-              key={
-                row.tanggal
-              }
               style={{
                 background:
                   'var(--color-surface)',
@@ -138,78 +122,65 @@ const CardTableAbsensi = ({
 
                 boxShadow:
                   '0 2px 8px rgba(0,0,0,0.04)',
-
-                position:
-                  'relative',
               }}
             >
-
-              {/* CONTENT */}
-              <div className="d-flex justify-content-between align-items-start">
-                {/* LEFT */}
+              {/* BADGE + DATE */}
+              <div className="d-flex align-items-center gap-2 mb-1">
                 <div
                   style={{
-                    flex: 1,
-                    minWidth: 0,
+                    padding: '4px 9px',
+                    borderRadius: 999,
+                    background: style.bg,
+                    color: style.text,
+                    fontSize: 10,
+                    fontWeight: 700,
+                    lineHeight: 1.2,
                   }}
                 >
-                  {/* BADGE + DATE */}
-                  <div className="d-flex align-items-center gap-2 mb-1">
-                    <div
-                      style={{
-                        padding: '4px 9px',
-                        borderRadius: 999,
-                        background: style.bg,
-                        color: style.text,
-                        fontSize: 10,
-                        fontWeight: 700,
-                        lineHeight: 1.2,
-                      }}
-                    >
-                      {style.label}
-                    </div>
-
-                    <div
-                      style={{
-                        fontSize: 11,
-                        color: 'var(--color-gray-500)',
-                        fontWeight: 600,
-                      }}
-                    >
-                      {dayjs(row.tanggal).format(
-                        'DD MMM YYYY'
-                      )}
-                    </div>
-                  </div>
-
-                  {/* KETERANGAN */}
-                  <div
-                    style={{
-                      fontSize: 12,
-                      color: 'var(--color-gray-500)',
-                      marginTop: 4,
-                      lineHeight: 1.4,
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }}
-                  >
-                    {row.keterangan ||
-                      'Tidak ada keterangan'}
-                  </div>
+                  {style.label}
                 </div>
 
-                {/* DELETE */}
-                <div style={{ flexShrink: 0, marginLeft: 10 }}>
-                  <ActionIconButton
-                    icon={<FiTrash2 size={14} />}
-                    variant="danger"
-                    title="Hapus"
-                    onClick={() => onDelete?.(row.tanggal)}
-                  />
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: 'var(--color-gray-500)',
+                    fontWeight: 600,
+                  }}
+                >
+                  {dayjs(row.tanggal).format(
+                    'DD MMM YYYY'
+                  )}
                 </div>
               </div>
+
+              {/* KETERANGAN */}
+              <div
+                style={{
+                  fontSize: 12,
+                  color: 'var(--color-gray-500)',
+                  marginTop: 4,
+                  lineHeight: 1.4,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {row.keterangan ||
+                  'Tidak ada keterangan'}
+              </div>
             </div>
+          );
+
+          return onDelete ? (
+            <SwipeToDelete
+              key={row.tanggal}
+              borderRadius={16}
+              onDelete={() => onDelete(row.tanggal)}
+            >
+              {rowContent}
+            </SwipeToDelete>
+          ) : (
+            <div key={row.tanggal}>{rowContent}</div>
           );
         }
       )}

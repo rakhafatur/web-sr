@@ -61,9 +61,6 @@ const AddTransaksiPagePengawas = () => {
         className="card border-0 shadow-sm rounded-4 mb-4"
         style={{
           overflow: 'hidden',
-          position: isMobile ? 'sticky' : undefined,
-          top: isMobile ? 64 : undefined,
-          zIndex: isMobile ? 10 : undefined,
         }}
       >
         <div
