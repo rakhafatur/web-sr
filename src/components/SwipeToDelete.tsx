@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useRef, type ReactNode } from 'react';
+import { motion, useMotionValue, animate, type PanInfo } from 'framer-motion';
 import { FiTrash2 } from 'react-icons/fi';
 
 type Props = {
@@ -8,83 +9,31 @@ type Props = {
 };
 
 const REVEAL_WIDTH = 72;
-const LOCK_THRESHOLD = 8;
+const VELOCITY_THRESHOLD = 500;
+const SPRING = { type: 'spring', stiffness: 500, damping: 40 } as const;
 
 /** Geser baris ke kiri untuk menyingkap tombol hapus — pola swipe-to-delete
-    ala Mail/Gmail. Listener dipasang per-instance lewat ref (bukan window,
-    beda dari PullToRefresh) supaya tiap baris punya gesture sendiri-sendiri
-    tanpa saling ganggu, dan arah gesture (horizontal vs vertical) dikunci
-    di awal supaya tidak bentrok dengan scroll vertikal halaman. */
+    ala Mail/Notes. Pakai `drag` bawaan framer-motion (bukan touch handler
+    manual + setState React) supaya transform-nya digerakkan langsung tanpa
+    lewat render cycle React tiap piksel — versi sebelumnya terasa patah-patah
+    karena tiap gerakan jari memicu re-render. dragElastic ngasih efek karet
+    pas ditarik lewat batas, dan snap akhir mempertimbangkan kecepatan sentuh
+    (flek cepat langsung kebuka walau belum jauh geserannya), bukan cuma jarak. */
 const SwipeToDelete = ({ onDelete, children, borderRadius = 12 }: Props) => {
-  const [translateX, setTranslateX] = useState(0);
-  const [dragging, setDragging] = useState(false);
-
-  const rowRef = useRef<HTMLDivElement>(null);
-  const startX = useRef(0);
-  const startY = useRef(0);
-  const baseX = useRef(0);
-  const direction = useRef<'horizontal' | 'vertical' | null>(null);
+  const x = useMotionValue(0);
   const openRef = useRef(false);
 
-  useEffect(() => {
-    const el = rowRef.current;
-    if (!el) return;
+  const handleDragEnd = (_e: PointerEvent, info: PanInfo) => {
+    const shouldOpen =
+      info.offset.x < -REVEAL_WIDTH / 2 || info.velocity.x < -VELOCITY_THRESHOLD;
 
-    const handleTouchStart = (e: TouchEvent) => {
-      startX.current = e.touches[0].clientX;
-      startY.current = e.touches[0].clientY;
-      baseX.current = openRef.current ? -REVEAL_WIDTH : 0;
-      direction.current = null;
-      setDragging(true);
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      const touch = e.touches[0];
-      const dx = touch.clientX - startX.current;
-      const dy = touch.clientY - startY.current;
-
-      if (!direction.current) {
-        if (Math.abs(dx) < LOCK_THRESHOLD && Math.abs(dy) < LOCK_THRESHOLD) return;
-        direction.current = Math.abs(dx) > Math.abs(dy) ? 'horizontal' : 'vertical';
-      }
-
-      if (direction.current !== 'horizontal') return;
-
-      e.preventDefault();
-      const next = Math.min(0, Math.max(-REVEAL_WIDTH, baseX.current + dx));
-      setTranslateX(next);
-    };
-
-    const finishDrag = () => {
-      setDragging(false);
-
-      if (direction.current === 'horizontal') {
-        setTranslateX((current) => {
-          const shouldOpen = current < -REVEAL_WIDTH / 2;
-          openRef.current = shouldOpen;
-          return shouldOpen ? -REVEAL_WIDTH : 0;
-        });
-      }
-
-      direction.current = null;
-    };
-
-    el.addEventListener('touchstart', handleTouchStart, { passive: true });
-    el.addEventListener('touchmove', handleTouchMove, { passive: false });
-    el.addEventListener('touchend', finishDrag);
-    el.addEventListener('touchcancel', finishDrag);
-
-    return () => {
-      el.removeEventListener('touchstart', handleTouchStart);
-      el.removeEventListener('touchmove', handleTouchMove);
-      el.removeEventListener('touchend', finishDrag);
-      el.removeEventListener('touchcancel', finishDrag);
-    };
-  }, []);
+    openRef.current = shouldOpen;
+    animate(x, shouldOpen ? -REVEAL_WIDTH : 0, SPRING);
+  };
 
   const handleDeleteClick = () => {
-    setTranslateX(0);
     openRef.current = false;
+    animate(x, 0, SPRING);
     onDelete();
   };
 
@@ -113,17 +62,16 @@ const SwipeToDelete = ({ onDelete, children, borderRadius = 12 }: Props) => {
         <FiTrash2 />
       </button>
 
-      <div
-        ref={rowRef}
-        style={{
-          position: 'relative',
-          zIndex: 2,
-          transform: `translateX(${translateX}px)`,
-          transition: dragging ? 'none' : 'transform 0.2s ease',
-        }}
+      <motion.div
+        drag="x"
+        dragConstraints={{ left: -REVEAL_WIDTH, right: 0 }}
+        dragElastic={{ left: 0.15, right: 0 }}
+        dragMomentum={false}
+        onDragEnd={handleDragEnd}
+        style={{ x, position: 'relative', zIndex: 2, touchAction: 'pan-y' }}
       >
         {children}
-      </div>
+      </motion.div>
     </div>
   );
 };
