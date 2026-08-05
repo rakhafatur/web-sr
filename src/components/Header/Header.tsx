@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabaseClient';
 import { FiChevronDown, FiLogOut, FiShield } from 'react-icons/fi';
+import NotificationBell from './NotificationBell';
 
 import './Header.css';
 
@@ -84,6 +85,8 @@ function Header() {
       </div>
 
       <div className="header-right" ref={dropdownRef}>
+        {user?.ladies_id && <NotificationBell ladiesId={user.ladies_id} />}
+
         <div className="user-meta">
           <div className="user-greeting">Hi, {displayName}</div>
           <div className="user-role">

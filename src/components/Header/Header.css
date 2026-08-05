@@ -252,6 +252,135 @@
 }
 
 /* =========================================================
+   NOTIFICATION BELL
+========================================================= */
+
+.notif-wrapper {
+  position: relative;
+}
+
+.notif-btn {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  color: var(--color-gray-600);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.notif-btn:hover {
+  background: var(--color-surface-2);
+  border-color: var(--color-gray-300);
+}
+
+.notif-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--color-expense);
+  color: white;
+  font-size: 0.62rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--color-surface);
+}
+
+.notif-panel {
+  position: absolute;
+  top: 54px;
+  right: 0;
+  width: 300px;
+  max-height: 360px;
+  overflow-y: auto;
+  background: var(--color-surface);
+  border-radius: 18px;
+  border: 1px solid var(--color-gray-200);
+  box-shadow: var(--shadow-lg);
+  padding: 10px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 0.2s ease;
+  z-index: 2000;
+}
+
+.notif-panel.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.notif-panel-header {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-dark);
+  padding: 6px 8px 10px;
+}
+
+.notif-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.notif-empty {
+  padding: 20px 10px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--color-gray-500);
+}
+
+.notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 8px;
+  border-radius: 12px;
+}
+
+.notif-item.unread {
+  background: var(--color-green-lighter);
+}
+
+.notif-item-icon {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--color-surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+
+.notif-item-message {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-dark);
+  line-height: 1.35;
+}
+
+.notif-item-time {
+  font-size: 0.68rem;
+  color: var(--color-gray-500);
+  margin-top: 2px;
+}
+
+/* =========================================================
    MOBILE
 ========================================================= */
 
@@ -294,5 +423,17 @@
   .dropdown-menu {
     width: 210px;
     top: 50px;
+  }
+
+  .notif-btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .notif-panel {
+    width: calc(100vw - 28px);
+    max-width: 340px;
+    top: 50px;
+    right: -8px;
   }
 }
