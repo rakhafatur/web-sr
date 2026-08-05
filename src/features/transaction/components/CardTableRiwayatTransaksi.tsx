@@ -1,7 +1,6 @@
 import dayjs from 'dayjs';
-import ActionIconButton from '../../../components/ActionIconButton';
 import Pagination from '../../../components/Pagination';
-import { FiTrash2 } from 'react-icons/fi';
+import SwipeToDelete from '../../../components/SwipeToDelete';
 
 type Transaksi = {
   id: string;
@@ -110,9 +109,8 @@ const CardTableRiwayatTransaksi = ({
             row.tipe
           );
 
-        return (
+        const rowContent = (
           <div
-            key={row.id}
             style={{
               background:
                 'var(--color-surface)',
@@ -129,114 +127,104 @@ const CardTableRiwayatTransaksi = ({
                 '0 1px 4px rgba(0,0,0,0.03)',
             }}
           >
-            <div className="d-flex justify-content-between align-items-center">
-              {/* LEFT */}
+            {/* BADGE + DATE */}
+            <div className="d-flex align-items-center gap-2 mb-1">
               <div
                 style={{
-                  flex: 1,
-                  minWidth: 0,
+                  padding:
+                    '2px 7px',
+
+                  borderRadius: 999,
+
+                  background:
+                    style.bg,
+
+                  color:
+                    style.text,
+
+                  fontSize: 9,
+
+                  fontWeight: 700,
+
+                  lineHeight: 1.2,
                 }}
               >
-                {/* BADGE + DATE */}
-                <div className="d-flex align-items-center gap-2 mb-1">
-                  <div
-                    style={{
-                      padding:
-                        '2px 7px',
-
-                      borderRadius: 999,
-
-                      background:
-                        style.bg,
-
-                      color:
-                        style.text,
-
-                      fontSize: 9,
-
-                      fontWeight: 700,
-
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    {style.label}
-                  </div>
-
-                  <div
-                    style={{
-                      fontSize: 10,
-                      color: 'var(--color-gray-500)',
-                      fontWeight: 500,
-                    }}
-                  >
-                    {dayjs(
-                      row.tanggal
-                    ).format(
-                      'DD MMM'
-                    )}
-                  </div>
-                </div>
-
-                {/* JUMLAH */}
-                <div
-                  style={{
-                    fontSize: 16,
-                    fontWeight: 700,
-                    color:
-                      style.text,
-
-                    lineHeight: 1.1,
-                  }}
-                >
-                  {row.tipe ===
-                    'kasbon' ||
-                  row.tipe ===
-                    'dokter'
-                    ? '- '
-                    : '+ '}
-                  Rp
-                  {Number(
-                    row.jumlah
-                  ).toLocaleString()}
-                </div>
-
-                {/* KETERANGAN */}
-                <div
-                  style={{
-                    fontSize: 11,
-                    color: 'var(--color-gray-500)',
-                    marginTop: 2,
-
-                    whiteSpace:
-                      'nowrap',
-
-                    overflow:
-                      'hidden',
-
-                    textOverflow:
-                      'ellipsis',
-                  }}
-                >
-                  {row.tipe ===
-                  'voucher'
-                    ? `${
-                        row.jumlah /
-                        150000
-                      }× voucher`
-                    : row.keterangan ||
-                      '-'}
-                </div>
+                {style.label}
               </div>
 
-              {/* DELETE */}
-              <ActionIconButton
-                icon={<FiTrash2 size={13} />}
-                variant="danger"
-                title="Hapus"
-                onClick={() => onDelete?.(row)}
-              />
+              <div
+                style={{
+                  fontSize: 10,
+                  color: 'var(--color-gray-500)',
+                  fontWeight: 500,
+                }}
+              >
+                {dayjs(
+                  row.tanggal
+                ).format(
+                  'DD MMM'
+                )}
+              </div>
+            </div>
+
+            {/* JUMLAH */}
+            <div
+              style={{
+                fontSize: 16,
+                fontWeight: 700,
+                color:
+                  style.text,
+
+                lineHeight: 1.1,
+              }}
+            >
+              {row.tipe ===
+                'kasbon' ||
+              row.tipe ===
+                'dokter'
+                ? '- '
+                : '+ '}
+              Rp
+              {Number(
+                row.jumlah
+              ).toLocaleString()}
+            </div>
+
+            {/* KETERANGAN */}
+            <div
+              style={{
+                fontSize: 11,
+                color: 'var(--color-gray-500)',
+                marginTop: 2,
+
+                whiteSpace:
+                  'nowrap',
+
+                overflow:
+                  'hidden',
+
+                textOverflow:
+                  'ellipsis',
+              }}
+            >
+              {row.tipe ===
+              'voucher'
+                ? `${
+                    row.jumlah /
+                    150000
+                  }× voucher`
+                : row.keterangan ||
+                  '-'}
             </div>
           </div>
+        );
+
+        return onDelete ? (
+          <SwipeToDelete key={row.id} onDelete={() => onDelete(row)}>
+            {rowContent}
+          </SwipeToDelete>
+        ) : (
+          <div key={row.id}>{rowContent}</div>
         );
       })}
 
