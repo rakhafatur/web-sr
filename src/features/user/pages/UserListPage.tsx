@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 
 import { supabase } from '../../../lib/supabaseClient';
 import { confirmDialog } from '../../../components/ConfirmDialog';
+import { sanitizeSearchKeyword } from '../../../utils/sanitizeSearch';
 
 import DataTable from '../../../components/DataTable';
 import ActionIconButton from '../../../components/ActionIconButton';
@@ -54,9 +55,11 @@ const UserListPage = () => {
         .eq('is_active', true)
         .range(from, to);
 
-      if (keyword.trim()) {
+      const safeKeyword = sanitizeSearchKeyword(keyword.trim());
+
+      if (safeKeyword) {
         query = query.or(
-          `username.ilike.%${keyword}%,nama.ilike.%${keyword}%`
+          `username.ilike.%${safeKeyword}%,nama.ilike.%${safeKeyword}%`
         );
       }
 

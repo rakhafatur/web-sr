@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useMediaQuery } from 'react-responsive';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   FiUsers,
   FiCreditCard,
@@ -319,7 +320,17 @@ const AddTransaksiPage = () => {
               })}
             </div>
 
-            {activeTab === 'tambah' ? formCard : riwayatCard}
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.18, ease: 'easeOut' }}
+              >
+                {activeTab === 'tambah' ? formCard : riwayatCard}
+              </motion.div>
+            </AnimatePresence>
           </>
         );
       })()}

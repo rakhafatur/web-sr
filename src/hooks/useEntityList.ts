@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { supabase } from '../lib/supabaseClient';
 import { confirmDialog } from '../components/ConfirmDialog';
+import { sanitizeSearchKeyword } from '../utils/sanitizeSearch';
 
 /**
  * Data layer generik untuk halaman admin list bergaya "paginated + search + CRUD"
@@ -32,9 +33,11 @@ export function useEntityList<T extends { id: string }>(
         .select('*', { count: 'exact' })
         .range(from, to);
 
-      if (keyword.trim() && searchColumns.length > 0) {
+      const safeKeyword = sanitizeSearchKeyword(keyword.trim());
+
+      if (safeKeyword && searchColumns.length > 0) {
         const orFilter = searchColumns
-          .map((col) => `${col}.ilike.%${keyword}%`)
+          .map((col) => `${col}.ilike.%${safeKeyword}%`)
           .join(',');
         q = q.or(orFilter);
       }

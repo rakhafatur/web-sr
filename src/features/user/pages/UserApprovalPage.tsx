@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../../lib/supabaseClient';
+import { sanitizeSearchKeyword } from '../../../utils/sanitizeSearch';
 import { useMediaQuery } from 'react-responsive';
 import { toast } from 'react-toastify';
 import DataTable from '../../../components/DataTable';
@@ -50,8 +51,10 @@ const UserApprovalPage = () => {
       .eq('is_active', false)
       .range(from, to);
 
-    if (keyword.trim() !== '') {
-      query = query.or(`username.ilike.%${keyword}%,nama.ilike.%${keyword}%`);
+    const safeKeyword = sanitizeSearchKeyword(keyword.trim());
+
+    if (safeKeyword !== '') {
+      query = query.or(`username.ilike.%${safeKeyword}%,nama.ilike.%${safeKeyword}%`);
     }
 
     const { data, count, error } = await query;

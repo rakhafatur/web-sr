@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { AnimatePresence, motion } from 'framer-motion';
 import { supabase } from '../../../lib/supabaseClient';
 import { confirmDialog } from '../../../components/ConfirmDialog';
 import dayjs from 'dayjs';
@@ -55,10 +57,6 @@ const AbsensiPage = () => {
     maxWidth: 768,
   });
 
-  const [ladies, setLadies] = useState<
-    Lady[]
-  >([]);
-
   const [selectedLadyId, setSelectedLadyId] =
     useState('');
 
@@ -71,13 +69,6 @@ const AbsensiPage = () => {
 
   const [keterangan, setKeterangan] =
     useState('');
-
-  const [riwayat, setRiwayat] = useState<
-    Absensi[]
-  >([]);
-
-  const [rekapRiwayat, setRekapRiwayat] =
-    useState<Absensi[]>([]);
 
   const [bulan, setBulan] = useState(
     dayjs().month() + 1
@@ -106,6 +97,57 @@ const AbsensiPage = () => {
     'input' | 'riwayat'
   >('input');
 
+  const queryClient = useQueryClient();
+  const monthKey = `${tahun}-${String(bulan).padStart(2, '0')}`;
+  const rekapQueryKey = ['absensi-rekap', selectedLadyId, monthKey];
+
+  const { data: ladies = [] } = useQuery({
+    queryKey: ['ladies-active'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ladies')
+        .select('*')
+        .eq('status', 'active')
+        .order('nama_ladies', {
+          ascending: true,
+        });
+
+      if (error) throw error;
+      return (data ?? []) as Lady[];
+    },
+    meta: { errorLabel: 'data ladies' },
+  });
+
+  // Sengaja satu query buat sebulan penuh (maksimal ~31 baris, ringan) —
+  // riwayat (paginated, dipakai DataTable desktop) & rekapRiwayat (dipakai
+  // summary + CardTableAbsensi mobile) sebelumnya 2 fetch terpisah yang
+  // datanya tumpang tindih, sekarang cukup di-derive dari satu cache.
+  const { data: rekapRiwayat = [] } = useQuery({
+    queryKey: rekapQueryKey,
+    queryFn: async () => {
+      const start = `${tahun}-${String(bulan).padStart(2, '0')}-01`;
+      const end = dayjs(start).endOf('month').format('YYYY-MM-DD');
+
+      const { data, error } = await supabase
+        .from('absensi')
+        .select('tanggal, status, keterangan')
+        .eq('ladies_id', selectedLadyId)
+        .gte('tanggal', start)
+        .lte('tanggal', end)
+        .order('tanggal', { ascending: false });
+
+      if (error) throw error;
+      return (data ?? []) as Absensi[];
+    },
+    enabled: !!selectedLadyId,
+    meta: { errorLabel: 'absensi' },
+  });
+
+  const riwayat = rekapRiwayat.slice(
+    (page - 1) * limit,
+    (page - 1) * limit + limit
+  );
+
   const totalPages = Math.max(
     1,
     Math.ceil(rekapRiwayat.length / limit)
@@ -115,23 +157,44 @@ const AbsensiPage = () => {
     (l) => l.id === selectedLadyId
   );
 
-  useEffect(() => {
-    const fetchLadies = async () => {
-      const { data } = await supabase
-        .from('ladies')
-        .select('*')
-        .eq('status', 'active')
-        .order('nama_ladies', {
-          ascending: true,
-        });
+  const addMutation = useMutation({
+    mutationFn: async () => {
+      const { data: existing } =
+        await supabase
+          .from('absensi')
+          .select('*')
+          .eq('ladies_id', selectedLadyId)
+          .eq('tanggal', tanggal);
 
-      setLadies(data || []);
-    };
+      if (existing && existing.length > 0) {
+        throw new Error('Absensi untuk tanggal ini sudah ada!');
+      }
 
-    fetchLadies();
-  }, []);
+      const { error } =
+        await supabase
+          .from('absensi')
+          .upsert({
+            ladies_id: selectedLadyId,
+            tanggal,
+            status,
+            keterangan: keterangan || null,
+          });
 
-  const handleSubmit = async () => {
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success('Absensi berhasil disimpan!');
+      setKeterangan('');
+      queryClient.invalidateQueries({ queryKey: ['absensi-rekap', selectedLadyId] });
+    },
+    onError: (err) => {
+      toast.error(
+        err instanceof Error ? err.message : 'Gagal menyimpan absensi'
+      );
+    },
+  });
+
+  const handleSubmit = () => {
     if (
       !selectedLadyId ||
       !tanggal ||
@@ -154,130 +217,8 @@ const AbsensiPage = () => {
       return;
     }
 
-    const { data: existing } =
-      await supabase
-        .from('absensi')
-        .select('*')
-        .eq(
-          'ladies_id',
-          selectedLadyId
-        )
-        .eq('tanggal', tanggal);
-
-    if (
-      existing &&
-      existing.length > 0
-    ) {
-      toast.error(
-        'Absensi untuk tanggal ini sudah ada!'
-      );
-      return;
-    }
-
-    const { error } =
-      await supabase
-        .from('absensi')
-        .upsert({
-          ladies_id: selectedLadyId,
-          tanggal,
-          status,
-          keterangan:
-            keterangan || null,
-        });
-
-    if (error) {
-      toast.error(
-        'Gagal menyimpan absensi'
-      );
-    } else {
-      toast.success(
-        'Absensi berhasil disimpan!'
-      );
-
-      setKeterangan('');
-
-      fetchRiwayat();
-      fetchRekapRiwayat();
-    }
+    addMutation.mutate();
   };
-
-  const fetchRiwayat = async () => {
-    if (!selectedLadyId) return;
-
-    const start = `${tahun}-${String(
-      bulan
-    ).padStart(2, '0')}-01`;
-
-    const end = dayjs(start)
-      .endOf('month')
-      .format('YYYY-MM-DD');
-
-    const from = (page - 1) * limit;
-
-    const to = from + limit - 1;
-
-    const { data } = await supabase
-      .from('absensi')
-      .select(
-        'tanggal, status, keterangan'
-      )
-      .eq(
-        'ladies_id',
-        selectedLadyId
-      )
-      .gte('tanggal', start)
-      .lte('tanggal', end)
-      .order('tanggal', {
-        ascending: false,
-      })
-      .range(from, to);
-
-    setRiwayat(data || []);
-  };
-
-  const fetchRekapRiwayat =
-    async () => {
-      if (!selectedLadyId) return;
-
-      const start = `${tahun}-${String(
-        bulan
-      ).padStart(2, '0')}-01`;
-
-      const end = dayjs(start)
-        .endOf('month')
-        .format('YYYY-MM-DD');
-
-      const { data } = await supabase
-        .from('absensi')
-        .select(
-          'tanggal, status, keterangan'
-        )
-        .eq(
-          'ladies_id',
-          selectedLadyId
-        )
-        .gte('tanggal', start)
-        .lte('tanggal', end)
-        .order('tanggal', {
-          ascending: false,
-        });
-
-      setRekapRiwayat(data || []);
-    };
-
-  useEffect(() => {
-    if (selectedLadyId) {
-      fetchRiwayat();
-      fetchRekapRiwayat();
-    }
-
-    // eslint-disable-next-line
-  }, [
-    selectedLadyId,
-    bulan,
-    tahun,
-    page,
-  ]);
 
   const handlePrevMonth = () => {
     if (bulan === 1) {
@@ -312,7 +253,7 @@ const AbsensiPage = () => {
   };
 
   const handleDelete = async (
-    tanggal: string
+    tanggalToDelete: string
   ) => {
     const confirm =
       await confirmDialog(
@@ -325,6 +266,14 @@ const AbsensiPage = () => {
     )
       return;
 
+    await queryClient.cancelQueries({ queryKey: rekapQueryKey });
+
+    const previous = queryClient.getQueryData<Absensi[]>(rekapQueryKey);
+
+    queryClient.setQueryData<Absensi[]>(rekapQueryKey, (old) =>
+      (old || []).filter((item) => item.tanggal !== tanggalToDelete)
+    );
+
     const { error } =
       await supabase
         .from('absensi')
@@ -333,16 +282,16 @@ const AbsensiPage = () => {
           'ladies_id',
           selectedLadyId
         )
-        .eq('tanggal', tanggal);
+        .eq('tanggal', tanggalToDelete);
 
     if (error) {
+      queryClient.setQueryData(rekapQueryKey, previous);
       toast.error(
         'Gagal hapus data: ' +
         error.message
       );
     } else {
-      fetchRiwayat();
-      fetchRekapRiwayat();
+      queryClient.invalidateQueries({ queryKey: ['absensi-rekap', selectedLadyId] });
     }
   };
 
@@ -927,10 +876,11 @@ const AbsensiPage = () => {
               <div className="mt-4 d-flex">
                 <Button
                   variant="primary"
-                  icon={<FiPlus size={18} />}
+                  icon={addMutation.isPending ? <div className="spinner-border spinner-border-sm" role="status" /> : <FiPlus size={18} />}
                   onClick={handleSubmit}
+                  disabled={addMutation.isPending}
                 >
-                  Simpan Absensi
+                  {addMutation.isPending ? 'Menyimpan...' : 'Simpan Absensi'}
                 </Button>
               </div>
             </div>
@@ -1061,6 +1011,14 @@ const AbsensiPage = () => {
                 })}
               </div>
 
+              <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.18, ease: 'easeOut' }}
+              >
               {activeTab === 'input' ? (
                 <div
                   className="card border-0 shadow-sm rounded-4"
@@ -1148,11 +1106,12 @@ const AbsensiPage = () => {
                     <div className="mt-4 d-flex justify-content-center">
                       <Button
                         variant="primary"
-                        icon={<FiPlus size={18} />}
+                        icon={addMutation.isPending ? <div className="spinner-border spinner-border-sm" role="status" /> : <FiPlus size={18} />}
                         onClick={handleSubmit}
+                        disabled={addMutation.isPending}
                         fullWidth
                       >
-                        Simpan Absensi
+                        {addMutation.isPending ? 'Menyimpan...' : 'Simpan Absensi'}
                       </Button>
                     </div>
                   </div>
@@ -1160,6 +1119,8 @@ const AbsensiPage = () => {
               ) : (
                 riwayatSection
               )}
+              </motion.div>
+              </AnimatePresence>
             </>
           )}
         </>
@@ -1211,8 +1172,7 @@ const AbsensiPage = () => {
           setEditAbsensi(null);
           setSelectedTanggal(null);
 
-          fetchRiwayat();
-          fetchRekapRiwayat();
+          queryClient.invalidateQueries({ queryKey: ['absensi-rekap', selectedLadyId] });
         }}
       />
     </div>
