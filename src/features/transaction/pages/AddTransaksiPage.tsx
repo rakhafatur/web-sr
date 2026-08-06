@@ -9,6 +9,7 @@ import { supabase } from '../../../lib/supabaseClient';
 import TransaksiForm from '../components/TransaksiForm';
 import RiwayatTransaksi from '../components/RiwayatTransaksi';
 import FeaturePageHeader from '../../../components/FeaturePageHeader';
+import SearchableSelect from '../../../components/SearchableSelect';
 
 type Lady = {
   id: string;
@@ -89,47 +90,22 @@ const AddTransaksiPage = () => {
         </div>
 
         <div className="p-4">
-          <div
-            style={{
-              position: 'relative',
+          <SearchableSelect
+            value={selectedLadyId}
+            onChange={(v) => {
+              setSelectedLadyId(v);
+              setActiveTab('tambah');
             }}
-          >
-            <select
-              className="form-select shadow-none"
-              value={selectedLadyId}
-              onChange={(e) => {
-                setSelectedLadyId(e.target.value);
-                setActiveTab('tambah');
-              }}
-              style={{
-                height: isMobile ? 50 : 58,
-                borderRadius: isMobile ? 14 : 18,
-                border: '2px solid var(--color-green-light)',
-                paddingLeft: isMobile ? 14 : 18,
-                paddingRight: isMobile ? 40 : 48,
-                fontWeight: 600,
-                fontSize: isMobile ? '0.82rem' : '0.97rem',
-                backgroundColor: 'var(--color-surface)',
-                color: 'var(--color-dark)',
-                appearance: 'none',
-              }}
-            >
-              <option value="">
-                -- Pilih Ladies --
-              </option>
-
-              {ladiesList.map((lady) => (
-                <option
-                  key={lady.id}
-                  value={lady.id}
-                >
-                  {lady.nama_ladies} •{' '}
-                  {lady.nama_outlet} ({lady.pin})
-                </option>
-              ))}
-            </select>
-
-          </div>
+            options={ladiesList.map((lady) => ({
+              value: lady.id,
+              label: `${lady.nama_ladies} • ${lady.nama_outlet} (${lady.pin})`,
+            }))}
+            placeholder="-- Pilih Ladies --"
+            searchPlaceholder="Cari nama ladies..."
+            height={isMobile ? 50 : 58}
+            borderRadius={isMobile ? 14 : 18}
+            fontSize={isMobile ? '0.82rem' : '0.97rem'}
+          />
 
           {/* EMPTY STATE */}
           {!selectedLadyId && !loading && (

@@ -12,6 +12,7 @@ import ActionIconButton from '../../../components/ActionIconButton';
 import Pagination from '../../../components/Pagination';
 import Button from '../../../components/Button';
 import FeaturePageHeader from '../../../components/FeaturePageHeader';
+import SearchableSelect from '../../../components/SearchableSelect';
 
 import {
   FiPlus,
@@ -840,49 +841,22 @@ const AbsensiPage = () => {
                     Pilih Ladies
                   </label>
 
-                  <select
-                    className="form-select shadow-none"
-                    value={
-                      selectedLadyId
-                    }
-                    onChange={(e) => {
-                      setSelectedLadyId(
-                        e.target.value
-                      );
-
+                  <SearchableSelect
+                    value={selectedLadyId}
+                    onChange={(v) => {
+                      setSelectedLadyId(v);
                       setPage(1);
                     }}
-                    style={{
-                      height: 58,
-                      borderRadius: 18,
-                      border:
-                        '2px solid var(--color-green-light)',
-                      paddingLeft: 18,
-                      paddingRight: 40,
-                      fontWeight: 600,
-                      fontSize: '0.95rem',
-                    }}
-                  >
-                    <option value="">
-                      -- Pilih Ladies --
-                    </option>
-
-                    {ladies.map((l) => (
-                      <option
-                        key={l.id}
-                        value={l.id}
-                      >
-                        {
-                          l.nama_ladies
-                        }{' '}
-                        •{' '}
-                        {
-                          l.nama_outlet
-                        }{' '}
-                        ({l.pin})
-                      </option>
-                    ))}
-                  </select>
+                    options={ladies.map((l) => ({
+                      value: l.id,
+                      label: `${l.nama_ladies} • ${l.nama_outlet} (${l.pin})`,
+                    }))}
+                    placeholder="-- Pilih Ladies --"
+                    searchPlaceholder="Cari nama ladies..."
+                    height={58}
+                    borderRadius={18}
+                    fontSize="0.95rem"
+                  />
                 </div>
 
                 {/* DATE */}
@@ -996,35 +970,23 @@ const AbsensiPage = () => {
             </div>
 
             <div className="p-4">
-              <select
-                className="form-select shadow-none"
+              <SearchableSelect
                 value={selectedLadyId}
-                onChange={(e) => {
-                  setSelectedLadyId(e.target.value);
+                onChange={(v) => {
+                  setSelectedLadyId(v);
                   setPage(1);
                   setActiveTab('input');
                 }}
-                style={{
-                  height: 50,
-                  borderRadius: 14,
-                  border: '2px solid var(--color-green-light)',
-                  paddingLeft: 14,
-                  paddingRight: 40,
-                  fontWeight: 600,
-                  fontSize: '0.82rem',
-                  backgroundColor: 'var(--color-surface)',
-                  color: 'var(--color-dark)',
-                  appearance: 'none',
-                }}
-              >
-                <option value="">-- Pilih Ladies --</option>
-
-                {ladies.map((l) => (
-                  <option key={l.id} value={l.id}>
-                    {l.nama_ladies} • {l.nama_outlet} ({l.pin})
-                  </option>
-                ))}
-              </select>
+                options={ladies.map((l) => ({
+                  value: l.id,
+                  label: `${l.nama_ladies} • ${l.nama_outlet} (${l.pin})`,
+                }))}
+                placeholder="-- Pilih Ladies --"
+                searchPlaceholder="Cari nama ladies..."
+                height={50}
+                borderRadius={14}
+                fontSize="0.82rem"
+              />
 
               {/* EMPTY STATE */}
               {!selectedLadyId && (

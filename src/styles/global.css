@@ -442,6 +442,13 @@ body {
   transform: scale(0.97);
 }
 
+/* Dipakai SearchableSelect */
+@media (hover: hover) {
+  .searchable-select-option:hover {
+    background: var(--color-surface-2) !important;
+  }
+}
+
 /* ========= TEXT STYLES ========== */
 .text-muted {
   color: var(--color-gray-600);

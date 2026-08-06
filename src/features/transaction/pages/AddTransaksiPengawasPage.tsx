@@ -5,6 +5,7 @@ import { supabase } from '../../../lib/supabaseClient';
 import TransaksiFormPengawas from '../components/TransaksiFormPengawas';
 import RiwayatTransaksiPengawas from '../components/RiwayatTransaksiPengawas';
 import FeaturePageHeader from '../../../components/FeaturePageHeader';
+import SearchableSelect from '../../../components/SearchableSelect';
 
 import { FiUsers, FiCreditCard, FiClock, FiLoader } from 'react-icons/fi';
 
@@ -79,38 +80,22 @@ const AddTransaksiPagePengawas = () => {
         </div>
 
         <div className="p-4">
-          <select
-            className="form-select shadow-none"
+          <SearchableSelect
             value={selectedPengawasId}
-            onChange={(e) => {
-              setSelectedPengawasId(e.target.value);
+            onChange={(v) => {
+              setSelectedPengawasId(v);
               setActiveTab('tambah');
             }}
-            style={{
-              height: isMobile ? 50 : 58,
-              borderRadius: isMobile ? 14 : 18,
-              border: '2px solid var(--color-green-light)',
-              fontWeight: 600,
-              fontSize: isMobile ? '0.82rem' : '0.97rem',
-
-              backgroundColor: 'var(--color-surface)',
-              color: 'var(--color-dark)',
-
-              paddingLeft: isMobile ? 14 : 18,
-              paddingRight: isMobile ? 40 : 48,
-
-              appearance: 'none',
-            }}
-          >
-            <option value="">-- Pilih Pengawas --</option>
-
-            {pengawasList.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.nama_lengkap}
-                {p.nama_panggilan ? ` (${p.nama_panggilan})` : ''}
-              </option>
-            ))}
-          </select>
+            options={pengawasList.map((p) => ({
+              value: p.id,
+              label: `${p.nama_lengkap}${p.nama_panggilan ? ` (${p.nama_panggilan})` : ''}`,
+            }))}
+            placeholder="-- Pilih Pengawas --"
+            searchPlaceholder="Cari nama pengawas..."
+            height={isMobile ? 50 : 58}
+            borderRadius={isMobile ? 14 : 18}
+            fontSize={isMobile ? '0.82rem' : '0.97rem'}
+          />
 
           {/* EMPTY STATE */}
           {!selectedPengawasId && !loading && (
