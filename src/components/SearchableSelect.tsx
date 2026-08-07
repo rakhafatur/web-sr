@@ -79,10 +79,15 @@ const SearchableSelect = ({
 
     updatePosition();
 
-    // Panel-nya position:fixed relatif ke viewport — kalau halaman di-scroll
-    // selagi terbuka, posisinya bisa nyasar dari tombol trigger. Tutup saja,
-    // pola umum buat dropdown/popover.
-    const handleScroll = () => setOpen(false);
+    // Panel-nya position:fixed relatif ke viewport — kalau HALAMAN di-scroll
+    // selagi terbuka, posisinya bisa nyasar dari tombol trigger, jadi ditutup
+    // saja. Tapi scroll capture-phase di window juga kepicu oleh scroll di
+    // DALAM daftar panel sendiri (overflowY:auto) — itu harus diabaikan,
+    // bukan dianggap "scroll di luar".
+    const handleScroll = (e: Event) => {
+      if (panelRef.current?.contains(e.target as Node)) return;
+      setOpen(false);
+    };
     window.addEventListener('scroll', handleScroll, true);
     window.addEventListener('resize', updatePosition);
 
