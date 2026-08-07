@@ -9,7 +9,7 @@ import MonthNavigator from '../components/MonthNavigator';
 import LedgerSummaryCard from '../components/LedgerSummaryCard';
 import LedgerEmptyState from '../components/LedgerEmptyState';
 import LedgerLoadingState from '../components/LedgerLoadingState';
-import LedgerCardRow from '../components/LedgerCardRow';
+import VoucherCardRow from '../components/VoucherCardRow';
 import { useMonthNavigation } from '../hooks/useMonthNavigation';
 import { useLedgerData } from '../hooks/useLedgerData';
 
@@ -91,13 +91,13 @@ const VoucherListPage = () => {
             page={page}
             rowsPerPage={rowsPerPage}
             onPageChange={setPage}
-            renderItem={(row) => (
-              <LedgerCardRow
+            renderItem={(row, index) => (
+              <VoucherCardRow
                 tanggal={row.tanggal}
-                color="var(--color-income)"
-                mainLine={<>{row.jumlah_voucher} pcs</>}
-                extraLine={<>Rp {(row.jumlah_voucher * HARGA_PER_VOUCHER).toLocaleString('id-ID')}</>}
+                pcs={row.jumlah_voucher}
+                nominal={row.jumlah_voucher * HARGA_PER_VOUCHER}
                 keterangan={row.keterangan}
+                index={index}
               />
             )}
           />
