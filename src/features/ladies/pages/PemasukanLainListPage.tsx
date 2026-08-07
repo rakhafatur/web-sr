@@ -9,7 +9,7 @@ import MonthNavigator from '../components/MonthNavigator';
 import LedgerSummaryCard from '../components/LedgerSummaryCard';
 import LedgerEmptyState from '../components/LedgerEmptyState';
 import LedgerLoadingState from '../components/LedgerLoadingState';
-import LedgerCardRow from '../components/LedgerCardRow';
+import LedgerCardRowV2 from '../components/LedgerCardRowV2';
 import { useMonthNavigation } from '../hooks/useMonthNavigation';
 import { useLedgerData } from '../hooks/useLedgerData';
 
@@ -20,7 +20,7 @@ type PemasukanLain = {
   keterangan?: string;
 };
 
-const rowsPerPage = 10;
+const rowsPerPage = 5;
 
 const PemasukanLainListPage = () => {
   const user = useSelector(
@@ -85,12 +85,16 @@ const PemasukanLainListPage = () => {
             page={page}
             rowsPerPage={rowsPerPage}
             onPageChange={setPage}
-            renderItem={(item) => (
-              <LedgerCardRow
+            rowClassName="p-2 mb-2"
+            renderItem={(item, index) => (
+              <LedgerCardRowV2
                 tanggal={item.tanggal}
-                color="var(--color-voucher)"
-                mainLine={<>+ Rp {item.jumlah.toLocaleString('id-ID')}</>}
+                label="Pemasukan Lain"
+                color="var(--color-income)"
+                colorSoft="var(--color-income-soft)"
+                mainValue={<>+ Rp {item.jumlah.toLocaleString('id-ID')}</>}
                 keterangan={item.keterangan}
+                index={index}
               />
             )}
           />

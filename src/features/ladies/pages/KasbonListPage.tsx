@@ -9,7 +9,7 @@ import MonthNavigator from '../components/MonthNavigator';
 import LedgerSummaryCard from '../components/LedgerSummaryCard';
 import LedgerEmptyState from '../components/LedgerEmptyState';
 import LedgerLoadingState from '../components/LedgerLoadingState';
-import LedgerCardRow from '../components/LedgerCardRow';
+import LedgerCardRowV2 from '../components/LedgerCardRowV2';
 import { useMonthNavigation } from '../hooks/useMonthNavigation';
 import { useLedgerData } from '../hooks/useLedgerData';
 
@@ -20,7 +20,7 @@ type Kasbon = {
   keterangan?: string;
 };
 
-const rowsPerPage = 10;
+const rowsPerPage = 5;
 
 const KasbonListPage = () => {
   const user = useSelector(
@@ -85,12 +85,16 @@ const KasbonListPage = () => {
             page={page}
             rowsPerPage={rowsPerPage}
             onPageChange={setPage}
-            renderItem={(item) => (
-              <LedgerCardRow
+            rowClassName="p-2 mb-2"
+            renderItem={(item, index) => (
+              <LedgerCardRowV2
                 tanggal={item.tanggal}
+                label="Kasbon"
                 color="var(--color-expense)"
-                mainLine={<>- Rp {item.jumlah.toLocaleString('id-ID')}</>}
+                colorSoft="var(--color-expense-soft)"
+                mainValue={<>- Rp {item.jumlah.toLocaleString('id-ID')}</>}
                 keterangan={item.keterangan}
+                index={index}
               />
             )}
           />

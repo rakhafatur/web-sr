@@ -21,7 +21,25 @@ const MAX_PULL = 90;
     (konten "nyangkut"/tidak kembali ke posisi awal yang tepat). touchcancel
     juga ditangani — tanpa ini, gesture yang dibatalkan sistem (cukup umum
     di mobile) bikin pullDistance nyangkut permanen karena touchend tidak
-    pernah terpanggil. */
+    pernah terpanggil.
+
+    `touchmove` dengan { passive: false } SEBELUMNYA dipasang permanen di
+    window sepanjang halaman terbuka, meskipun 99% gesture bukan pull
+    (scroll biasa di tengah/bawah halaman). Listener non-passive seperti
+    ini memaksa browser menunggu handler JS selesai jalan dulu sebelum
+    commit ke native scroll di SETIAP frame sentuh — kalau main thread
+    lagi sibuk (render ulang, animasi), scroll jadi "macet"/tidak
+    responsif sesaat, termasuk saat scroll dari posisi paling bawah.
+    Diperbaiki dengan hanya memasang `touchmove` saat gesture pull benar-
+    benar dimulai (di dalam handleTouchStart) dan melepasnya lagi begitu
+    gesture selesai/batal — jadi scroll normal di luar area atas halaman
+    sama sekali tidak melewati listener ini.
+
+    Pengecekan posisi juga dilonggarkan dari `scrollY === 0` jadi
+    `scrollY <= 0` — di iOS, rubber-band overscroll di paling atas bisa
+    bikin scrollY sedikit negatif, dan perbandingan strict `=== 0`
+    membuat gesture pull kadang tidak terdeteksi (submitted balik ke
+    posisi awal tapi terasa tidak semestinya) tergantung timing. */
 const PullToRefresh = ({ onRefresh, children }: Props) => {
   const [pullDistance, setPullDistance] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
@@ -38,27 +56,16 @@ const PullToRefresh = ({ onRefresh, children }: Props) => {
   }, [onRefresh]);
 
   useEffect(() => {
+    const detachTouchMove = () => {
+      window.removeEventListener('touchmove', handleTouchMove);
+    };
+
     const reset = () => {
       pullingRef.current = false;
       pullDistanceRef.current = 0;
       setIsPulling(false);
       setPullDistance(0);
-    };
-
-    const handleTouchStart = (e: TouchEvent) => {
-      // Abaikan gesture yang mulai di dalam area yang punya scroll sendiri
-      // (mis. panel notifikasi, bottom-sheet modal) — tanpa ini, listener
-      // touchmove global di sini bisa "mencuri" gesture scroll di area
-      // tersebut dan malah preventDefault-nya, bikin area itu jadi tidak
-      // bisa di-scroll secara konsisten.
-      const target = e.target as HTMLElement | null;
-      if (target?.closest('[data-ptr-ignore]')) return;
-
-      if (window.scrollY === 0 && !refreshingRef.current) {
-        startY.current = e.touches[0].clientY;
-        pullingRef.current = true;
-        setIsPulling(true);
-      }
+      detachTouchMove();
     };
 
     const handleTouchMove = (e: TouchEvent) => {
@@ -77,11 +84,32 @@ const PullToRefresh = ({ onRefresh, children }: Props) => {
       setPullDistance(next);
     };
 
+    const handleTouchStart = (e: TouchEvent) => {
+      // Abaikan gesture yang mulai di dalam area yang punya scroll sendiri
+      // (mis. panel notifikasi, bottom-sheet modal) — tanpa ini, listener
+      // touchmove di sini bisa "mencuri" gesture scroll di area tersebut
+      // dan malah preventDefault-nya, bikin area itu jadi tidak bisa
+      // di-scroll secara konsisten.
+      const target = e.target as HTMLElement | null;
+      if (target?.closest('[data-ptr-ignore]')) return;
+
+      if (window.scrollY <= 0 && !refreshingRef.current) {
+        startY.current = e.touches[0].clientY;
+        pullingRef.current = true;
+        setIsPulling(true);
+        // Dipasang di sini (bukan permanen) supaya scroll normal di luar
+        // gesture pull tidak pernah lewat listener non-passive ini sama
+        // sekali — lihat catatan di atas komponen.
+        window.addEventListener('touchmove', handleTouchMove, { passive: false });
+      }
+    };
+
     const handleTouchEnd = async () => {
       if (!pullingRef.current) return;
 
       pullingRef.current = false;
       setIsPulling(false);
+      detachTouchMove();
 
       const finalDistance = pullDistanceRef.current;
 
@@ -110,15 +138,14 @@ const PullToRefresh = ({ onRefresh, children }: Props) => {
     };
 
     window.addEventListener('touchstart', handleTouchStart, { passive: true });
-    window.addEventListener('touchmove', handleTouchMove, { passive: false });
     window.addEventListener('touchend', handleTouchEnd);
     window.addEventListener('touchcancel', handleTouchCancel);
 
     return () => {
       window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleTouchEnd);
       window.removeEventListener('touchcancel', handleTouchCancel);
+      detachTouchMove();
     };
   }, []);
 
