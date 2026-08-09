@@ -68,8 +68,8 @@ const VoucherListPage = () => {
         />
 
         <LedgerSummaryCard
-          gradient="linear-gradient(135deg, var(--color-green), var(--color-accent))"
-          shadowColor="rgba(var(--color-primary-rgb),0.3)"
+          gradient="linear-gradient(135deg, var(--color-voucher), var(--color-voucher-deep))"
+          shadowColor="rgba(var(--color-warning-solid-rgb),0.3)"
           icon={<FiGift size={18} />}
           label="Total Voucher"
           value={<>{totalPcs} pcs</>}

@@ -90,8 +90,8 @@ const PemasukanLainListPage = () => {
               <LedgerCardRowV2
                 tanggal={item.tanggal}
                 label="Pemasukan Lain"
-                color="var(--color-income)"
-                colorSoft="var(--color-income-soft)"
+                color="var(--color-voucher)"
+                colorSoft="var(--color-voucher-soft)"
                 mainValue={<>+ Rp {item.jumlah.toLocaleString('id-ID')}</>}
                 keterangan={item.keterangan}
                 index={index}
