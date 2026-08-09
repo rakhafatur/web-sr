@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../../lib/supabaseClient';
 import dayjs from 'dayjs';
 import { useMediaQuery } from 'react-responsive';
@@ -49,97 +50,90 @@ type PerformaSummary = {
 const PerformaLadiesPage = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
-  const [ladiesList, setLadiesList] = useState<Lady[]>([]);
   const [bulan, setBulan] = useState(dayjs().month() + 1);
   const [tahun, setTahun] = useState(dayjs().year());
-  const [data, setData] = useState<PerformaSummary[]>([]);
   const [mode, setMode] = useState<'aktivitas' | 'pendapatan'>('aktivitas');
-  const [loading, setLoading] = useState(false);
 
-  const fetchLadies = async () => {
-    const { data, error } = await supabase
-      .from('ladies')
-      .select('id, nama_ladies, nama_outlet')
-      .eq('status', 'active');
+  const { data: ladiesList = [] } = useQuery({
+    queryKey: ['performa-ladies-aktif'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ladies')
+        .select('id, nama_ladies, nama_outlet')
+        .eq('status', 'active');
 
-    if (!error && data) setLadiesList(data);
-  };
+      if (error) throw error;
+      return (data ?? []) as Lady[];
+    },
+    meta: { errorLabel: 'data ladies' },
+  });
 
-  const fetchSummary = async () => {
-    setLoading(true);
+  const { data = [], isLoading: loading } = useQuery({
+    queryKey: ['performa-summary', bulan, tahun, ladiesList.length],
+    queryFn: async () => {
+      const monthStr = String(bulan).padStart(2, '0');
+      const startDate = dayjs(`${tahun}-${monthStr}-01`).startOf('month');
+      const endDate = dayjs(`${tahun}-${monthStr}-01`).endOf('month');
 
-    const monthStr = String(bulan).padStart(2, '0');
-    const startDate = dayjs(`${tahun}-${monthStr}-01`).startOf('month');
-    const endDate = dayjs(`${tahun}-${monthStr}-01`).endOf('month');
+      const [vouchers, kasbon, pemasukan, absensi] = await Promise.all([
+        supabase.from('vouchers').select('jumlah, tanggal, ladies_id').gte('tanggal', startDate.format('YYYY-MM-DD')).lte('tanggal', endDate.format('YYYY-MM-DD')),
+        supabase.from('kasbon').select('jumlah, tanggal, ladies_id').gte('tanggal', startDate.format('YYYY-MM-DD')).lte('tanggal', endDate.format('YYYY-MM-DD')),
+        supabase.from('pemasukan_lain').select('jumlah, tanggal, ladies_id').gte('tanggal', startDate.format('YYYY-MM-DD')).lte('tanggal', endDate.format('YYYY-MM-DD')),
+        supabase.from('absensi').select('status, tanggal, ladies_id').gte('tanggal', startDate.format('YYYY-MM-DD')).lte('tanggal', endDate.format('YYYY-MM-DD')),
+      ]);
 
-    const [vouchers, kasbon, pemasukan, absensi] = await Promise.all([
-      supabase.from('vouchers').select('jumlah, tanggal, ladies_id').gte('tanggal', startDate.format('YYYY-MM-DD')).lte('tanggal', endDate.format('YYYY-MM-DD')),
-      supabase.from('kasbon').select('jumlah, tanggal, ladies_id').gte('tanggal', startDate.format('YYYY-MM-DD')).lte('tanggal', endDate.format('YYYY-MM-DD')),
-      supabase.from('pemasukan_lain').select('jumlah, tanggal, ladies_id').gte('tanggal', startDate.format('YYYY-MM-DD')).lte('tanggal', endDate.format('YYYY-MM-DD')),
-      supabase.from('absensi').select('status, tanggal, ladies_id').gte('tanggal', startDate.format('YYYY-MM-DD')).lte('tanggal', endDate.format('YYYY-MM-DD')),
-    ]);
+      const summaryMap: Record<string, PerformaSummary> = {};
 
-    const summaryMap: Record<string, PerformaSummary> = {};
+      ladiesList.forEach((lady) => {
+        summaryMap[lady.id] = {
+          id: lady.id,
+          nama_ladies: lady.nama_ladies || `Unknown-${lady.id}`,
+          nama_outlet: lady.nama_outlet || '-',
+          voucherTotal: 0,
+          voucherAvg: 0,
+          kasbon: 0,
+          pemasukan: 0,
+          masuk: 0,
+          pendapatanVoucher: 0,
+          total: 0,
+        };
+      });
 
-    ladiesList.forEach((lady) => {
-      summaryMap[lady.id] = {
-        id: lady.id,
-        nama_ladies: lady.nama_ladies || `Unknown-${lady.id}`,
-        nama_outlet: lady.nama_outlet || '-',
-        voucherTotal: 0,
-        voucherAvg: 0,
-        kasbon: 0,
-        pemasukan: 0,
-        masuk: 0,
-        pendapatanVoucher: 0,
-        total: 0,
-      };
-    });
+      (vouchers.data || []).forEach((v) => {
+        if (v.ladies_id && summaryMap[v.ladies_id]) {
+          summaryMap[v.ladies_id].voucherTotal += Number(v.jumlah || 0) / 150000;
+        }
+      });
 
-    (vouchers.data || []).forEach((v) => {
-      if (v.ladies_id && summaryMap[v.ladies_id]) {
-        summaryMap[v.ladies_id].voucherTotal += Number(v.jumlah || 0) / 150000;
-      }
-    });
+      (kasbon.data || []).forEach((k) => {
+        if (k.ladies_id && summaryMap[k.ladies_id]) summaryMap[k.ladies_id].kasbon += Number(k.jumlah || 0);
+      });
 
-    (kasbon.data || []).forEach((k) => {
-      if (k.ladies_id && summaryMap[k.ladies_id]) summaryMap[k.ladies_id].kasbon += Number(k.jumlah || 0);
-    });
+      (pemasukan.data || []).forEach((p) => {
+        if (p.ladies_id && summaryMap[p.ladies_id]) summaryMap[p.ladies_id].pemasukan += Number(p.jumlah || 0);
+      });
 
-    (pemasukan.data || []).forEach((p) => {
-      if (p.ladies_id && summaryMap[p.ladies_id]) summaryMap[p.ladies_id].pemasukan += Number(p.jumlah || 0);
-    });
+      (absensi.data || []).forEach((a) => {
+        const id = a.ladies_id;
+        const status = (a.status || '').toLowerCase();
+        if (!id || !summaryMap[id]) return;
+        if (['kerja', 'masuk', 'hadir'].includes(status)) summaryMap[id].masuk += 1;
+      });
 
-    (absensi.data || []).forEach((a) => {
-      const id = a.ladies_id;
-      const status = (a.status || '').toLowerCase();
-      if (!id || !summaryMap[id]) return;
-      if (['kerja', 'masuk', 'hadir'].includes(status)) summaryMap[id].masuk += 1;
-    });
+      return Object.values(summaryMap).map((row) => {
+        const pendapatanVoucher = row.voucherTotal * 150000;
 
-    const finalData = Object.values(summaryMap).map((row) => {
-      const pendapatanVoucher = row.voucherTotal * 150000;
-
-      return {
-        ...row,
-        voucherAvg: row.masuk > 0 ? row.voucherTotal / row.masuk : 0,
-        pendapatanVoucher,
-        total: row.pemasukan + pendapatanVoucher - row.kasbon,
-      };
-    });
-
-    setData(finalData);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchLadies();
-  }, []);
-
-  useEffect(() => {
-    if (ladiesList.length > 0) fetchSummary();
-    // eslint-disable-next-line
-  }, [bulan, tahun, ladiesList]);
+        return {
+          ...row,
+          voucherAvg: row.masuk > 0 ? row.voucherTotal / row.masuk : 0,
+          pendapatanVoucher,
+          total: row.pemasukan + pendapatanVoucher - row.kasbon,
+        };
+      });
+    },
+    enabled: ladiesList.length > 0,
+    meta: { errorLabel: 'performa ladies' },
+  });
 
   const modeOptions = [
     { value: 'aktivitas' as const, label: 'Aktivitas', icon: <FiActivity size={14} /> },

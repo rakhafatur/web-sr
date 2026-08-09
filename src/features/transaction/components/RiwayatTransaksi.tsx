@@ -9,11 +9,14 @@ import Pagination from '../../../components/Pagination';
 import EmptyState from '../../../components/EmptyState';
 import { useMediaQuery } from 'react-responsive';
 import CardTableRiwayatTransaksi from './CardTableRiwayatTransaksi';
+import MonthNavigator from '../../ladies/components/MonthNavigator';
+import { useMonthNavigation } from '../../ladies/hooks/useMonthNavigation';
 import dayjs from 'dayjs';
 
 import {
   FiSearch,
   FiTrash2,
+  FiLoader,
 } from 'react-icons/fi';
 
 type Props = {
@@ -26,7 +29,7 @@ type Transaksi = {
   tipe: string;
   tipeLabel: string;
   jumlah: number;
-  keterangan: string;
+  keterangan?: string;
   priority: number;
 };
 
@@ -56,6 +59,29 @@ const RiwayatTransaksi = ({
       'desc'
     );
 
+  const {
+    selectedMonth,
+    handleMonthChange,
+    prevMonth,
+    nextMonth,
+    isNextDisabled,
+  } = useMonthNavigation();
+
+  const handleMonthChangeAndResetPage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleMonthChange(e);
+    setPage(1);
+  };
+
+  const handlePrevMonth = () => {
+    prevMonth();
+    setPage(1);
+  };
+
+  const handleNextMonth = () => {
+    nextMonth();
+    setPage(1);
+  };
+
   const limit = isMobile ? 5 : 10;
 
   const getTableName = (
@@ -80,11 +106,15 @@ const RiwayatTransaksi = ({
   };
 
   const queryClient = useQueryClient();
-  const queryKey = ['riwayat-transaksi', ladiesId];
+  const monthKey = selectedMonth.format('YYYY-MM');
+  const queryKey = ['riwayat-transaksi', ladiesId, monthKey];
 
   const { data: rawData = [], isLoading: loading, refetch } = useQuery({
     queryKey,
     queryFn: async () => {
+      const bulanAwal = selectedMonth.startOf('month').format('YYYY-MM-DD');
+      const bulanAkhir = selectedMonth.endOf('month').format('YYYY-MM-DD');
+
       const [
         voucher,
         kasbon,
@@ -93,11 +123,13 @@ const RiwayatTransaksi = ({
       ] = await Promise.all([
         supabase
           .from('vouchers')
-          .select('id, tanggal, jumlah, keterangan')
+          .select('id, tanggal, jumlah')
           .eq(
             'ladies_id',
             ladiesId
-          ),
+          )
+          .gte('tanggal', bulanAwal)
+          .lte('tanggal', bulanAkhir),
 
         supabase
           .from('kasbon')
@@ -105,7 +137,9 @@ const RiwayatTransaksi = ({
           .eq(
             'ladies_id',
             ladiesId
-          ),
+          )
+          .gte('tanggal', bulanAwal)
+          .lte('tanggal', bulanAkhir),
 
         supabase
           .from('pemasukan_lain')
@@ -113,7 +147,9 @@ const RiwayatTransaksi = ({
           .eq(
             'ladies_id',
             ladiesId
-          ),
+          )
+          .gte('tanggal', bulanAwal)
+          .lte('tanggal', bulanAkhir),
 
         supabase
           .from(
@@ -123,7 +159,9 @@ const RiwayatTransaksi = ({
           .eq(
             'ladies_id',
             ladiesId
-          ),
+          )
+          .gte('tanggal', bulanAwal)
+          .lte('tanggal', bulanAkhir),
       ]);
 
       const combined: Transaksi[] = [
@@ -384,6 +422,16 @@ const RiwayatTransaksi = ({
 
   return (
     <div className="mt-3">
+      <div className="mb-3" style={{ maxWidth: isMobile ? undefined : 320 }}>
+        <MonthNavigator
+          selectedMonth={selectedMonth}
+          onChange={handleMonthChangeAndResetPage}
+          onPrev={handlePrevMonth}
+          onNext={handleNextMonth}
+          nextDisabled={isNextDisabled}
+        />
+      </div>
+
       {!isMobile && (
         <div className="card border-0 shadow-sm rounded-4 mb-4">
           <div className="p-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
@@ -517,7 +565,15 @@ const RiwayatTransaksi = ({
         </div>
       )}
 
-      {isMobile ? (
+      {loading ? (
+        <div
+          className="d-flex justify-content-center p-4"
+          role="status"
+          aria-label="Loading"
+        >
+          <FiLoader size={20} className="spinner-icon" />
+        </div>
+      ) : isMobile ? (
         <CardTableRiwayatTransaksi
           data={data}
           page={page - 1}

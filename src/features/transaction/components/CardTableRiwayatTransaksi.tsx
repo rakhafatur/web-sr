@@ -8,7 +8,7 @@ type Transaksi = {
   tipe: string;
   tipeLabel: string;
   jumlah: number;
-  keterangan: string;
+  keterangan?: string;
   priority: number;
 };
 

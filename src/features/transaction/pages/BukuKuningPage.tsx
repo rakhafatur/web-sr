@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
 import { confirmDialog } from '../../../components/ConfirmDialog';
@@ -46,45 +47,38 @@ type Absensi = {
 };
 
 const BukuKuningPage = () => {
-  const [rekapAbsensi, setRekapAbsensi] = useState<Absensi[]>([]);
-  const [ladiesList, setLadiesList] = useState<Lady[]>([]);
   const [selectedLadyId, setSelectedLadyId] = useState('');
   const [bulan, setBulan] = useState(new Date().getMonth() + 1);
   const [tahun, setTahun] = useState(new Date().getFullYear());
-  const [rows, setRows] = useState<Row[]>([]);
   const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
-  useEffect(() => {
-    const fetchLadies = async () => {
+  const { data: ladiesList = [] } = useQuery({
+    queryKey: ['bukukuning-ladies-aktif'],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from('ladies')
         .select('id, nama_ladies, nama_outlet, pin, status')
         .eq('status', 'active');
 
-      if (error) {
-        console.error('Gagal mengambil ladies:', error.message);
-      } else {
-        setLadiesList(data || []);
-      }
-    };
+      if (error) throw error;
+      return (data ?? []) as Lady[];
+    },
+    meta: { errorLabel: 'data ladies' },
+  });
 
-    fetchLadies();
-  }, []);
+  const { data: bukuData } = useQuery({
+    queryKey: ['bukukuning-data', selectedLadyId, bulan, tahun, refreshKey],
+    queryFn: async () => {
+      const from = `${tahun}-${pad(bulan)}-01`;
+      const to = `${tahun}-${pad(bulan)}-${pad(
+        getLastDay(tahun, bulan)
+      )}`;
 
-  useEffect(() => {
-    if (!selectedLadyId) return;
+      const prevMonth = bulan === 1 ? 12 : bulan - 1;
+      const prevYear = bulan === 1 ? tahun - 1 : tahun;
 
-    const from = `${tahun}-${pad(bulan)}-01`;
-    const to = `${tahun}-${pad(bulan)}-${pad(
-      getLastDay(tahun, bulan)
-    )}`;
-
-    const prevMonth = bulan === 1 ? 12 : bulan - 1;
-    const prevYear = bulan === 1 ? tahun - 1 : tahun;
-
-    const fetchData = async () => {
       const { data: rekap } = await supabase
         .from('rekap_bulanan')
         .select('saldo_akhir')
@@ -217,14 +211,17 @@ const BukuKuningPage = () => {
         });
       });
 
-      setRekapAbsensi(absensi?.data || []);
+      return {
+        rows: fullRows,
+        rekapAbsensi: (absensi?.data || []) as Absensi[],
+      };
+    },
+    enabled: !!selectedLadyId,
+    meta: { errorLabel: 'data buku kuning' },
+  });
 
-      setRows(fullRows);
-
-    };
-
-    fetchData();
-  }, [selectedLadyId, bulan, tahun, refreshKey]);
+  const rows = bukuData?.rows ?? [];
+  const rekapAbsensi = bukuData?.rekapAbsensi ?? [];
 
   const handleTutupBuku = async () => {
     if (rows.length === 0) {

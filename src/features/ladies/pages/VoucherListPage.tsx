@@ -43,7 +43,7 @@ const VoucherListPage = () => {
     user?.ladies_id,
     selectedMonth,
     'voucher',
-    'id, tanggal, jumlah_voucher, keterangan'
+    'id, tanggal, jumlah_voucher'
   );
 
   const totalPcs = useMemo(
