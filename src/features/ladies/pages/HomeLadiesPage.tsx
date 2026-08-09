@@ -56,7 +56,7 @@ const HomeLadiesPage = () => {
 
         supabase
           .from('vouchers')
-          .select('jumlah_voucher')
+          .select('jumlah, jumlah_voucher')
           .eq('ladies_id', ladiesId as string)
           .gte('tanggal', tanggalAwal)
           .lte('tanggal', tanggalAkhir),
@@ -76,10 +76,13 @@ const HomeLadiesPage = () => {
       const totalVoucherPcs =
         vouchers?.reduce((sum, v) => sum + (v.jumlah_voucher || 0), 0) || 0;
 
+      const totalVoucherNominal =
+        vouchers?.reduce((sum, v) => sum + (v.jumlah || 0), 0) || 0;
+
       return {
         hariMasuk: absensi?.length || 0,
         voucherPcs: totalVoucherPcs,
-        voucherNominal: totalVoucherPcs * 150000,
+        voucherNominal: totalVoucherNominal,
         pengeluaran: kasbon?.reduce((sum, k) => sum + k.jumlah, 0) || 0,
       };
     },

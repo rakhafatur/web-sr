@@ -52,7 +52,7 @@ const SmartChatLadiesPage: React.FC = () => {
 
     const { data, error } = await supabase
       .from("vouchers")
-      .select("jumlah_voucher")
+      .select("jumlah, jumlah_voucher")
       .eq("ladies_id", ladiesId)
       .gte("tanggal", startOfMonth)
       .lte("tanggal", endOfMonth);
@@ -63,7 +63,10 @@ const SmartChatLadiesPage: React.FC = () => {
       (sum, v) => sum + (v.jumlah_voucher || 0),
       0
     );
-    const totalRp = totalPcs * 150000;
+    const totalRp = data.reduce(
+      (sum, v) => sum + (v.jumlah || 0),
+      0
+    );
 
     return {
       title: "Voucher Bulan Ini",

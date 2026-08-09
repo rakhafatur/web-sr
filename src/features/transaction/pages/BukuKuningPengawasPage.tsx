@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
 import { confirmDialog } from '../../../components/ConfirmDialog';
 import DataTable from '../../../components/DataTable';
 import logo from '../../../assets/logosr-black.png';
 import { useMediaQuery } from 'react-responsive';
-import { FiBook, FiPrinter } from 'react-icons/fi';
+import { FiBook, FiPrinter, FiLoader } from 'react-icons/fi';
 import ListPageHeader from '../../../components/ListPageHeader';
 import EmptyState from '../../../components/EmptyState';
 import {
@@ -30,33 +31,32 @@ const formatRupiah = (value: number | string) => {
 };
 
 const BukuKuningPengawasPage = () => {
-  const [pengawasList, setPengawasList] = useState<any[]>([]);
   const [selectedId, setSelectedId] = useState('');
   const [bulan, setBulan] = useState(new Date().getMonth() + 1);
   const [tahun, setTahun] = useState(new Date().getFullYear());
-  const [rows, setRows] = useState<any[]>([]);
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const pad = (n: number) => String(n).padStart(2, '0');
   const getLastDay = (year: number, month: number) => new Date(year, month, 0).getDate();
 
-  useEffect(() => {
-    const fetchPengawas = async () => {
-      const { data } = await supabase.from('pengawas').select('*');
-      setPengawasList(data || []);
-    };
-    fetchPengawas();
-  }, []);
+  const { data: pengawasList = [] } = useQuery({
+    queryKey: ['bukukuning-pengawas-list'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('pengawas').select('id, nama_panggilan');
+      if (error) throw error;
+      return data ?? [];
+    },
+    meta: { errorLabel: 'data pengawas' },
+  });
 
-  useEffect(() => {
-    if (!selectedId) return;
+  const { data: bukuData, isLoading: loadingBuku } = useQuery({
+    queryKey: ['bukukuning-pengawas-data', selectedId, bulan, tahun],
+    queryFn: async () => {
+      const from = `${tahun}-${pad(bulan)}-01`;
+      const to = `${tahun}-${pad(bulan)}-${pad(getLastDay(tahun, bulan))}`;
+      const prevMonth = bulan === 1 ? 12 : bulan - 1;
+      const prevYear = bulan === 1 ? tahun - 1 : tahun;
 
-    const from = `${tahun}-${pad(bulan)}-01`;
-    const to = `${tahun}-${pad(bulan)}-${pad(getLastDay(tahun, bulan))}`;
-    const prevMonth = bulan === 1 ? 12 : bulan - 1;
-    const prevYear = bulan === 1 ? tahun - 1 : tahun;
-
-    const fetchData = async () => {
       // Ambil saldo akhir bulan sebelumnya
       const { data: rekap } = await supabase
         .from('rekap_bulanan_pengawas')
@@ -121,11 +121,13 @@ const BukuKuningPengawasPage = () => {
         fullRows.push({ ...trx, saldo });
       });
 
-      setRows(fullRows);
-    };
+      return fullRows;
+    },
+    enabled: !!selectedId,
+    meta: { errorLabel: 'data buku kuning pengawas' },
+  });
 
-    fetchData();
-  }, [selectedId, bulan, tahun]);
+  const rows = bukuData ?? [];
 
   // === Perubahan hanya di sini: logic tutup buku ===
   const handleTutupBuku = async () => {
@@ -514,7 +516,15 @@ const BukuKuningPengawasPage = () => {
 
       {selectedId && (
         <>
-          {rows.length > 0 ? (
+          {loadingBuku ? (
+            <div
+              className="d-flex justify-content-center p-4"
+              role="status"
+              aria-label="Loading"
+            >
+              <FiLoader size={20} className="spinner-icon" />
+            </div>
+          ) : rows.length > 0 ? (
             !isMobile && (
               <DataTable
                 columns={[

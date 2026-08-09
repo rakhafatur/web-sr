@@ -22,6 +22,9 @@ import {
 
 type VoucherRow = {
   jumlah: number;
+  jumlah_voucher: number;
+  outlet: string | null;
+  untung: number | null;
   tanggal: string;
   ladies: {
     id: string;
@@ -36,6 +39,7 @@ type OutletGroup = {
     nama_ladies: string;
     totalVoucher: number;
     totalNominal: number;
+    totalUntung: number;
   }[];
 };
 
@@ -70,11 +74,17 @@ const RekapVoucherPage = () => {
   const [totalNominalAll, setTotalNominalAll] =
     useState(0);
 
+  const [totalUntungAll, setTotalUntungAll] =
+    useState(0);
+
   const fetchData = async () => {
     const { data, error } = await supabase
       .from('vouchers')
       .select(`
         jumlah,
+        jumlah_voucher,
+        outlet,
+        untung,
         tanggal,
         ladies (
           id,
@@ -93,6 +103,9 @@ const RekapVoucherPage = () => {
 
     const vouchers = (data as any[]).map((v) => ({
       jumlah: v.jumlah,
+      jumlah_voucher: v.jumlah_voucher,
+      outlet: v.outlet,
+      untung: v.untung,
       tanggal: v.tanggal,
       ladies: v.ladies,
     })) as VoucherRow[];
@@ -104,6 +117,7 @@ const RekapVoucherPage = () => {
 
     let totalVoucher = 0;
     let totalNominal = 0;
+    let totalUntung = 0;
 
     vouchers.forEach((v) => {
       const lady = v.ladies;
@@ -111,16 +125,22 @@ const RekapVoucherPage = () => {
       if (!lady) return;
 
       const outlet =
-        lady.nama_outlet || 'Tanpa Outlet';
+        v.outlet || lady.nama_outlet || 'Tanpa Outlet';
 
       const nama = lady.nama_ladies;
 
       const nominal = Number(v.jumlah);
 
-      const pcs = nominal / 150000;
+      const pcs = Number(v.jumlah_voucher || 0);
+
+      const untung =
+        v.untung != null
+          ? Number(v.untung)
+          : pcs * 75000;
 
       totalVoucher += pcs;
       totalNominal += nominal;
+      totalUntung += untung;
 
       if (!grouped[outlet]) {
         grouped[outlet] = {
@@ -138,11 +158,13 @@ const RekapVoucherPage = () => {
       if (existing) {
         existing.totalVoucher += pcs;
         existing.totalNominal += nominal;
+        existing.totalUntung += untung;
       } else {
         grouped[outlet].data.push({
           nama_ladies: nama,
           totalVoucher: pcs,
           totalNominal: nominal,
+          totalUntung: untung,
         });
       }
     });
@@ -154,6 +176,8 @@ const RekapVoucherPage = () => {
     setTotalVoucherAll(totalVoucher);
 
     setTotalNominalAll(totalNominal);
+
+    setTotalUntungAll(totalUntung);
   };
 
   const handleExportPDF = async () => {
@@ -480,8 +504,7 @@ const RekapVoucherPage = () => {
                     'Total Hasil',
                   value:
                     formatRupiah(
-                      totalVoucherAll *
-                      75000
+                      totalUntungAll
                     ),
                   icon: (
                     <FiTrendingUp />
@@ -495,8 +518,8 @@ const RekapVoucherPage = () => {
                     'Total Didapat',
                   value:
                     formatRupiah(
-                      totalVoucherAll *
-                      225000
+                      totalNominalAll +
+                      totalUntungAll
                     ),
                   icon: <FiUsers />,
                   bg: 'var(--color-purple-soft)',
@@ -617,13 +640,20 @@ const RekapVoucherPage = () => {
                     0
                   );
 
+                const totalUntung =
+                  outletGroup.data.reduce(
+                    (sum, d) =>
+                      sum +
+                      d.totalUntung,
+                    0
+                  );
+
                 const totalHasil =
-                  totalVoucher *
-                  75000;
+                  totalUntung;
 
                 const totalDidapat =
-                  totalVoucher *
-                  225000;
+                  totalNominal +
+                  totalUntung;
 
                 return (
                   <div
@@ -863,8 +893,7 @@ const RekapVoucherPage = () => {
                                       }}
                                     >
                                       {formatRupiah(
-                                        row.totalVoucher *
-                                        75000
+                                        row.totalUntung
                                       )}
                                     </div>
                                   </div>
@@ -926,8 +955,7 @@ const RekapVoucherPage = () => {
                                 row: any
                               ) =>
                                 formatRupiah(
-                                  row.totalVoucher *
-                                  75000
+                                  row.totalUntung
                                 ),
                             },
 
@@ -942,8 +970,8 @@ const RekapVoucherPage = () => {
                                 row: any
                               ) =>
                                 formatRupiah(
-                                  row.totalVoucher *
-                                  225000
+                                  row.totalNominal +
+                                  row.totalUntung
                                 ),
                             },
                           ]}
@@ -957,10 +985,10 @@ const RekapVoucherPage = () => {
                               ...row,
 
                               totalHasil:
-                                row.totalVoucher * 75000,
+                                row.totalUntung,
 
                               totalDidapat:
-                                row.totalVoucher * 225000,
+                                row.totalNominal + row.totalUntung,
                             })
                           )}
                         />

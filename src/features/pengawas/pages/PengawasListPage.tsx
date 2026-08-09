@@ -33,7 +33,12 @@ const PengawasListPage = () => {
     keyword,
     setKeyword,
     remove,
-  } = useEntityList<Pengawas>('pengawas', ['nama_lengkap', 'nama_panggilan'], limit);
+  } = useEntityList<Pengawas>(
+    'pengawas',
+    ['nama_lengkap', 'nama_panggilan'],
+    limit,
+    'id, nama_lengkap, nama_panggilan'
+  );
 
   const handleDelete = (id: string) => remove(id, 'Yakin ingin hapus pengawas ini?');
 

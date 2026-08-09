@@ -6,7 +6,7 @@ import { confirmDialog } from '../../../components/ConfirmDialog';
 import DataTable from '../../../components/DataTable';
 import logo from '../../../assets/logosr-black.png';
 import { useMediaQuery } from 'react-responsive';
-import { FiBook, FiPrinter, FiRepeat } from 'react-icons/fi';
+import { FiBook, FiPrinter, FiRepeat, FiLoader } from 'react-icons/fi';
 import ListPageHeader from '../../../components/ListPageHeader';
 import HeaderActionButton from '../../../components/HeaderActionButton';
 import EmptyState from '../../../components/EmptyState';
@@ -68,7 +68,7 @@ const BukuKuningPage = () => {
     meta: { errorLabel: 'data ladies' },
   });
 
-  const { data: bukuData } = useQuery({
+  const { data: bukuData, isLoading: loadingBuku } = useQuery({
     queryKey: ['bukukuning-data', selectedLadyId, bulan, tahun, refreshKey],
     queryFn: async () => {
       const from = `${tahun}-${pad(bulan)}-01`;
@@ -92,7 +92,7 @@ const BukuKuningPage = () => {
       const [vouchers, kasbon, pemasukan, dokter, absensi] = await Promise.all([
         supabase
           .from('vouchers')
-          .select('tanggal, jumlah')
+          .select('tanggal, jumlah, jumlah_voucher')
           .eq('ladies_id', selectedLadyId)
           .gte('tanggal', from)
           .lte('tanggal', to),
@@ -135,7 +135,7 @@ const BukuKuningPage = () => {
         transaksi.push({
           tanggal: v.tanggal,
           keterangan: 'Voucher',
-          voucher: v.jumlah / 150000,
+          voucher: v.jumlah_voucher,
           pemasukan: Number(v.jumlah),
           pengeluaran: '',
           saldo: 0,
@@ -867,7 +867,15 @@ const BukuKuningPage = () => {
 
       {selectedLadyId && (
         <>
-          {rows.length > 0 ? (
+          {loadingBuku ? (
+            <div
+              className="d-flex justify-content-center p-4"
+              role="status"
+              aria-label="Loading"
+            >
+              <FiLoader size={20} className="spinner-icon" />
+            </div>
+          ) : rows.length > 0 ? (
             !isMobile && (
               <DataTable
                 columns={[

@@ -51,7 +51,7 @@ const SmartChatPage: React.FC = () => {
 
     const { data, error } = await supabase
       .from("vouchers")
-      .select("jumlah")
+      .select("jumlah, jumlah_voucher, untung")
       .gte("tanggal", startOfMonth)
       .lte("tanggal", endOfMonth)
       .not("ladies_id", "is", null);
@@ -61,10 +61,19 @@ const SmartChatPage: React.FC = () => {
     const totalNominal =
       data?.reduce((sum, v: any) => sum + Number(v.jumlah), 0) || 0;
 
-    const totalVoucher = totalNominal / 150000;
+    const totalVoucher =
+      data?.reduce((sum, v: any) => sum + Number(v.jumlah_voucher || 0), 0) || 0;
     const totalLadies = totalNominal;
-    const totalKeuntungan = totalVoucher * 75000;
-    const totalKeseluruhan = totalVoucher * 225000;
+    const totalKeuntungan =
+      data?.reduce(
+        (sum, v: any) =>
+          sum +
+          (v.untung != null
+            ? Number(v.untung)
+            : Number(v.jumlah_voucher || 0) * 75000),
+        0
+      ) || 0;
+    const totalKeseluruhan = totalNominal + totalKeuntungan;
 
     return {
       title: "Voucher Bulan Ini",
@@ -109,7 +118,7 @@ const SmartChatPage: React.FC = () => {
 
     const { data, error } = await supabase
       .from("vouchers")
-      .select("jumlah")
+      .select("jumlah, jumlah_voucher, untung")
       .gte("tanggal", startOfWeek.format("YYYY-MM-DD"))
       .lte("tanggal", endOfWeek.format("YYYY-MM-DD"))
       .not("ladies_id", "is", null);
@@ -119,10 +128,19 @@ const SmartChatPage: React.FC = () => {
     const totalNominal =
       data?.reduce((sum, v: any) => sum + Number(v.jumlah), 0) || 0;
 
-    const totalVoucher = totalNominal / 150000;
+    const totalVoucher =
+      data?.reduce((sum, v: any) => sum + Number(v.jumlah_voucher || 0), 0) || 0;
     const totalLadies = totalNominal;
-    const totalKeuntungan = totalVoucher * 75000;
-    const totalKeseluruhan = totalVoucher * 225000;
+    const totalKeuntungan =
+      data?.reduce(
+        (sum, v: any) =>
+          sum +
+          (v.untung != null
+            ? Number(v.untung)
+            : Number(v.jumlah_voucher || 0) * 75000),
+        0
+      ) || 0;
+    const totalKeseluruhan = totalNominal + totalKeuntungan;
 
     return {
       title: "Voucher Minggu Ini",
@@ -170,7 +188,7 @@ const SmartChatPage: React.FC = () => {
 
     const { data: voucherData } = await supabase
       .from("vouchers")
-      .select("jumlah, ladies_id")
+      .select("jumlah_voucher, ladies_id")
       .gte("tanggal", startOfMonth)
       .lte("tanggal", endOfMonth);
 
@@ -182,7 +200,7 @@ const SmartChatPage: React.FC = () => {
 
     voucherData?.forEach((v) => {
       if (v.ladies_id && totals[v.ladies_id] !== undefined) {
-        totals[v.ladies_id] += Number(v.jumlah) / 150000;
+        totals[v.ladies_id] += Number(v.jumlah_voucher || 0);
       }
     });
 

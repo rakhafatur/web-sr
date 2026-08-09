@@ -9,11 +9,14 @@ import Pagination from '../../../components/Pagination';
 import EmptyState from '../../../components/EmptyState';
 import { useMediaQuery } from 'react-responsive';
 import CardTableRiwayatTransaksi from './CardTableRiwayatTransaksi';
+import MonthNavigator from '../../ladies/components/MonthNavigator';
+import { useMonthNavigation } from '../../ladies/hooks/useMonthNavigation';
 import dayjs from 'dayjs';
 
 import {
   FiSearch,
   FiTrash2,
+  FiLoader,
 } from 'react-icons/fi';
 
 type Props = {
@@ -41,6 +44,29 @@ const RiwayatTransaksiPengawas = ({ pengawasId }: Props) => {
   const [sortKey, setSortKey] = useState<keyof Transaksi>('tanggal');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
+  const {
+    selectedMonth,
+    handleMonthChange,
+    prevMonth,
+    nextMonth,
+    isNextDisabled,
+  } = useMonthNavigation();
+
+  const handleMonthChangeAndResetPage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleMonthChange(e);
+    setPage(1);
+  };
+
+  const handlePrevMonth = () => {
+    prevMonth();
+    setPage(1);
+  };
+
+  const handleNextMonth = () => {
+    nextMonth();
+    setPage(1);
+  };
+
   const limit = isMobile ? 5 : 10;
 
   const getTableName = (tipe: string) => {
@@ -55,14 +81,28 @@ const RiwayatTransaksiPengawas = ({ pengawasId }: Props) => {
   };
 
   const queryClient = useQueryClient();
-  const queryKey = ['riwayat-transaksi-pengawas', pengawasId];
+  const monthKey = selectedMonth.format('YYYY-MM');
+  const queryKey = ['riwayat-transaksi-pengawas', pengawasId, monthKey];
 
   const { data: rawData = [], isLoading: loading, refetch } = useQuery({
     queryKey,
     queryFn: async () => {
+      const bulanAwal = selectedMonth.startOf('month').format('YYYY-MM-DD');
+      const bulanAkhir = selectedMonth.endOf('month').format('YYYY-MM-DD');
+
       const [kasbon, gaji] = await Promise.all([
-        supabase.from('kasbon_pengawas').select('*').eq('pengawas_id', pengawasId),
-        supabase.from('gaji_pengawas').select('*').eq('pengawas_id', pengawasId),
+        supabase
+          .from('kasbon_pengawas')
+          .select('id, tanggal, jumlah, keterangan')
+          .eq('pengawas_id', pengawasId)
+          .gte('tanggal', bulanAwal)
+          .lte('tanggal', bulanAkhir),
+        supabase
+          .from('gaji_pengawas')
+          .select('id, tanggal, jumlah, keterangan')
+          .eq('pengawas_id', pengawasId)
+          .gte('tanggal', bulanAwal)
+          .lte('tanggal', bulanAkhir),
       ]);
 
       const combined: Transaksi[] = [
@@ -197,6 +237,15 @@ const RiwayatTransaksiPengawas = ({ pengawasId }: Props) => {
 
   return (
     <div className="mt-3">
+      <div className="mb-3" style={{ maxWidth: isMobile ? undefined : 320 }}>
+        <MonthNavigator
+          selectedMonth={selectedMonth}
+          onChange={handleMonthChangeAndResetPage}
+          onPrev={handlePrevMonth}
+          onNext={handleNextMonth}
+          nextDisabled={isNextDisabled}
+        />
+      </div>
 
       {/* FILTER + SEARCH */}
       {!isMobile && (
@@ -263,7 +312,15 @@ const RiwayatTransaksiPengawas = ({ pengawasId }: Props) => {
       )}
 
       {/* TABLE */}
-      {isMobile ? (
+      {loading ? (
+        <div
+          className="d-flex justify-content-center p-4"
+          role="status"
+          aria-label="Loading"
+        >
+          <FiLoader size={20} className="spinner-icon" />
+        </div>
+      ) : isMobile ? (
         <CardTableRiwayatTransaksi
           data={data}
           page={page - 1}

@@ -29,6 +29,7 @@ type Transaksi = {
   tipe: string;
   tipeLabel: string;
   jumlah: number;
+  jumlah_voucher?: number;
   keterangan?: string;
   priority: number;
 };
@@ -123,7 +124,7 @@ const RiwayatTransaksi = ({
       ] = await Promise.all([
         supabase
           .from('vouchers')
-          .select('id, tanggal, jumlah')
+          .select('id, tanggal, jumlah, jumlah_voucher')
           .eq(
             'ladies_id',
             ladiesId
@@ -665,10 +666,8 @@ const RiwayatTransaksi = ({
                         }}
                       >
                         Voucher{' '}
-                        {row.jumlah /
-                          150000}{' '}
-                        x
-                        150.000
+                        {row.jumlah_voucher}{' '}
+                        pcs
                       </span>
                     ) : (
                       row.keterangan ||

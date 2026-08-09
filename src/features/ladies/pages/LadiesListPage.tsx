@@ -36,7 +36,12 @@ const LadiesListPage = () => {
     keyword,
     setKeyword,
     remove,
-  } = useEntityList<Lady>('ladies', ['nama_lengkap', 'nama_ladies', 'nama_outlet'], limit);
+  } = useEntityList<Lady>(
+    'ladies',
+    ['nama_lengkap', 'nama_ladies', 'nama_outlet'],
+    limit,
+    'id, nama_lengkap, nama_ladies, nama_outlet, pin, status'
+  );
 
   const handleDelete = (id: string) => remove(id, '❗ Yakin ingin hapus data ladies ini?');
 

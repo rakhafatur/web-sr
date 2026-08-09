@@ -8,6 +8,7 @@ type Transaksi = {
   tipe: string;
   tipeLabel: string;
   jumlah: number;
+  jumlah_voucher?: number;
   keterangan?: string;
   priority: number;
 };
@@ -209,10 +210,7 @@ const CardTableRiwayatTransaksi = ({
             >
               {row.tipe ===
               'voucher'
-                ? `${
-                    row.jumlah /
-                    150000
-                  }× voucher`
+                ? `${row.jumlah_voucher}× voucher`
                 : row.keterangan ||
                   '-'}
             </div>

@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
 import FormField from '../../../components/FormField';
 import Button from '../../../components/Button';
+import { getHargaVoucher, getUntungVoucher } from '../utils/hargaVoucher';
 import {
   FiGift,
   FiTrendingUp,
@@ -48,6 +49,8 @@ type TransaksiPayload = {
   jumlah: number;
   jumlah_voucher?: number;
   keterangan?: string;
+  outlet?: string;
+  untung?: number;
 };
 
 const TransaksiForm = ({
@@ -208,11 +211,7 @@ const TransaksiForm = ({
         );
 
       const hargaVoucher =
-        outlet === 'Travel'
-          ? travelType === 'Single'
-            ? 105000
-            : 95000
-          : 150000;
+        getHargaVoucher(outlet, travelType);
 
       const jumlah =
         jumlahVoucher * hargaVoucher;
@@ -221,6 +220,12 @@ const TransaksiForm = ({
         jumlahVoucher;
 
       payload.jumlah = jumlah;
+
+      payload.outlet = outlet;
+
+      payload.untung =
+        jumlahVoucher *
+        getUntungVoucher(outlet, travelType);
     } else {
       payload.jumlah = parseFloat(
         unformatNumber(form.jumlah)
@@ -241,11 +246,7 @@ const TransaksiForm = ({
     );
 
   const hargaVoucher =
-    outlet === 'Travel'
-      ? travelType === 'Single'
-        ? 105000
-        : 95000
-      : 150000;
+    getHargaVoucher(outlet, travelType);
 
   const totalJumlah = isNaN(
     jumlahVoucherRaw

@@ -16,12 +16,12 @@ import { useLedgerData } from '../hooks/useLedgerData';
 type Voucher = {
   id: string;
   tanggal: string;
+  jumlah: number;
   jumlah_voucher: number;
   keterangan?: string;
 };
 
 const rowsPerPage = 5;
-const HARGA_PER_VOUCHER = 150000;
 
 const VoucherListPage = () => {
   const user = useSelector(
@@ -43,7 +43,7 @@ const VoucherListPage = () => {
     user?.ladies_id,
     selectedMonth,
     'voucher',
-    'id, tanggal, jumlah_voucher'
+    'id, tanggal, jumlah, jumlah_voucher'
   );
 
   const totalPcs = useMemo(
@@ -51,7 +51,10 @@ const VoucherListPage = () => {
     [vouchers]
   );
 
-  const totalRp = totalPcs * HARGA_PER_VOUCHER;
+  const totalRp = useMemo(
+    () => vouchers.reduce((sum, v) => sum + (v.jumlah || 0), 0),
+    [vouchers]
+  );
 
   if (loading) {
     return <LedgerLoadingState text="Memuat voucher..." />;
@@ -100,7 +103,7 @@ const VoucherListPage = () => {
                 color="var(--color-voucher)"
                 colorSoft="var(--color-voucher-soft)"
                 mainValue={<>{row.jumlah_voucher} pcs</>}
-                subValue={<>Rp{(row.jumlah_voucher * HARGA_PER_VOUCHER).toLocaleString('id-ID')}</>}
+                subValue={<>Rp{(row.jumlah || 0).toLocaleString('id-ID')}</>}
                 keterangan={row.keterangan}
                 index={index}
               />

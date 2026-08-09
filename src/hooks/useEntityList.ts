@@ -16,7 +16,8 @@ import { sanitizeSearchKeyword } from '../utils/sanitizeSearch';
 export function useEntityList<T extends { id: string }>(
   table: string,
   searchColumns: string[],
-  pageSize: number
+  pageSize: number,
+  columns = '*'
 ) {
   const [page, setPage] = useState(1);
   const [keyword, setKeyword] = useState('');
@@ -30,7 +31,7 @@ export function useEntityList<T extends { id: string }>(
 
       let q = supabase
         .from(table)
-        .select('*', { count: 'exact' })
+        .select(columns, { count: 'exact' })
         .range(from, to);
 
       const safeKeyword = sanitizeSearchKeyword(keyword.trim());
@@ -46,7 +47,7 @@ export function useEntityList<T extends { id: string }>(
 
       if (error) throw error;
 
-      return { list: (data as T[]) || [], total: count || 0 };
+      return { list: (data as unknown as T[]) || [], total: count || 0 };
     },
     meta: { errorLabel: 'data' },
   });

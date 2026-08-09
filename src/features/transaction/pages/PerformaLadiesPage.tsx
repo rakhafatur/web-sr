@@ -19,6 +19,7 @@ import {
   FiTrendingDown,
   FiAward,
   FiUsers,
+  FiLoader,
 } from 'react-icons/fi';
 
 const monthNames = [
@@ -76,7 +77,7 @@ const PerformaLadiesPage = () => {
       const endDate = dayjs(`${tahun}-${monthStr}-01`).endOf('month');
 
       const [vouchers, kasbon, pemasukan, absensi] = await Promise.all([
-        supabase.from('vouchers').select('jumlah, tanggal, ladies_id').gte('tanggal', startDate.format('YYYY-MM-DD')).lte('tanggal', endDate.format('YYYY-MM-DD')),
+        supabase.from('vouchers').select('jumlah, jumlah_voucher, tanggal, ladies_id').gte('tanggal', startDate.format('YYYY-MM-DD')).lte('tanggal', endDate.format('YYYY-MM-DD')),
         supabase.from('kasbon').select('jumlah, tanggal, ladies_id').gte('tanggal', startDate.format('YYYY-MM-DD')).lte('tanggal', endDate.format('YYYY-MM-DD')),
         supabase.from('pemasukan_lain').select('jumlah, tanggal, ladies_id').gte('tanggal', startDate.format('YYYY-MM-DD')).lte('tanggal', endDate.format('YYYY-MM-DD')),
         supabase.from('absensi').select('status, tanggal, ladies_id').gte('tanggal', startDate.format('YYYY-MM-DD')).lte('tanggal', endDate.format('YYYY-MM-DD')),
@@ -101,7 +102,8 @@ const PerformaLadiesPage = () => {
 
       (vouchers.data || []).forEach((v) => {
         if (v.ladies_id && summaryMap[v.ladies_id]) {
-          summaryMap[v.ladies_id].voucherTotal += Number(v.jumlah || 0) / 150000;
+          summaryMap[v.ladies_id].voucherTotal += Number(v.jumlah_voucher || 0);
+          summaryMap[v.ladies_id].pendapatanVoucher += Number(v.jumlah || 0);
         }
       });
 
@@ -120,16 +122,11 @@ const PerformaLadiesPage = () => {
         if (['kerja', 'masuk', 'hadir'].includes(status)) summaryMap[id].masuk += 1;
       });
 
-      return Object.values(summaryMap).map((row) => {
-        const pendapatanVoucher = row.voucherTotal * 150000;
-
-        return {
-          ...row,
-          voucherAvg: row.masuk > 0 ? row.voucherTotal / row.masuk : 0,
-          pendapatanVoucher,
-          total: row.pemasukan + pendapatanVoucher - row.kasbon,
-        };
-      });
+      return Object.values(summaryMap).map((row) => ({
+        ...row,
+        voucherAvg: row.masuk > 0 ? row.voucherTotal / row.masuk : 0,
+        total: row.pemasukan + row.pendapatanVoucher - row.kasbon,
+      }));
     },
     enabled: ladiesList.length > 0,
     meta: { errorLabel: 'performa ladies' },
@@ -252,6 +249,17 @@ const PerformaLadiesPage = () => {
           </div>
         </div>
       </div>
+
+      {/* LOADING */}
+      {loading && (
+        <div
+          className="d-flex justify-content-center p-4"
+          role="status"
+          aria-label="Loading"
+        >
+          <FiLoader size={20} className="spinner-icon" />
+        </div>
+      )}
 
       {/* EMPTY STATE */}
       {!loading && data.length === 0 && (
