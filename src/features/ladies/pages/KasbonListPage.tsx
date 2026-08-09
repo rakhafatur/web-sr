@@ -41,7 +41,8 @@ const KasbonListPage = () => {
     'kasbon',
     user?.ladies_id,
     selectedMonth,
-    'kasbon'
+    'kasbon',
+    'id, tanggal, jumlah, keterangan'
   );
 
   const totalJumlah = useMemo(

@@ -1,12 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
-import { FiPlus, FiEdit2, FiTrash2, FiUser, FiSearch } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiUser } from 'react-icons/fi';
 import { useEntityList } from '../../../hooks/useEntityList';
 import DataTable from '../../../components/DataTable';
 import ActionIconButton from '../../../components/ActionIconButton';
 import Pagination from '../../../components/Pagination';
 import ListPageHeader from '../../../components/ListPageHeader';
 import HeaderActionButton from '../../../components/HeaderActionButton';
+import ListPageToolbar from '../../../components/ListPageToolbar';
 import LadiesCardList from '../components/LadiesCardList';
 
 export type Lady = {
@@ -57,55 +58,16 @@ const LadiesListPage = () => {
       />
 
       <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
-        {/* TOPBAR */}
-        <div className="px-3 py-3 border-bottom bg-light">
-          <div className="d-flex justify-content-between align-items-center gap-2 flex-wrap">
-            <div>
-              <div className="fw-bold">List Ladies</div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--color-gray-500)' }}>
-                Data ladies
-              </div>
-            </div>
-
-            {!isMobile && (
-              <div style={{ width: 300, position: 'relative' }}>
-                <FiSearch
-                  style={{
-                    position: 'absolute',
-                    top: 12,
-                    left: 12,
-                    color: 'var(--color-gray-500)',
-                  }}
-                />
-                <input
-                  className="form-control form-control-sm"
-                  style={{ paddingLeft: 35, borderRadius: 10 }}
-                  placeholder="Cari ladies..."
-                  value={keyword}
-                  onChange={(e) => {
-                    setPage(1);
-                    setKeyword(e.target.value);
-                  }}
-                />
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* MOBILE SEARCH */}
-        {isMobile && (
-          <div className="p-2 border-bottom">
-            <input
-              className="form-control form-control-sm"
-              placeholder="Cari ladies..."
-              value={keyword}
-              onChange={(e) => {
-                setPage(1);
-                setKeyword(e.target.value);
-              }}
-            />
-          </div>
-        )}
+        <ListPageToolbar
+          title="List Ladies"
+          subtitle="Data ladies"
+          placeholder="Cari ladies..."
+          keyword={keyword}
+          onKeywordChange={(value) => {
+            setPage(1);
+            setKeyword(value);
+          }}
+        />
 
         {/* BODY */}
         <div className="p-2 p-md-3">

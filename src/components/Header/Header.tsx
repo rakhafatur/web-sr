@@ -97,15 +97,29 @@ function Header() {
 
         <div
           className={`avatar-wrapper ${menuOpen ? 'active' : ''}`}
+          role="button"
+          tabIndex={0}
+          aria-haspopup="menu"
+          aria-expanded={menuOpen}
+          aria-label="Menu akun pengguna"
           onClick={(e) => {
             e.stopPropagation();
             setMenuOpen((prev) => !prev);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              e.stopPropagation();
+              setMenuOpen((prev) => !prev);
+            } else if (e.key === 'Escape') {
+              setMenuOpen(false);
+            }
           }}
         >
           <div className="avatar-circle">{getInitial()}</div>
           <FiChevronDown className={`avatar-chevron ${menuOpen ? 'rotate' : ''}`} />
 
-          <div className={`dropdown-menu ${menuOpen ? 'show' : ''}`}>
+          <div className={`dropdown-menu ${menuOpen ? 'show' : ''}`} role="menu">
             <div className="dropdown-user-info">
               <div className="dropdown-avatar">{getInitial()}</div>
               <div>

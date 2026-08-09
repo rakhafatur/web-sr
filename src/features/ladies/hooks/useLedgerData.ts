@@ -11,7 +11,8 @@ export function useLedgerData<T>(
   table: string,
   ladiesId: string | undefined,
   selectedMonth: Dayjs,
-  errorLabel: string
+  errorLabel: string,
+  columns = '*'
 ) {
   const monthKey = selectedMonth.format('YYYY-MM');
 
@@ -23,7 +24,7 @@ export function useLedgerData<T>(
 
       const { data, error } = await supabase
         .from(table)
-        .select('*')
+        .select(columns)
         .eq('ladies_id', ladiesId as string)
         .gte('tanggal', bulanAwal.format('YYYY-MM-DD'))
         .lte('tanggal', bulanAkhir.format('YYYY-MM-DD'))

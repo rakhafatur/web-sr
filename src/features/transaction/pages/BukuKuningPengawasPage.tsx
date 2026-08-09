@@ -3,8 +3,6 @@ import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
 import { confirmDialog } from '../../../components/ConfirmDialog';
 import DataTable from '../../../components/DataTable';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import logo from '../../../assets/logosr-black.png';
 import { useMediaQuery } from 'react-responsive';
 import { FiBook, FiPrinter } from 'react-icons/fi';
@@ -155,7 +153,10 @@ const BukuKuningPengawasPage = () => {
     else toast.success('Buku bulan ini ditutup dan saldo disimpan.');
   };
 
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
+
     const doc = new jsPDF('p', 'mm', 'a4');
     const img = new Image();
     img.src = logo;

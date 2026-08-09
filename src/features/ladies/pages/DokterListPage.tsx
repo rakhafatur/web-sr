@@ -41,7 +41,8 @@ const DokterListPage = () => {
     'dokter',
     user?.ladies_id,
     selectedMonth,
-    'dokter'
+    'dokter',
+    'id, tanggal, jumlah, keterangan'
   );
 
   const totalJumlah = useMemo(

@@ -48,6 +48,7 @@
   /* ===== Kategori transaksi (semantic) ===== */
   --color-income: #57c98a;
   --color-income-soft: #10281c;
+  --color-income-deep: #15803d;
   --color-expense: #e2666f;
   --color-expense-soft: #33181b;
   --color-expense-deep: #b91c1c;
@@ -56,6 +57,11 @@
   --color-voucher: #f2a94e;
   --color-voucher-soft: #332711;
   --color-voucher-deep: #a16207;
+
+  /* Aksen ke-4 untuk kartu statistik yang butuh lebih dari 3 warna kategori
+     di atas (mis. "Total Didapat" di RekapVoucherPage). */
+  --color-purple: #a78bfa;
+  --color-purple-soft: #2a2340;
 
   /* ===== Semantic UI state =====
      Satu-satunya sumber warna primary/success/warning/danger di seluruh app.

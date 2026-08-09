@@ -7,7 +7,7 @@ type FooterContext = {
   onPageChange: (newPage: number) => void;
 };
 
-type Props<T> = {
+type Props<T extends { id: string | number }> = {
   data: T[];
   page: number;
   rowsPerPage: number;
@@ -19,7 +19,7 @@ type Props<T> = {
   rowClassName?: string;
 };
 
-function CardTable<T>({
+function CardTable<T extends { id: string | number }>({
   data,
   page,
   rowsPerPage,
@@ -35,7 +35,7 @@ function CardTable<T>({
     <>
       {paginatedRows.map((item, index) => (
         <div
-          key={index}
+          key={item.id}
           className={rowClassName}
           style={{
             backgroundColor: 'var(--color-surface)',

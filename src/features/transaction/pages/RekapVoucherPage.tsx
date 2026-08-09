@@ -8,9 +8,6 @@ import DataTable from '../../../components/DataTable';
 import Button from '../../../components/Button';
 import FeaturePageHeader from '../../../components/FeaturePageHeader';
 
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-
 import logo from '../../../assets/logosr-black.png';
 
 import {
@@ -159,7 +156,10 @@ const RekapVoucherPage = () => {
     setTotalNominalAll(totalNominal);
   };
 
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
+
     const doc = new jsPDF();
 
     const img = new Image();
@@ -499,8 +499,8 @@ const RekapVoucherPage = () => {
                       225000
                     ),
                   icon: <FiUsers />,
-                  bg: '#2a2340',
-                  color: '#a78bfa',
+                  bg: 'var(--color-purple-soft)',
+                  color: 'var(--color-purple)',
                 },
               ].map((item) => (
                 <div

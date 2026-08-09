@@ -24,19 +24,19 @@ const variantStyles: Record<Variant, React.CSSProperties> = {
     fontWeight: 700,
   },
   success: {
-    background: 'linear-gradient(135deg, var(--color-success), #15803d)',
+    background: 'linear-gradient(135deg, var(--color-success), var(--color-income-deep))',
     color: 'white',
     boxShadow: '0 10px 25px rgba(var(--color-success-rgb),0.3)',
     fontWeight: 700,
   },
   warning: {
-    background: 'linear-gradient(135deg, var(--color-warning-solid), #c9820f)',
+    background: 'linear-gradient(135deg, var(--color-warning-solid), var(--color-voucher-deep))',
     color: 'white',
     boxShadow: '0 10px 25px rgba(var(--color-warning-solid-rgb),0.3)',
     fontWeight: 700,
   },
   danger: {
-    background: 'linear-gradient(135deg, var(--color-danger-solid), #b91c1c)',
+    background: 'linear-gradient(135deg, var(--color-danger-solid), var(--color-expense-deep))',
     color: 'white',
     boxShadow: '0 10px 25px rgba(var(--color-danger-solid-rgb),0.3)',
     fontWeight: 700,

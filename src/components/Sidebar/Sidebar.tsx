@@ -34,6 +34,7 @@ function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps) {
         onClick={onToggleCollapse}
         className="sidebar-toggle-btn"
         title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       >
         {isCollapsed ? <FiChevronRight /> : <FiChevronLeft />}
       </button>
@@ -49,7 +50,17 @@ function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps) {
         <li>
           <div
             className="nav-link sidebar-link fw-bold d-flex align-items-center justify-content-between"
+            role="button"
+            tabIndex={0}
+            aria-expanded={showParameter}
+            aria-label="Parameter"
             onClick={() => setShowParameter((p) => !p)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setShowParameter((p) => !p);
+              }
+            }}
             style={{ cursor: 'pointer' }}
           >
             <div>
@@ -94,7 +105,17 @@ function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps) {
         <li>
           <div
             className="nav-link sidebar-link fw-bold d-flex align-items-center justify-content-between"
+            role="button"
+            tabIndex={0}
+            aria-expanded={showTransaksiLadies}
+            aria-label="Transaksi Ladies"
             onClick={() => setShowTransaksiLadies((p) => !p)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setShowTransaksiLadies((p) => !p);
+              }
+            }}
             style={{ cursor: 'pointer' }}
           >
             <div>
@@ -124,7 +145,17 @@ function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps) {
         <li>
           <div
             className="nav-link sidebar-link fw-bold d-flex align-items-center justify-content-between"
+            role="button"
+            tabIndex={0}
+            aria-expanded={showTransaksiPengawas}
+            aria-label="Transaksi Pengawas"
             onClick={() => setShowTransaksiPengawas((p) => !p)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setShowTransaksiPengawas((p) => !p);
+              }
+            }}
             style={{ cursor: 'pointer' }}
           >
             <div>

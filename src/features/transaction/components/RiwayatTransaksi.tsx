@@ -93,7 +93,7 @@ const RiwayatTransaksi = ({
       ] = await Promise.all([
         supabase
           .from('vouchers')
-          .select('*')
+          .select('id, tanggal, jumlah, keterangan')
           .eq(
             'ladies_id',
             ladiesId
@@ -101,7 +101,7 @@ const RiwayatTransaksi = ({
 
         supabase
           .from('kasbon')
-          .select('*')
+          .select('id, tanggal, jumlah, keterangan')
           .eq(
             'ladies_id',
             ladiesId
@@ -109,7 +109,7 @@ const RiwayatTransaksi = ({
 
         supabase
           .from('pemasukan_lain')
-          .select('*')
+          .select('id, tanggal, jumlah, keterangan')
           .eq(
             'ladies_id',
             ladiesId
@@ -119,7 +119,7 @@ const RiwayatTransaksi = ({
           .from(
             'dokter'
           )
-          .select('*')
+          .select('id, tanggal, jumlah, keterangan')
           .eq(
             'ladies_id',
             ladiesId

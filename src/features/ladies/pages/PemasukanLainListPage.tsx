@@ -41,7 +41,8 @@ const PemasukanLainListPage = () => {
     'pemasukan_lain',
     user?.ladies_id,
     selectedMonth,
-    'pemasukan lain'
+    'pemasukan lain',
+    'id, tanggal, jumlah, keterangan'
   );
 
   const totalJumlah = useMemo(

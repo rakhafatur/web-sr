@@ -533,7 +533,7 @@ const TransaksiForm = ({
                     'linear-gradient(135deg, var(--color-income-soft), var(--color-surface-2))',
 
                   border:
-                    '1px solid #1f4a34',
+                    '1px solid rgba(var(--color-success-rgb), 0.35)',
                 }}
               >
                 <div

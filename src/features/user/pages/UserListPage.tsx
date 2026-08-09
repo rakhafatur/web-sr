@@ -12,6 +12,7 @@ import ActionIconButton from '../../../components/ActionIconButton';
 import Pagination from '../../../components/Pagination';
 import ListPageHeader from '../../../components/ListPageHeader';
 import HeaderActionButton from '../../../components/HeaderActionButton';
+import ListPageToolbar from '../../../components/ListPageToolbar';
 import UserCardList from '../components/UserCardList';
 
 import { useMediaQuery } from 'react-responsive';
@@ -19,7 +20,6 @@ import { useMediaQuery } from 'react-responsive';
 import {
   FiPlus,
   FiUsers,
-  FiSearch,
   FiEdit2,
   FiTrash2,
   FiLoader,
@@ -122,55 +122,16 @@ const UserListPage = () => {
 
       {/* CONTENT */}
       <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
-        {/* TOPBAR */}
-        <div className="px-3 py-3 border-bottom bg-light">
-          <div className="d-flex justify-content-between align-items-center gap-2 flex-wrap">
-            <div>
-              <div className="fw-bold">List User</div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--color-gray-500)' }}>
-                Data user aktif
-              </div>
-            </div>
-
-            {!isMobile && (
-              <div style={{ width: 300, position: 'relative' }}>
-                <FiSearch
-                  style={{
-                    position: 'absolute',
-                    top: 12,
-                    left: 12,
-                    color: 'var(--color-gray-500)',
-                  }}
-                />
-                <input
-                  className="form-control form-control-sm"
-                  style={{ paddingLeft: 35, borderRadius: 10 }}
-                  placeholder="Search user..."
-                  value={keyword}
-                  onChange={(e) => {
-                    setPage(1);
-                    setKeyword(e.target.value);
-                  }}
-                />
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* MOBILE SEARCH */}
-        {isMobile && (
-          <div className="p-2 border-bottom">
-            <input
-              className="form-control form-control-sm"
-              placeholder="Search user..."
-              value={keyword}
-              onChange={(e) => {
-                setPage(1);
-                setKeyword(e.target.value);
-              }}
-            />
-          </div>
-        )}
+        <ListPageToolbar
+          title="List User"
+          subtitle="Data user aktif"
+          placeholder="Search user..."
+          keyword={keyword}
+          onKeywordChange={(value) => {
+            setPage(1);
+            setKeyword(value);
+          }}
+        />
 
         {/* BODY */}
         <div className="p-2 p-md-3">
