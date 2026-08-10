@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
 import FormField from '../../../components/FormField';
 import Button from '../../../components/Button';
-import { getHargaVoucher, getUntungVoucher } from '../utils/hargaVoucher';
+import { useOutletPricing } from '../hooks/useOutletPricing';
 import {
   FiGift,
   FiTrendingUp,
@@ -64,9 +64,16 @@ const TransaksiForm = ({
   const queryClient = useQueryClient();
   const riwayatKey = ['riwayat-transaksi', ladiesId];
 
-  const [travelType, setTravelType] = useState<
-    'Single' | 'Double'
-  >('Single');
+  const { data: tiers = [], isLoading: pricingLoading } =
+    useOutletPricing(outlet);
+
+  const [selectedTierName, setSelectedTierName] = useState<
+    string | null
+  >(null);
+
+  const activeTier =
+    tiers.find((t) => t.tier_name === selectedTierName) ??
+    tiers[0];
 
   const [form, setForm] = useState({
     tanggal: '',
@@ -203,6 +210,13 @@ const TransaksiForm = ({
     };
 
     if (form.tipe === 'voucher') {
+      if (pricingLoading || !activeTier) {
+        toast.error(
+          'Harga outlet belum termuat atau belum dikonfigurasi. Hubungi admin.'
+        );
+        return;
+      }
+
       const jumlahVoucher =
         parseFloat(
           unformatNumber(
@@ -210,11 +224,8 @@ const TransaksiForm = ({
           )
         );
 
-      const hargaVoucher =
-        getHargaVoucher(outlet, travelType);
-
       const jumlah =
-        jumlahVoucher * hargaVoucher;
+        jumlahVoucher * activeTier.harga_ladies;
 
       payload.jumlah_voucher =
         jumlahVoucher;
@@ -224,8 +235,7 @@ const TransaksiForm = ({
       payload.outlet = outlet;
 
       payload.untung =
-        jumlahVoucher *
-        getUntungVoucher(outlet, travelType);
+        jumlahVoucher * activeTier.untung;
     } else {
       payload.jumlah = parseFloat(
         unformatNumber(form.jumlah)
@@ -246,7 +256,7 @@ const TransaksiForm = ({
     );
 
   const hargaVoucher =
-    getHargaVoucher(outlet, travelType);
+    activeTier?.harga_ladies ?? 0;
 
   const totalJumlah = isNaN(
     jumlahVoucherRaw
@@ -468,7 +478,7 @@ const TransaksiForm = ({
               </div>
             </div>
 
-            {outlet === 'Travel' && (
+            {tiers.length > 1 && (
               <div className="col-12">
                 <div
                   className={
@@ -492,15 +502,15 @@ const TransaksiForm = ({
                       marginBottom: 8,
                     }}
                   >
-                    Tipe Travel
+                    Tipe
                   </label>
 
                   <select
                     className="form-select shadow-none"
-                    value={travelType}
+                    value={activeTier?.tier_name ?? ''}
                     onChange={(e) =>
-                      setTravelType(
-                        e.target.value as 'Single' | 'Double'
+                      setSelectedTierName(
+                        e.target.value
                       )
                     }
                     style={{
@@ -509,8 +519,14 @@ const TransaksiForm = ({
                       border: '1px solid var(--color-green-light)',
                     }}
                   >
-                    <option value="Single">Single</option>
-                    <option value="Double">Double</option>
+                    {tiers.map((t) => (
+                      <option
+                        key={t.tier_name}
+                        value={t.tier_name ?? ''}
+                      >
+                        {t.tier_name}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>

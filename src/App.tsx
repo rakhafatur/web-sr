@@ -25,6 +25,7 @@ const SmartChatLadiesPage = lazy(() => import('./features/smartchat/pages/SmartC
 const AgentPage = lazy(() => import('./features/agent/pages/AgentListPage'));
 const CreateAgentPage = lazy(() => import('./features/agent/pages/CreateAgent'));
 const DetailAgentPage = lazy(() => import('./features/agent/pages/DetailAgent'));
+const OutletListPage = lazy(() => import('./features/outlet/pages/OutletListPage'));
 const CreatePengawasPage = lazy(() => import('./features/pengawas/pages/CreatePengawas'));
 const DetailPengawasPage = lazy(() => import('./features/pengawas/pages/DetailPengawas'));
 const CreateLadiesPage = lazy(() => import('./features/ladies/pages/CreateLadies'));
@@ -109,6 +110,7 @@ function App() {
               <Route path="/agent" element={<AgentPage />} />
               <Route path="/agent-create" element={<CreateAgentPage />} />
               <Route path="/agent-detail/:id" element={<DetailAgentPage />} />
+              <Route path="/outlet" element={<OutletListPage />} />
 
               {/* Ladies-specific */}
               <Route path="/ladies/home" element={<HomeLadiesPage />} />

@@ -5,7 +5,7 @@ import {
   FiCalendar, FiBook, FiPlus, FiDollarSign, FiBarChart2,
   FiChevronLeft, FiChevronRight, FiChevronDown, FiChevronUp, FiFolder,
   FiCheckSquare,FiMessageSquare,
-  FiBriefcase
+  FiBriefcase, FiMapPin
 } from 'react-icons/fi';
 
 import { SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from '../../constant';
@@ -95,6 +95,11 @@ function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps) {
               <li>
                 <Link to="/agent" className={`nav-link sidebar-link ${isActive('/agent') ? 'active' : ''}`}>
                   <FiBriefcase className="sidebar-icon" /> {renderText('Agent')}
+                </Link>
+              </li>
+              <li>
+                <Link to="/outlet" className={`nav-link sidebar-link ${isActive('/outlet') ? 'active' : ''}`}>
+                  <FiMapPin className="sidebar-icon" /> {renderText('Outlet')}
                 </Link>
               </li>
             </ul>
