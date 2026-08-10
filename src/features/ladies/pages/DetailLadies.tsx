@@ -10,11 +10,13 @@ import EntityFormCard from '../../../components/EntityFormCard';
 import EntityDetailActions from '../../../components/EntityDetailActions';
 import { supabase } from '../../../lib/supabaseClient';
 import { useAgentOptions } from '../hooks/useAgentOptions';
+import { useOutletOptions } from '../hooks/useOutletOptions';
 
 type FormType = {
   nama_lengkap: string;
   nama_ladies: string;
   nama_outlet: string;
+  outlet_id: string | null;
   pin: string;
   nomor_ktp: string;
   tanggal_bergabung: string;
@@ -27,6 +29,7 @@ const emptyForm: FormType = {
   nama_lengkap: '',
   nama_ladies: '',
   nama_outlet: '',
+  outlet_id: null,
   pin: '',
   nomor_ktp: '',
   tanggal_bergabung: '',
@@ -39,6 +42,7 @@ const DetailLadies = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const agents = useAgentOptions();
+  const outlets = useOutletOptions();
 
   const [form, setForm] = useState<FormType>(emptyForm);
   const [loading, setLoading] = useState(true);
@@ -61,6 +65,7 @@ const DetailLadies = () => {
         nama_lengkap: data.nama_lengkap || '',
         nama_ladies: data.nama_ladies || '',
         nama_outlet: data.nama_outlet || '',
+        outlet_id: data.outlet_id,
         pin: data.pin || '',
         nomor_ktp: data.nomor_ktp || '',
         tanggal_bergabung: data.tanggal_bergabung || '',
@@ -86,6 +91,15 @@ const DetailLadies = () => {
   ) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleOutletChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = outlets.find((o) => o.id === e.target.value);
+    setForm((prev) => ({
+      ...prev,
+      outlet_id: selected?.id ?? null,
+      nama_outlet: selected?.nama_outlet ?? '',
+    }));
   };
 
   const handleSave = async () => {
@@ -210,24 +224,19 @@ const DetailLadies = () => {
               readOnly
             />
           ) : (
-            <div className="d-flex gap-3 flex-wrap">
-              {['SA', 'Royal', 'MTR', 'Travel'].map((outlet) => (
-                <div key={outlet} className="form-check">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="nama_outlet"
-                    value={outlet}
-                    checked={form.nama_outlet === outlet}
-                    onChange={handleChange}
-                    id={`outlet-${outlet}`}
-                  />
-                  <label className="form-check-label" htmlFor={`outlet-${outlet}`}>
-                    {outlet}
-                  </label>
-                </div>
+            <select
+              className="form-select border"
+              name="outlet_id"
+              value={form.outlet_id || ''}
+              onChange={handleOutletChange}
+            >
+              <option value="">-- Pilih Outlet --</option>
+              {outlets.map((o) => (
+                <option key={o.id} value={o.id}>
+                  {o.nama_outlet}
+                </option>
               ))}
-            </div>
+            </select>
           )}
         </div>
 
