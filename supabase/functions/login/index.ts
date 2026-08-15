@@ -1,5 +1,11 @@
 // Edge Function: login
 //
+// !!! BELUM AKTIF !!!
+// AuthContext.tsx SENGAJA masih memakai jalur lama (bcrypt.compare di browser).
+// Jangan sambungkan klien ke fungsi ini sebelum fungsinya ter-deploy DAN lolos
+// uji curl di README — kalau dibalik, semua orang langsung tidak bisa login.
+// Urutan lengkapnya ada di README.md folder ini.
+//
 // Memindahkan verifikasi password dari browser ke server. Sebelum ini,
 // AuthContext.tsx menarik kolom `password` (hash bcrypt) ke browser lalu
 // membandingkannya di sana — yang memaksa kolom hash bisa dibaca publik.
