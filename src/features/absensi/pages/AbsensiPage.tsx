@@ -1062,7 +1062,8 @@ const AbsensiPage = () => {
                             borderRadius: 14,
                             border: '2px solid var(--color-green-light)',
                             paddingInline: 14,
-                            fontSize: '0.82rem',
+                            // 16px — di bawah itu iOS otomatis nge-zoom saat difokus.
+                            fontSize: 16,
                           }}
                         />
                       </div>

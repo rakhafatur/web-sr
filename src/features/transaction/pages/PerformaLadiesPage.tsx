@@ -208,7 +208,8 @@ const PerformaLadiesPage = () => {
                   borderRadius: 16,
                   border: '2px solid var(--color-green-light)',
                   paddingInline: 16,
-                  fontSize: isMobile ? '0.84rem' : '0.92rem',
+                  // 16px di mobile — di bawah itu iOS otomatis nge-zoom saat difokus.
+                  fontSize: isMobile ? 16 : '0.92rem',
                   backgroundColor: 'var(--color-surface)',
                   color: 'var(--color-dark)',
                 }}

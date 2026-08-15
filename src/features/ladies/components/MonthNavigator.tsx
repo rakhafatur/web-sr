@@ -1,4 +1,5 @@
 import dayjs, { type Dayjs } from 'dayjs';
+import { useMediaQuery } from 'react-responsive';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
 type Props = {
@@ -16,7 +17,10 @@ const navButtonStyle = {
   background: 'var(--color-surface-2)',
 };
 
-const MonthNavigator = ({ selectedMonth, onChange, onPrev, onNext, nextDisabled }: Props) => (
+const MonthNavigator = ({ selectedMonth, onChange, onPrev, onNext, nextDisabled }: Props) => {
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+
+  return (
   <div className="d-flex align-items-center justify-content-between" style={{ gap: 'var(--space-2)' }}>
     <button
       className="btn border-0 d-flex align-items-center justify-content-center tap-scale"
@@ -34,8 +38,9 @@ const MonthNavigator = ({ selectedMonth, onChange, onPrev, onNext, nextDisabled 
       className="form-control"
       style={{
         borderRadius: 'var(--radius-md)',
-        height: 38,
-        fontSize: 'var(--font-size-sm)',
+        height: isMobile ? 42 : 38,
+        // 16px di mobile — di bawah itu iOS otomatis nge-zoom saat difokus.
+        fontSize: isMobile ? 16 : 'var(--font-size-sm)',
         fontWeight: 600,
         border: '1px solid var(--color-gray-200)',
       }}
@@ -50,6 +55,7 @@ const MonthNavigator = ({ selectedMonth, onChange, onPrev, onNext, nextDisabled 
       <FiChevronRight />
     </button>
   </div>
-);
+  );
+};
 
 export default MonthNavigator;

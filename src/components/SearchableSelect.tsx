@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
+import { useMediaQuery } from 'react-responsive';
 import { FiChevronDown, FiSearch, FiCheck } from 'react-icons/fi';
 
 export type SearchableOption = {
@@ -38,6 +39,8 @@ const SearchableSelect = ({
   borderRadius = 16,
   fontSize = '0.9rem',
 }: Props) => {
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [panelStyle, setPanelStyle] = useState<React.CSSProperties>({});
@@ -118,11 +121,17 @@ const SearchableSelect = ({
   useEffect(() => {
     if (!open) return;
 
-    // Beri waktu render dulu sebelum fokus, supaya keyboard mobile tidak
-    // "menyela" animasi buka panel.
+    // Auto-focus HANYA di desktop. Di iOS, `.focus()` yang dipanggil di luar
+    // gesture user langsung (di sini: dalam setTimeout) tetap memindahkan
+    // fokus — sehingga halaman ikut nge-zoom ke input — tapi keyboard-nya
+    // ditolak muncul oleh Safari. Hasilnya: layar ke-zoom tanpa keyboard.
+    // Di mobile biarkan user yang menyentuh kolom cari; tap itu gesture sah,
+    // jadi keyboard muncul normal.
+    if (isMobile) return;
+
     const timer = setTimeout(() => inputRef.current?.focus(), 50);
     return () => clearTimeout(timer);
-  }, [open]);
+  }, [open, isMobile]);
 
   const handleSelect = (opt: SearchableOption) => {
     onChange(opt.value);
@@ -209,13 +218,16 @@ const SearchableSelect = ({
                   placeholder={searchPlaceholder}
                   style={{
                     width: '100%',
-                    height: 38,
+                    height: isMobile ? 44 : 38,
                     borderRadius: 10,
                     border: '1px solid var(--color-gray-200)',
                     background: 'var(--color-surface-2)',
                     paddingLeft: 32,
                     paddingRight: 10,
-                    fontSize: '0.85rem',
+                    // 16px itu ambang batas iOS: font di bawah itu bikin
+                    // Safari otomatis nge-zoom halaman saat input difokus.
+                    // Jangan turunkan di bawah 16 untuk mobile.
+                    fontSize: isMobile ? 16 : '0.85rem',
                     color: 'var(--color-dark)',
                   }}
                 />
