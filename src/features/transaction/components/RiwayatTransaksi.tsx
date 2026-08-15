@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+﻿import { useMemo, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
@@ -9,12 +9,12 @@ import Pagination from '../../../components/Pagination';
 import EmptyState from '../../../components/EmptyState';
 import { useMediaQuery } from 'react-responsive';
 import CardTableRiwayatTransaksi from './CardTableRiwayatTransaksi';
+import TransaksiFilterBar from './TransaksiFilterBar';
 import MonthNavigator from '../../ladies/components/MonthNavigator';
 import { useMonthNavigation } from '../../ladies/hooks/useMonthNavigation';
 import dayjs from 'dayjs';
 
 import {
-  FiSearch,
   FiTrash2,
   FiLoader,
 } from 'react-icons/fi';
@@ -212,7 +212,7 @@ const RiwayatTransaksi = ({
     meta: { errorLabel: 'riwayat transaksi' },
   });
 
-  // Filter + sort dilakukan di client dari data yang sudah ada — filterTipe,
+  // Filter + sort dilakukan di client dari data yang sudah ada â€” filterTipe,
   // searchText, dan sortKey/sortOrder TIDAK perlu fetch ulang ke Supabase.
   const data = useMemo(() => {
     const search =
@@ -317,7 +317,7 @@ const RiwayatTransaksi = ({
   ) => {
     const confirmDelete =
       await confirmDialog(
-        '❗ Yakin ingin menghapus transaksi ini?'
+        'â— Yakin ingin menghapus transaksi ini?'
       );
 
     if (!confirmDelete) return;
@@ -433,138 +433,25 @@ const RiwayatTransaksi = ({
         />
       </div>
 
-      {!isMobile && (
-        <div className="card border-0 shadow-sm rounded-4 mb-4">
-          <div className="p-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
-            <div className="d-flex gap-2 flex-wrap">
-              {[
-                {
-                  value: '',
-                  label: 'Semua',
-                },
-
-                {
-                  value:
-                    'voucher',
-                  label:
-                    'Voucher',
-                },
-
-                {
-                  value:
-                    'pemasukan_lain',
-
-                  label:
-                    'Pemasukan Lain',
-                },
-
-                {
-                  value:
-                    'kasbon',
-                  label:
-                    'Kasbon',
-                },
-
-                {
-                  value:
-                    'dokter',
-                  label:
-                    'Dokter',
-                },
-              ].map((item) => (
-                <button
-                  key={item.value}
-                  className="btn"
-                  onClick={() => {
-                    setPage(1);
-
-                    setFilterTipe(
-                      item.value
-                    );
-                  }}
-                  style={{
-                    borderRadius: 999,
-
-                    padding:
-                      '8px 18px',
-
-                    border:
-                      filterTipe ===
-                      item.value
-                        ? 'none'
-                        : '1px solid var(--color-gray-200)',
-
-                    background:
-                      filterTipe ===
-                      item.value
-                        ? 'var(--color-green)'
-                        : 'var(--color-surface)',
-
-                    color:
-                      filterTipe ===
-                      item.value
-                        ? '#fff'
-                        : 'var(--color-gray-700)',
-
-                    fontWeight: 600,
-                  }}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-
-            <div
-              style={{
-                position:
-                  'relative',
-
-                width: 300,
-              }}
-            >
-              <FiSearch
-                style={{
-                  position:
-                    'absolute',
-
-                  left: 14,
-
-                  top: '50%',
-
-                  transform:
-                    'translateY(-50%)',
-
-                  color: 'var(--color-gray-500)',
-                }}
-              />
-
-              <input
-                type="text"
-                className="form-control border-0 shadow-none"
-                placeholder="Cari transaksi..."
-                value={searchText}
-                onChange={(e) => {
-                  setPage(1);
-
-                  setSearchText(
-                    e.target.value
-                  );
-                }}
-                style={{
-                  borderRadius: 999,
-
-                  background:
-                    'var(--color-surface-2)',
-
-                  paddingLeft: 40,
-
-                  height: 45,
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      <TransaksiFilterBar
+        options={[
+          { value: '', label: 'Semua' },
+          { value: 'voucher', label: 'Voucher' },
+          { value: 'pemasukan_lain', label: 'Pemasukan Lain' },
+          { value: 'kasbon', label: 'Kasbon' },
+          { value: 'dokter', label: 'Dokter' },
+        ]}
+        value={filterTipe}
+        onChange={(v) => {
+          setPage(1);
+          setFilterTipe(v);
+        }}
+        searchText={searchText}
+        onSearchChange={(v) => {
+          setPage(1);
+          setSearchText(v);
+        }}
+      />
 
       {loading ? (
         <div

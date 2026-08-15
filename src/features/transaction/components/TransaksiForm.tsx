@@ -7,6 +7,12 @@ import FormField from '../../../components/FormField';
 import Button from '../../../components/Button';
 import { useOutletPricing } from '../hooks/useOutletPricing';
 import {
+  pilihTier,
+  perluPilihTier,
+  hitungJumlahVoucher,
+  hitungUntungVoucher,
+} from '../utils/pilihTier';
+import {
   FiGift,
   FiTrendingUp,
   FiTrendingDown,
@@ -71,9 +77,7 @@ const TransaksiForm = ({
     string | null
   >(null);
 
-  const activeTier =
-    tiers.find((t) => t.tier_name === selectedTierName) ??
-    tiers[0];
+  const activeTier = pilihTier(tiers, selectedTierName);
 
   const [form, setForm] = useState({
     tanggal: '',
@@ -224,18 +228,16 @@ const TransaksiForm = ({
           )
         );
 
-      const jumlah =
-        jumlahVoucher * activeTier.harga_ladies;
-
       payload.jumlah_voucher =
         jumlahVoucher;
 
-      payload.jumlah = jumlah;
+      payload.jumlah =
+        hitungJumlahVoucher(jumlahVoucher, activeTier);
 
       payload.outlet = outlet;
 
       payload.untung =
-        jumlahVoucher * activeTier.untung;
+        hitungUntungVoucher(jumlahVoucher, activeTier);
     } else {
       payload.jumlah = parseFloat(
         unformatNumber(form.jumlah)
@@ -478,7 +480,7 @@ const TransaksiForm = ({
               </div>
             </div>
 
-            {tiers.length > 1 && (
+            {perluPilihTier(tiers) && (
               <div className="col-12">
                 <div
                   className={

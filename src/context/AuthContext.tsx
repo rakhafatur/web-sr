@@ -6,7 +6,6 @@ import {
   type ReactNode,
 } from 'react';
 import { supabase } from '../lib/supabaseClient';
-import bcrypt from 'bcryptjs';
 import { useDispatch } from 'react-redux';
 import {
   setUser as setReduxUser,
@@ -69,31 +68,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(false);
   }, [dispatch]);
 
+  /**
+   * Verifikasi password dikerjakan Edge Function `login` di server, bukan di
+   * browser — hash bcrypt tidak pernah dikirim ke klien. Bentuk sesi yang
+   * disimpan tetap sama seperti sebelumnya, jadi user yang sudah login tidak
+   * perlu login ulang saat perubahan ini dirilis.
+   */
   const login = async (username: string, password: string): Promise<LoginResult> => {
-    const { data: userData, error } = await supabase
-      .from('users')
-      .select('id, username, nama, password, is_active, user_group_id, ladies_id, pengawas_id')
-      .eq('username', username.trim())
-      .single();
+    const { data, error } = await supabase.functions.invoke<{
+      result: LoginResult;
+      user?: AuthUser;
+    }>('login', {
+      body: { username: username.trim(), password },
+    });
 
-    if (error || !userData) return 'invalid';
+    if (error || !data) return 'error';
 
-    const passwordMatch = await bcrypt.compare(password, userData.password);
-    if (!passwordMatch) return 'invalid';
+    if (data.result !== 'success' || !data.user) return data.result;
 
-    if (!userData.is_active) return 'inactive';
-
-    // Bentuk ulang secara eksplisit tanpa `password` — tanpa ini hash ikut
-    // mengendap di localStorage dan bisa dibaca script mana pun di halaman.
-    const authUser: AuthUser = {
-      id: userData.id,
-      username: userData.username,
-      nama: userData.nama,
-      is_active: userData.is_active,
-      user_group_id: userData.user_group_id,
-      ladies_id: userData.ladies_id,
-      pengawas_id: userData.pengawas_id,
-    };
+    const authUser = data.user;
 
     setUser(authUser);
     localStorage.setItem('user', JSON.stringify(authUser));

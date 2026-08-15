@@ -22,6 +22,7 @@ import {
   drawStatCard,
 } from '../utils/pdfReport';
 import { monthNames, formatRupiah, pad, getLastDay } from '../utils/biayaBulanan';
+import { hitungSaldoBerjalan, type SaldoRow } from '../utils/saldoBerjalan';
 
 type Lady = {
   id: string;
@@ -31,14 +32,7 @@ type Lady = {
   status: string;
 };
 
-type Row = {
-  tanggal: string;
-  keterangan: string;
-  voucher: number | string;
-  pemasukan: number | string;
-  pengeluaran: number | string;
-  saldo: number;
-};
+type Row = SaldoRow;
 
 type Absensi = {
   tanggal: string;
@@ -175,44 +169,8 @@ const BukuKuningPage = () => {
         });
       });
 
-      transaksi.sort((a, b) =>
-        a.tanggal.localeCompare(b.tanggal)
-      );
-
-      const fullRows: Row[] = [
-        {
-          tanggal: 'Sisa Kasbon',
-          keterangan: '',
-          voucher: '',
-          pemasukan: '',
-          pengeluaran: '',
-          saldo: saldoAwal,
-        },
-      ];
-
-      let saldo = saldoAwal;
-
-      transaksi.forEach((trx) => {
-        const pemasukan =
-          trx.pemasukan === ''
-            ? 0
-            : Number(trx.pemasukan);
-
-        const pengeluaran =
-          trx.pengeluaran === ''
-            ? 0
-            : Number(trx.pengeluaran);
-
-        saldo += pemasukan - pengeluaran;
-
-        fullRows.push({
-          ...trx,
-          saldo,
-        });
-      });
-
       return {
-        rows: fullRows,
+        rows: hitungSaldoBerjalan(saldoAwal, transaksi),
         rekapAbsensi: (absensi?.data || []) as Absensi[],
       };
     },

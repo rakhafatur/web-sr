@@ -18,6 +18,7 @@ import {
   drawSectionTitle,
   drawProfileCard,
 } from '../utils/pdfReport';
+import { hitungSaldoBerjalan, type SaldoRow } from '../utils/saldoBerjalan';
 
 const monthNames = [
   'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
@@ -30,16 +31,7 @@ const formatRupiah = (value: number | string) => {
   return `Rp${num.toLocaleString('id-ID')}`;
 };
 
-/** Satu baris buku kuning. Kolom nominal bisa string kosong ketika tidak
-    berlaku untuk baris itu (mis. pemasukan pada baris kasbon). */
-type Row = {
-  tanggal: string;
-  keterangan: string;
-  voucher: number | string;
-  pemasukan: number | string;
-  pengeluaran: number | string;
-  saldo: number;
-};
+type Row = SaldoRow;
 
 const BukuKuningPengawasPage = () => {
   const [selectedId, setSelectedId] = useState('');
@@ -109,30 +101,7 @@ const BukuKuningPengawasPage = () => {
         });
       });
 
-      // Urutkan tanggal ASC
-      transaksi.sort((a, b) => a.tanggal.localeCompare(b.tanggal));
-
-      // Hitung saldo berjalan
-      const fullRows: Row[] = [
-        {
-          tanggal: 'Sisa Kasbon',
-          keterangan: '',
-          voucher: '',
-          pemasukan: '',
-          pengeluaran: '',
-          saldo: saldoAwal,
-        },
-      ];
-
-      let saldo = saldoAwal;
-      transaksi.forEach((trx) => {
-        const pemasukan = trx.pemasukan === '' ? 0 : Number(trx.pemasukan);
-        const pengeluaran = trx.pengeluaran === '' ? 0 : Number(trx.pengeluaran);
-        saldo += pemasukan - pengeluaran;
-        fullRows.push({ ...trx, saldo });
-      });
-
-      return fullRows;
+      return hitungSaldoBerjalan(saldoAwal, transaksi);
     },
     enabled: !!selectedId,
     meta: { errorLabel: 'data buku kuning pengawas' },
