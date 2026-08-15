@@ -40,7 +40,6 @@ const PemasukanLainListPage = lazy(() => import('./features/ladies/pages/Pemasuk
 const PeraturanPage = lazy(() => import('./features/ladies/pages/PeraturanPage'));
 const ProfilePage = lazy(() => import('./features/ladies/pages/ProfilePage'));
 
-import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import RootRoute from './components/RootRoute';
 import MainLayout from './layout/MainLayout';
@@ -65,7 +64,7 @@ function App() {
   }
 
   return (
-    <AuthProvider>
+    <>
       <OfflineBanner />
 
       <BrowserRouter>
@@ -131,7 +130,7 @@ function App() {
 
       <ToastContainer position="top-right" autoClose={4000} newestOnTop />
       <ConfirmDialogHost />
-    </AuthProvider>
+    </>
   );
 }
 

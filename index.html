@@ -10,8 +10,9 @@
     <!-- iOS homescreen icon -->
     <link rel="apple-touch-icon" href="/icons/sr-blue.png" />
 
-    <!-- PWA manifest — supaya bisa di-install sebagai app di Android/Chrome -->
-    <link rel="manifest" href="/manifest.json" />
+    <!-- PWA manifest disuntik otomatis oleh vite-plugin-pwa sebagai
+         /manifest.webmanifest — jangan tambah <link rel="manifest"> manual
+         di sini, nanti jadi dobel dan yang manual menang tapi 404. -->
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SR Agency</title>

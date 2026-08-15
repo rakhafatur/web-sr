@@ -12,6 +12,12 @@ dist
 dist-ssr
 *.local
 
+# Environment — jangan pernah commit kredensial.
+# Pakai .env.example sebagai dokumentasi variabel yang dibutuhkan.
+.env
+.env.*
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -1,15 +1,8 @@
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../app/store';
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import bgImage from '../../../assets/bg-home.png';
+import bgImage from '../../../assets/bg-home.jpg';
 import './HomePage.css';
 
 function HomePageMobile() {
-  const user = useSelector((state: RootState) => state.user.currentUser);
-  const firstName = user?.nama?.split(' ')[0] || 'kamu';
-  const navigate = useNavigate();
-
   return (
     <div className="home-wrapper">
       <img src={bgImage} alt="background" className="home-bg-mobile" />

@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiUser, FiLock, FiEdit3, FiUsers } from 'react-icons/fi';
 import Button from './Button';
+import bgImage from '../assets/bg-home.jpg';
 import '../styles/auth.css';
 
 type FormData = {
@@ -67,7 +68,7 @@ function SignUpForm() {
     <div className="auth-page">
       <div className="auth-container">
         <div className="auth-illustration d-none d-md-flex">
-          <img src="/assets/bg-home.png" alt="SR SignUp Illustration" className="img-fluid" style={{ maxWidth: '90%' }} />
+          <img src={bgImage} alt="SR SignUp Illustration" className="img-fluid" style={{ maxWidth: '90%' }} loading="lazy" />
         </div>
 
         <div className="auth-form-wrapper">

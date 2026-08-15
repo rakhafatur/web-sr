@@ -57,8 +57,8 @@ const CreateUser = () => {
 
       toast.success('User berhasil ditambahkan');
       navigate('/users');
-    } catch (err: any) {
-      toast.error(err.message || 'Gagal menambahkan user');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Gagal menambahkan user');
     } finally {
       setLoading(false);
     }

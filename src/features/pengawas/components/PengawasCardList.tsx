@@ -1,4 +1,4 @@
-import { FiCreditCard, FiCalendar, FiUserPlus, FiUser, FiSmile } from 'react-icons/fi';
+import { FiUser, FiSmile } from 'react-icons/fi';
 import DataCardList from '../../../components/DataCardList';
 
 export type Pengawas = {

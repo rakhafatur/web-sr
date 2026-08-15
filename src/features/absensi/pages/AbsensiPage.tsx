@@ -106,7 +106,7 @@ const AbsensiPage = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('ladies')
-        .select('*')
+        .select('id, nama_ladies, nama_outlet, pin, status')
         .eq('status', 'active')
         .order('nama_ladies', {
           ascending: true,

@@ -51,7 +51,7 @@ const UserListPage = () => {
 
       let query = supabase
         .from('users')
-        .select('*', { count: 'exact' })
+        .select('id, username, nama', { count: 'exact' })
         .eq('is_active', true)
         .range(from, to);
 

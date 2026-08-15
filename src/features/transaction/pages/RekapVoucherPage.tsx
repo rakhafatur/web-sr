@@ -35,12 +35,20 @@ type VoucherRow = {
 
 type OutletGroup = {
   outlet: string;
-  data: {
-    nama_ladies: string;
-    totalVoucher: number;
-    totalNominal: number;
-    totalUntung: number;
-  }[];
+  data: LadiesRekap[];
+};
+
+/** Satu baris rekap per ladies dalam sebuah outlet. */
+type LadiesRekap = {
+  nama_ladies: string;
+  totalVoucher: number;
+  totalNominal: number;
+  totalUntung: number;
+};
+
+/** jspdf-autotable menambahkan properti ini ke doc saat runtime. */
+type jsPDFWithAutoTable = {
+  lastAutoTable?: { finalY: number };
 };
 
 const formatRupiah = (n: number) =>
@@ -101,14 +109,9 @@ const RekapVoucherPage = () => {
       return;
     }
 
-    const vouchers = (data as any[]).map((v) => ({
-      jumlah: v.jumlah,
-      jumlah_voucher: v.jumlah_voucher,
-      outlet: v.outlet,
-      untung: v.untung,
-      tanggal: v.tanggal,
-      ladies: v.ladies,
-    })) as VoucherRow[];
+    // Supabase mengetik relasi `ladies` sebagai array untuk nested select,
+    // padahal di sini selalu satu baris — jadi dinormalkan lewat unknown.
+    const vouchers = data as unknown as VoucherRow[];
 
     const grouped: Record<
       string,
@@ -269,9 +272,11 @@ const RekapVoucherPage = () => {
             },
           });
 
+          // jspdf-autotable menempelkan `lastAutoTable` ke instance doc saat
+          // runtime, tapi tidak ikut di type bawaan jsPDF.
           const lastY =
-            (doc as any)
-              .lastAutoTable.finalY || 0;
+            (doc as jsPDFWithAutoTable)
+              .lastAutoTable?.finalY || 0;
 
           doc.text(
             `Total Voucher: ${totalVoucherOutlet.toFixed(
@@ -921,9 +926,7 @@ const RekapVoucherPage = () => {
                               label:
                                 'Voucher',
 
-                              render: (
-                                row: any
-                              ) =>
+                              render: (row) =>
                                 `${row.totalVoucher.toFixed(
                                   0
                                 )} pcs`,
@@ -936,9 +939,7 @@ const RekapVoucherPage = () => {
                               label:
                                 'Total Ladies',
 
-                              render: (
-                                row: any
-                              ) =>
+                              render: (row) =>
                                 formatRupiah(
                                   row.totalNominal
                                 ),
@@ -951,9 +952,7 @@ const RekapVoucherPage = () => {
                               label:
                                 'Total Hasil',
 
-                              render: (
-                                row: any
-                              ) =>
+                              render: (row) =>
                                 formatRupiah(
                                   row.totalUntung
                                 ),
@@ -966,9 +965,7 @@ const RekapVoucherPage = () => {
                               label:
                                 'Total Didapat',
 
-                              render: (
-                                row: any
-                              ) =>
+                              render: (row) =>
                                 formatRupiah(
                                   row.totalNominal +
                                   row.totalUntung

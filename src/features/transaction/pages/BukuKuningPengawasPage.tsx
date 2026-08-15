@@ -30,6 +30,17 @@ const formatRupiah = (value: number | string) => {
   return `Rp${num.toLocaleString('id-ID')}`;
 };
 
+/** Satu baris buku kuning. Kolom nominal bisa string kosong ketika tidak
+    berlaku untuk baris itu (mis. pemasukan pada baris kasbon). */
+type Row = {
+  tanggal: string;
+  keterangan: string;
+  voucher: number | string;
+  pemasukan: number | string;
+  pengeluaran: number | string;
+  saldo: number;
+};
+
 const BukuKuningPengawasPage = () => {
   const [selectedId, setSelectedId] = useState('');
   const [bulan, setBulan] = useState(new Date().getMonth() + 1);
@@ -74,7 +85,7 @@ const BukuKuningPengawasPage = () => {
         supabase.from('gaji_pengawas').select('tanggal, jumlah, keterangan').eq('pengawas_id', selectedId).gte('tanggal', from).lte('tanggal', to),
       ]);
 
-      const transaksi: any[] = [];
+      const transaksi: Row[] = [];
 
       (gaji?.data || []).forEach((g) => {
         transaksi.push({
@@ -102,7 +113,7 @@ const BukuKuningPengawasPage = () => {
       transaksi.sort((a, b) => a.tanggal.localeCompare(b.tanggal));
 
       // Hitung saldo berjalan
-      const fullRows: any[] = [
+      const fullRows: Row[] = [
         {
           tanggal: 'Sisa Kasbon',
           keterangan: '',

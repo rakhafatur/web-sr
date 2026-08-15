@@ -55,7 +55,7 @@ const DetailUser = () => {
       const { data, error } =
         await supabase
           .from('users')
-          .select('*')
+          .select('username, nama')
           .eq('id', id)
           .single();
 
@@ -67,10 +67,11 @@ const DetailUser = () => {
         nama: data.nama || '',
         password: '',
       });
-    } catch (err: any) {
+    } catch (err) {
       toast.error(
-        err.message ||
-          'Gagal mengambil data user'
+        err instanceof Error
+          ? err.message
+          : 'Gagal mengambil data user'
       );
 
       navigate('/users');
@@ -154,10 +155,11 @@ const DetailUser = () => {
         ...prev,
         password: '',
       }));
-    } catch (err: any) {
+    } catch (err) {
       toast.error(
-        err.message ||
-          'Gagal update user'
+        err instanceof Error
+          ? err.message
+          : 'Gagal update user'
       );
     } finally {
       setSaving(false);

@@ -25,6 +25,18 @@ type Message = {
   report?: ChatReport;
 };
 
+/** Bentuk baris voucher yang dipakai laporan chat. `untung` bisa null untuk
+    transaksi lama yang dibuat sebelum kolom itu ada — penanganannya lewat
+    fallback di tiap perhitungan. */
+type VoucherRow = {
+  jumlah: number;
+  jumlah_voucher: number | null;
+  untung: number | null;
+};
+
+const untungDariBaris = (v: VoucherRow) =>
+  v.untung != null ? Number(v.untung) : Number(v.jumlah_voucher || 0) * 75000;
+
 const SmartChatPage: React.FC = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
@@ -58,21 +70,12 @@ const SmartChatPage: React.FC = () => {
 
     if (error) return "❌ Gagal mengambil data voucher bulan ini.";
 
-    const totalNominal =
-      data?.reduce((sum, v: any) => sum + Number(v.jumlah), 0) || 0;
+    const rows = (data ?? []) as VoucherRow[];
 
-    const totalVoucher =
-      data?.reduce((sum, v: any) => sum + Number(v.jumlah_voucher || 0), 0) || 0;
+    const totalNominal = rows.reduce((sum, v) => sum + Number(v.jumlah), 0);
+    const totalVoucher = rows.reduce((sum, v) => sum + Number(v.jumlah_voucher || 0), 0);
     const totalLadies = totalNominal;
-    const totalKeuntungan =
-      data?.reduce(
-        (sum, v: any) =>
-          sum +
-          (v.untung != null
-            ? Number(v.untung)
-            : Number(v.jumlah_voucher || 0) * 75000),
-        0
-      ) || 0;
+    const totalKeuntungan = rows.reduce((sum, v) => sum + untungDariBaris(v), 0);
     const totalKeseluruhan = totalNominal + totalKeuntungan;
 
     return {
@@ -125,21 +128,12 @@ const SmartChatPage: React.FC = () => {
 
     if (error) return "❌ Gagal mengambil data voucher minggu ini.";
 
-    const totalNominal =
-      data?.reduce((sum, v: any) => sum + Number(v.jumlah), 0) || 0;
+    const rows = (data ?? []) as VoucherRow[];
 
-    const totalVoucher =
-      data?.reduce((sum, v: any) => sum + Number(v.jumlah_voucher || 0), 0) || 0;
+    const totalNominal = rows.reduce((sum, v) => sum + Number(v.jumlah), 0);
+    const totalVoucher = rows.reduce((sum, v) => sum + Number(v.jumlah_voucher || 0), 0);
     const totalLadies = totalNominal;
-    const totalKeuntungan =
-      data?.reduce(
-        (sum, v: any) =>
-          sum +
-          (v.untung != null
-            ? Number(v.untung)
-            : Number(v.jumlah_voucher || 0) * 75000),
-        0
-      ) || 0;
+    const totalKeuntungan = rows.reduce((sum, v) => sum + untungDariBaris(v), 0);
     const totalKeseluruhan = totalNominal + totalKeuntungan;
 
     return {

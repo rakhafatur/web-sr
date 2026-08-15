@@ -313,7 +313,7 @@ const RiwayatTransaksi = ({
   };
 
   const handleDelete = async (
-    row: any
+    row: Transaksi
   ) => {
     const confirmDelete =
       await confirmDialog(
@@ -365,7 +365,7 @@ const RiwayatTransaksi = ({
   const renderBadge = (
     tipe: string
   ) => {
-    const styles: any = {
+    const styles: Record<string, { bg: string; color: string; label: string }> = {
       voucher: {
         bg: 'var(--color-income-soft)',
         color: 'var(--color-income)',
@@ -676,8 +676,7 @@ const RiwayatTransaksi = ({
                 },
 
                 {
-                  key:
-                    'aksi' as any,
+                  key: 'id',
 
                   label: 'Aksi',
 

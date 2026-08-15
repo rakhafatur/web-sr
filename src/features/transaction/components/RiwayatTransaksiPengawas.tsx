@@ -29,7 +29,8 @@ type Transaksi = {
   tipe: string;
   tipeLabel: string;
   jumlah: number;
-  keterangan: string;
+  /** Opsional — harus cocok dengan tipe di CardTableRiwayatTransaksi. */
+  keterangan?: string;
   priority: number;
 };
 
@@ -174,7 +175,7 @@ const RiwayatTransaksiPengawas = ({ pengawasId }: Props) => {
     }
   };
 
-  const handleDelete = async (row: any) => {
+  const handleDelete = async (row: Transaksi) => {
     if (!(await confirmDialog('❗ Yakin ingin menghapus transaksi ini?'))) return;
 
     const table = getTableName(row.tipe);
@@ -204,7 +205,7 @@ const RiwayatTransaksiPengawas = ({ pengawasId }: Props) => {
   const totalPages = Math.ceil(data.length / limit);
 
   const renderBadge = (tipe: string) => {
-    const styles: any = {
+    const styles: Record<string, { bg: string; color: string; label: string }> = {
       gaji_pengawas: {
         bg: 'var(--color-income-soft)',
         color: 'var(--color-income)',
@@ -360,7 +361,7 @@ const RiwayatTransaksiPengawas = ({ pengawasId }: Props) => {
                   render: (row) => row.keterangan || '-',
                 },
                 {
-                  key: 'aksi' as any,
+                  key: 'id',
                   label: 'Aksi',
                   render: (row) => (
                     <ActionIconButton

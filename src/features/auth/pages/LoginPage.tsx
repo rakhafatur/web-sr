@@ -31,10 +31,10 @@ function LoginPage() {
       }
     } else if (result === 'inactive') {
       toast.warning('Akunmu belum aktif. Menunggu persetujuan admin.');
-    } else if (result === 'wrong_password') {
-      toast.error('Password salah.');
-    } else if (result === 'not_found') {
-      toast.error('Username tidak ditemukan.');
+    } else if (result === 'invalid') {
+      // Sengaja tidak membedakan "username tidak ada" dan "password salah" —
+      // pesan yang berbeda memberi tahu orang luar username mana yang valid.
+      toast.error('Username atau password salah.');
     } else {
       toast.error('Terjadi kesalahan saat login.');
     }
@@ -45,7 +45,7 @@ function LoginPage() {
       <div className="auth-container">
         {/* Ilustrasi kiri (desktop only) */}
         <div className="auth-illustration d-none d-md-flex">
-          <img src="/assets/bg-login.png" alt="SR Login Illustration" className="img-fluid" style={{ maxWidth: '90%' }} />
+          <img src="/assets/bg-login.jpg" alt="SR Login Illustration" className="img-fluid" style={{ maxWidth: '90%' }} loading="lazy" />
         </div>
 
         {/* Form kanan */}

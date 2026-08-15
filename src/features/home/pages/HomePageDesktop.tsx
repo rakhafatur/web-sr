@@ -3,7 +3,7 @@ import { RootState } from '../../../app/store';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import './HomePage.css';
-import heroImage from '../../../assets/sr-home-char2.png';
+import heroImage from '../../../assets/sr-home-char2.jpg';
 
 function HomePageDesktop() {
   const user = useSelector((state: RootState) => state.user.currentUser);

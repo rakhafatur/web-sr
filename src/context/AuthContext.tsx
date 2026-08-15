@@ -13,10 +13,24 @@ import {
   clearUser as clearReduxUser,
 } from '../features/user/userSlice';
 
-type LoginResult = 'success' | 'inactive' | 'wrong_password' | 'not_found' | 'error';
+/** `invalid` sengaja menggabungkan "username tidak ada" dan "password salah" —
+    membedakan keduanya membocorkan username mana yang terdaftar. */
+type LoginResult = 'success' | 'inactive' | 'invalid' | 'error';
+
+/** Identitas user yang sedang login. Sengaja TIDAK memuat `password` —
+    hash tidak boleh ikut tersimpan di state maupun localStorage. */
+export type AuthUser = {
+  id: string;
+  username: string;
+  nama: string | null;
+  is_active: boolean;
+  user_group_id: string | null;
+  ladies_id: string | null;
+  pengawas_id: string | null;
+};
 
 type AuthContextType = {
-  user: any;
+  user: AuthUser | null;
   login: (username: string, password: string) => Promise<LoginResult>;
   logout: () => void;
 };
@@ -24,14 +38,22 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
+      const parsedUser = JSON.parse(storedUser) as AuthUser & { password?: string };
+
+      // Sesi lama (dibuat sebelum perbaikan ini) masih menyimpan hash —
+      // bersihkan begitu dibaca supaya tidak mengendap terus di browser.
+      if (parsedUser.password) {
+        delete parsedUser.password;
+        localStorage.setItem('user', JSON.stringify(parsedUser));
+      }
+
       setUser(parsedUser);
       dispatch(
         setReduxUser({
@@ -54,24 +76,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .eq('username', username.trim())
       .single();
 
-    if (error || !userData) return 'not_found';
+    if (error || !userData) return 'invalid';
 
     const passwordMatch = await bcrypt.compare(password, userData.password);
-    if (!passwordMatch) return 'wrong_password';
+    if (!passwordMatch) return 'invalid';
 
     if (!userData.is_active) return 'inactive';
 
-    // Simpan ke local state + Redux + localStorage
-    setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
+    // Bentuk ulang secara eksplisit tanpa `password` — tanpa ini hash ikut
+    // mengendap di localStorage dan bisa dibaca script mana pun di halaman.
+    const authUser: AuthUser = {
+      id: userData.id,
+      username: userData.username,
+      nama: userData.nama,
+      is_active: userData.is_active,
+      user_group_id: userData.user_group_id,
+      ladies_id: userData.ladies_id,
+      pengawas_id: userData.pengawas_id,
+    };
+
+    setUser(authUser);
+    localStorage.setItem('user', JSON.stringify(authUser));
     dispatch(
       setReduxUser({
-        id: userData.id,
-        username: userData.username,
-        nama: userData.nama,
-        user_group_id: userData.user_group_id,
-        ladies_id: userData.ladies_id,
-        pengawas_id: userData.pengawas_id,
+        id: authUser.id,
+        username: authUser.username,
+        nama: authUser.nama,
+        user_group_id: authUser.user_group_id,
+        ladies_id: authUser.ladies_id,
+        pengawas_id: authUser.pengawas_id,
       })
     );
 
