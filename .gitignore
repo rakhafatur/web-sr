@@ -12,11 +12,18 @@ dist
 dist-ssr
 *.local
 
-# Environment — jangan pernah commit kredensial.
-# Pakai .env.example sebagai dokumentasi variabel yang dibutuhkan.
+# Environment — jangan pernah commit rahasia asli.
+#
+# .env.production SENGAJA ikut ter-commit: isinya cuma URL + anon key Supabase
+# yang toh sudah ikut ter-inline ke bundle JS dan dibaca setiap pengunjung.
+# Tanpa file itu, build di Vercel kehilangan konfigurasinya dan app blank.
+#
+# Rahasia asli (service role key, dsb) taruh di .env.local — diabaikan di bawah.
 .env
-.env.*
+.env.local
+.env.*.local
 !.env.example
+!.env.production
 
 # Editor directories and files
 .vscode/*
