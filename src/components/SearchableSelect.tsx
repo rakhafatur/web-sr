@@ -60,7 +60,23 @@ const SearchableSelect = ({
   // Hitung posisi panel dari posisi tombol trigger di viewport — dipanggil
   // ulang tiap kali dibuka, dan otomatis "flip" ke atas kalau ruang di
   // bawah tidak cukup buat menampung panelnya.
+  //
+  // Di MOBILE panel tidak menempel ke tombol sama sekali, melainkan ke sisi
+  // atas viewport. Alasannya: begitu kolom cari disentuh, keyboard muncul dan
+  // browser men-scroll halaman sendiri — panel yang menempel ke tombol jadi
+  // ikut bergeser atau malah tertutup keyboard. Ditempel ke atas, panel selalu
+  // berada di area yang tersisa di atas keyboard.
   const updatePosition = () => {
+    if (isMobile) {
+      setPanelStyle({
+        position: 'fixed',
+        top: 12,
+        left: 12,
+        right: 12,
+      });
+      return;
+    }
+
     const rect = triggerRef.current?.getBoundingClientRect();
     if (!rect) return;
 
@@ -82,11 +98,17 @@ const SearchableSelect = ({
 
     updatePosition();
 
-    // Panel-nya position:fixed relatif ke viewport — kalau HALAMAN di-scroll
-    // selagi terbuka, posisinya bisa nyasar dari tombol trigger, jadi ditutup
-    // saja. Tapi scroll capture-phase di window juga kepicu oleh scroll di
-    // DALAM daftar panel sendiri (overflowY:auto) — itu harus diabaikan,
-    // bukan dianggap "scroll di luar".
+    // Tutup-saat-scroll HANYA relevan di desktop, tempat panel menempel ke
+    // tombol trigger. Di mobile justru merusak: menyentuh kolom cari membuat
+    // keyboard muncul, dan browser otomatis men-scroll halaman — scroll itu
+    // menutup panelnya sendiri sebelum sempat mengetik. Karena di mobile
+    // panel menempel ke viewport (bukan ke tombol), tidak ada yang perlu
+    // ditutup saat halaman bergeser.
+    if (isMobile) return;
+
+    // Scroll capture-phase di window juga kepicu oleh scroll di DALAM daftar
+    // panel sendiri (overflowY:auto) — itu harus diabaikan, bukan dianggap
+    // "scroll di luar".
     const handleScroll = (e: Event) => {
       if (panelRef.current?.contains(e.target as Node)) return;
       setOpen(false);
@@ -98,7 +120,8 @@ const SearchableSelect = ({
       window.removeEventListener('scroll', handleScroll, true);
       window.removeEventListener('resize', updatePosition);
     };
-  }, [open]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, isMobile]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -184,6 +207,25 @@ const SearchableSelect = ({
 
       {open &&
         ReactDOM.createPortal(
+          <>
+            {/* Di mobile panel lepas dari tombolnya, jadi perlu backdrop
+                supaya jelas ini lapisan terpisah — sekaligus area tap untuk
+                menutup, menggantikan "tutup saat scroll" yang dimatikan. */}
+            {isMobile && (
+              <div
+                onClick={() => {
+                  setOpen(false);
+                  setQuery('');
+                }}
+                style={{
+                  position: 'fixed',
+                  inset: 0,
+                  background: 'rgba(0,0,0,0.45)',
+                  zIndex: 2999,
+                }}
+              />
+            )}
+
           <div
             ref={panelRef}
             data-ptr-ignore
@@ -236,7 +278,10 @@ const SearchableSelect = ({
 
             <div
               style={{
-                maxHeight: PANEL_MAX_HEIGHT - 54,
+                // Di mobile dibatasi relatif ke tinggi layar, bukan angka
+                // tetap — keyboard memakan sekitar separuh viewport, jadi
+                // daftar harus muat di sisa ruang atas tanpa tertutup.
+                maxHeight: isMobile ? '38vh' : PANEL_MAX_HEIGHT - 54,
                 overflowY: 'auto',
                 WebkitOverflowScrolling: 'touch',
               }}
@@ -295,7 +340,8 @@ const SearchableSelect = ({
                 })
               )}
             </div>
-          </div>,
+          </div>
+          </>,
           document.body
         )}
     </div>
