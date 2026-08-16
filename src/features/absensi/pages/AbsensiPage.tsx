@@ -9,6 +9,10 @@ import { toast } from 'react-toastify';
 
 import AddAbsensiModal from '../components/AddAbsensiModal';
 import CardTableAbsensi from '../components/CardTableAbsensi';
+import AbsensiSummaryCards from '../components/AbsensiSummaryCards';
+import AbsensiMonthHeader from '../components/AbsensiMonthHeader';
+import StatusPicker from '../components/StatusPicker';
+import { hitungRekapAbsensi } from '../utils/rekapAbsensi';
 import DataTable from '../../../components/DataTable';
 import ActionIconButton from '../../../components/ActionIconButton';
 import Pagination from '../../../components/Pagination';
@@ -295,25 +299,7 @@ const AbsensiPage = () => {
     }
   };
 
-  const totalKERJA =
-    rekapRiwayat.filter(
-      (r) => r.status === 'KERJA'
-    ).length;
-
-  const totalMENS =
-    rekapRiwayat.filter(
-      (r) => r.status === 'MENS'
-    ).length;
-
-  const totalOFF =
-    rekapRiwayat.filter(
-      (r) => r.status === 'OFF'
-    ).length;
-
-  const totalSAKIT =
-    rekapRiwayat.filter(
-      (r) => r.status === 'SAKIT'
-    ).length;
+  const rekap = hitungRekapAbsensi(rekapRiwayat);
 
   const riwayatWithId = riwayat.map(
     (row, idx) => ({
@@ -324,257 +310,19 @@ const AbsensiPage = () => {
   );
 
   const statusButtons = (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: isMobile
-          ? 'repeat(4, 1fr)'
-          : 'repeat(4, auto)',
-        gap: isMobile ? 8 : 10,
-      }}
-    >
-      {[
-        'KERJA',
-        'MENS',
-        'OFF',
-        'SAKIT',
-      ].map((opt) => {
-        const active =
-          status === opt;
-
-        return (
-          <button
-            key={opt}
-            type="button"
-            onClick={() =>
-              setStatus(opt)
-            }
-            className={`btn segmented-chip${active ? ' active' : ''}`}
-            style={{
-              height: isMobile ? 42 : 46,
-              padding: isMobile ? '0 6px' : '0 16px',
-              fontSize: isMobile ? '0.7rem' : '0.88rem',
-            }}
-          >
-            {opt}
-          </button>
-        );
-      })}
-    </div>
+    <StatusPicker value={status} onChange={setStatus} />
   );
 
   const riwayatSection = (
     <>
-      {/* HEADER REKAP */}
-      <div
-        className="d-flex justify-content-between align-items-center mb-3"
-        style={{
-          gap: 12,
-        }}
-      >
-        {/* LEFT */}
-        <div
-          style={{
-            minWidth: 0,
-          }}
-        >
-          <div
-            className="fw-bold"
-            style={{
-              fontSize: isMobile
-                ? '0.92rem'
-                : '1.1rem',
+      <AbsensiMonthHeader
+        bulanLabel={monthNames[bulan - 1]}
+        tahun={tahun}
+        onPrev={handlePrevMonth}
+        onNext={handleNextMonth}
+      />
 
-              color:
-                'var(--color-dark)',
-
-              lineHeight: 1.1,
-            }}
-          >
-            Rekap Absensi
-          </div>
-
-          <div
-            style={{
-              fontSize: isMobile
-                ? '0.72rem'
-                : '0.9rem',
-
-              color: 'var(--color-gray-500)',
-
-              marginTop: 2,
-            }}
-          >
-            {
-              monthNames[
-              bulan - 1
-              ]
-            }{' '}
-            {tahun}
-          </div>
-        </div>
-
-        {/* RIGHT */}
-        <div
-          className="d-flex align-items-center"
-          style={{
-            gap: 6,
-            flexShrink: 0,
-          }}
-        >
-          <button
-            className="btn border-0 d-flex align-items-center justify-content-center"
-            onClick={
-              handlePrevMonth
-            }
-            style={{
-              width: isMobile
-                ? 34
-                : 40,
-
-              height: isMobile
-                ? 34
-                : 40,
-
-              borderRadius: 12,
-
-              background:
-                'var(--color-surface-2)',
-
-              padding: 0,
-
-              fontSize: isMobile
-                ? '0.8rem'
-                : '1rem',
-            }}
-          >
-            ←
-          </button>
-
-          <button
-            className="btn border-0 d-flex align-items-center justify-content-center"
-            onClick={
-              handleNextMonth
-            }
-            style={{
-              width: isMobile
-                ? 34
-                : 40,
-
-              height: isMobile
-                ? 34
-                : 40,
-
-              borderRadius: 12,
-
-              background:
-                'var(--color-surface-2)',
-
-              padding: 0,
-
-              fontSize: isMobile
-                ? '0.8rem'
-                : '1rem',
-            }}
-          >
-            →
-          </button>
-        </div>
-      </div>
-
-      {/* SUMMARY */}
-      <div
-        className="row g-2 mb-4"
-      >
-        {[
-          {
-            label: 'Kerja',
-            total: totalKERJA,
-            bg: 'var(--color-income-soft)',
-            color: 'var(--color-income)',
-          },
-          {
-            label: 'Mens',
-            total: totalMENS,
-            bg: 'var(--color-expense-soft)',
-            color: 'var(--color-expense)',
-          },
-          {
-            label: 'Off',
-            total: totalOFF,
-            bg: 'var(--color-gray-200)',
-            color: 'var(--color-gray-700)',
-          },
-          {
-            label: 'Sakit',
-            total: totalSAKIT,
-            bg: 'var(--color-voucher-soft)',
-            color: 'var(--color-voucher)',
-          },
-        ].map((item) => (
-          <div
-            className="col-6 col-lg-3"
-            key={item.label}
-          >
-            <div
-              className="h-100"
-              style={{
-                background:
-                  item.bg,
-
-                borderRadius:
-                  isMobile
-                    ? 16
-                    : 22,
-
-                padding:
-                  isMobile
-                    ? '12px 14px'
-                    : '18px 20px',
-
-                boxShadow:
-                  '0 2px 10px rgba(0,0,0,0.04)',
-              }}
-            >
-              <div
-                style={{
-                  fontSize: isMobile
-                    ? '0.7rem'
-                    : '0.82rem',
-
-                  color:
-                    item.color,
-
-                  opacity: 0.8,
-
-                  fontWeight: 600,
-                }}
-              >
-                {item.label}
-              </div>
-
-              <div
-                style={{
-                  fontSize: isMobile
-                    ? '1.4rem'
-                    : '2rem',
-
-                  fontWeight: 800,
-
-                  lineHeight: 1.1,
-
-                  marginTop: 2,
-
-                  color:
-                    item.color,
-                }}
-              >
-                {item.total}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      <AbsensiSummaryCards rekap={rekap} />
 
       {/* RIWAYAT */}
       <div
