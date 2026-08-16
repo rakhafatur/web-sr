@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import dayjs from 'dayjs';
 import { useMediaQuery } from 'react-responsive';
 import { toast } from 'react-toastify';
@@ -8,7 +8,13 @@ import DataTable from '../../../components/DataTable';
 import Button from '../../../components/Button';
 import FeaturePageHeader from '../../../components/FeaturePageHeader';
 
-import logo from '../../../assets/logosr-black.png';
+import {
+  agregasiRekapVoucher,
+  totalPerOutlet,
+  type VoucherRow,
+  type OutletGroup,
+} from '../utils/rekapVoucher';
+import { cetakRekapVoucherPdf } from '../utils/rekapVoucherPdf';
 
 import {
   FiCalendar,
@@ -19,37 +25,6 @@ import {
   FiDollarSign,
   FiUsers,
 } from 'react-icons/fi';
-
-type VoucherRow = {
-  jumlah: number;
-  jumlah_voucher: number;
-  outlet: string | null;
-  untung: number | null;
-  tanggal: string;
-  ladies: {
-    id: string;
-    nama_ladies: string;
-    nama_outlet: string;
-  } | null;
-};
-
-type OutletGroup = {
-  outlet: string;
-  data: LadiesRekap[];
-};
-
-/** Satu baris rekap per ladies dalam sebuah outlet. */
-type LadiesRekap = {
-  nama_ladies: string;
-  totalVoucher: number;
-  totalNominal: number;
-  totalUntung: number;
-};
-
-/** jspdf-autotable menambahkan properti ini ke doc saat runtime. */
-type jsPDFWithAutoTable = {
-  lastAutoTable?: { finalY: number };
-};
 
 const formatRupiah = (n: number) =>
   `Rp${n.toLocaleString('id-ID')}`;
@@ -110,216 +85,17 @@ const RekapVoucherPage = () => {
     }
 
     // Supabase mengetik relasi `ladies` sebagai array untuk nested select,
-    // padahal di sini selalu satu baris — jadi dinormalkan lewat unknown.
-    const vouchers = data as unknown as VoucherRow[];
+    // padahal di sini selalu satu baris â€” jadi dinormalkan lewat unknown.
+    const hasil = agregasiRekapVoucher(data as unknown as VoucherRow[]);
 
-    const grouped: Record<
-      string,
-      OutletGroup
-    > = {};
-
-    let totalVoucher = 0;
-    let totalNominal = 0;
-    let totalUntung = 0;
-
-    vouchers.forEach((v) => {
-      const lady = v.ladies;
-
-      if (!lady) return;
-
-      const outlet =
-        v.outlet || lady.nama_outlet || 'Tanpa Outlet';
-
-      const nama = lady.nama_ladies;
-
-      const nominal = Number(v.jumlah);
-
-      const pcs = Number(v.jumlah_voucher || 0);
-
-      const untung =
-        v.untung != null
-          ? Number(v.untung)
-          : pcs * 75000;
-
-      totalVoucher += pcs;
-      totalNominal += nominal;
-      totalUntung += untung;
-
-      if (!grouped[outlet]) {
-        grouped[outlet] = {
-          outlet,
-          data: [],
-        };
-      }
-
-      const existing =
-        grouped[outlet].data.find(
-          (d) =>
-            d.nama_ladies === nama
-        );
-
-      if (existing) {
-        existing.totalVoucher += pcs;
-        existing.totalNominal += nominal;
-        existing.totalUntung += untung;
-      } else {
-        grouped[outlet].data.push({
-          nama_ladies: nama,
-          totalVoucher: pcs,
-          totalNominal: nominal,
-          totalUntung: untung,
-        });
-      }
-    });
-
-    setDataPerOutlet(
-      Object.values(grouped)
-    );
-
-    setTotalVoucherAll(totalVoucher);
-
-    setTotalNominalAll(totalNominal);
-
-    setTotalUntungAll(totalUntung);
+    setDataPerOutlet(hasil.perOutlet);
+    setTotalVoucherAll(hasil.totalVoucher);
+    setTotalNominalAll(hasil.totalNominal);
+    setTotalUntungAll(hasil.totalUntung);
   };
 
-  const handleExportPDF = async () => {
-    const { default: jsPDF } = await import('jspdf');
-    const { default: autoTable } = await import('jspdf-autotable');
-
-    const doc = new jsPDF();
-
-    const img = new Image();
-
-    img.src = logo;
-
-    img.onload = () => {
-      doc.addImage(
-        img,
-        'PNG',
-        12,
-        10,
-        16,
-        16
-      );
-
-      doc.setFontSize(15);
-
-      doc.text(
-        'REKAP VOUCHER PER OUTLET',
-        32,
-        18
-      );
-
-      doc.setFontSize(11);
-
-      doc.text(
-        `Periode ${start} s/d ${end}`,
-        32,
-        24
-      );
-
-      let currentY = 38;
-
-      dataPerOutlet.forEach(
-        (outletGroup) => {
-          const tableData =
-            outletGroup.data.map((d) => [
-              d.nama_ladies,
-              d.totalVoucher.toFixed(0),
-              formatRupiah(
-                d.totalNominal
-              ),
-            ]);
-
-          const totalVoucherOutlet =
-            outletGroup.data.reduce(
-              (sum, d) =>
-                sum + d.totalVoucher,
-              0
-            );
-
-          doc.setFontSize(12);
-
-          doc.text(
-            `Outlet: ${outletGroup.outlet}`,
-            14,
-            currentY
-          );
-
-          autoTable(doc, {
-            startY: currentY + 5,
-
-            head: [
-              [
-                'Nama Ladies',
-                'Voucher',
-                'Total',
-              ],
-            ],
-
-            body: tableData,
-
-            theme: 'grid',
-
-            headStyles: {
-              fillColor: [76, 175, 80],
-              textColor: 255,
-            },
-
-            styles: {
-              fontSize: 10,
-            },
-          });
-
-          // jspdf-autotable menempelkan `lastAutoTable` ke instance doc saat
-          // runtime, tapi tidak ikut di type bawaan jsPDF.
-          const lastY =
-            (doc as jsPDFWithAutoTable)
-              .lastAutoTable?.finalY || 0;
-
-          doc.text(
-            `Total Voucher: ${totalVoucherOutlet.toFixed(
-              0
-            )} pcs`,
-            14,
-            lastY + 7
-          );
-
-          currentY = lastY + 18;
-        }
-      );
-
-      const pageHeight =
-        doc.internal.pageSize.getHeight();
-
-      const pageWidth =
-        doc.internal.pageSize.getWidth();
-
-      doc.setFontSize(9);
-
-      doc.text(
-        `Dicetak ${dayjs().format(
-          'DD/MM/YYYY HH:mm'
-        )}`,
-        14,
-        pageHeight - 10
-      );
-
-      doc.text(
-        'SR Agency',
-        pageWidth - 14,
-        pageHeight - 10,
-        {
-          align: 'right',
-        }
-      );
-
-      doc.save(
-        `Rekap-Voucher-${start}-${end}.pdf`
-      );
-    };
-  };
+  const handleExportPDF = () =>
+    cetakRekapVoucherPdf({ dataPerOutlet, start, end });
 
   return (
     <div className="page-shell py-4 px-md-4 px-3">
@@ -629,36 +405,12 @@ const RekapVoucherPage = () => {
             {/* OUTLET */}
             {dataPerOutlet.map(
               (outletGroup, idx) => {
-                const totalVoucher =
-                  outletGroup.data.reduce(
-                    (sum, d) =>
-                      sum +
-                      d.totalVoucher,
-                    0
-                  );
+                const { totalVoucher, totalNominal, totalUntung } =
+                  totalPerOutlet(outletGroup);
 
-                const totalNominal =
-                  outletGroup.data.reduce(
-                    (sum, d) =>
-                      sum +
-                      d.totalNominal,
-                    0
-                  );
+                const totalHasil = totalUntung;
 
-                const totalUntung =
-                  outletGroup.data.reduce(
-                    (sum, d) =>
-                      sum +
-                      d.totalUntung,
-                    0
-                  );
-
-                const totalHasil =
-                  totalUntung;
-
-                const totalDidapat =
-                  totalNominal +
-                  totalUntung;
+                const totalDidapat = totalNominal + totalUntung;
 
                 return (
                   <div
