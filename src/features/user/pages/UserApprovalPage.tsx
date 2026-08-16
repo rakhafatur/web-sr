@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../../lib/supabaseClient';
 import { sanitizeSearchKeyword } from '../../../utils/sanitizeSearch';
 import { useMediaQuery } from 'react-responsive';
@@ -28,82 +29,75 @@ type AssignItem = {
 
 type AssignType = 'ladies' | 'pengawas' | 'agent';
 
+/** Sumber daftar yang bisa di-assign, per tipe. */
+const ASSIGN_SOURCE: Record<AssignType, { table: string; columns: string; orderBy: string }> = {
+  ladies: { table: 'ladies', columns: 'id, nama_ladies, nama_outlet, pin', orderBy: 'nama_ladies' },
+  pengawas: { table: 'pengawas', columns: 'id, nama_panggilan', orderBy: 'nama_panggilan' },
+  agent: { table: 'agent', columns: 'id, nama_agent', orderBy: 'nama_agent' },
+};
+
 const UserApprovalPage = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
-  const [userList, setUserList] = useState<User[]>([]);
+  const queryClient = useQueryClient();
+
   const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
   const [keyword, setKeyword] = useState('');
 
   const [assignModal, setAssignModal] = useState<{ id: string; show: boolean }>({ id: '', show: false });
   const [assignType, setAssignType] = useState<AssignType | null>(null);
-  const [assignList, setAssignList] = useState<AssignItem[]>([]);
   const [selectedAssignId, setSelectedAssignId] = useState<string>('');
 
   const limit = isMobile ? 5 : 10;
 
-  const fetchUsers = async () => {
-    const from = (page - 1) * limit;
-    const to = from + limit - 1;
+  const { data: userData } = useQuery({
+    queryKey: ['user-approval', page, limit, keyword],
+    queryFn: async () => {
+      const from = (page - 1) * limit;
+      const to = from + limit - 1;
 
-    let query = supabase
-      .from('users')
-      .select('id, username, nama', { count: 'exact' })
-      .eq('is_active', false)
-      .range(from, to);
+      let query = supabase
+        .from('users')
+        .select('id, username, nama', { count: 'exact' })
+        .eq('is_active', false)
+        .range(from, to);
 
-    const safeKeyword = sanitizeSearchKeyword(keyword.trim());
+      const safeKeyword = sanitizeSearchKeyword(keyword.trim());
 
-    if (safeKeyword !== '') {
-      query = query.or(`username.ilike.%${safeKeyword}%,nama.ilike.%${safeKeyword}%`);
-    }
-
-    const { data, count, error } = await query;
-    if (!error) {
-      setUserList(data || []);
-      setTotal(count || 0);
-    }
-  };
-
-  const fetchAssignList = async (type: AssignType) => {
-    try {
-      if (type === 'ladies') {
-        const { data, error } = await supabase
-          .from('ladies')
-          .select('id, nama_ladies, nama_outlet, pin')
-          .order('nama_ladies', { ascending: true });
-
-        if (error) throw error;
-        setAssignList(data || []);
-
-      } else if (type === 'pengawas') {
-        const { data, error } = await supabase
-          .from('pengawas')
-          .select('id, nama_panggilan')
-          .order('nama_panggilan', { ascending: true });
-
-        if (error) throw error;
-        setAssignList(data || []);
-
-      } else if (type === 'agent') {
-        const { data, error } = await supabase
-          .from('agent')
-          .select('id, nama_agent')
-          .order('nama_agent', { ascending: true });
-
-        if (error) throw error;
-        setAssignList(data || []);
+      if (safeKeyword !== '') {
+        query = query.or(`username.ilike.%${safeKeyword}%,nama.ilike.%${safeKeyword}%`);
       }
-    } catch (err) {
-      console.error('❌ Error fetchAssignList:', err);
-      setAssignList([]);
-    }
-  };
+
+      const { data, count, error } = await query;
+      if (error) throw error;
+
+      return { list: (data ?? []) as User[], total: count ?? 0 };
+    },
+    meta: { errorLabel: 'user menunggu persetujuan' },
+  });
+
+  const userList = userData?.list ?? [];
+  const total = userData?.total ?? 0;
+
+  const { data: assignList = [] } = useQuery({
+    queryKey: ['assign-options', assignType],
+    queryFn: async () => {
+      const source = ASSIGN_SOURCE[assignType as AssignType];
+
+      const { data, error } = await supabase
+        .from(source.table)
+        .select(source.columns)
+        .order(source.orderBy, { ascending: true });
+
+      if (error) throw error;
+      return (data ?? []) as unknown as AssignItem[];
+    },
+    enabled: !!assignType,
+    meta: { errorLabel: 'daftar penugasan' },
+  });
 
   const handleApproveClick = (userId: string) => {
     setAssignModal({ id: userId, show: true });
     setAssignType(null);
-    setAssignList([]);
     setSelectedAssignId('');
   };
 
@@ -120,27 +114,20 @@ const UserApprovalPage = () => {
 
     if (error) {
       toast.error('Gagal assign: ' + error.message);
-    } else {
-      toast.success('User berhasil di-assign & diaktifkan!');
-      fetchUsers();
-      setAssignModal({ id: '', show: false });
-      setAssignList([]);
-      setAssignType(null);
-      setSelectedAssignId('');
+      return;
     }
+
+    toast.success('User berhasil di-assign & diaktifkan!');
+
+    // User yang baru diaktifkan hilang dari daftar "menunggu persetujuan",
+    // dan muncul di halaman Management User — segarkan keduanya.
+    queryClient.invalidateQueries({ queryKey: ['user-approval'] });
+    queryClient.invalidateQueries({ queryKey: ['user-list'] });
+
+    setAssignModal({ id: '', show: false });
+    setAssignType(null);
+    setSelectedAssignId('');
   };
-
-  useEffect(() => {
-    fetchUsers();
-  }, [page, keyword]);
-
-  useEffect(() => {
-    if (assignType) {
-      fetchAssignList(assignType);
-    } else {
-      setAssignList([]);
-    }
-  }, [assignType]);
 
   const totalPages = Math.ceil(total / limit);
 
