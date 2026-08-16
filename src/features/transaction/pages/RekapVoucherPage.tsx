@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import dayjs from 'dayjs';
 import { useMediaQuery } from 'react-responsive';
 import { toast } from 'react-toastify';
@@ -85,7 +85,7 @@ const RekapVoucherPage = () => {
     }
 
     // Supabase mengetik relasi `ladies` sebagai array untuk nested select,
-    // padahal di sini selalu satu baris â€” jadi dinormalkan lewat unknown.
+    // padahal di sini selalu satu baris — jadi dinormalkan lewat unknown.
     const hasil = agregasiRekapVoucher(data as unknown as VoucherRow[]);
 
     setDataPerOutlet(hasil.perOutlet);

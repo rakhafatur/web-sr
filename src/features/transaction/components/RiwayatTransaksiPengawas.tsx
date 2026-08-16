@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
@@ -29,7 +29,7 @@ type Transaksi = {
   tipe: string;
   tipeLabel: string;
   jumlah: number;
-  /** Opsional â€” harus cocok dengan tipe di CardTableRiwayatTransaksi. */
+  /** Opsional — harus cocok dengan tipe di CardTableRiwayatTransaksi. */
   keterangan?: string;
   priority: number;
 };
@@ -127,7 +127,7 @@ const RiwayatTransaksiPengawas = ({ pengawasId }: Props) => {
     meta: { errorLabel: 'riwayat transaksi' },
   });
 
-  // Filter + sort dilakukan di client dari data yang sudah ada â€” filterTipe,
+  // Filter + sort dilakukan di client dari data yang sudah ada — filterTipe,
   // searchText, dan sortKey/sortOrder TIDAK perlu fetch ulang ke Supabase.
   const data = useMemo(() => {
     const search = searchText.toLowerCase();
@@ -176,7 +176,7 @@ const RiwayatTransaksiPengawas = ({ pengawasId }: Props) => {
   };
 
   const handleDelete = async (row: Transaksi) => {
-    if (!(await confirmDialog('â— Yakin ingin menghapus transaksi ini?'))) return;
+    if (!(await confirmDialog('❗ Yakin ingin menghapus transaksi ini?'))) return;
 
     const table = getTableName(row.tipe);
 

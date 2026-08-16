@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
@@ -212,7 +212,7 @@ const RiwayatTransaksi = ({
     meta: { errorLabel: 'riwayat transaksi' },
   });
 
-  // Filter + sort dilakukan di client dari data yang sudah ada â€” filterTipe,
+  // Filter + sort dilakukan di client dari data yang sudah ada — filterTipe,
   // searchText, dan sortKey/sortOrder TIDAK perlu fetch ulang ke Supabase.
   const data = useMemo(() => {
     const search =
@@ -317,7 +317,7 @@ const RiwayatTransaksi = ({
   ) => {
     const confirmDelete =
       await confirmDialog(
-        'â— Yakin ingin menghapus transaksi ini?'
+        '❗ Yakin ingin menghapus transaksi ini?'
       );
 
     if (!confirmDelete) return;
