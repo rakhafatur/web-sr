@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { useMediaQuery } from 'react-responsive';
-import { FiChevronDown, FiSearch, FiCheck } from 'react-icons/fi';
+import { FiChevronDown, FiSearch, FiCheck, FiX } from 'react-icons/fi';
 
 export type SearchableOption = {
   value: string;
@@ -25,10 +25,20 @@ const PANEL_MAX_HEIGHT = 320;
     diketik buat filter, jadi tidak perlu scroll manual satu-satu nyari nama
     di antara puluhan opsi.
 
-    Panel-nya di-render lewat portal ke document.body (bukan di dalam alur
-    dokumen biasa) — kalau tidak, dia ke-clip oleh card pembungkus yang
-    hampir semua punya `overflow: hidden` (buat merapikan sudut header
-    card), jadi kelihatan cuma sedikit padahal daftarnya lebih panjang. */
+    DUA MODE, sengaja berbeda:
+
+    - Desktop: dropdown yang menempel ke tombol, di-render lewat portal ke
+      document.body. Portal-nya perlu karena kalau di-render di alur dokumen
+      biasa, panel ke-clip oleh card pembungkus yang hampir semua punya
+      `overflow: hidden`.
+
+    - Mobile: pemilih LAYAR PENUH, seperti picker aplikasi native. Model
+      "menempel ke tombol" tidak bisa dipakai di layar kecil karena begitu
+      kolom cari disentuh, keyboard muncul dan browser men-scroll halaman
+      sendiri — panel jadi ikut bergeser, tertutup keyboard, atau menutup
+      sendiri. Layar penuh menghilangkan seluruh kelas masalah itu: tidak ada
+      perhitungan posisi, tidak ada tabrakan dengan keyboard, dan kolom cari
+      selalu di atas sehingga keyboard (yang selalu di bawah) tidak menutupinya. */
 const SearchableSelect = ({
   value,
   onChange,
@@ -57,26 +67,14 @@ const SearchableSelect = ({
       )
     : options;
 
-  // Hitung posisi panel dari posisi tombol trigger di viewport — dipanggil
-  // ulang tiap kali dibuka, dan otomatis "flip" ke atas kalau ruang di
-  // bawah tidak cukup buat menampung panelnya.
-  //
-  // Di MOBILE panel tidak menempel ke tombol sama sekali, melainkan ke sisi
-  // atas viewport. Alasannya: begitu kolom cari disentuh, keyboard muncul dan
-  // browser men-scroll halaman sendiri — panel yang menempel ke tombol jadi
-  // ikut bergeser atau malah tertutup keyboard. Ditempel ke atas, panel selalu
-  // berada di area yang tersisa di atas keyboard.
-  const updatePosition = () => {
-    if (isMobile) {
-      setPanelStyle({
-        position: 'fixed',
-        top: 12,
-        left: 12,
-        right: 12,
-      });
-      return;
-    }
+  const close = () => {
+    setOpen(false);
+    setQuery('');
+  };
 
+  // Hanya dipakai mode desktop — hitung posisi panel dari tombol trigger,
+  // dan "flip" ke atas kalau ruang di bawah tidak cukup.
+  const updatePosition = () => {
     const rect = triggerRef.current?.getBoundingClientRect();
     if (!rect) return;
 
@@ -94,21 +92,13 @@ const SearchableSelect = ({
   };
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || isMobile) return;
 
     updatePosition();
 
-    // Tutup-saat-scroll HANYA relevan di desktop, tempat panel menempel ke
-    // tombol trigger. Di mobile justru merusak: menyentuh kolom cari membuat
-    // keyboard muncul, dan browser otomatis men-scroll halaman — scroll itu
-    // menutup panelnya sendiri sebelum sempat mengetik. Karena di mobile
-    // panel menempel ke viewport (bukan ke tombol), tidak ada yang perlu
-    // ditutup saat halaman bergeser.
-    if (isMobile) return;
-
-    // Scroll capture-phase di window juga kepicu oleh scroll di DALAM daftar
-    // panel sendiri (overflowY:auto) — itu harus diabaikan, bukan dianggap
-    // "scroll di luar".
+    // Panel desktop menempel ke tombol; kalau halaman di-scroll, posisinya
+    // nyasar — jadi ditutup saja. Scroll capture-phase juga kepicu oleh
+    // scroll di DALAM daftar panel sendiri, itu harus diabaikan.
     const handleScroll = (e: Event) => {
       if (panelRef.current?.contains(e.target as Node)) return;
       setOpen(false);
@@ -120,10 +110,13 @@ const SearchableSelect = ({
       window.removeEventListener('scroll', handleScroll, true);
       window.removeEventListener('resize', updatePosition);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, isMobile]);
 
+  // Klik di luar hanya relevan untuk dropdown desktop. Mode mobile menutup
+  // lewat tombol X-nya sendiri.
   useEffect(() => {
+    if (isMobile) return;
+
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as Node;
       if (
@@ -132,35 +125,136 @@ const SearchableSelect = ({
       ) {
         return;
       }
-
-      setOpen(false);
-      setQuery('');
+      close();
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [isMobile]);
 
   useEffect(() => {
     if (!open) return;
 
-    // Auto-focus HANYA di desktop. Di iOS, `.focus()` yang dipanggil di luar
-    // gesture user langsung (di sini: dalam setTimeout) tetap memindahkan
-    // fokus — sehingga halaman ikut nge-zoom ke input — tapi keyboard-nya
-    // ditolak muncul oleh Safari. Hasilnya: layar ke-zoom tanpa keyboard.
-    // Di mobile biarkan user yang menyentuh kolom cari; tap itu gesture sah,
-    // jadi keyboard muncul normal.
+    // Auto-focus HANYA di desktop. Di iOS, `.focus()` di luar gesture user
+    // langsung tetap memindahkan fokus (halaman ikut ter-zoom) tapi keyboard
+    // ditolak muncul. Di mobile biarkan user menyentuh kolom carinya sendiri.
     if (isMobile) return;
 
     const timer = setTimeout(() => inputRef.current?.focus(), 50);
     return () => clearTimeout(timer);
   }, [open, isMobile]);
 
+  // Kunci scroll halaman selama pemilih layar penuh terbuka, supaya latar
+  // belakang tidak ikut bergeser di balik overlay.
+  useEffect(() => {
+    if (!open || !isMobile) return;
+
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [open, isMobile]);
+
   const handleSelect = (opt: SearchableOption) => {
     onChange(opt.value);
-    setOpen(false);
-    setQuery('');
+    close();
   };
+
+  const searchInput = (
+    <div style={{ position: 'relative' }}>
+      <FiSearch
+        size={15}
+        style={{
+          position: 'absolute',
+          left: 10,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          color: 'var(--color-gray-500)',
+        }}
+      />
+
+      <input
+        ref={inputRef}
+        type="text"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder={searchPlaceholder}
+        style={{
+          width: '100%',
+          height: isMobile ? 46 : 38,
+          borderRadius: 10,
+          border: '1px solid var(--color-gray-200)',
+          background: 'var(--color-surface-2)',
+          paddingLeft: 32,
+          paddingRight: 10,
+          // 16px itu ambang batas iOS: font di bawah itu bikin Safari
+          // otomatis nge-zoom halaman saat input difokus.
+          fontSize: isMobile ? 16 : '0.85rem',
+          color: 'var(--color-dark)',
+        }}
+      />
+    </div>
+  );
+
+  const optionList = (
+    <>
+      {filtered.length === 0 ? (
+        <div
+          style={{
+            padding: '16px 12px',
+            textAlign: 'center',
+            fontSize: isMobile ? '0.9rem' : '0.8rem',
+            color: 'var(--color-gray-500)',
+          }}
+        >
+          Tidak ditemukan
+        </div>
+      ) : (
+        filtered.map((opt) => {
+          const active = opt.value === value;
+
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => handleSelect(opt)}
+              className="searchable-select-option"
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 8,
+                padding: isMobile ? '14px 16px' : '10px 14px',
+                border: 'none',
+                borderBottom: isMobile ? '1px solid var(--color-gray-200)' : undefined,
+                background: active ? 'var(--color-green-lighter)' : 'transparent',
+                color: 'var(--color-dark)',
+                fontSize: isMobile ? '0.95rem' : '0.85rem',
+                fontWeight: active ? 700 : 500,
+                textAlign: 'left',
+              }}
+            >
+              <span
+                style={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {opt.label}
+              </span>
+
+              {active && (
+                <FiCheck size={16} style={{ flexShrink: 0, color: 'var(--color-green)' }} />
+              )}
+            </button>
+          );
+        })
+      )}
+    </>
+  );
 
   return (
     <div style={{ position: 'relative' }}>
@@ -205,27 +299,82 @@ const SearchableSelect = ({
         />
       </button>
 
+      {/* ===== MODE MOBILE: pemilih layar penuh ===== */}
       {open &&
+        isMobile &&
         ReactDOM.createPortal(
-          <>
-            {/* Di mobile panel lepas dari tombolnya, jadi perlu backdrop
-                supaya jelas ini lapisan terpisah — sekaligus area tap untuk
-                menutup, menggantikan "tutup saat scroll" yang dimatikan. */}
-            {isMobile && (
-              <div
-                onClick={() => {
-                  setOpen(false);
-                  setQuery('');
-                }}
-                style={{
-                  position: 'fixed',
-                  inset: 0,
-                  background: 'rgba(0,0,0,0.45)',
-                  zIndex: 2999,
-                }}
-              />
-            )}
+          <div
+            ref={panelRef}
+            data-ptr-ignore
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 3000,
+              background: 'var(--color-bg)',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <div
+              style={{
+                padding: 12,
+                borderBottom: '1px solid var(--color-gray-200)',
+                background: 'var(--color-surface)',
+                flexShrink: 0,
+              }}
+            >
+              <div className="d-flex align-items-center gap-2 mb-2">
+                <div
+                  style={{
+                    fontWeight: 700,
+                    fontSize: '1rem',
+                    color: 'var(--color-dark)',
+                    flex: 1,
+                  }}
+                >
+                  {placeholder.replace(/^--\s*|\s*--$/g, '')}
+                </div>
 
+                <button
+                  type="button"
+                  onClick={close}
+                  aria-label="Tutup"
+                  className="btn border-0 d-flex align-items-center justify-content-center"
+                  style={{
+                    width: 38,
+                    height: 38,
+                    borderRadius: 12,
+                    background: 'var(--color-surface-2)',
+                    color: 'var(--color-gray-500)',
+                    flexShrink: 0,
+                  }}
+                >
+                  <FiX size={20} />
+                </button>
+              </div>
+
+              {searchInput}
+            </div>
+
+            {/* Daftar mengisi sisa ruang. Keyboard muncul dari bawah dan
+                memperkecil area ini — kolom cari di header tetap terlihat. */}
+            <div
+              style={{
+                flex: 1,
+                overflowY: 'auto',
+                WebkitOverflowScrolling: 'touch',
+              }}
+            >
+              {optionList}
+            </div>
+          </div>,
+          document.body
+        )}
+
+      {/* ===== MODE DESKTOP: dropdown menempel ke tombol ===== */}
+      {open &&
+        !isMobile &&
+        ReactDOM.createPortal(
           <div
             ref={panelRef}
             data-ptr-ignore
@@ -240,108 +389,19 @@ const SearchableSelect = ({
             }}
           >
             <div style={{ padding: 8, borderBottom: '1px solid var(--color-gray-200)' }}>
-              <div style={{ position: 'relative' }}>
-                <FiSearch
-                  size={15}
-                  style={{
-                    position: 'absolute',
-                    left: 10,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    color: 'var(--color-gray-500)',
-                  }}
-                />
-
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder={searchPlaceholder}
-                  style={{
-                    width: '100%',
-                    height: isMobile ? 44 : 38,
-                    borderRadius: 10,
-                    border: '1px solid var(--color-gray-200)',
-                    background: 'var(--color-surface-2)',
-                    paddingLeft: 32,
-                    paddingRight: 10,
-                    // 16px itu ambang batas iOS: font di bawah itu bikin
-                    // Safari otomatis nge-zoom halaman saat input difokus.
-                    // Jangan turunkan di bawah 16 untuk mobile.
-                    fontSize: isMobile ? 16 : '0.85rem',
-                    color: 'var(--color-dark)',
-                  }}
-                />
-              </div>
+              {searchInput}
             </div>
 
             <div
               style={{
-                // Di mobile dibatasi relatif ke tinggi layar, bukan angka
-                // tetap — keyboard memakan sekitar separuh viewport, jadi
-                // daftar harus muat di sisa ruang atas tanpa tertutup.
-                maxHeight: isMobile ? '38vh' : PANEL_MAX_HEIGHT - 54,
+                maxHeight: PANEL_MAX_HEIGHT - 54,
                 overflowY: 'auto',
                 WebkitOverflowScrolling: 'touch',
               }}
             >
-              {filtered.length === 0 ? (
-                <div
-                  style={{
-                    padding: '16px 12px',
-                    textAlign: 'center',
-                    fontSize: '0.8rem',
-                    color: 'var(--color-gray-500)',
-                  }}
-                >
-                  Tidak ditemukan
-                </div>
-              ) : (
-                filtered.map((opt) => {
-                  const active = opt.value === value;
-
-                  return (
-                    <button
-                      key={opt.value}
-                      type="button"
-                      onClick={() => handleSelect(opt)}
-                      className="searchable-select-option"
-                      style={{
-                        width: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        gap: 8,
-                        padding: '10px 14px',
-                        border: 'none',
-                        background: active ? 'var(--color-green-lighter)' : 'transparent',
-                        color: 'var(--color-dark)',
-                        fontSize: '0.85rem',
-                        fontWeight: active ? 700 : 500,
-                        textAlign: 'left',
-                      }}
-                    >
-                      <span
-                        style={{
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {opt.label}
-                      </span>
-
-                      {active && (
-                        <FiCheck size={14} style={{ flexShrink: 0, color: 'var(--color-green)' }} />
-                      )}
-                    </button>
-                  );
-                })
-              )}
+              {optionList}
             </div>
-          </div>
-          </>,
+          </div>,
           document.body
         )}
     </div>
