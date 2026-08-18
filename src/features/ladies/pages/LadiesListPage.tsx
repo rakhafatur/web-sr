@@ -8,6 +8,7 @@ import Pagination from '../../../components/Pagination';
 import ListPageHeader from '../../../components/ListPageHeader';
 import HeaderActionButton from '../../../components/HeaderActionButton';
 import ListPageToolbar from '../../../components/ListPageToolbar';
+import ListLoadingState from '../../../components/ListLoadingState';
 import LadiesCardList from '../components/LadiesCardList';
 
 export type Lady = {
@@ -35,6 +36,7 @@ const LadiesListPage = () => {
     totalPages,
     keyword,
     setKeyword,
+    loading,
     remove,
   } = useEntityList<Lady>(
     'ladies',
@@ -76,7 +78,9 @@ const LadiesListPage = () => {
 
         {/* BODY */}
         <div className="p-2 p-md-3">
-          {isMobile ? (
+          {loading ? (
+            <ListLoadingState label="Memuat data ladies" />
+          ) : isMobile ? (
             <LadiesCardList
               ladies={ladiesList}
               onEdit={(l) => navigate(`/ladies-detail/${l.id}`)}

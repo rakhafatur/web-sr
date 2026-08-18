@@ -439,6 +439,7 @@ const TransaksiForm = ({
             <FormField
               label="Tanggal"
               name="tanggal"
+              required
               value={form.tanggal}
               onChange={
                 handleChange
@@ -474,6 +475,7 @@ const TransaksiForm = ({
                 <FormField
                   label="Jumlah Voucher"
                   name="jumlah_voucher"
+                  required
                   value={
                     form.jumlah_voucher
                   }
@@ -631,6 +633,7 @@ const TransaksiForm = ({
               <FormField
                 label="Jumlah"
                 name="jumlah"
+                required
                 value={form.jumlah}
                 onChange={
                   handleChange

@@ -9,6 +9,7 @@ import { FiPlus, FiEdit2, FiTrash2, FiUser } from 'react-icons/fi';
 import ListPageHeader from '../../../components/ListPageHeader';
 import HeaderActionButton from '../../../components/HeaderActionButton';
 import ListPageToolbar from '../../../components/ListPageToolbar';
+import ListLoadingState from '../../../components/ListLoadingState';
 
 type Pengawas = {
   id: string;
@@ -32,6 +33,7 @@ const PengawasListPage = () => {
     totalPages,
     keyword,
     setKeyword,
+    loading,
     remove,
   } = useEntityList<Pengawas>(
     'pengawas',
@@ -78,7 +80,9 @@ const PengawasListPage = () => {
 
         {/* BODY */}
         <div className="p-2 p-md-3">
-          {isMobile ? (
+          {loading ? (
+            <ListLoadingState label="Memuat data pengawas" />
+          ) : isMobile ? (
             <PengawasCardList
               pengawas={pengawasList}
               onEdit={(p) => navigate(`/pengawas-detail/${p.id}`)}

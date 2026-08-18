@@ -7,6 +7,8 @@ import { supabase } from '../../../lib/supabaseClient';
 import DataTable from '../../../components/DataTable';
 import Button from '../../../components/Button';
 import FeaturePageHeader from '../../../components/FeaturePageHeader';
+import EmptyState from '../../../components/EmptyState';
+import ListLoadingState from '../../../components/ListLoadingState';
 
 import {
   agregasiRekapVoucher,
@@ -60,7 +62,16 @@ const RekapVoucherPage = () => {
   const [totalUntungAll, setTotalUntungAll] =
     useState(0);
 
+  // Halaman ini tidak memuat data sendiri — user harus menekan "Tampilkan".
+  // Kedua penanda di bawah dipakai untuk membedakan tiga keadaan yang tampak
+  // sama-sama kosong: belum pernah dicari, sedang memuat, dan sudah dicari
+  // tapi memang tidak ada datanya.
+  const [sudahCari, setSudahCari] = useState(false);
+  const [memuat, setMemuat] = useState(false);
+
   const fetchData = async () => {
+    setMemuat(true);
+
     const { data, error } = await supabase
       .from('vouchers')
       .select(`
@@ -80,6 +91,7 @@ const RekapVoucherPage = () => {
       .not('ladies_id', 'is', null);
 
     if (error || !data || !Array.isArray(data)) {
+      setMemuat(false);
       toast.error('Gagal ambil data voucher');
       return;
     }
@@ -92,6 +104,9 @@ const RekapVoucherPage = () => {
     setTotalVoucherAll(hasil.totalVoucher);
     setTotalNominalAll(hasil.totalNominal);
     setTotalUntungAll(hasil.totalUntung);
+
+    setSudahCari(true);
+    setMemuat(false);
   };
 
   const handleExportPDF = () =>
@@ -222,10 +237,17 @@ const RekapVoucherPage = () => {
                 variant="primary"
                 fullWidth
                 onClick={fetchData}
-                icon={<FiRefreshCw />}
+                disabled={memuat}
+                icon={
+                  memuat ? (
+                    <div className="spinner-border spinner-border-sm" role="status" />
+                  ) : (
+                    <FiRefreshCw />
+                  )
+                }
                 style={{ height: isMobile ? 50 : 56 }}
               >
-                Tampilkan
+                {memuat ? 'Memuat...' : 'Tampilkan'}
               </Button>
             </div>
 
@@ -248,6 +270,26 @@ const RekapVoucherPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Tiga keadaan yang sama-sama tampak kosong dibedakan di sini, supaya
+          layar kosong tidak lagi terbaca sebagai "datanya tidak ada". */}
+      {memuat && <ListLoadingState label="Memuat rekap voucher" />}
+
+      {!memuat && !sudahCari && (
+        <EmptyState
+          icon="🗓️"
+          title="Pilih periode dulu"
+          description="Tentukan rentang tanggal di atas, lalu tekan Tampilkan untuk melihat rekapnya."
+        />
+      )}
+
+      {!memuat && sudahCari && dataPerOutlet.length === 0 && (
+        <EmptyState
+          icon="📭"
+          title="Tidak ada voucher di periode ini"
+          description="Coba ubah rentang tanggalnya."
+        />
+      )}
 
       {/* SUMMARY */}
       {dataPerOutlet.length >

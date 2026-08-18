@@ -207,6 +207,10 @@ const DetailUser = () => {
         <div>
           <div className="mb-2 fw-semibold" style={{ fontSize: '0.88rem', color: 'var(--color-dark)' }}>
             Username
+            <span aria-hidden="true" style={{ color: 'var(--color-expense)', marginLeft: 4 }}>
+              *
+            </span>
+            <span className="visually-hidden"> (wajib diisi)</span>
           </div>
 
           <FormField
@@ -221,6 +225,10 @@ const DetailUser = () => {
         <div>
           <div className="mb-2 fw-semibold" style={{ fontSize: '0.88rem', color: 'var(--color-dark)' }}>
             Nama Lengkap
+            <span aria-hidden="true" style={{ color: 'var(--color-expense)', marginLeft: 4 }}>
+              *
+            </span>
+            <span className="visually-hidden"> (wajib diisi)</span>
           </div>
 
           <FormField

@@ -112,12 +112,14 @@ const CreateLadies = () => {
         <FormField
           label="Nama Lengkap"
           name="nama_lengkap"
+          required
           value={form.nama_lengkap}
           onChange={handleChange}
         />
         <FormField
           label="Nama Ladies"
           name="nama_ladies"
+          required
           value={form.nama_ladies}
           onChange={handleChange}
         />

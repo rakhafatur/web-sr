@@ -2,6 +2,9 @@ import { ReactNode } from 'react';
 
 type BaseFieldProps = {
   label: string;
+  /** Tampilkan penanda wajib di label. Tanpa ini, user baru tahu field mana
+      yang kurang setelah menekan Simpan dan gagal. */
+  required?: boolean;
 };
 
 type InputFieldProps = BaseFieldProps & {
@@ -40,7 +43,7 @@ const dateInputStyle: React.CSSProperties = {
 };
 
 const FormField = (props: FormFieldProps) => {
-  const { label } = props;
+  const { label, required } = props;
 
   let content: ReactNode;
 
@@ -62,6 +65,16 @@ const FormField = (props: FormFieldProps) => {
     <div className="mb-3">
       <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>
         {label}
+        {required && (
+          <>
+            {/* Tanda bintang untuk yang melihat, kata "wajib diisi" untuk
+                pembaca layar — bintang saja tidak terbaca sebagai kewajiban. */}
+            <span aria-hidden="true" style={{ color: 'var(--color-expense)', marginLeft: 4 }}>
+              *
+            </span>
+            <span className="visually-hidden"> (wajib diisi)</span>
+          </>
+        )}
       </label>
       {content}
     </div>

@@ -177,6 +177,7 @@ const DetailLadies = () => {
         <FormField
           label="Nama Lengkap"
           name="nama_lengkap"
+          required
           value={form.nama_lengkap}
           onChange={handleChange}
           readOnly={readonly}
@@ -184,6 +185,7 @@ const DetailLadies = () => {
         <FormField
           label="Nama Ladies"
           name="nama_ladies"
+          required
           value={form.nama_ladies}
           onChange={handleChange}
           readOnly={readonly}

@@ -19,6 +19,7 @@ import { confirmDialog } from '../../../components/ConfirmDialog';
 import ListPageHeader from '../../../components/ListPageHeader';
 import HeaderActionButton from '../../../components/HeaderActionButton';
 import ListPageToolbar from '../../../components/ListPageToolbar';
+import ListLoadingState from '../../../components/ListLoadingState';
 import ActionIconButton from '../../../components/ActionIconButton';
 import ModalWrapper from '../../../components/ModalWrapper';
 import FormField from '../../../components/FormField';
@@ -237,9 +238,7 @@ const OutletListPage = () => {
 
         <div className="p-2 p-md-3">
           {loading ? (
-            <div className="d-flex justify-content-center p-3" role="status" aria-label="Loading">
-              <FiLoader size={20} className="spinner-icon" />
-            </div>
+            <ListLoadingState label="Memuat data outlet" />
           ) : outlets.length === 0 ? (
             <EmptyState title="Belum ada outlet" />
           ) : (
@@ -398,6 +397,7 @@ const OutletListPage = () => {
         <FormField
           label="Nama Outlet"
           name="nama_outlet"
+          required
           value={outletForm.nama_outlet}
           onChange={(e) => setOutletForm((p) => ({ ...p, nama_outlet: e.target.value }))}
         />
@@ -444,6 +444,7 @@ const OutletListPage = () => {
         <FormField
           label="Harga Ladies (Rp)"
           name="harga_ladies"
+          required
           type="number"
           value={tierForm.harga_ladies}
           onChange={(e) => setTierForm((p) => ({ ...p, harga_ladies: e.target.value }))}
@@ -452,6 +453,7 @@ const OutletListPage = () => {
         <FormField
           label="Untung (Rp)"
           name="untung"
+          required
           type="number"
           value={tierForm.untung}
           onChange={(e) => setTierForm((p) => ({ ...p, untung: e.target.value }))}

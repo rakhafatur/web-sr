@@ -9,6 +9,7 @@ import { FiPlus, FiEdit2, FiTrash2, FiUser } from 'react-icons/fi';
 import ListPageHeader from '../../../components/ListPageHeader';
 import HeaderActionButton from '../../../components/HeaderActionButton';
 import ListPageToolbar from '../../../components/ListPageToolbar';
+import ListLoadingState from '../../../components/ListLoadingState';
 
 export type Agent = {
   id: string;
@@ -27,6 +28,7 @@ const AgentListPage = () => {
     totalPages,
     keyword,
     setKeyword,
+    loading,
     remove,
   } = useEntityList<Agent>('agent', ['nama_agent'], limit);
 
@@ -68,7 +70,9 @@ const AgentListPage = () => {
 
         {/* BODY */}
         <div className="p-2 p-md-3">
-          {isMobile ? (
+          {loading ? (
+            <ListLoadingState label="Memuat data agent" />
+          ) : isMobile ? (
             <AgentCardList
               agents={agentList}
               onEdit={(a) => navigate(`/agent-detail/${a.id}`)}

@@ -65,6 +65,7 @@ const CreateAgent = () => {
         <FormField
           label="Nama Agent"
           name="nama_agent"
+          required
           value={form.nama_agent}
           onChange={handleChange}
         />

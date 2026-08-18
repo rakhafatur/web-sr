@@ -13,6 +13,7 @@ import Pagination from '../../../components/Pagination';
 import ListPageHeader from '../../../components/ListPageHeader';
 import HeaderActionButton from '../../../components/HeaderActionButton';
 import ListPageToolbar from '../../../components/ListPageToolbar';
+import ListLoadingState from '../../../components/ListLoadingState';
 import UserCardList from '../components/UserCardList';
 
 import { useMediaQuery } from 'react-responsive';
@@ -22,7 +23,6 @@ import {
   FiUsers,
   FiEdit2,
   FiTrash2,
-  FiLoader,
 } from 'react-icons/fi';
 
 type User = {
@@ -136,13 +136,7 @@ const UserListPage = () => {
         {/* BODY */}
         <div className="p-2 p-md-3">
           {loading ? (
-            <div
-              className="d-flex justify-content-center p-3"
-              role="status"
-              aria-label="Loading"
-            >
-              <FiLoader size={20} className="spinner-icon" />
-            </div>
+            <ListLoadingState label="Memuat data user" />
           ) : isMobile ? (
             <UserCardList
               users={userList}

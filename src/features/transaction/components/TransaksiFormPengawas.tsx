@@ -260,6 +260,7 @@ const TransaksiFormPengawas = ({
           <FormField
             label="Tanggal"
             name="tanggal"
+            required
             value={form.tanggal}
             onChange={handleChange}
             type="date"
@@ -282,6 +283,7 @@ const TransaksiFormPengawas = ({
           <FormField
             label="Jumlah"
             name="jumlah"
+            required
             value={form.jumlah}
             onChange={handleChange}
             type="text"

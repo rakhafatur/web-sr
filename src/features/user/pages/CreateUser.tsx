@@ -89,6 +89,7 @@ const CreateUser = () => {
         <FormField
           label="Username"
           name="username"
+          required
           value={form.username}
           onChange={handleChange}
         />
@@ -96,6 +97,7 @@ const CreateUser = () => {
         <FormField
           label="Nama Lengkap"
           name="nama"
+          required
           value={form.nama}
           onChange={handleChange}
         />
@@ -104,6 +106,7 @@ const CreateUser = () => {
           <FormField
             label="Password"
             name="password"
+            required
             type="password"
             value={form.password}
             onChange={handleChange}

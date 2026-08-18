@@ -151,6 +151,7 @@ const DetailPengawas = () => {
         <FormField
           label="Nama Lengkap"
           name="nama_lengkap"
+          required
           value={form.nama_lengkap}
           onChange={handleChange}
           readOnly={readonly}
