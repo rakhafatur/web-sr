@@ -6,6 +6,7 @@ import {
   FiBarChart2,
   FiMenu,
   FiUsers,
+  FiUser,
   FiUserCheck,
   FiClipboard,
   FiTrendingUp,
@@ -13,6 +14,8 @@ import {
   FiBookOpen,
   FiShield,
   FiActivity,
+  FiBriefcase,
+  FiMapPin,
   FiChevronRight,
 } from 'react-icons/fi';
 
@@ -192,9 +195,21 @@ function BottomNavbarAdmin() {
               )}
 
               {renderMenuItem(
-                <FiUsers />,
+                <FiUser />,
                 'Ladies',
                 '/ladies'
+              )}
+
+              {renderMenuItem(
+                <FiBriefcase />,
+                'Agent',
+                '/agent'
+              )}
+
+              {renderMenuItem(
+                <FiMapPin />,
+                'Outlet',
+                '/outlet'
               )}
 
               <div className="sheet-section-title">
