@@ -10,6 +10,7 @@ import ListPageHeader from '../../../components/ListPageHeader';
 import HeaderActionButton from '../../../components/HeaderActionButton';
 import ListPageToolbar from '../../../components/ListPageToolbar';
 import ListLoadingState from '../../../components/ListLoadingState';
+import PullToRefresh from '../../../components/PullToRefresh';
 
 export type Agent = {
   id: string;
@@ -30,11 +31,13 @@ const AgentListPage = () => {
     setKeyword,
     loading,
     remove,
+    refetch,
   } = useEntityList<Agent>('agent', ['nama_agent'], limit);
 
   const handleDelete = (id: string) => remove(id, 'Yakin ingin hapus agent ini?');
 
   return (
+    <PullToRefresh onRefresh={refetch}>
     <div
       className="page-shell p-4"
       style={{
@@ -113,6 +116,7 @@ const AgentListPage = () => {
         </div>
       </div>
     </div>
+    </PullToRefresh>
   );
 };
 

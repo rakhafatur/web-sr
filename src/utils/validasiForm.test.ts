@@ -46,7 +46,7 @@ describe('validasiWajib', () => {
       validasiWajib([
         { label: 'Nama lengkap', value: 'Budi' },
         { label: 'Nama ladies', value: '' },
-      ])
+      ])?.pesan
     ).toBe('Nama ladies wajib diisi.');
   });
 
@@ -56,18 +56,33 @@ describe('validasiWajib', () => {
         { label: 'Username', value: '' },
         { label: 'Nama', value: '' },
         { label: 'Password', value: '' },
-      ])
+      ])?.pesan
     ).toBe('Username, Nama dan Password wajib diisi.');
   });
 
   it('menangkap field yang hanya berisi spasi', () => {
     expect(
-      validasiWajib([{ label: 'Nama agent', value: '   ' }])
+      validasiWajib([{ label: 'Nama agent', value: '   ' }])?.pesan
     ).toBe('Nama agent wajib diisi.');
   });
 
   it('mengembalikan null untuk daftar kosong', () => {
     expect(validasiWajib([])).toBeNull();
+  });
+
+  it('menunjuk field kosong yang pertama, bukan yang terakhir', () => {
+    // Yang disorot harus yang pertama supaya layar tidak melompat ke bawah
+    // padahal masih ada field kosong di atasnya.
+    expect(
+      validasiWajib([
+        { label: 'Username', value: '', name: 'username' },
+        { label: 'Nama', value: '', name: 'nama' },
+      ])?.nama
+    ).toBe('username');
+  });
+
+  it('memberi nama null kalau pemanggil tidak menyertakan name', () => {
+    expect(validasiWajib([{ label: 'Nama agent', value: '' }])?.nama).toBeNull();
   });
 });
 
@@ -82,19 +97,19 @@ describe('validasiAngka', () => {
   });
 
   it('menolak field yang belum diisi', () => {
-    expect(validasiAngka([{ label: 'Harga ladies', value: '' }])).toBe(
+    expect(validasiAngka([{ label: 'Harga ladies', value: '' }])?.pesan).toBe(
       'Harga ladies wajib diisi.'
     );
   });
 
   it('menolak teks yang bukan angka', () => {
-    expect(validasiAngka([{ label: 'Untung', value: 'abc' }])).toBe(
+    expect(validasiAngka([{ label: 'Untung', value: 'abc' }])?.pesan).toBe(
       'Untung harus berupa angka.'
     );
   });
 
   it('menolak angka negatif — nominal uang tidak boleh minus', () => {
-    expect(validasiAngka([{ label: 'Harga ladies', value: '-5000' }])).toBe(
+    expect(validasiAngka([{ label: 'Harga ladies', value: '-5000' }])?.pesan).toBe(
       'Harga ladies tidak boleh negatif.'
     );
   });
@@ -104,7 +119,16 @@ describe('validasiAngka', () => {
       validasiAngka([
         { label: 'Harga ladies', value: 'abc' },
         { label: 'Untung', value: 'juga salah' },
-      ])
+      ])?.pesan
     ).toBe('Harga ladies harus berupa angka.');
+  });
+
+  it('ikut menyebut name field yang bermasalah', () => {
+    expect(
+      validasiAngka([
+        { label: 'Harga ladies', value: '150000', name: 'harga_ladies' },
+        { label: 'Untung', value: '-1', name: 'untung' },
+      ])?.nama
+    ).toBe('untung');
   });
 });

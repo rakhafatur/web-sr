@@ -33,21 +33,29 @@ const CreatePengawas = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [fieldSalah, setFieldSalah] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+
+    // Sorotan hilang begitu field-nya disentuh.
+    setFieldSalah((prev) => (prev === name ? null : prev));
+
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async () => {
     const error = validasiWajib([
-      { label: 'Nama lengkap', value: form.nama_lengkap },
+      { label: 'Nama lengkap', value: form.nama_lengkap, name: 'nama_lengkap' },
     ]);
 
     if (error) {
-      toast.error(error);
+      setFieldSalah(error.nama);
+      toast.error(error.pesan);
       return;
     }
+
+    setFieldSalah(null);
 
     try {
       setLoading(true);
@@ -90,6 +98,7 @@ const CreatePengawas = () => {
           label="Nama Lengkap"
           name="nama_lengkap"
           required
+          invalid={fieldSalah === 'nama_lengkap'}
           value={form.nama_lengkap}
           onChange={handleChange}
         />

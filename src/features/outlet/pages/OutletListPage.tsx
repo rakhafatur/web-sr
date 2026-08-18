@@ -19,6 +19,7 @@ import ListPageHeader from '../../../components/ListPageHeader';
 import HeaderActionButton from '../../../components/HeaderActionButton';
 import ListPageToolbar from '../../../components/ListPageToolbar';
 import ListLoadingState from '../../../components/ListLoadingState';
+import PullToRefresh from '../../../components/PullToRefresh';
 import ActionIconButton from '../../../components/ActionIconButton';
 import ModalWrapper from '../../../components/ModalWrapper';
 import FormField from '../../../components/FormField';
@@ -57,6 +58,7 @@ const OutletListPage = () => {
     loading,
     remove,
     save,
+    refetch,
   } = useEntityList<Outlet>(
     'outlets',
     ['nama_outlet'],
@@ -83,6 +85,10 @@ const OutletListPage = () => {
     untung: '',
     is_active: true,
   });
+
+  /** Cukup satu penanda untuk kedua modal: hanya satu yang bisa terbuka pada
+      satu waktu, dan nama field-nya tidak bertabrakan. */
+  const [fieldSalah, setFieldSalah] = useState<string | null>(null);
 
   const tiersQuery = useQuery({
     queryKey: ['outlet-pricing-admin', expandedId],
@@ -116,13 +122,16 @@ const OutletListPage = () => {
 
   const handleSaveOutlet = async () => {
     const errorValidasi = validasiWajib([
-      { label: 'Nama outlet', value: outletForm.nama_outlet },
+      { label: 'Nama outlet', value: outletForm.nama_outlet, name: 'nama_outlet' },
     ]);
 
     if (errorValidasi) {
-      toast.error(errorValidasi);
+      setFieldSalah(errorValidasi.nama);
+      toast.error(errorValidasi.pesan);
       return;
     }
+
+    setFieldSalah(null);
 
     const ok = await save(
       { nama_outlet: outletForm.nama_outlet.trim(), is_active: outletForm.is_active },
@@ -166,14 +175,17 @@ const OutletListPage = () => {
     // `Number('')` bernilai 0 dan lolos isNaN — sebelumnya field nominal yang
     // dikosongkan diam-diam tersimpan sebagai 0.
     const errorValidasi = validasiAngka([
-      { label: 'Harga ladies', value: tierForm.harga_ladies },
-      { label: 'Untung', value: tierForm.untung },
+      { label: 'Harga ladies', value: tierForm.harga_ladies, name: 'harga_ladies' },
+      { label: 'Untung', value: tierForm.untung, name: 'untung' },
     ]);
 
     if (errorValidasi) {
-      toast.error(errorValidasi);
+      setFieldSalah(errorValidasi.nama);
+      toast.error(errorValidasi.pesan);
       return;
     }
+
+    setFieldSalah(null);
 
     const payload = {
       outlet_id: tierModal.outletId,
@@ -211,6 +223,7 @@ const OutletListPage = () => {
   };
 
   return (
+    <PullToRefresh onRefresh={refetch}>
     <div className="page-shell py-4 px-md-4 px-3">
       <ListPageHeader
         icon={<FiMapPin />}
@@ -395,8 +408,12 @@ const OutletListPage = () => {
           label="Nama Outlet"
           name="nama_outlet"
           required
+          invalid={fieldSalah === 'nama_outlet'}
           value={outletForm.nama_outlet}
-          onChange={(e) => setOutletForm((p) => ({ ...p, nama_outlet: e.target.value }))}
+          onChange={(e) => {
+            setFieldSalah(null);
+            setOutletForm((p) => ({ ...p, nama_outlet: e.target.value }));
+          }}
         />
 
         <FormField label="Status">
@@ -442,18 +459,26 @@ const OutletListPage = () => {
           label="Harga Ladies (Rp)"
           name="harga_ladies"
           required
+          invalid={fieldSalah === 'harga_ladies'}
           type="number"
           value={tierForm.harga_ladies}
-          onChange={(e) => setTierForm((p) => ({ ...p, harga_ladies: e.target.value }))}
+          onChange={(e) => {
+            setFieldSalah((prev) => (prev === 'harga_ladies' ? null : prev));
+            setTierForm((p) => ({ ...p, harga_ladies: e.target.value }));
+          }}
         />
 
         <FormField
           label="Untung (Rp)"
           name="untung"
           required
+          invalid={fieldSalah === 'untung'}
           type="number"
           value={tierForm.untung}
-          onChange={(e) => setTierForm((p) => ({ ...p, untung: e.target.value }))}
+          onChange={(e) => {
+            setFieldSalah((prev) => (prev === 'untung' ? null : prev));
+            setTierForm((p) => ({ ...p, untung: e.target.value }));
+          }}
         />
 
         <FormField label="Status">
@@ -472,6 +497,7 @@ const OutletListPage = () => {
         </FormField>
       </ModalWrapper>
     </div>
+    </PullToRefresh>
   );
 };
 

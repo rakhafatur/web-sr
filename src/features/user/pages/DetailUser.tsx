@@ -48,6 +48,9 @@ const DetailUser = () => {
   const [readonly, setReadonly] =
     useState(true);
 
+  const [fieldSalah, setFieldSalah] =
+    useState<string | null>(null);
+
   const fetchUser = async () => {
     try {
       setLoading(true);
@@ -93,6 +96,9 @@ const DetailUser = () => {
   ) => {
     const { name, value } = e.target;
 
+    // Sorotan hilang begitu field-nya disentuh.
+    setFieldSalah((prev) => (prev === name ? null : prev));
+
     setForm((prev) => ({
       ...prev,
       [name]: value,
@@ -101,14 +107,17 @@ const DetailUser = () => {
 
   const handleSave = async () => {
     const error = validasiWajib([
-      { label: 'Username', value: form.username },
-      { label: 'Nama', value: form.nama },
+      { label: 'Username', value: form.username, name: 'username' },
+      { label: 'Nama', value: form.nama, name: 'nama' },
     ]);
 
     if (error) {
-      toast.error(error);
+      setFieldSalah(error.nama);
+      toast.error(error.pesan);
       return;
     }
+
+    setFieldSalah(null);
 
     try {
       setSaving(true);
@@ -209,6 +218,7 @@ const DetailUser = () => {
           <FormField
             label=""
             name="username"
+            invalid={fieldSalah === 'username'}
             value={form.username}
             onChange={handleChange}
             readOnly={readonly}
@@ -227,6 +237,7 @@ const DetailUser = () => {
           <FormField
             label=""
             name="nama"
+            invalid={fieldSalah === 'nama'}
             value={form.nama}
             onChange={handleChange}
             readOnly={readonly}

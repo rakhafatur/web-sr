@@ -108,7 +108,12 @@ export function useEntityList<T extends { id: string }>(
     keyword,
     setKeyword,
     loading: query.isLoading,
-    refetch: () => query.refetch(),
+    // Hasil query-nya sengaja tidak diteruskan: pemanggil hanya perlu tahu
+    // kapan pengambilan ulang selesai (mis. untuk PullToRefresh), dan
+    // membocorkan tipe internal React Query bikin hook ini susah dipakai.
+    refetch: async (): Promise<void> => {
+      await query.refetch();
+    },
     remove,
     save,
   };

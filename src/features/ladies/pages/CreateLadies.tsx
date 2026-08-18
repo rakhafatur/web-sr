@@ -46,11 +46,16 @@ const CreateLadies = () => {
 
   const [form, setForm] = useState<FormType>(emptyForm);
   const [loading, setLoading] = useState(false);
+  const [fieldSalah, setFieldSalah] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+
+    // Sorotan hilang begitu field-nya disentuh.
+    setFieldSalah((prev) => (prev === name ? null : prev));
+
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -65,14 +70,17 @@ const CreateLadies = () => {
 
   const handleSubmit = async () => {
     const error = validasiWajib([
-      { label: 'Nama lengkap', value: form.nama_lengkap },
-      { label: 'Nama ladies', value: form.nama_ladies },
+      { label: 'Nama lengkap', value: form.nama_lengkap, name: 'nama_lengkap' },
+      { label: 'Nama ladies', value: form.nama_ladies, name: 'nama_ladies' },
     ]);
 
     if (error) {
-      toast.error(error);
+      setFieldSalah(error.nama);
+      toast.error(error.pesan);
       return;
     }
+
+    setFieldSalah(null);
 
     try {
       setLoading(true);
@@ -114,6 +122,7 @@ const CreateLadies = () => {
           label="Nama Lengkap"
           name="nama_lengkap"
           required
+          invalid={fieldSalah === 'nama_lengkap'}
           value={form.nama_lengkap}
           onChange={handleChange}
         />
@@ -121,6 +130,7 @@ const CreateLadies = () => {
           label="Nama Ladies"
           name="nama_ladies"
           required
+          invalid={fieldSalah === 'nama_ladies'}
           value={form.nama_ladies}
           onChange={handleChange}
         />

@@ -472,6 +472,25 @@ body {
   transform: scale(0.97);
 }
 
+/* Tombol sungguhan ikut merasakan tekanan tanpa perlu dipasangi .tap-scale
+   satu per satu — sebelumnya efek ini hanya ada di enam berkas, sehingga
+   sebagian layar terasa mati saat disentuh.
+
+   Selektornya sengaja dibuat berspesifisitas rendah (`button:active`, bukan
+   `button:not(:disabled):active`) supaya komponen yang sudah menentukan nilai
+   tekannya sendiri — mis. `.nav-item` dan `.bottom-sheet-item` — tetap menang.
+   Tombol nonaktif tidak perlu dikecualikan: `:active` memang tidak berlaku
+   untuk elemen yang disabled. */
+button,
+.btn {
+  transition: transform 0.15s ease;
+}
+
+button:active,
+.btn:active {
+  transform: scale(0.97);
+}
+
 /* Dipakai SearchableSelect */
 @media (hover: hover) {
   .searchable-select-option:hover {

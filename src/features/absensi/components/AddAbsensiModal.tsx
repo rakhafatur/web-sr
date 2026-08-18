@@ -79,10 +79,13 @@ const AddAbsensiModal = ({
   };
 
   const handleSubmit = async () => {
+    // Tanpa `name`: status dipilih lewat StatusPicker, bukan FormField, jadi
+    // tidak ada field yang bisa disorot — notifikasi saja sudah cukup jelas
+    // karena pilihannya tepat di depan mata.
     const error = validasiWajib([{ label: 'Status', value: form.status }]);
 
     if (error) {
-      toast.error(error);
+      toast.error(error.pesan);
       return;
     }
 

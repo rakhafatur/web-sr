@@ -14,6 +14,7 @@ import ListPageHeader from '../../../components/ListPageHeader';
 import HeaderActionButton from '../../../components/HeaderActionButton';
 import ListPageToolbar from '../../../components/ListPageToolbar';
 import ListLoadingState from '../../../components/ListLoadingState';
+import PullToRefresh from '../../../components/PullToRefresh';
 import UserCardList from '../components/UserCardList';
 
 import { useMediaQuery } from 'react-responsive';
@@ -43,7 +44,7 @@ const UserListPage = () => {
   const queryClient = useQueryClient();
   const queryKey = ['user-list', page, limit, keyword];
 
-  const { data, isLoading: loading } = useQuery({
+  const { data, isLoading: loading, refetch } = useQuery({
     queryKey,
     queryFn: async () => {
       const from = (page - 1) * limit;
@@ -104,6 +105,7 @@ const UserListPage = () => {
   const totalPages = Math.ceil(total / limit);
 
   return (
+    <PullToRefresh onRefresh={async () => { await refetch(); }}>
     <div className="page-shell py-4 px-3 px-md-4">
       <ListPageHeader
         icon={<FiUsers />}
@@ -180,6 +182,7 @@ const UserListPage = () => {
         </div>
       </div>
     </div>
+    </PullToRefresh>
   );
 };
 

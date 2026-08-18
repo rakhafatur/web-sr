@@ -5,7 +5,9 @@ import './HomePage.css';
 function HomePageMobile() {
   return (
     <div className="home-wrapper">
-      <img src={bgImage} alt="background" className="home-bg-mobile" />
+      {/* alt kosong disengaja: gambar ini murni hiasan, jadi sebaiknya
+          dilewati pembaca layar — bukan dibacakan sebagai "background". */}
+      <img src={bgImage} alt="" className="home-bg-mobile" />
       <div className="home-overlay">
         <motion.h1
           className="home-title"

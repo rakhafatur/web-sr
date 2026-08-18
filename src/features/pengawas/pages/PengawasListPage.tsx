@@ -10,6 +10,7 @@ import ListPageHeader from '../../../components/ListPageHeader';
 import HeaderActionButton from '../../../components/HeaderActionButton';
 import ListPageToolbar from '../../../components/ListPageToolbar';
 import ListLoadingState from '../../../components/ListLoadingState';
+import PullToRefresh from '../../../components/PullToRefresh';
 
 type Pengawas = {
   id: string;
@@ -35,6 +36,7 @@ const PengawasListPage = () => {
     setKeyword,
     loading,
     remove,
+    refetch,
   } = useEntityList<Pengawas>(
     'pengawas',
     ['nama_lengkap', 'nama_panggilan'],
@@ -45,6 +47,7 @@ const PengawasListPage = () => {
   const handleDelete = (id: string) => remove(id, 'Yakin ingin hapus pengawas ini?');
 
   return (
+    <PullToRefresh onRefresh={refetch}>
     <div
       className="page-shell p-4"
       style={{
@@ -124,6 +127,7 @@ const PengawasListPage = () => {
         </div>
       </div>
     </div>
+    </PullToRefresh>
   );
 };
 

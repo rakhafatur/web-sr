@@ -50,6 +50,7 @@ const DetailLadies = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [readonly, setReadonly] = useState(true);
+  const [fieldSalah, setFieldSalah] = useState<string | null>(null);
 
   const fetchLady = async () => {
     try {
@@ -92,6 +93,10 @@ const DetailLadies = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+
+    // Sorotan hilang begitu field-nya disentuh.
+    setFieldSalah((prev) => (prev === name ? null : prev));
+
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -106,14 +111,17 @@ const DetailLadies = () => {
 
   const handleSave = async () => {
     const error = validasiWajib([
-      { label: 'Nama lengkap', value: form.nama_lengkap },
-      { label: 'Nama ladies', value: form.nama_ladies },
+      { label: 'Nama lengkap', value: form.nama_lengkap, name: 'nama_lengkap' },
+      { label: 'Nama ladies', value: form.nama_ladies, name: 'nama_ladies' },
     ]);
 
     if (error) {
-      toast.error(error);
+      setFieldSalah(error.nama);
+      toast.error(error.pesan);
       return;
     }
+
+    setFieldSalah(null);
 
     try {
       setSaving(true);
@@ -172,6 +180,7 @@ const DetailLadies = () => {
           label="Nama Lengkap"
           name="nama_lengkap"
           required
+          invalid={fieldSalah === 'nama_lengkap'}
           value={form.nama_lengkap}
           onChange={handleChange}
           readOnly={readonly}
@@ -180,6 +189,7 @@ const DetailLadies = () => {
           label="Nama Ladies"
           name="nama_ladies"
           required
+          invalid={fieldSalah === 'nama_ladies'}
           value={form.nama_ladies}
           onChange={handleChange}
           readOnly={readonly}

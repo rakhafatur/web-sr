@@ -22,11 +22,15 @@ const CreateUser = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [fieldSalah, setFieldSalah] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+
+    // Sorotan hilang begitu field-nya disentuh.
+    setFieldSalah((prev) => (prev === name ? null : prev));
 
     setForm((prev) => ({
       ...prev,
@@ -36,15 +40,18 @@ const CreateUser = () => {
 
   const handleSubmit = async () => {
     const error = validasiWajib([
-      { label: 'Username', value: form.username },
-      { label: 'Nama', value: form.nama },
-      { label: 'Password', value: form.password },
+      { label: 'Username', value: form.username, name: 'username' },
+      { label: 'Nama', value: form.nama, name: 'nama' },
+      { label: 'Password', value: form.password, name: 'password' },
     ]);
 
     if (error) {
-      toast.error(error);
+      setFieldSalah(error.nama);
+      toast.error(error.pesan);
       return;
     }
+
+    setFieldSalah(null);
 
     try {
       setLoading(true);
@@ -91,6 +98,7 @@ const CreateUser = () => {
           label="Username"
           name="username"
           required
+          invalid={fieldSalah === 'username'}
           value={form.username}
           onChange={handleChange}
         />
@@ -99,6 +107,7 @@ const CreateUser = () => {
           label="Nama Lengkap"
           name="nama"
           required
+          invalid={fieldSalah === 'nama'}
           value={form.nama}
           onChange={handleChange}
         />
@@ -108,6 +117,7 @@ const CreateUser = () => {
             label="Password"
             name="password"
             required
+            invalid={fieldSalah === 'password'}
             type="password"
             value={form.password}
             onChange={handleChange}

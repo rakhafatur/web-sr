@@ -16,21 +16,29 @@ const CreateAgent = () => {
 
   const [form, setForm] = useState({ nama_agent: '' });
   const [loading, setLoading] = useState(false);
+  const [fieldSalah, setFieldSalah] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+
+    // Sorotan hilang begitu field-nya disentuh.
+    setFieldSalah((prev) => (prev === name ? null : prev));
+
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async () => {
     const error = validasiWajib([
-      { label: 'Nama agent', value: form.nama_agent },
+      { label: 'Nama agent', value: form.nama_agent, name: 'nama_agent' },
     ]);
 
     if (error) {
-      toast.error(error);
+      setFieldSalah(error.nama);
+      toast.error(error.pesan);
       return;
     }
+
+    setFieldSalah(null);
 
     try {
       setLoading(true);
@@ -67,6 +75,7 @@ const CreateAgent = () => {
           label="Nama Agent"
           name="nama_agent"
           required
+          invalid={fieldSalah === 'nama_agent'}
           value={form.nama_agent}
           onChange={handleChange}
         />

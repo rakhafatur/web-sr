@@ -9,6 +9,7 @@ import ListPageHeader from '../../../components/ListPageHeader';
 import HeaderActionButton from '../../../components/HeaderActionButton';
 import ListPageToolbar from '../../../components/ListPageToolbar';
 import ListLoadingState from '../../../components/ListLoadingState';
+import PullToRefresh from '../../../components/PullToRefresh';
 import LadiesCardList from '../components/LadiesCardList';
 
 export type Lady = {
@@ -38,6 +39,7 @@ const LadiesListPage = () => {
     setKeyword,
     loading,
     remove,
+    refetch,
   } = useEntityList<Lady>(
     'ladies',
     ['nama_lengkap', 'nama_ladies', 'nama_outlet'],
@@ -48,6 +50,7 @@ const LadiesListPage = () => {
   const handleDelete = (id: string) => remove(id, '❗ Yakin ingin hapus data ladies ini?');
 
   return (
+    <PullToRefresh onRefresh={refetch}>
     <div className="page-shell p-4" style={{ color: 'var(--color-dark)' }}>
       <ListPageHeader
         icon={<FiUser />}
@@ -155,6 +158,7 @@ const LadiesListPage = () => {
         </div>
       </div>
     </div>
+    </PullToRefresh>
   );
 };
 

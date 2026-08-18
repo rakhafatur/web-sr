@@ -24,6 +24,7 @@ const DetailAgent = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [readonly, setReadonly] = useState(true);
+  const [fieldSalah, setFieldSalah] = useState<string | null>(null);
 
   const fetchAgent = async () => {
     try {
@@ -53,18 +54,25 @@ const DetailAgent = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+
+    // Sorotan hilang begitu field-nya disentuh.
+    setFieldSalah((prev) => (prev === name ? null : prev));
+
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSave = async () => {
     const error = validasiWajib([
-      { label: 'Nama agent', value: form.nama_agent },
+      { label: 'Nama agent', value: form.nama_agent, name: 'nama_agent' },
     ]);
 
     if (error) {
-      toast.error(error);
+      setFieldSalah(error.nama);
+      toast.error(error.pesan);
       return;
     }
+
+    setFieldSalah(null);
 
     try {
       setSaving(true);
@@ -114,6 +122,7 @@ const DetailAgent = () => {
           label="Nama Agent"
           name="nama_agent"
           required
+          invalid={fieldSalah === 'nama_agent'}
           value={form.nama_agent}
           onChange={handleChange}
           readOnly={readonly}

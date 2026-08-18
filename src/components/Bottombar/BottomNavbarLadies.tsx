@@ -158,8 +158,11 @@ function BottomNavbarLadies() {
           <div className="bottom-sheet-content">
             {activeModal === 'transaksi' && (
               <>
+                {/* Bukan "Input Transaksi": keempat halaman di bawah ini hanya
+                    menampilkan riwayat — ladies tidak bisa menginput apa pun
+                    di sana, jadi judul lama menjanjikan hal yang tidak ada. */}
                 <div className="sheet-section-title">
-                  Input Transaksi
+                  Riwayat Transaksi
                 </div>
 
                 {renderMenuItem(

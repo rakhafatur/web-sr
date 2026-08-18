@@ -11,6 +11,18 @@ export type FieldWajib = {
   /** Nama field seperti yang dilihat user, dipakai di pesan error. */
   label: string;
   value: unknown;
+  /** Atribut `name` field-nya. Dipakai form untuk menyorot field yang
+      bermasalah; boleh dikosongkan kalau form tidak memakai penyorotan. */
+  name?: string;
+};
+
+export type HasilValidasi = {
+  /** Pesan siap tampil untuk toast. */
+  pesan: string;
+  /** Field pertama yang bermasalah, atau null kalau pemanggil tidak
+      menyertakan `name`. Aturan validasinya sendiri tidak berubah — ini
+      hanya keterangan tambahan supaya form bisa menunjukkan letaknya. */
+  nama: string | null;
 };
 
 /** Kosong = null, undefined, string kosong, atau string berisi spasi saja. */
@@ -27,16 +39,23 @@ export function kosong(value: unknown): boolean {
  * Sengaja menyebut field yang bermasalah, bukan pesan umum — user tidak perlu
  * menebak field mana yang belum diisi.
  */
-export function validasiWajib(fields: FieldWajib[]): string | null {
+export function validasiWajib(fields: FieldWajib[]): HasilValidasi | null {
   const kurang = fields.filter((f) => kosong(f.value));
 
   if (kurang.length === 0) return null;
-  if (kurang.length === 1) return `${kurang[0].label} wajib diisi.`;
+
+  // Yang disorot selalu yang pertama, biar layar tidak melompat-lompat kalau
+  // beberapa field sekaligus kosong.
+  const nama = kurang[0].name ?? null;
+
+  if (kurang.length === 1) {
+    return { pesan: `${kurang[0].label} wajib diisi.`, nama };
+  }
 
   const labels = kurang.map((f) => f.label);
   const terakhir = labels.pop();
 
-  return `${labels.join(', ')} dan ${terakhir} wajib diisi.`;
+  return { pesan: `${labels.join(', ')} dan ${terakhir} wajib diisi.`, nama };
 }
 
 /**
@@ -44,13 +63,15 @@ export function validasiWajib(fields: FieldWajib[]): string | null {
  * (bukan nol) supaya tidak diam-diam tersimpan sebagai 0 — penting untuk
  * field nominal uang.
  */
-export function validasiAngka(fields: FieldWajib[]): string | null {
+export function validasiAngka(fields: FieldWajib[]): HasilValidasi | null {
   for (const f of fields) {
-    if (kosong(f.value)) return `${f.label} wajib diisi.`;
+    const nama = f.name ?? null;
+
+    if (kosong(f.value)) return { pesan: `${f.label} wajib diisi.`, nama };
 
     const angka = Number(f.value);
-    if (Number.isNaN(angka)) return `${f.label} harus berupa angka.`;
-    if (angka < 0) return `${f.label} tidak boleh negatif.`;
+    if (Number.isNaN(angka)) return { pesan: `${f.label} harus berupa angka.`, nama };
+    if (angka < 0) return { pesan: `${f.label} tidak boleh negatif.`, nama };
   }
 
   return null;

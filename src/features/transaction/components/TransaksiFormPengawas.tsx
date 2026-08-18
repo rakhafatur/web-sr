@@ -62,6 +62,8 @@ const TransaksiFormPengawas = ({
     tipe: 'kasbon_pengawas',
   });
 
+  const [fieldSalah, setFieldSalah] = useState<string | null>(null);
+
   const formatNumber = (value: string) => {
     const number = value.replace(/[^\d]/g, '');
     return number.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
@@ -77,6 +79,9 @@ const TransaksiFormPengawas = ({
     >
   ) => {
     const { name, value } = e.target;
+
+    // Sorotan hilang begitu field-nya disentuh.
+    setFieldSalah((prev) => (prev === name ? null : prev));
 
     if (name === 'jumlah') {
       const raw = unformatNumber(value);
@@ -146,14 +151,17 @@ const TransaksiFormPengawas = ({
 
   const handleSubmit = () => {
     const error = validasiWajib([
-      { label: 'Tanggal', value: form.tanggal },
-      { label: 'Jumlah', value: form.jumlah },
+      { label: 'Tanggal', value: form.tanggal, name: 'tanggal' },
+      { label: 'Jumlah', value: form.jumlah, name: 'jumlah' },
     ]);
 
     if (error) {
-      toast.error(error);
+      setFieldSalah(error.nama);
+      toast.error(error.pesan);
       return;
     }
+
+    setFieldSalah(null);
 
     const table = form.tipe;
 
@@ -261,6 +269,7 @@ const TransaksiFormPengawas = ({
             label="Tanggal"
             name="tanggal"
             required
+            invalid={fieldSalah === 'tanggal'}
             value={form.tanggal}
             onChange={handleChange}
             type="date"
@@ -284,6 +293,7 @@ const TransaksiFormPengawas = ({
             label="Jumlah"
             name="jumlah"
             required
+            invalid={fieldSalah === 'jumlah'}
             value={form.jumlah}
             onChange={handleChange}
             type="text"

@@ -88,6 +88,8 @@ const TransaksiForm = ({
     tipe: 'voucher',
   });
 
+  const [fieldSalah, setFieldSalah] = useState<string | null>(null);
+
   const formatNumber = (
     value: string
   ) => {
@@ -116,6 +118,10 @@ const TransaksiForm = ({
     >
   ) => {
     const { name, value } = e.target;
+
+    // Sorotan hilang begitu field-nya disentuh — kalau tidak, garis merah
+    // tetap tertinggal padahal user sudah memperbaikinya.
+    setFieldSalah((prev) => (prev === name ? null : prev));
 
     if (
       name === 'jumlah' ||
@@ -195,17 +201,21 @@ const TransaksiForm = ({
     // Voucher mengisi `jumlah_voucher`, tipe lain mengisi `jumlah` — jadi
     // field nominalnya bergantung tipe transaksi yang sedang dipilih.
     const error = validasiWajib([
-      { label: 'Tanggal', value: form.tanggal },
+      { label: 'Tanggal', value: form.tanggal, name: 'tanggal' },
       {
         label: form.tipe === 'voucher' ? 'Jumlah voucher' : 'Jumlah',
         value: form.tipe === 'voucher' ? form.jumlah_voucher : form.jumlah,
+        name: form.tipe === 'voucher' ? 'jumlah_voucher' : 'jumlah',
       },
     ]);
 
     if (error) {
-      toast.error(error);
+      setFieldSalah(error.nama);
+      toast.error(error.pesan);
       return;
     }
+
+    setFieldSalah(null);
 
     const table =
       form.tipe === 'voucher'
@@ -440,6 +450,7 @@ const TransaksiForm = ({
               label="Tanggal"
               name="tanggal"
               required
+              invalid={fieldSalah === 'tanggal'}
               value={form.tanggal}
               onChange={
                 handleChange
@@ -476,6 +487,7 @@ const TransaksiForm = ({
                   label="Jumlah Voucher"
                   name="jumlah_voucher"
                   required
+                  invalid={fieldSalah === 'jumlah_voucher'}
                   value={
                     form.jumlah_voucher
                   }
@@ -634,6 +646,7 @@ const TransaksiForm = ({
                 label="Jumlah"
                 name="jumlah"
                 required
+                invalid={fieldSalah === 'jumlah'}
                 value={form.jumlah}
                 onChange={
                   handleChange

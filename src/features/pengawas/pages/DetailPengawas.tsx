@@ -39,6 +39,7 @@ const DetailPengawas = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [readonly, setReadonly] = useState(true);
+  const [fieldSalah, setFieldSalah] = useState<string | null>(null);
 
   const fetchPengawas = async () => {
     try {
@@ -75,18 +76,25 @@ const DetailPengawas = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+
+    // Sorotan hilang begitu field-nya disentuh.
+    setFieldSalah((prev) => (prev === name ? null : prev));
+
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSave = async () => {
     const error = validasiWajib([
-      { label: 'Nama lengkap', value: form.nama_lengkap },
+      { label: 'Nama lengkap', value: form.nama_lengkap, name: 'nama_lengkap' },
     ]);
 
     if (error) {
-      toast.error(error);
+      setFieldSalah(error.nama);
+      toast.error(error.pesan);
       return;
     }
+
+    setFieldSalah(null);
 
     try {
       setSaving(true);
@@ -146,6 +154,7 @@ const DetailPengawas = () => {
           label="Nama Lengkap"
           name="nama_lengkap"
           required
+          invalid={fieldSalah === 'nama_lengkap'}
           value={form.nama_lengkap}
           onChange={handleChange}
           readOnly={readonly}
