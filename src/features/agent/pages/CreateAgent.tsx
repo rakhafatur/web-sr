@@ -9,6 +9,7 @@ import EntityHeroCard from '../../../components/EntityHeroCard';
 import EntityFormCard from '../../../components/EntityFormCard';
 import EntitySubmitButton from '../../../components/EntitySubmitButton';
 import { supabase } from '../../../lib/supabaseClient';
+import { validasiWajib } from '../../../utils/validasiForm';
 
 const CreateAgent = () => {
   const navigate = useNavigate();
@@ -22,8 +23,12 @@ const CreateAgent = () => {
   };
 
   const handleSubmit = async () => {
-    if (!form.nama_agent) {
-      toast.error('Nama agent wajib diisi');
+    const error = validasiWajib([
+      { label: 'Nama agent', value: form.nama_agent },
+    ]);
+
+    if (error) {
+      toast.error(error);
       return;
     }
 

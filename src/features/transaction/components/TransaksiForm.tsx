@@ -6,6 +6,7 @@ import { supabase } from '../../../lib/supabaseClient';
 import FormField from '../../../components/FormField';
 import Button from '../../../components/Button';
 import { useOutletPricing } from '../hooks/useOutletPricing';
+import { validasiWajib } from '../../../utils/validasiForm';
 import {
   pilihTier,
   perluPilihTier,
@@ -191,14 +192,18 @@ const TransaksiForm = ({
   });
 
   const handleSubmit = () => {
-    if (
-      !form.tanggal ||
-      (!form.jumlah &&
-        !form.jumlah_voucher)
-    ) {
-      toast.error(
-        'Harap isi tanggal dan jumlah.'
-      );
+    // Voucher mengisi `jumlah_voucher`, tipe lain mengisi `jumlah` — jadi
+    // field nominalnya bergantung tipe transaksi yang sedang dipilih.
+    const error = validasiWajib([
+      { label: 'Tanggal', value: form.tanggal },
+      {
+        label: form.tipe === 'voucher' ? 'Jumlah voucher' : 'Jumlah',
+        value: form.tipe === 'voucher' ? form.jumlah_voucher : form.jumlah,
+      },
+    ]);
+
+    if (error) {
+      toast.error(error);
       return;
     }
 

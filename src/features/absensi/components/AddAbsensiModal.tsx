@@ -4,6 +4,7 @@ import FormField from '../../../components/FormField';
 import ModalWrapper from '../../../components/ModalWrapper';
 import ModalHeading from '../../../components/ModalHeading';
 import Button from '../../../components/Button';
+import { validasiWajib } from '../../../utils/validasiForm';
 
 import {
   FiCalendar,
@@ -78,8 +79,10 @@ const AddAbsensiModal = ({
   };
 
   const handleSubmit = async () => {
-    if (!form.status) {
-      toast.error('Status wajib diisi');
+    const error = validasiWajib([{ label: 'Status', value: form.status }]);
+
+    if (error) {
+      toast.error(error);
       return;
     }
 

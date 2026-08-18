@@ -9,6 +9,7 @@ import EntityHeroCard from '../../../components/EntityHeroCard';
 import EntityFormCard from '../../../components/EntityFormCard';
 import EntityDetailActions from '../../../components/EntityDetailActions';
 import { supabase } from '../../../lib/supabaseClient';
+import { validasiWajib } from '../../../utils/validasiForm';
 import { useAgentOptions } from '../hooks/useAgentOptions';
 import { useOutletOptions } from '../hooks/useOutletOptions';
 
@@ -103,8 +104,13 @@ const DetailLadies = () => {
   };
 
   const handleSave = async () => {
-    if (!form.nama_lengkap || !form.nama_ladies) {
-      toast.error('Nama lengkap dan nama ladies wajib diisi');
+    const error = validasiWajib([
+      { label: 'Nama lengkap', value: form.nama_lengkap },
+      { label: 'Nama ladies', value: form.nama_ladies },
+    ]);
+
+    if (error) {
+      toast.error(error);
       return;
     }
 

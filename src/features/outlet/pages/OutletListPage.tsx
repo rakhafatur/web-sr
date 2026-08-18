@@ -13,6 +13,7 @@ import {
 } from 'react-icons/fi';
 
 import { supabase } from '../../../lib/supabaseClient';
+import { validasiWajib, validasiAngka } from '../../../utils/validasiForm';
 import { useEntityList } from '../../../hooks/useEntityList';
 import { confirmDialog } from '../../../components/ConfirmDialog';
 import ListPageHeader from '../../../components/ListPageHeader';
@@ -114,8 +115,12 @@ const OutletListPage = () => {
   };
 
   const handleSaveOutlet = async () => {
-    if (!outletForm.nama_outlet.trim()) {
-      toast.error('Nama outlet wajib diisi.');
+    const errorValidasi = validasiWajib([
+      { label: 'Nama outlet', value: outletForm.nama_outlet },
+    ]);
+
+    if (errorValidasi) {
+      toast.error(errorValidasi);
       return;
     }
 
@@ -156,19 +161,25 @@ const OutletListPage = () => {
     setTierModal({ show: false, outletId: null, editId: null });
 
   const handleSaveTier = async () => {
-    const harga = Number(tierForm.harga_ladies);
-    const untung = Number(tierForm.untung);
+    if (!tierModal.outletId) return;
 
-    if (!tierModal.outletId || isNaN(harga) || isNaN(untung)) {
-      toast.error('Harga ladies dan untung wajib diisi angka.');
+    // `Number('')` bernilai 0 dan lolos isNaN — sebelumnya field nominal yang
+    // dikosongkan diam-diam tersimpan sebagai 0.
+    const errorValidasi = validasiAngka([
+      { label: 'Harga ladies', value: tierForm.harga_ladies },
+      { label: 'Untung', value: tierForm.untung },
+    ]);
+
+    if (errorValidasi) {
+      toast.error(errorValidasi);
       return;
     }
 
     const payload = {
       outlet_id: tierModal.outletId,
       tier_name: tierForm.tier_name.trim() || null,
-      harga_ladies: harga,
-      untung,
+      harga_ladies: Number(tierForm.harga_ladies),
+      untung: Number(tierForm.untung),
       is_active: tierForm.is_active,
     };
 

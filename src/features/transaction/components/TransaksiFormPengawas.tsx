@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
 import FormField from '../../../components/FormField';
 import Button from '../../../components/Button';
+import { validasiWajib } from '../../../utils/validasiForm';
 
 import {
   FiTrendingDown,
@@ -144,8 +145,13 @@ const TransaksiFormPengawas = ({
   });
 
   const handleSubmit = () => {
-    if (!form.tanggal || !form.jumlah) {
-      toast.error('Harap isi tanggal dan jumlah.');
+    const error = validasiWajib([
+      { label: 'Tanggal', value: form.tanggal },
+      { label: 'Jumlah', value: form.jumlah },
+    ]);
+
+    if (error) {
+      toast.error(error);
       return;
     }
 

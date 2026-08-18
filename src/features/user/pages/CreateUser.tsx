@@ -10,6 +10,7 @@ import EntityHeroCard from '../../../components/EntityHeroCard';
 import EntityFormCard from '../../../components/EntityFormCard';
 import EntitySubmitButton from '../../../components/EntitySubmitButton';
 import { supabase } from '../../../lib/supabaseClient';
+import { validasiWajib } from '../../../utils/validasiForm';
 import bcrypt from 'bcryptjs';
 
 const CreateUser = () => {
@@ -35,8 +36,14 @@ const CreateUser = () => {
   };
 
   const handleSubmit = async () => {
-    if (!form.username || !form.nama || !form.password) {
-      toast.error('Semua field wajib diisi');
+    const error = validasiWajib([
+      { label: 'Username', value: form.username },
+      { label: 'Nama', value: form.nama },
+      { label: 'Password', value: form.password },
+    ]);
+
+    if (error) {
+      toast.error(error);
       return;
     }
 

@@ -20,6 +20,7 @@ import EntityHeroCard from '../../../components/EntityHeroCard';
 import EntityFormCard from '../../../components/EntityFormCard';
 import EntityDetailActions from '../../../components/EntityDetailActions';
 import { supabase } from '../../../lib/supabaseClient';
+import { validasiWajib } from '../../../utils/validasiForm';
 
 type FormType = {
   username: string;
@@ -100,13 +101,13 @@ const DetailUser = () => {
   };
 
   const handleSave = async () => {
-    if (
-      !form.username ||
-      !form.nama
-    ) {
-      toast.error(
-        'Username dan nama wajib diisi'
-      );
+    const error = validasiWajib([
+      { label: 'Username', value: form.username },
+      { label: 'Nama', value: form.nama },
+    ]);
+
+    if (error) {
+      toast.error(error);
       return;
     }
 
