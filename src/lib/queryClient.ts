@@ -1,5 +1,6 @@
 import { QueryCache, QueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
+import { reportError } from './reportError';
 
 /**
  * Satu instance QueryClient untuk seluruh app. `staleTime` 30 detik dipilih
@@ -24,6 +25,13 @@ export const queryClient = new QueryClient({
     onError: (error, query) => {
       const label = (query.meta?.errorLabel as string | undefined) || 'data';
       toast.error(`Gagal memuat ${label}. Coba lagi.`);
+
+      // Toast memberi tahu user, laporan memberi tahu kita. Query yang gagal
+      // sering jadi petunjuk pertama saat ada masalah RLS atau kolom berubah.
+      reportError(error, {
+        sumber: 'query',
+        detail: JSON.stringify(query.queryKey),
+      });
     },
   }),
 });

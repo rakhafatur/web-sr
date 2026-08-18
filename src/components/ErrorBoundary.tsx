@@ -1,6 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { FiAlertTriangle, FiRefreshCw, FiHome } from 'react-icons/fi';
 import Button from './Button';
+import { reportError } from '../lib/reportError';
 
 type Props = {
   children: ReactNode;
@@ -21,7 +22,10 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, info.componentStack);
+    reportError(error, {
+      sumber: 'ErrorBoundary',
+      detail: info.componentStack ?? undefined,
+    });
   }
 
   render() {
