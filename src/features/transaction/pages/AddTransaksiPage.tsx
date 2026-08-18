@@ -142,18 +142,20 @@ const AddTransaksiPage = () => {
             </div>
           )}
 
-          {/* LOADING */}
+          {/* Pengecualian yang disengaja dari aturan "skeleton untuk daftar":
+              ini status pilihan yang sedang dimuat untuk sebuah dropdown, bukan
+              daftar isi halaman — skeleton baris justru menggambarkan tata letak
+              yang tidak akan pernah muncul. */}
           {loading && (
             <div
               className="d-flex align-items-center gap-3 mt-3"
               style={{
                 color: 'var(--color-gray-500)',
               }}
+              role="status"
+              aria-label="Mengambil data ladies"
             >
-              <div
-                className="spinner-border spinner-border-sm"
-                role="status"
-              />
+              <div className="spinner-border spinner-border-sm" />
 
               <span>Mengambil data ladies...</span>
             </div>

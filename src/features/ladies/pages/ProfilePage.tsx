@@ -9,9 +9,9 @@ import {
   FiUser,
   FiCheckCircle,
   FiShield,
-  FiLoader,
 } from 'react-icons/fi';
 import type { UserWithLadies } from '../../../types/user';
+import Skeleton from '../../../components/Skeleton';
 import ProfileHeroCard from '../../../components/ProfileHeroCard';
 import InfoRow from '../../../components/InfoRow';
 import { STATUS_VARIANT_COLORS, StatusVariant } from '../../../components/StatusBadge';
@@ -60,14 +60,23 @@ const ProfilePage = () => {
   const statusColors = STATUS_VARIANT_COLORS[statusInfo.variant];
 
   if (loading) {
+    // Bentuknya mengikuti tata letak asli: kartu identitas, tiga baris info,
+    // lalu kartu keamanan — jadi halaman tidak melompat saat data datang.
     return (
       <div
-        className="d-flex justify-content-center align-items-center"
-        style={{ minHeight: '70vh' }}
+        className="page-shell d-flex flex-column gap-3"
+        style={{ paddingBottom: 24, maxWidth: 560 }}
         role="status"
+        aria-busy="true"
         aria-label="Memuat profile"
       >
-        <FiLoader size={28} className="spinner-icon" />
+        <Skeleton height={132} borderRadius="var(--radius-lg)" />
+
+        {[0, 1, 2].map((i) => (
+          <Skeleton key={i} height={62} borderRadius="var(--radius-lg)" />
+        ))}
+
+        <Skeleton height={92} borderRadius="var(--radius-lg)" />
       </div>
     );
   }

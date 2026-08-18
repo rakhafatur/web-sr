@@ -74,6 +74,7 @@ const CreateUser = () => {
   return (
     <div className="page-shell py-4 px-md-4 px-3" style={{ maxWidth: 760 }}>
       <EntityPageHeader
+        backTo="/users"
         icon={<FiUsers />}
         title="Tambah User"
         description="Tambahkan user baru ke sistem SR Agency"

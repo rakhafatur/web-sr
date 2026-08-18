@@ -10,7 +10,6 @@ import {
   FiLock,
   FiUser,
   FiUsers,
-  FiLoader,
 } from 'react-icons/fi';
 
 import FormField from '../../../components/FormField';
@@ -18,6 +17,7 @@ import EntityPageHeader from '../../../components/EntityPageHeader';
 import EntityHeroCard from '../../../components/EntityHeroCard';
 import EntityFormCard from '../../../components/EntityFormCard';
 import EntityDetailActions from '../../../components/EntityDetailActions';
+import DetailFormSkeleton from '../../../components/DetailFormSkeleton';
 import { supabase } from '../../../lib/supabaseClient';
 import { validasiWajib } from '../../../utils/validasiForm';
 
@@ -169,20 +169,13 @@ const DetailUser = () => {
   };
 
   if (loading) {
-    return (
-      <div
-        className="page-shell d-flex justify-content-center align-items-center py-5"
-        role="status"
-        aria-label="Mengambil data user"
-      >
-        <FiLoader size={24} className="spinner-icon" />
-      </div>
-    );
+    return <DetailFormSkeleton label="Mengambil data user" fields={2} />;
   }
 
   return (
     <div className="page-shell py-4 px-md-4 px-3" style={{ maxWidth: 760 }}>
       <EntityPageHeader
+        backTo="/users"
         icon={<FiUsers />}
         title="Detail User"
         description="Kelola informasi user dan akses sistem"

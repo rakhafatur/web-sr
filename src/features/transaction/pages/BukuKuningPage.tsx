@@ -5,10 +5,11 @@ import { supabase } from '../../../lib/supabaseClient';
 import { confirmDialog } from '../../../components/ConfirmDialog';
 import DataTable from '../../../components/DataTable';
 import { useMediaQuery } from 'react-responsive';
-import { FiBook, FiPrinter, FiRepeat, FiLoader } from 'react-icons/fi';
+import { FiBook, FiPrinter, FiRepeat } from 'react-icons/fi';
 import ListPageHeader from '../../../components/ListPageHeader';
 import HeaderActionButton from '../../../components/HeaderActionButton';
 import EmptyState from '../../../components/EmptyState';
+import ListLoadingState from '../../../components/ListLoadingState';
 import GenerateBiayaBulananModal from '../components/GenerateBiayaBulananModal';
 import { monthNames, formatRupiah, pad, getLastDay } from '../utils/biayaBulanan';
 import { hitungSaldoBerjalan, type SaldoRow } from '../utils/saldoBerjalan';
@@ -404,13 +405,7 @@ const BukuKuningPage = () => {
       {selectedLadyId && (
         <>
           {loadingBuku ? (
-            <div
-              className="d-flex justify-content-center p-4"
-              role="status"
-              aria-label="Loading"
-            >
-              <FiLoader size={20} className="spinner-icon" />
-            </div>
+            <ListLoadingState label="Memuat buku kuning" rows={5} />
           ) : rows.length > 0 ? (
             !isMobile && (
               <DataTable

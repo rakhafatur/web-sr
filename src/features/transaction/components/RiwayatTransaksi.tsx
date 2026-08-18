@@ -7,6 +7,7 @@ import DataTable from '../../../components/DataTable';
 import ActionIconButton from '../../../components/ActionIconButton';
 import Pagination from '../../../components/Pagination';
 import EmptyState from '../../../components/EmptyState';
+import ListLoadingState from '../../../components/ListLoadingState';
 import { useMediaQuery } from 'react-responsive';
 import CardTableRiwayatTransaksi from './CardTableRiwayatTransaksi';
 import TransaksiFilterBar from './TransaksiFilterBar';
@@ -16,7 +17,6 @@ import dayjs from 'dayjs';
 
 import {
   FiTrash2,
-  FiLoader,
 } from 'react-icons/fi';
 
 type Props = {
@@ -454,13 +454,7 @@ const RiwayatTransaksi = ({
       />
 
       {loading ? (
-        <div
-          className="d-flex justify-content-center p-4"
-          role="status"
-          aria-label="Loading"
-        >
-          <FiLoader size={20} className="spinner-icon" />
-        </div>
+        <ListLoadingState label="Memuat riwayat transaksi" />
       ) : isMobile ? (
         <CardTableRiwayatTransaksi
           data={data}

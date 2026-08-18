@@ -9,7 +9,6 @@ import {
   FiTrash2,
   FiChevronDown,
   FiChevronUp,
-  FiLoader,
 } from 'react-icons/fi';
 
 import { supabase } from '../../../lib/supabaseClient';
@@ -303,9 +302,7 @@ const OutletListPage = () => {
                         }}
                       >
                         {tiersQuery.isLoading ? (
-                          <div className="text-center p-2">
-                            <FiLoader className="spinner-icon" />
-                          </div>
+                          <ListLoadingState label="Memuat tier harga" rows={2} />
                         ) : (tiersQuery.data ?? []).length === 0 ? (
                           <div
                             className="mb-2"

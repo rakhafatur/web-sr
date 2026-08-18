@@ -4,6 +4,7 @@ import { supabase } from '../../../lib/supabaseClient';
 import ModalWrapper from '../../../components/ModalWrapper';
 import ModalHeading from '../../../components/ModalHeading';
 import Button from '../../../components/Button';
+import ListLoadingState from '../../../components/ListLoadingState';
 import { FiRepeat, FiCheckCircle, FiClock } from 'react-icons/fi';
 import {
   monthNames,
@@ -287,9 +288,7 @@ const GenerateBiayaBulananModal = ({ show, onClose, onGenerated }: Props) => {
 
       {/* PREVIEW LIST */}
       {loadingPreview ? (
-        <div className="d-flex justify-content-center py-4">
-          <div className="spinner-border spinner-border-sm" role="status" />
-        </div>
+        <ListLoadingState label="Memuat daftar ladies" rows={3} />
       ) : ladies.length === 0 ? (
         <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-500)' }}>
           Tidak ada ladies aktif di outlet {namaOutletBiaya.join('/')}.

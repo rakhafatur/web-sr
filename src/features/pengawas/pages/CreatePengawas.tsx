@@ -73,6 +73,7 @@ const CreatePengawas = () => {
   return (
     <div className="page-shell py-4 px-md-4 px-3" style={{ maxWidth: 760 }}>
       <EntityPageHeader
+        backTo="/pengawas"
         icon={<FiUser />}
         title="Tambah Pengawas"
         description="Tambahkan pengawas baru ke sistem SR Agency"

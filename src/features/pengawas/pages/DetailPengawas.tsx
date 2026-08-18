@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FiUser, FiLoader } from 'react-icons/fi';
+import { FiUser } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 
@@ -9,6 +9,7 @@ import EntityPageHeader from '../../../components/EntityPageHeader';
 import EntityHeroCard from '../../../components/EntityHeroCard';
 import EntityFormCard from '../../../components/EntityFormCard';
 import EntityDetailActions from '../../../components/EntityDetailActions';
+import DetailFormSkeleton from '../../../components/DetailFormSkeleton';
 import { supabase } from '../../../lib/supabaseClient';
 import { validasiWajib } from '../../../utils/validasiForm';
 
@@ -109,20 +110,13 @@ const DetailPengawas = () => {
   };
 
   if (loading) {
-    return (
-      <div
-        className="page-shell d-flex justify-content-center align-items-center py-5"
-        role="status"
-        aria-label="Mengambil data pengawas"
-      >
-        <FiLoader size={24} className="spinner-icon" />
-      </div>
-    );
+    return <DetailFormSkeleton label="Mengambil data pengawas" fields={6} />;
   }
 
   return (
     <div className="page-shell py-4 px-md-4 px-3" style={{ maxWidth: 760 }}>
       <EntityPageHeader
+        backTo="/pengawas"
         icon={<FiUser />}
         title="Detail Pengawas"
         description="Kelola informasi pengawas"

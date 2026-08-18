@@ -16,6 +16,7 @@ import { hitungRekapAbsensi } from '../utils/rekapAbsensi';
 import DataTable from '../../../components/DataTable';
 import ActionIconButton from '../../../components/ActionIconButton';
 import Pagination from '../../../components/Pagination';
+import ListLoadingState from '../../../components/ListLoadingState';
 import Button from '../../../components/Button';
 import FeaturePageHeader from '../../../components/FeaturePageHeader';
 import SearchableSelect from '../../../components/SearchableSelect';
@@ -126,7 +127,7 @@ const AbsensiPage = () => {
   // riwayat (paginated, dipakai DataTable desktop) & rekapRiwayat (dipakai
   // summary + CardTableAbsensi mobile) sebelumnya 2 fetch terpisah yang
   // datanya tumpang tindih, sekarang cukup di-derive dari satu cache.
-  const { data: rekapRiwayat = [] } = useQuery({
+  const { data: rekapRiwayat = [], isLoading: loadingRiwayat } = useQuery({
     queryKey: rekapQueryKey,
     queryFn: async () => {
       const start = `${tahun}-${String(bulan).padStart(2, '0')}-01`;
@@ -361,7 +362,9 @@ const AbsensiPage = () => {
               : 'p-3'
           }
         >
-          {!isMobile ? (
+          {loadingRiwayat ? (
+            <ListLoadingState label="Memuat histori absensi" rows={4} />
+          ) : !isMobile ? (
             <>
               <DataTable
                 columns={[

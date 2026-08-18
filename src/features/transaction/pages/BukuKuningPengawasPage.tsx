@@ -6,9 +6,10 @@ import { confirmDialog } from '../../../components/ConfirmDialog';
 import DataTable from '../../../components/DataTable';
 import logo from '../../../assets/logosr-black.png';
 import { useMediaQuery } from 'react-responsive';
-import { FiBook, FiPrinter, FiLoader } from 'react-icons/fi';
+import { FiBook, FiPrinter } from 'react-icons/fi';
 import ListPageHeader from '../../../components/ListPageHeader';
 import EmptyState from '../../../components/EmptyState';
+import ListLoadingState from '../../../components/ListLoadingState';
 import {
   PDF_COLORS,
   drawBackground,
@@ -497,13 +498,7 @@ const BukuKuningPengawasPage = () => {
       {selectedId && (
         <>
           {loadingBuku ? (
-            <div
-              className="d-flex justify-content-center p-4"
-              role="status"
-              aria-label="Loading"
-            >
-              <FiLoader size={20} className="spinner-icon" />
-            </div>
+            <ListLoadingState label="Memuat buku kuning" rows={5} />
           ) : rows.length > 0 ? (
             !isMobile && (
               <DataTable

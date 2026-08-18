@@ -50,6 +50,7 @@ const CreateAgent = () => {
   return (
     <div className="page-shell py-4 px-md-4 px-3" style={{ maxWidth: 760 }}>
       <EntityPageHeader
+        backTo="/agent"
         icon={<FiUser />}
         title="Tambah Agent"
         description="Tambahkan agent baru ke sistem SR Agency"

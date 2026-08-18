@@ -12,8 +12,8 @@ import {
   FiMoon,
   FiCoffee,
   FiHeart,
-  FiLoader,
 } from 'react-icons/fi';
+import ListLoadingState from '../../../components/ListLoadingState';
 
 import 'react-calendar/dist/Calendar.css';
 import './RiwayatAbsensiPage.css';
@@ -257,16 +257,7 @@ const RiwayatAbsensiPage = () => {
       </div>
 
       {/* LOADING */}
-      {loading && (
-        <div
-          className="d-flex justify-content-center"
-          style={{ marginTop: 4 }}
-          role="status"
-          aria-label="Memuat data"
-        >
-          <FiLoader size={18} className="spinner-icon" />
-        </div>
-      )}
+      {loading && <ListLoadingState label="Memuat riwayat absensi" rows={3} />}
     </div>
   );
 };

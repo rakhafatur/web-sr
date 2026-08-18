@@ -1,15 +1,27 @@
 import { ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FiArrowLeft } from 'react-icons/fi';
 
 type Props = {
   icon: ReactNode;
   title: string;
   description: string;
   actions?: ReactNode;
+  /** Halaman induk untuk tombol kembali. Sengaja berupa path, bukan
+      `navigate(-1)`: aplikasi ini terpasang sebagai PWA, dan kalau halaman
+      dibuka langsung (cold start / deep link) riwayatnya kosong sehingga
+      `navigate(-1)` justru keluar dari aplikasi. */
+  backTo?: string;
 };
 
 /** Banner atas halaman Tambah/Detail entitas (Agent/Pengawas/Ladies/User) — dipakai seragam di semua.
-    Tanpa tombol back — navigasi kembali sudah lewat swipe/gesture bawaan browser. */
-const EntityPageHeader = ({ icon, title, description, actions }: Props) => (
+    Tombol kembali wajib ada di sini: dalam mode PWA terpasang tidak ada tombol
+    back bawaan browser maupun gesture geser, jadi satu-satunya jalan keluar
+    tadinya lewat menu bawah — dan itu berarti kehilangan konteks. */
+const EntityPageHeader = ({ icon, title, description, actions, backTo }: Props) => {
+  const navigate = useNavigate();
+
+  return (
   <div
     className="mb-4 p-4 rounded-4 shadow-sm position-relative overflow-hidden"
     style={{
@@ -31,6 +43,30 @@ const EntityPageHeader = ({ icon, title, description, actions }: Props) => (
 
     <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 position-relative">
       <div className="d-flex align-items-center gap-3">
+        {backTo && (
+          <button
+            type="button"
+            aria-label="Kembali"
+            onClick={() => navigate(backTo)}
+            style={{
+              width: 40,
+              height: 40,
+              flexShrink: 0,
+              borderRadius: '50%',
+              border: '1px solid rgba(255,255,255,0.28)',
+              background: 'rgba(255,255,255,0.16)',
+              color: 'white',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              backdropFilter: 'blur(10px)',
+            }}
+          >
+            <FiArrowLeft size={20} />
+          </button>
+        )}
+
         <div
           style={{
             width: 64,
@@ -58,6 +94,7 @@ const EntityPageHeader = ({ icon, title, description, actions }: Props) => (
       {actions}
     </div>
   </div>
-);
+  );
+};
 
 export default EntityPageHeader;

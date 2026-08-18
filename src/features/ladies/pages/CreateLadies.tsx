@@ -97,6 +97,7 @@ const CreateLadies = () => {
   return (
     <div className="page-shell py-4 px-md-4 px-3" style={{ maxWidth: 760 }}>
       <EntityPageHeader
+        backTo="/ladies"
         icon={<FiUser />}
         title="Tambah Ladies"
         description="Tambahkan ladies baru ke sistem SR Agency"

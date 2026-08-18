@@ -79,6 +79,12 @@ Kalau menambah perhitungan uang baru, ikuti pola yang sama: fungsi murni di
   `TransaksiFilterBar`, `SearchableSelect`, `EmptyState`, `Pagination`.
 - Gunakan `confirmDialog()` dari `components/ConfirmDialog`, bukan
   `window.confirm`.
+- **Status memuat: skeleton untuk daftar & kartu, ikon berputar hanya di dalam
+  tombol aksi.** Pakai `ListLoadingState` (daftar/tabel), `DetailFormSkeleton`
+  (halaman Detail entitas), atau susun sendiri dari `Skeleton` kalau tata
+  letaknya khas. Dua pengecualian yang sudah disepakati dan diberi komentar di
+  kode: `RouteLoader` (halaman yang akan muncul belum diketahui) dan status
+  "sedang mengambil pilihan" di samping dropdown pada halaman Add Transaksi.
 - **Input di mobile minimal 16px.** Di bawah itu Safari iOS otomatis men-zoom
   halaman saat input difokus. Sudah ada aturan global di `global.css` untuk
   layar ≤768px, tapi inline style mengalahkan stylesheet — jadi kalau menulis

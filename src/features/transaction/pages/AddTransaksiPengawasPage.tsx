@@ -8,7 +8,7 @@ import RiwayatTransaksiPengawas from '../components/RiwayatTransaksiPengawas';
 import FeaturePageHeader from '../../../components/FeaturePageHeader';
 import SearchableSelect from '../../../components/SearchableSelect';
 
-import { FiUsers, FiCreditCard, FiClock, FiLoader } from 'react-icons/fi';
+import { FiUsers, FiCreditCard, FiClock } from 'react-icons/fi';
 
 type Pengawas = {
   id: string;
@@ -123,13 +123,20 @@ const AddTransaksiPagePengawas = () => {
           )}
 
           {/* LOADING */}
+          {/* Pengecualian yang disengaja dari aturan "skeleton untuk daftar":
+              ini status pilihan yang sedang dimuat untuk sebuah dropdown, bukan
+              daftar isi halaman — skeleton baris justru menggambarkan tata letak
+              yang tidak akan pernah muncul. Dibuat sama dengan versi ladies. */}
           {loading && (
             <div
-              className="d-flex justify-content-center mt-3"
+              className="d-flex align-items-center gap-3 mt-3"
+              style={{ color: 'var(--color-gray-500)' }}
               role="status"
-              aria-label="Memuat data pengawas"
+              aria-label="Mengambil data pengawas"
             >
-              <FiLoader size={20} className="spinner-icon" />
+              <div className="spinner-border spinner-border-sm" />
+
+              <span>Mengambil data pengawas...</span>
             </div>
           )}
         </div>

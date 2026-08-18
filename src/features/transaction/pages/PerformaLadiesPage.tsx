@@ -19,8 +19,8 @@ import {
   FiTrendingDown,
   FiAward,
   FiUsers,
-  FiLoader,
 } from 'react-icons/fi';
+import ListLoadingState from '../../../components/ListLoadingState';
 
 const monthNames = [
   'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
@@ -252,15 +252,7 @@ const PerformaLadiesPage = () => {
       </div>
 
       {/* LOADING */}
-      {loading && (
-        <div
-          className="d-flex justify-content-center p-4"
-          role="status"
-          aria-label="Loading"
-        >
-          <FiLoader size={20} className="spinner-icon" />
-        </div>
-      )}
+      {loading && <ListLoadingState label="Memuat performa ladies" />}
 
       {/* EMPTY STATE */}
       {!loading && data.length === 0 && (
