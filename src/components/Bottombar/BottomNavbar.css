@@ -56,6 +56,11 @@
   border: none;
   background: transparent;
 
+  /* Item navigasi adalah <button>. Tanpa ini teksnya jatuh ke font bawaan
+     browser, bukan font aplikasi. */
+  font-family: inherit;
+  padding: 0;
+
   cursor: pointer;
   transition: all 0.2s ease;
 
@@ -259,6 +264,12 @@
 
   background: var(--color-surface);
   border: 1px solid var(--color-gray-200);
+
+  /* Sama seperti .nav-item: ini <button>, jadi font & perataan teksnya harus
+     dikembalikan ke milik aplikasi. */
+  font-family: inherit;
+  color: inherit;
+  text-align: left;
 
   transition: all 0.18s ease;
 

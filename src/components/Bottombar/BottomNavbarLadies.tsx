@@ -20,18 +20,48 @@ import {
 
 import './BottomNavbar.css';
 
+type Tab = 'menu' | 'transaksi';
+
+/**
+ * Rute yang dimiliki tab Transaksi dan Menu. Tanpa ini keduanya hanya menyala
+ * selama sheet-nya terbuka, jadi setelah membuka mis. halaman Kasbon tidak ada
+ * penanda posisi sama sekali di navigasi bawah.
+ */
+const RUTE_TAB: Record<Tab, string[]> = {
+  transaksi: [
+    '/ladies/voucher',
+    '/ladies/pemasukan_lain',
+    '/ladies/kasbon',
+    '/ladies/dokter',
+  ],
+  menu: ['/ladies/profile', '/ladies/peraturan', '/smart-chat-ladies'],
+};
+
+const tabDariRute = (pathname: string): Tab | null => {
+  for (const [tab, daftar] of Object.entries(RUTE_TAB)) {
+    if (daftar.some((rute) => pathname === rute || pathname.startsWith(`${rute}/`))) {
+      return tab as Tab;
+    }
+  }
+  return null;
+};
+
 function BottomNavbarLadies() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [activeModal, setActiveModal] = useState<
-    'menu' | 'transaksi' | null
-  >(null);
+  const [activeModal, setActiveModal] = useState<Tab | null>(null);
 
   const modalRef = useRef<HTMLDivElement | null>(null);
 
   const isActive = (path: string) =>
     location.pathname.startsWith(path);
+
+  const tabAktif = tabDariRute(location.pathname);
+
+  // Selama sheet terbuka, tab itulah yang menyala; kalau tidak, URL yang menentukan.
+  const menyala = (tab: Tab) =>
+    activeModal ? activeModal === tab : tabAktif === tab;
 
   const closeModal = () => {
     setActiveModal(null);
@@ -197,9 +227,7 @@ function BottomNavbarLadies() {
           <button
             type="button"
             className={`nav-item ${
-              isActive('/ladies/home')
-                ? 'active'
-                : ''
+              !activeModal && isActive('/ladies/home') ? 'active' : ''
             }`}
             aria-label="Home"
             aria-current={isActive('/ladies/home') ? 'page' : undefined}
@@ -219,12 +247,11 @@ function BottomNavbarLadies() {
           <button
             type="button"
             className={`nav-item ${
-              activeModal === 'transaksi'
-                ? 'active'
-                : ''
+              menyala('transaksi') ? 'active' : ''
             }`}
             aria-label="Transaksi"
             aria-expanded={activeModal === 'transaksi'}
+            aria-current={tabAktif === 'transaksi' ? 'page' : undefined}
             onClick={() =>
               setActiveModal('transaksi')
             }
@@ -240,9 +267,7 @@ function BottomNavbarLadies() {
           <button
             type="button"
             className={`nav-item ${
-              isActive('/ladies/absensi')
-                ? 'active'
-                : ''
+              !activeModal && isActive('/ladies/absensi') ? 'active' : ''
             }`}
             aria-label="Absensi"
             aria-current={isActive('/ladies/absensi') ? 'page' : undefined}
@@ -262,12 +287,11 @@ function BottomNavbarLadies() {
           <button
             type="button"
             className={`nav-item ${
-              activeModal === 'menu'
-                ? 'active'
-                : ''
+              menyala('menu') ? 'active' : ''
             }`}
             aria-label="Menu"
             aria-expanded={activeModal === 'menu'}
+            aria-current={tabAktif === 'menu' ? 'page' : undefined}
             onClick={() => setActiveModal('menu')}
           >
             <div className="nav-icon-wrapper">

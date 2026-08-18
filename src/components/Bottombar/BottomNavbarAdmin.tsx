@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import {
   FiHome,
@@ -23,20 +23,91 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import './BottomNavbar.css';
 
+type Tab = 'transaksi' | 'report' | 'menu';
+
+/**
+ * Rute yang dimiliki tiap tab. Dipakai untuk menyalakan penanda halaman aktif
+ * dari URL: sebelumnya tab Transaksi/Report/Menu hanya menyala selama sheet-nya
+ * masih terbuka, jadi begitu berpindah halaman tidak ada penanda apa pun dan
+ * user kehilangan jejak posisinya.
+ *
+ * Ditulis lengkap per rute karena halaman Tambah & Detail memakai akhiran
+ * (`/ladies-create`, `/ladies-detail/:id`), bukan sub-path — jadi mencocokkan
+ * awalan `/ladies` saja tidak cukup.
+ */
+const RUTE_TAB: Record<Tab, string[]> = {
+  transaksi: [
+    '/add-transaksi',
+    '/add-transaksi-pengawas',
+    '/buku-kuning',
+    '/buku-kuning-pengawas',
+  ],
+  report: ['/absensi', '/rekap-voucher', '/performa-ladies'],
+  menu: [
+    '/users',
+    '/user-create',
+    '/user-approval',
+    '/user-detail',
+    '/pengawas',
+    '/pengawas-create',
+    '/pengawas-detail',
+    '/ladies',
+    '/ladies-create',
+    '/ladies-detail',
+    '/agent',
+    '/agent-create',
+    '/agent-detail',
+    '/outlet',
+    '/smart-chat',
+  ],
+};
+
+/**
+ * Cocok kalau rutenya sama persis atau merupakan induk langsung — bukan sekadar
+ * berawalan sama. Tanpa syarat itu `/smart-chat` akan ikut menyala di halaman
+ * ladies `/smart-chat-ladies`.
+ */
+const cocok = (pathname: string, rute: string) =>
+  pathname === rute || pathname.startsWith(`${rute}/`);
+
+const tabDariRute = (pathname: string): Tab | null => {
+  for (const [tab, daftar] of Object.entries(RUTE_TAB)) {
+    if (daftar.some((rute) => cocok(pathname, rute))) return tab as Tab;
+  }
+  return null;
+};
+
 function BottomNavbarAdmin() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [activeModal, setActiveModal] = useState<
-    'transaksi' | 'report' | 'menu' | null
-  >(null);
+  const [activeModal, setActiveModal] = useState<Tab | null>(null);
 
-  const isActive = (path: string) =>
-    location.pathname.startsWith(path);
+  const modalRef = useRef<HTMLDivElement | null>(null);
+
+  const tabAktif = tabDariRute(location.pathname);
+  const diHome = location.pathname === '/';
+
+  // Selama sheet terbuka, tab itulah yang menyala; kalau tidak, URL yang menentukan.
+  const menyala = (tab: Tab) =>
+    activeModal ? activeModal === tab : tabAktif === tab;
 
   const closeModal = () => {
     setActiveModal(null);
   };
+
+  useEffect(() => {
+    if (!activeModal) return;
+
+    modalRef.current?.focus();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeModal();
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [activeModal]);
 
   const handleNavigate = (path: string) => {
     navigate(path);
@@ -49,7 +120,8 @@ function BottomNavbarAdmin() {
     path: string,
     badge?: string
   ) => (
-    <div
+    <button
+      type="button"
       className="bottom-sheet-item"
       onClick={() => handleNavigate(path)}
     >
@@ -72,16 +144,30 @@ function BottomNavbarAdmin() {
       </div>
 
       <FiChevronRight className="bottom-sheet-arrow" />
-    </div>
+    </button>
   );
 
-  const renderModalContent = () => (
+  const renderModalContent = () => {
+    const title =
+      activeModal === 'transaksi'
+        ? 'Transaksi'
+        : activeModal === 'report'
+        ? 'Laporan'
+        : 'Menu';
+
+    return (
     <div
       className="bottom-modal-backdrop"
       onClick={closeModal}
     >
       <div
         className="bottom-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        tabIndex={-1}
+        ref={modalRef}
+        data-ptr-ignore
         onClick={(e) => e.stopPropagation()}
       >
         {/* HANDLE */}
@@ -93,11 +179,7 @@ function BottomNavbarAdmin() {
         <div className="bottom-sheet-header">
           <div>
             <div className="bottom-sheet-title">
-              {activeModal === 'transaksi'
-                ? 'Transaksi'
-                : activeModal === 'report'
-                ? 'Laporan'
-                : 'Menu'}
+              {title}
             </div>
 
             <div className="bottom-sheet-subtitle">
@@ -226,20 +308,21 @@ function BottomNavbarAdmin() {
         </div>
       </div>
     </div>
-  );
+    );
+  };
 
   return (
     <>
       <div className="bottom-navbar-wrapper">
         <div className="bottom-navbar">
           {/* HOME */}
-          <div
+          <button
+            type="button"
             className={`nav-item ${
-              isActive('/') &&
-              location.pathname === '/'
-                ? 'active'
-                : ''
+              !activeModal && diHome ? 'active' : ''
             }`}
+            aria-label="Home"
+            aria-current={diHome ? 'page' : undefined}
             onClick={() => {
               navigate('/');
               closeModal();
@@ -250,15 +333,17 @@ function BottomNavbarAdmin() {
             </div>
 
             <span>Home</span>
-          </div>
+          </button>
 
           {/* TRANSAKSI */}
-          <div
+          <button
+            type="button"
             className={`nav-item ${
-              activeModal === 'transaksi'
-                ? 'active'
-                : ''
+              menyala('transaksi') ? 'active' : ''
             }`}
+            aria-label="Transaksi"
+            aria-expanded={activeModal === 'transaksi'}
+            aria-current={tabAktif === 'transaksi' ? 'page' : undefined}
             onClick={() =>
               setActiveModal('transaksi')
             }
@@ -268,15 +353,17 @@ function BottomNavbarAdmin() {
             </div>
 
             <span>Transaksi</span>
-          </div>
+          </button>
 
           {/* REPORT */}
-          <div
+          <button
+            type="button"
             className={`nav-item ${
-              activeModal === 'report'
-                ? 'active'
-                : ''
+              menyala('report') ? 'active' : ''
             }`}
+            aria-label="Report"
+            aria-expanded={activeModal === 'report'}
+            aria-current={tabAktif === 'report' ? 'page' : undefined}
             onClick={() => setActiveModal('report')}
           >
             <div className="nav-icon-wrapper">
@@ -284,15 +371,17 @@ function BottomNavbarAdmin() {
             </div>
 
             <span>Report</span>
-          </div>
+          </button>
 
           {/* MENU */}
-          <div
+          <button
+            type="button"
             className={`nav-item ${
-              activeModal === 'menu'
-                ? 'active'
-                : ''
+              menyala('menu') ? 'active' : ''
             }`}
+            aria-label="Menu"
+            aria-expanded={activeModal === 'menu'}
+            aria-current={tabAktif === 'menu' ? 'page' : undefined}
             onClick={() => setActiveModal('menu')}
           >
             <div className="nav-icon-wrapper">
@@ -300,7 +389,7 @@ function BottomNavbarAdmin() {
             </div>
 
             <span>Menu</span>
-          </div>
+          </button>
         </div>
       </div>
 
