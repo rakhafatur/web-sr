@@ -2,7 +2,6 @@ import { useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { supabase } from '../lib/supabaseClient';
-import bcrypt from 'bcryptjs';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiUser, FiLock, FiEdit3, FiUsers } from 'react-icons/fi';
 import Button from './Button';
@@ -43,6 +42,7 @@ function SignUpForm() {
   const onSubmit = async (data: FormData) => {
     setSaving(true);
 
+    const { default: bcrypt } = await import('bcryptjs');
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
     const { error } = await supabase.from('users').insert({

@@ -5,7 +5,6 @@ import {
 } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-import bcrypt from 'bcryptjs';
 
 import {
   FiLock,
@@ -121,6 +120,8 @@ const DetailUser = () => {
       if (
         form.password.trim() !== ''
       ) {
+        const { default: bcrypt } = await import('bcryptjs');
+
         hashedPassword =
           await bcrypt.hash(
             form.password,

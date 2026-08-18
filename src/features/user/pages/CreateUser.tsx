@@ -11,7 +11,6 @@ import EntityFormCard from '../../../components/EntityFormCard';
 import EntitySubmitButton from '../../../components/EntitySubmitButton';
 import { supabase } from '../../../lib/supabaseClient';
 import { validasiWajib } from '../../../utils/validasiForm';
-import bcrypt from 'bcryptjs';
 
 const CreateUser = () => {
   const navigate = useNavigate();
@@ -50,6 +49,7 @@ const CreateUser = () => {
     try {
       setLoading(true);
 
+      const { default: bcrypt } = await import('bcryptjs');
       const hashedPassword = await bcrypt.hash(form.password, 10);
 
       const { error } = await supabase.from('users').insert([

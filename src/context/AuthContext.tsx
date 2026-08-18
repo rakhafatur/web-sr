@@ -6,7 +6,6 @@ import {
   type ReactNode,
 } from 'react';
 import { supabase } from '../lib/supabaseClient';
-import bcrypt from 'bcryptjs';
 import { useDispatch } from 'react-redux';
 import {
   setUser as setReduxUser,
@@ -77,6 +76,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .single();
 
     if (error || !userData) return 'invalid';
+
+    // Diimpor saat dibutuhkan saja. AuthContext dimuat di setiap kunjungan,
+    // jadi impor statis membuat library kriptografi ini ikut terunduh oleh
+    // semua orang padahal cuma dipakai saat menekan tombol Login.
+    const { default: bcrypt } = await import('bcryptjs');
 
     const passwordMatch = await bcrypt.compare(password, userData.password);
     if (!passwordMatch) return 'invalid';
