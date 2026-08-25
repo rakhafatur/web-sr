@@ -12,9 +12,10 @@ import {
   FiGift,
   FiUsers,
   FiBriefcase,
+  FiRotateCcw,
 } from "react-icons/fi";
 import { useMediaQuery } from "react-responsive";
-import SmartChatBox, { ChatReport } from "../components/SmartChatBox";
+import SmartChatBox, { ChatReport, ChatStat } from "../components/SmartChatBox";
 import FeaturePageHeader from "../../../components/FeaturePageHeader";
 import dayjs from "dayjs";
 import { supabase } from "../../../lib/supabaseClient";
@@ -37,6 +38,65 @@ type VoucherRow = {
 const untungDariBaris = (v: VoucherRow) =>
   v.untung != null ? Number(v.untung) : Number(v.jumlah_voucher || 0) * 75000;
 
+/** Minggu operasional SR dimulai hari Selasa. `mundur` dihitung dalam minggu:
+    0 = minggu yang sedang berjalan, 1 = minggu sebelumnya, dst. */
+const rentangMingguSR = (mundur = 0) => {
+  const today = dayjs();
+  const awalMingguIni =
+    today.day() >= 2 ? today.day(2) : today.subtract(1, "week").day(2);
+
+  const awal = awalMingguIni.subtract(mundur, "week");
+
+  return { awal, akhir: awal.add(6, "day") };
+};
+
+/** Empat angka ringkasan yang sama untuk semua laporan voucher. Nilainya
+    dibaca dari kolom yang tersimpan di baris transaksi, bukan dihitung ulang
+    dari harga yang berlaku sekarang. */
+const statVoucher = (rows: VoucherRow[]): ChatStat[] => {
+  const totalVoucher = rows.reduce(
+    (sum, v) => sum + Number(v.jumlah_voucher || 0),
+    0
+  );
+  const totalLadies = rows.reduce((sum, v) => sum + Number(v.jumlah), 0);
+  const totalKeuntungan = rows.reduce((sum, v) => sum + untungDariBaris(v), 0);
+
+  return [
+    {
+      icon: <FiGift size={12} />,
+      label: "Total Voucher",
+      value: `${totalVoucher.toFixed(0)} pcs`,
+    },
+    {
+      icon: <FiUsers size={12} />,
+      label: "Total Ladies",
+      value: `Rp${totalLadies.toLocaleString("id-ID")}`,
+    },
+    {
+      icon: <FiTrendingUp size={12} />,
+      label: "Total Keuntungan",
+      value: `Rp${totalKeuntungan.toLocaleString("id-ID")}`,
+    },
+    {
+      icon: <FiBriefcase size={12} />,
+      label: "Total Keseluruhan",
+      value: `Rp${(totalLadies + totalKeuntungan).toLocaleString("id-ID")}`,
+    },
+  ];
+};
+
+/** Ambil baris voucher milik ladies dalam satu rentang tanggal (inklusif). */
+const ambilBarisVoucher = async (awal: string, akhir: string) => {
+  const { data, error } = await supabase
+    .from("vouchers")
+    .select("jumlah, jumlah_voucher, untung")
+    .gte("tanggal", awal)
+    .lte("tanggal", akhir)
+    .not("ladies_id", "is", null);
+
+  return { rows: (data ?? []) as VoucherRow[], error };
+};
+
 const SmartChatPage: React.FC = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
@@ -58,52 +118,18 @@ const SmartChatPage: React.FC = () => {
   // JUMLAH VOUCHER BULAN INI
   // =========================================================
   const getJumlahVoucherBulanIni = async (): Promise<ChatReport | string> => {
-    const startOfMonth = dayjs().startOf("month").format("YYYY-MM-DD");
-    const endOfMonth = dayjs().endOf("month").format("YYYY-MM-DD");
-
-    const { data, error } = await supabase
-      .from("vouchers")
-      .select("jumlah, jumlah_voucher, untung")
-      .gte("tanggal", startOfMonth)
-      .lte("tanggal", endOfMonth)
-      .not("ladies_id", "is", null);
+    const { rows, error } = await ambilBarisVoucher(
+      dayjs().startOf("month").format("YYYY-MM-DD"),
+      dayjs().endOf("month").format("YYYY-MM-DD")
+    );
 
     if (error) return "❌ Gagal mengambil data voucher bulan ini.";
-
-    const rows = (data ?? []) as VoucherRow[];
-
-    const totalNominal = rows.reduce((sum, v) => sum + Number(v.jumlah), 0);
-    const totalVoucher = rows.reduce((sum, v) => sum + Number(v.jumlah_voucher || 0), 0);
-    const totalLadies = totalNominal;
-    const totalKeuntungan = rows.reduce((sum, v) => sum + untungDariBaris(v), 0);
-    const totalKeseluruhan = totalNominal + totalKeuntungan;
 
     return {
       title: "Voucher Bulan Ini",
       subtitle: dayjs().format("MMMM YYYY"),
       icon: <FiCalendar />,
-      stats: [
-        {
-          icon: <FiGift size={12} />,
-          label: "Total Voucher",
-          value: `${totalVoucher.toFixed(0)} pcs`,
-        },
-        {
-          icon: <FiUsers size={12} />,
-          label: "Total Ladies",
-          value: `Rp${totalLadies.toLocaleString("id-ID")}`,
-        },
-        {
-          icon: <FiTrendingUp size={12} />,
-          label: "Total Keuntungan",
-          value: `Rp${totalKeuntungan.toLocaleString("id-ID")}`,
-        },
-        {
-          icon: <FiBriefcase size={12} />,
-          label: "Total Keseluruhan",
-          value: `Rp${totalKeseluruhan.toLocaleString("id-ID")}`,
-        },
-      ],
+      stats: statVoucher(rows),
     };
   };
 
@@ -111,57 +137,41 @@ const SmartChatPage: React.FC = () => {
   // JUMLAH VOUCHER MINGGU INI
   // =========================================================
   const getJumlahVoucherMingguIni = async (): Promise<ChatReport | string> => {
-    const today = dayjs();
-    const weekday = today.day();
+    const { awal, akhir } = rentangMingguSR(0);
 
-    const startOfWeek =
-      weekday >= 2 ? today.day(2) : today.subtract(1, "week").day(2);
-
-    const endOfWeek = startOfWeek.add(6, "day");
-
-    const { data, error } = await supabase
-      .from("vouchers")
-      .select("jumlah, jumlah_voucher, untung")
-      .gte("tanggal", startOfWeek.format("YYYY-MM-DD"))
-      .lte("tanggal", endOfWeek.format("YYYY-MM-DD"))
-      .not("ladies_id", "is", null);
+    const { rows, error } = await ambilBarisVoucher(
+      awal.format("YYYY-MM-DD"),
+      akhir.format("YYYY-MM-DD")
+    );
 
     if (error) return "❌ Gagal mengambil data voucher minggu ini.";
 
-    const rows = (data ?? []) as VoucherRow[];
-
-    const totalNominal = rows.reduce((sum, v) => sum + Number(v.jumlah), 0);
-    const totalVoucher = rows.reduce((sum, v) => sum + Number(v.jumlah_voucher || 0), 0);
-    const totalLadies = totalNominal;
-    const totalKeuntungan = rows.reduce((sum, v) => sum + untungDariBaris(v), 0);
-    const totalKeseluruhan = totalNominal + totalKeuntungan;
-
     return {
       title: "Voucher Minggu Ini",
-      subtitle: `${startOfWeek.format("DD MMM")} • ${endOfWeek.format("DD MMM")}`,
+      subtitle: `${awal.format("DD MMM")} • ${akhir.format("DD MMM")}`,
       icon: <FiTrendingUp />,
-      stats: [
-        {
-          icon: <FiGift size={12} />,
-          label: "Total Voucher",
-          value: `${totalVoucher.toFixed(0)} pcs`,
-        },
-        {
-          icon: <FiUsers size={12} />,
-          label: "Total Ladies",
-          value: `Rp${totalLadies.toLocaleString("id-ID")}`,
-        },
-        {
-          icon: <FiTrendingUp size={12} />,
-          label: "Total Keuntungan",
-          value: `Rp${totalKeuntungan.toLocaleString("id-ID")}`,
-        },
-        {
-          icon: <FiBriefcase size={12} />,
-          label: "Total Keseluruhan",
-          value: `Rp${totalKeseluruhan.toLocaleString("id-ID")}`,
-        },
-      ],
+      stats: statVoucher(rows),
+    };
+  };
+
+  // =========================================================
+  // JUMLAH VOUCHER MINGGU LALU
+  // =========================================================
+  const getJumlahVoucherMingguLalu = async (): Promise<ChatReport | string> => {
+    const { awal, akhir } = rentangMingguSR(1);
+
+    const { rows, error } = await ambilBarisVoucher(
+      awal.format("YYYY-MM-DD"),
+      akhir.format("YYYY-MM-DD")
+    );
+
+    if (error) return "❌ Gagal mengambil data voucher minggu lalu.";
+
+    return {
+      title: "Voucher Minggu Lalu",
+      subtitle: `${awal.format("DD MMM")} • ${akhir.format("DD MMM")}`,
+      icon: <FiRotateCcw />,
+      stats: statVoucher(rows),
     };
   };
 
@@ -324,6 +334,12 @@ const SmartChatPage: React.FC = () => {
       label: "Berapa jumlah voucher minggu ini?",
       short: "Voucher Minggu Ini",
       answer: getJumlahVoucherMingguIni,
+    },
+    {
+      icon: <FiRotateCcw />,
+      label: "Berapa jumlah voucher minggu lalu?",
+      short: "Voucher Minggu Lalu",
+      answer: getJumlahVoucherMingguLalu,
     },
     {
       icon: <FiCalendar />,
