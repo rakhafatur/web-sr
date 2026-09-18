@@ -19,6 +19,7 @@ import './styles/theme.css';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './lib/queryClient';
@@ -30,14 +31,17 @@ pasangPenangkapGlobal();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <Provider store={store}>
-          <AuthProvider>
-            <App />
-          </AuthProvider>
-        </Provider>
-      </QueryClientProvider>
-    </ErrorBoundary>
+    {/* Di luar ErrorBoundary supaya tema tetap berlaku di layar error. */}
+    <ThemeProvider>
+      <ErrorBoundary>
+        <QueryClientProvider client={queryClient}>
+          <Provider store={store}>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+          </Provider>
+        </QueryClientProvider>
+      </ErrorBoundary>
+    </ThemeProvider>
   </React.StrictMode>
 );
