@@ -28,6 +28,29 @@
       }
     </style>
 
+    <!-- Menentukan tema SEBELUM paint pertama supaya tidak ada kedip
+         terang/gelap saat aplikasi dibuka. Aturannya harus sama persis
+         dengan src/lib/theme.ts — kunci 'sr-theme' dijaga oleh test di
+         src/lib/theme.test.ts. Sengaja ditulis inline & tanpa modul:
+         apa pun yang di-import baru jalan setelah paint. -->
+    <script>
+      (function () {
+        var html = document.documentElement;
+        try {
+          var pref = localStorage.getItem('sr-theme');
+          if (pref !== 'light' && pref !== 'dark') pref = 'system';
+          var gelap =
+            pref === 'dark' ||
+            (pref === 'system' &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches);
+          html.setAttribute('data-theme', gelap ? 'dark' : 'light');
+        } catch (e) {
+          // localStorage melempar di mode privat / cookie diblokir.
+          html.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
+
     <!-- ✅ Fix neon Safari + iOS bar -->
     <meta name="theme-color" content="#0e0e10" />
     <meta name="apple-mobile-web-app-capable" content="yes" />

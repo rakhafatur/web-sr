@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it, vi } from 'vitest';
 import {
   THEME_STORAGE_KEY,
@@ -72,5 +74,29 @@ describe('applyTheme', () => {
     const root = { setAttribute: vi.fn() };
     applyTheme(root, 'dark');
     expect(root.setAttribute).toHaveBeenCalledWith('data-theme', 'dark');
+  });
+});
+
+describe('script pra-paint di index.html', () => {
+  const indexHtml = readFileSync(
+    fileURLToPath(new URL('../../index.html', import.meta.url)),
+    'utf-8',
+  );
+
+  it('memakai kunci penyimpanan yang sama dengan theme.ts', () => {
+    expect(indexHtml).toContain(`'${THEME_STORAGE_KEY}'`);
+  });
+
+  it('menulis data-theme sebelum modul aplikasi dimuat', () => {
+    const posisiScriptTema = indexHtml.indexOf('data-theme');
+    const posisiModulAplikasi = indexHtml.indexOf('src="/src/main.tsx"');
+
+    expect(posisiScriptTema).toBeGreaterThan(-1);
+    expect(posisiModulAplikasi).toBeGreaterThan(-1);
+    expect(posisiScriptTema).toBeLessThan(posisiModulAplikasi);
+  });
+
+  it('menangani localStorage yang melempar (mode privat)', () => {
+    expect(indexHtml).toMatch(/catch/);
   });
 });
