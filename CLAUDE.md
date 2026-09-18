@@ -95,6 +95,39 @@ Kalau menambah perhitungan uang baru, ikuti pola yang sama: fungsi murni di
 
 ---
 
+## Redesign UI — aturan yang berlaku sejak Fase 0
+
+Spec: `docs/superpowers/specs/2026-09-18-ui-redesign-design.md`.
+Rencana per fase: `docs/superpowers/plans/`.
+Aplikasi sedang bermigrasi dari Bootstrap ke Tailwind v4 secara bertahap
+per rute. Selama masa transisi, keduanya aktif bersamaan.
+
+- **Warna hanya boleh disebut lewat token semantik** di
+  `src/styles/theme.css` (`--color-canvas`, `--color-fg`, `--color-line`,
+  `--color-brand`, `--color-money-in`, dst) atau utility Tailwind yang
+  dihasilkannya (`bg-canvas`, `text-fg-muted`, `border-line`). Satu hex
+  literal atau satu warna inline akan rusak di salah satu tema tanpa
+  ketahuan, karena yang berganti saat tema berganti hanyalah isi token.
+- **Token lama di `src/styles/variable.css` masih dipakai halaman yang belum
+  dimigrasi.** Jangan hapus sampai halaman terakhir pindah.
+- **Preflight Tailwind sengaja dimatikan** di `src/styles/theme.css` — reset
+  bawaannya menimpa gaya dasar Bootstrap yang masih aktif. Jangan ganti tiga
+  baris `@import` di sana menjadi `@import "tailwindcss";` sebelum Bootstrap
+  benar-benar dicabut.
+- **Bootstrap dicabut paling akhir**, setelah halaman terakhir pindah.
+- **Setiap token terang wajib punya pasangan gelap.** Dijaga oleh
+  `src/styles/tokens.test.ts`; token yang terlewat membuat teks tidak
+  terbaca di tema gelap.
+- **Tema selalu ditulis sebagai nilai konkret** (`light`/`dark`) ke
+  `<html data-theme>`, tidak pernah `system`. Aturannya ada di
+  `src/lib/theme.ts`; script pra-paint di `index.html` menirunya dan kunci
+  penyimpanannya dijaga test.
+- **Inter Variable sudah di-bundle tapi belum diterapkan.** `--font-base`
+  masih `'Segoe UI'` sampai Fase 2.
+- **`background_color`/`theme_color` manifest PWA di `vite.config.ts` masih
+  gelap.** Diubah di Fase 2, bersamaan dengan shell terang — mengubahnya
+  lebih awal membuat splash PWA putih di atas aplikasi yang masih gelap.
+
 ## Deploy & rilis
 
 - Hosting **Vercel**, build dari repo GitHub. Variabel build diambil dari
