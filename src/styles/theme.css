@@ -28,6 +28,12 @@
    ========================================================================= */
 
 @theme {
+  /* Belum dipakai. Diterapkan ke body di Fase 2 bersamaan dengan shell baru —
+     menerapkannya sekarang akan mengubah setiap layar dan melanggar gate
+     nol-perubahan fase ini. */
+  --font-sans: 'Inter Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, sans-serif;
+
   /* Permukaan */
   --color-canvas: #ffffff;
   --color-surface: #fcfcfd;

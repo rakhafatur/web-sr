@@ -1,6 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
+// Font di-bundle lokal (bukan CDN) supaya PWA tetap benar saat offline.
+// SENGAJA belum diterapkan ke body — --font-base di variable.css masih
+// 'Segoe UI' sampai Fase 2. Fase ini wajib nol perubahan visual.
+import '@fontsource-variable/inter';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import './styles/variable.css';
