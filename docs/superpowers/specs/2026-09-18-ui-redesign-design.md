@@ -102,47 +102,51 @@ Tiga lapis. Komponen **hanya** boleh menyebut lapis semantik.
 
 ```
 primitif  →  semantik  →  tema mengisi ulang semantik
-(--gray-200)  (--border-default)   ([data-theme="dark"])
+(#EAECF0)     (--color-line)       ([data-theme="dark"])
 ```
 
 Konsekuensi yang harus ditegakkan: satu pun `#hex` atau warna inline di halaman akan
 merusak tema gelap tanpa ketahuan. Ini ditegakkan lewat lint di Fase 7.
 
+Semua token warna memakai prefiks **`--color-*`**. Itu bukan selera penamaan: Tailwind v4
+hanya menghasilkan utility (`bg-canvas`, `text-fg-muted`, `border-line`) dari token
+dengan prefiks tersebut, dan token ini hidup di dalam blok `@theme` milik Tailwind.
+
 ```css
 :root {
   /* ===== Permukaan ===== */
-  --bg-canvas:        #FFFFFF;
-  --bg-surface:       #FCFCFD;
-  --bg-subtle:        #F9FAFB;
-  --bg-hover:         #F2F4F7;
+  --color-canvas:       #FFFFFF;
+  --color-surface:      #FCFCFD;
+  --color-subtle:       #F9FAFB;
+  --color-hover:        #F2F4F7;
 
   /* ===== Teks ===== */
-  --text-primary:     #101828;
-  --text-secondary:   #475467;
-  --text-tertiary:    #98A2B3;
-  --text-on-brand:    #FFFFFF;
+  --color-fg:           #101828;
+  --color-fg-muted:     #475467;
+  --color-fg-faint:     #98A2B3;
+  --color-fg-on-brand:  #FFFFFF;
 
   /* ===== Garis ===== */
-  --border-subtle:    #F2F4F7;
-  --border-default:   #EAECF0;
-  --border-strong:    #D0D5DD;
+  --color-line-subtle:  #F2F4F7;
+  --color-line:         #EAECF0;
+  --color-line-strong:  #D0D5DD;
 
   /* ===== Brand ===== */
-  --brand-solid:      #4F46E5;
-  --brand-solid-hover:#4338CA;
-  --brand-subtle:     #EEF0FF;
-  --brand-text:       #3730A3;
-  --brand-ring:       rgb(79 70 229 / 0.14);
+  --color-brand:        #4F46E5;
+  --color-brand-hover:  #4338CA;
+  --color-brand-subtle: #EEF0FF;
+  --color-brand-fg:     #3730A3;
+  --color-brand-ring:   rgb(79 70 229 / 0.14);
 
   /* ===== Uang ===== */
-  --money-in:         #067647;
-  --money-out:        #B42318;
+  --color-money-in:     #067647;
+  --color-money-out:    #B42318;
 
   /* ===== Status ===== */
-  --success-bg: #ECFDF3;  --success-border: #ABEFC6;  --success-text: #067647;
-  --warning-bg: #FFFAEB;  --warning-border: #FEDF89;  --warning-text: #B54708;
-  --danger-bg:  #FEF3F2;  --danger-border:  #FECDCA;  --danger-text:  #B42318;
-  --danger-solid: #D92D20;
+  --color-success-bg: #ECFDF3;  --color-success-line: #ABEFC6;  --color-success-fg: #067647;
+  --color-warning-bg: #FFFAEB;  --color-warning-line: #FEDF89;  --color-warning-fg: #B54708;
+  --color-danger-bg:  #FEF3F2;  --color-danger-line:  #FECDCA;  --color-danger-fg:  #B42318;
+  --color-danger-solid: #D92D20;
 }
 
 /* Hanya satu selektor, tanpa duplikasi nilai: script pra-paint di §3.2 selalu
@@ -152,32 +156,32 @@ merusak tema gelap tanpa ketahuan. Ini ditegakkan lewat lint di Fase 7.
 :root[data-theme="dark"] {
   color-scheme: dark;
 
-  --bg-canvas:        #09090B;
-  --bg-surface:       #101012;
-  --bg-subtle:        #18181B;
-  --bg-hover:         #1F1F23;
+  --color-canvas:       #09090B;
+  --color-surface:      #101012;
+  --color-subtle:       #18181B;
+  --color-hover:        #1F1F23;
 
-  --text-primary:     #FAFAFA;
-  --text-secondary:   #A1A1AA;
-  --text-tertiary:    #52525B;
+  --color-fg:           #FAFAFA;
+  --color-fg-muted:     #A1A1AA;
+  --color-fg-faint:     #52525B;
 
-  --border-subtle:    #131316;
-  --border-default:   #1F1F23;
-  --border-strong:    #27272A;
+  --color-line-subtle:  #131316;
+  --color-line:         #1F1F23;
+  --color-line-strong:  #27272A;
 
-  --brand-solid:      #6D5CF0;
-  --brand-solid-hover:#7C6FF5;
-  --brand-subtle:     #1A1730;
-  --brand-text:       #A79BFF;
-  --brand-ring:       rgb(109 92 240 / 0.22);
+  --color-brand:        #6D5CF0;
+  --color-brand-hover:  #7C6FF5;
+  --color-brand-subtle: #1A1730;
+  --color-brand-fg:     #A79BFF;
+  --color-brand-ring:   rgb(109 92 240 / 0.22);
 
-  --money-in:         #4ADE80;
-  --money-out:        #F87171;
+  --color-money-in:     #4ADE80;
+  --color-money-out:    #F87171;
 
-  --success-bg: #0C1F16;  --success-border: #1B4430;  --success-text: #4ADE80;
-  --warning-bg: #221A0B;  --warning-border: #453416;  --warning-text: #FBBF4D;
-  --danger-bg:  #20110F;  --danger-border:  #4A1F1C;  --danger-text:  #F87171;
-  --danger-solid: #E5484D;
+  --color-success-bg: #0C1F16;  --color-success-line: #1B4430;  --color-success-fg: #4ADE80;
+  --color-warning-bg: #221A0B;  --color-warning-line: #453416;  --color-warning-fg: #FBBF4D;
+  --color-danger-bg:  #20110F;  --color-danger-line:  #4A1F1C;  --color-danger-fg:  #F87171;
+  --color-danger-solid: #E5484D;
 }
 ```
 
@@ -199,7 +203,9 @@ saat aplikasi terbuka. Ini yang membuat CSS di §3.1 cukup satu selektor tanpa d
   anti-blink yang sudah ada di sana tinggal diperluas.
 - `<meta name="theme-color">` ikut berganti saat tema berganti.
 - `vite.config.ts` → manifest PWA: `background_color` dan `theme_color` sekarang
-  `#0e0e10` (gelap). Harus jadi `#FFFFFF` karena default baru adalah terang.
+  `#0e0e10` (gelap) dan harus jadi `#FFFFFF`. **Dikerjakan di Fase 2, bukan Fase 0** —
+  mengubahnya sebelum shell terang hadir akan membuat splash PWA putih menimpa aplikasi
+  yang masih gelap, yaitu regresi terlihat.
 - Pengalih tema: kaki sidebar (desktop) dan halaman Profil (mobile).
 
 ### 3.3 Tipografi
@@ -390,9 +396,9 @@ di akhir setiap fase.
 
 | # | Fase | Isi | Dampak terlihat |
 |---|---|---|---|
-| 0 | **Fondasi** | Tailwind berdampingan dengan Bootstrap, lapisan token + dua tema, `ThemeProvider`, script anti-kedip, Inter Variable lokal, manifest PWA | **Nol** — itu gate-nya |
+| 0 | **Fondasi** | Tailwind berdampingan dengan Bootstrap, lapisan token + dua tema, `ThemeProvider`, script anti-kedip, Inter Variable lokal (belum diterapkan) | **Nol** — itu gate-nya |
 | 1 | **Primitif** | `Button`, `Field`/`Input`, `Badge`, `SectionCard`, `Overlay`/`Drawer`/`Sheet`, `Money`, `EmptyState`, `Pagination`, `SegmentedControl`, `StatCard`, `statusMap` | Kecil — baru dipasang di satu halaman uji |
-| 2 | **Shell** | `AppShell`, sidebar baru (+ sidebar ladies), app bar mobile, `BottomNav`, `MenuPage`, `CommandPalette`; `Header` dan animasi rute dihapus | **Terbesar** — shell kelihatan di 100% layar |
+| 2 | **Shell** | `AppShell`, sidebar baru (+ sidebar ladies), app bar mobile, `BottomNav`, `MenuPage`, `CommandPalette`; `Header` dan animasi rute dihapus; font Inter diterapkan ke `body`; manifest PWA jadi terang | **Terbesar** — shell kelihatan di 100% layar |
 | 3 | **Ladies (mobile)** | `HomeLadies`, `LedgerPage` tunggal (4→1), `RiwayatAbsensi`, `Profil`, `Peraturan` | Besar — layar prioritas tertinggi |
 | 4 | **Daftar admin** | `DataTable` responsif + `PageHeader` + `Toolbar`, lalu 6 halaman list. 5 `*CardList` dan 3 header dihapus | Besar — judul ganda hilang |
 | 5 | **Transaksi & laporan** | AddTransaksi ×2, BukuKuning ×2, RekapVoucher, PerformaLadies, Absensi. Termasuk pemecahan dua halaman 900-baris | Sedang-besar, **paling berat** |
