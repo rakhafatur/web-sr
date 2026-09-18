@@ -1,0 +1,17 @@
+/* =========================================================================
+   Tailwind v4 — SENGAJA TANPA PREFLIGHT.
+
+   `@import "tailwindcss"` yang biasa ikut membawa Preflight, yaitu reset CSS
+   bawaan Tailwind. Selama Bootstrap masih aktif (sampai Fase 7), reset itu
+   akan menimpa gaya dasar Bootstrap — tombol, heading, list, border — dan
+   langsung mengubah tampilan di seluruh aplikasi. Karena itu lapisan diimpor
+   satu per satu dan `preflight.css` ditinggalkan.
+
+   JANGAN ganti tiga baris di bawah jadi `@import "tailwindcss";` sebelum
+   Bootstrap benar-benar dicabut.
+   ========================================================================= */
+
+@layer theme, base, components, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);

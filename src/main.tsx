@@ -6,6 +6,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/variable.css';
 import './styles/global.css';
 import './styles/reset.css';
+// Paling akhir supaya utility Tailwind menang atas kelas Bootstrap pada
+// spesifisitas yang sama. Urutan ini penting mulai Fase 1 ketika utility
+// benar-benar dipakai di komponen.
+import './styles/theme.css';
 
 import { Provider } from 'react-redux';
 import { store } from './app/store';
