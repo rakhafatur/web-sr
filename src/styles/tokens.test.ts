@@ -47,3 +47,43 @@ describe('token tema', () => {
     expect(ambilBlok("[data-theme='dark']")).toContain('color-scheme: dark');
   });
 });
+
+describe('skala radius', () => {
+  const blok = ambilBlok('@theme');
+
+  it('mendefinisikan tepat lima nilai radius sesuai spec', () => {
+    expect(blok).toContain('--radius-sm: 6px');
+    expect(blok).toContain('--radius-md: 8px');
+    expect(blok).toContain('--radius-lg: 12px');
+    expect(blok).toContain('--radius-xl: 16px');
+  });
+});
+
+describe('skala tipografi', () => {
+  const blok = ambilBlok('@theme');
+
+  it('tidak ada ukuran huruf di bawah 12px', () => {
+    const ukuran = [...blok.matchAll(/--text-[a-z0-9]+:\s*(\d+)px/g)].map((m) =>
+      Number(m[1]),
+    );
+    expect(ukuran.length).toBeGreaterThan(5);
+    const terlaluKecil = ukuran.filter((u) => u < 12);
+    expect(terlaluKecil, `ukuran < 12px: ${terlaluKecil.join(', ')}`).toEqual([]);
+  });
+
+  it('memakai skala spec, bukan bawaan Tailwind', () => {
+    // Bawaan Tailwind: sm 14, base 16. Spec kita lebih padat.
+    expect(blok).toContain('--text-sm: 13px');
+    expect(blok).toContain('--text-base: 14px');
+    // 16px khusus input di mobile (anti auto-zoom iOS).
+    expect(blok).toContain('--text-md: 16px');
+  });
+
+  it('setiap ukuran huruf punya tinggi baris', () => {
+    const ukuran = [...blok.matchAll(/--text-([a-z0-9]+):\s*\d+px/g)].map((m) => m[1]);
+    const kurang = ukuran.filter(
+      (nama) => !blok.includes(`--text-${nama}--line-height:`),
+    );
+    expect(kurang, `tanpa line-height: ${kurang.join(', ')}`).toEqual([]);
+  });
+});
