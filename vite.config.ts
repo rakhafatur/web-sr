@@ -1,4 +1,6 @@
-import { defineConfig } from 'vite'
+// Dari 'vitest/config', bukan 'vite' — supaya blok `test` di bawah ikut
+// ter-type. Selebihnya identik dengan defineConfig milik Vite.
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
@@ -40,4 +42,13 @@ export default defineConfig({
       },
     }),
   ],
+
+  test: {
+    // Testing Library membersihkan DOM antar test lewat `afterEach` GLOBAL.
+    // Tanpa ini pembersihannya tidak pernah terdaftar, render menumpuk, dan
+    // kueri seperti getByRole('button') menemukan sisa render test sebelumnya.
+    // Test yang sudah ada tetap mengimpor describe/it/expect secara eksplisit;
+    // opsi ini hanya menambah, tidak memaksa.
+    globals: true,
+  },
 })
