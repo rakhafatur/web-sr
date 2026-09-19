@@ -1,12 +1,19 @@
-import { FiInbox, FiPlus, FiSearch } from 'react-icons/fi';
+import { useState } from 'react';
+import { FiInbox, FiPlus, FiSearch, FiUsers } from 'react-icons/fi';
 
 import { useTheme } from '../../../context/ThemeContext';
 import { petakanKategori, petakanStatus } from '../../../lib/statusMap';
 import Badge from '../../../components/ui/Badge';
 import Button from '../../../components/ui/Button';
 import EmptyState from '../../../components/ui/EmptyState';
+import Field from '../../../components/ui/Field';
+import Input from '../../../components/ui/Input';
 import Money from '../../../components/ui/Money';
+import Overlay, { type PenyajianOverlay } from '../../../components/ui/Overlay';
+import Pagination from '../../../components/ui/Pagination';
 import SectionCard from '../../../components/ui/SectionCard';
+import SegmentedControl from '../../../components/ui/SegmentedControl';
+import StatCard from '../../../components/ui/StatCard';
 
 import type { ThemePreference } from '../../../lib/theme';
 
@@ -29,6 +36,10 @@ const KATEGORI_CONTOH = ['voucher', 'kasbon', 'dokter', 'pemasukan_lain', 'gaji_
  */
 const UiPreviewPage = () => {
   const { preference, theme, setPreference } = useTheme();
+
+  const [mode, setMode] = useState<'harian' | 'bulanan'>('harian');
+  const [halaman, setHalaman] = useState(1);
+  const [overlay, setOverlay] = useState<PenyajianOverlay | null>(null);
 
   return (
     <div className="bg-canvas text-fg min-h-screen p-6 font-sans">
@@ -151,6 +162,109 @@ const UiPreviewPage = () => {
               <code> tabular-nums</code> tidak aktif.
             </p>
           </div>
+        </SectionCard>
+
+        <SectionCard title="StatCard" subtitle="Menggantikan tiga tampilan kartu angka">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <StatCard label="Total Ladies" nilai="47" ikon={<FiUsers />} />
+            <StatCard label="Aktif" nilai="41" catatan="87% dari total" />
+            <StatCard label="Voucher" nilai="612" catatan="bulan ini" />
+            <StatCard label="Nilai Voucher" nilai={<Money value={91800000} />} />
+          </div>
+        </SectionCard>
+
+        <SectionCard title="Field & Input" subtitle="Satu gaya untuk semua tipe, termasuk date">
+          <div className="grid md:grid-cols-2 gap-4">
+            <Field label="Nama Ladies" required helper="Nama panggilan, bukan nama lengkap">
+              <Input placeholder="mis. Sisi" />
+            </Field>
+
+            <Field label="Tanggal" required>
+              <Input type="date" />
+            </Field>
+
+            <Field label="Nominal" error="Wajib diisi">
+              <Input type="number" placeholder="0" />
+            </Field>
+
+            <Field label="Outlet">
+              <Input value="Kemang" readOnly />
+            </Field>
+
+            <div className="md:col-span-2">
+              <Field label="Catatan" helper="Boleh dikosongkan">
+                <Input multiline placeholder="Keterangan tambahan…" />
+              </Field>
+            </div>
+          </div>
+
+          <p className="text-xs text-fg-faint mt-3">
+            Tinggi keempat kontrol di atas harus sama persis. Di versi lama, input
+            tanggal punya gayanya sendiri sehingga tidak pernah sejajar.
+          </p>
+        </SectionCard>
+
+        <SectionCard title="SegmentedControl" subtitle="Coba navigasi dengan panah kiri/kanan">
+          <div className="flex flex-col gap-3">
+            <SegmentedControl
+              label="Mode tampilan"
+              nilai={mode}
+              onUbah={setMode}
+              opsi={[
+                { nilai: 'harian', label: 'Harian' },
+                { nilai: 'bulanan', label: 'Bulanan' },
+              ]}
+            />
+            <p className="text-xs text-fg-faint">Terpilih: {mode}</p>
+          </div>
+        </SectionCard>
+
+        <SectionCard title="Pagination">
+          <Pagination
+            halaman={halaman}
+            totalHalaman={5}
+            totalData={47}
+            perHalaman={10}
+            onUbah={setHalaman}
+          />
+        </SectionCard>
+
+        <SectionCard title="Overlay" subtitle="Tekan Escape untuk menutup — versi lama tidak bisa">
+          <div className="flex flex-wrap gap-2">
+            <Button variant="secondary" onClick={() => setOverlay('modal')}>
+              Modal
+            </Button>
+            <Button variant="secondary" onClick={() => setOverlay('drawer')}>
+              Drawer
+            </Button>
+            <Button variant="secondary" onClick={() => setOverlay('sheet')}>
+              Bottom sheet
+            </Button>
+          </div>
+
+          <Overlay
+            open={overlay !== null}
+            onOpenChange={(terbuka) => !terbuka && setOverlay(null)}
+            title="Hapus data ladies?"
+            description="Tindakan ini tidak bisa dibatalkan."
+            penyajian={overlay ?? 'modal'}
+            footer={
+              <>
+                <Button variant="secondary" onClick={() => setOverlay(null)}>
+                  Batal
+                </Button>
+                <Button variant="danger" onClick={() => setOverlay(null)}>
+                  Ya, hapus
+                </Button>
+              </>
+            }
+          >
+            <p className="text-sm text-fg-muted">
+              Penyajian: <strong className="text-fg">{overlay}</strong>. Coba tekan Tab —
+              fokus harus terkunci di dalam dialog, dan kembali ke tombol pemicunya
+              setelah ditutup.
+            </p>
+          </Overlay>
         </SectionCard>
 
         <SectionCard title="EmptyState" padding={false}>
