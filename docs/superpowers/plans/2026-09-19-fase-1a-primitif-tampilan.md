@@ -1469,17 +1469,22 @@ export default UiPreviewPage;
 Di `src/App.tsx`, tambahkan deklarasi lazy bersama deklarasi lazy lainnya (setelah baris `const HomePage = lazy(...)`):
 
 ```ts
-// Panduan gaya. Hanya dimuat di mode dev — di produksi rutenya tidak
-// didaftarkan sama sekali, jadi tidak menambah permukaan apa pun.
-const UiPreviewPage = lazy(() => import('./features/dev/pages/UiPreviewPage'));
+/* Panduan gaya — khusus mode dev.
+
+   Guard-nya membungkus `lazy()`, bukan cuma <Route>-nya. Kalau hanya JSX yang
+   dijaga, `import()` tetap berdiri di level modul dan Rollup tetap membuat
+   chunk-nya (terbukti: 8,8 KB ikut terkirim), cuma tidak pernah dipanggil.
+   Dengan bentuk ternary ini `import.meta.env.DEV` diganti `false` saat build,
+   cabangnya mati, dan chunk-nya tidak pernah lahir. */
+const UiPreviewPage = import.meta.env.DEV
+  ? lazy(() => import('./features/dev/pages/UiPreviewPage'))
+  : null;
 ```
 
 Lalu di dalam `<Routes>`, tepat **sebelum** baris `{/* 404 fallback */}`, tambahkan:
 
 ```tsx
-            {import.meta.env.DEV && (
-              <Route path="/ui" element={<UiPreviewPage />} />
-            )}
+            {UiPreviewPage && <Route path="/ui" element={<UiPreviewPage />} />}
 ```
 
 - [ ] **Step 3: Periksa kedua tema di browser**
@@ -1499,13 +1504,14 @@ Buka `http://localhost:5173/ui` dan periksa:
 
 Run: `npm run build`
 
-Lalu:
+**Jangan** memverifikasi dengan mencari string `"UiPreviewPage"` di dalam isi berkas — nama identifier hilang saat minifikasi, jadi pencarian itu mengembalikan nol walaupun kodenya sebenarnya ikut terkirim. Yang diperiksa adalah **ada tidaknya berkas chunk-nya**:
 
-```bash
-grep -c "UiPreviewPage" dist/assets/*.js
+```powershell
+Get-ChildItem dist/assets/*Ui*.js -ErrorAction SilentlyContinue
+Select-String -Path "dist/assets/*.js" -Pattern "Panduan Gaya" -SimpleMatch -List
 ```
 
-Expected: `0` di semua berkas. `import.meta.env.DEV` bernilai `false` saat build, sehingga Vite membuang cabang itu beserta impor dinamisnya. Kalau ada yang bukan nol, rute pratinjau ikut terkirim ke produksi dan harus diperbaiki sebelum lanjut.
+Expected: **keduanya tidak mengembalikan apa pun.** Kalau `UiPreviewPage-*.js` muncul, berarti guard-nya salah tempat — pastikan `import.meta.env.DEV` membungkus panggilan `lazy()`, bukan hanya elemen `<Route>`.
 
 - [ ] **Step 5: Jalankan gate lengkap**
 
