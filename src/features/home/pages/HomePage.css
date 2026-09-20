@@ -29,11 +29,18 @@
     object-fit: cover;
     object-position: center;
     z-index: 0;
-    /* Foto asli terang & hangat — diredupkan + didesaturasi supaya
-       menyatu dengan latar gelap tema Mono, bokeh keemasan dipertahankan
-       samar sebagai aksen, bukan diubah jadi biru penuh. */
-    filter: brightness(0.38) saturate(0.75) contrast(1.05);
+    /* Tema terang: foto cukup dilembutkan lewat opacity, tidak diredupkan —
+       meredupkannya di atas latar putih justru membuatnya jadi lubang gelap. */
+    filter: saturate(0.85) contrast(0.98);
+    opacity: 0.3;
     pointer-events: none;
+  }
+
+  /* Tema gelap: perlakuan aslinya — foto diredupkan supaya menyatu dengan
+     latar, bokeh keemasan dipertahankan samar sebagai aksen. */
+  :root[data-theme='dark'] .home-bg-mobile {
+    filter: brightness(0.38) saturate(0.75) contrast(1.05);
+    opacity: 1;
   }
 
   .home-wrapper::before {
