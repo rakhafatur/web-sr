@@ -1,85 +1,96 @@
+/* ===========================================================================
+   TOKEN LAMA — sekarang peka tema.
+
+   Berkas ini dipakai oleh setiap halaman yang belum dimigrasi ke Tailwind.
+   Namanya SENGAJA dipertahankan (termasuk yang menyesatkan seperti
+   `--color-green` yang sebenarnya biru) supaya tidak ada satu pun halaman
+   yang perlu disentuh: yang berubah hanya isinya.
+
+   Aturannya:
+   - `:root` = tema TERANG (bawaan baru)
+   - `:root[data-theme='dark']` = tema GELAP, yaitu nilai yang berlaku sebelum
+     Fase 2a
+   - Kalau ada padanan di theme.css, pakai alias `var(--color-...)` supaya
+     satu sumber kebenaran dan tidak perlu diduplikasi ke blok gelap.
+
+   Nama di sini TIDAK BOLEH sama dengan nama di theme.css — keduanya menulis
+   ke :root dan theme.css diimpor belakangan. Dijaga tokens.test.ts.
+   =========================================================================== */
+
 :root {
-  /* ===== Tema aktif: Mono (Tahap 4) =====
-     Charcoal netral + satu aksen biru elektrik. Bukan tema opsional/toggle —
-     ini pengganti tema terang sebelumnya. Nama token dipertahankan (mis.
-     --color-green, --color-dark) supaya semua file yang sudah pakai token
-     ini otomatis ikut berubah tanpa perlu diganti satu-satu; isinya sekarang
-     tidak lagi harfiah "hijau" atau "gelap" secara warna. */
-
   /* ===== Brand ===== */
-  --color-green: #5b8def;
-  --color-green-light: #1c2740;
-  --color-green-lighter: #141b2c;
-  --color-accent: #2f4f8f;
+  --color-green: var(--color-brand);
+  --color-green-light: var(--color-brand-subtle);
+  --color-green-lighter: var(--color-subtle);
+  --color-accent: var(--color-brand-hover);
 
-  --color-bg: #0e0e10;
-  --color-bg-rgb: 14, 14, 16;
-  --color-dark: #edeef0;
+  --color-bg: var(--color-canvas);
+  --color-bg-rgb: 255, 255, 255;
+  --color-dark: var(--color-fg);
   --color-white: #ffffff;
 
-  /* Permukaan kartu/panel — dulu semua kartu pakai --color-white langsung,
-     sekarang pakai token ini supaya kartu tetap gelap, bukan putih. */
-  --color-surface: #17181a;
-  --color-surface-2: #1e1f22;
+  --color-surface: var(--color-card);
+  --color-surface-2: var(--color-subtle);
 
-  /* ===== Neutral scale (text, border, background) =====
-     50-300 = tint permukaan/border (redup, dekat warna bg).
-     400-900 = teks, dari paling redup (400) ke paling tegas (900). */
-  --color-gray-50: #0b0c0d;
-  --color-gray-100: #1c1d20;
-  --color-gray-200: #24252a;
-  --color-gray-300: #2f3136;
-  --color-gray-400: #5a5d63;
-  --color-gray-500: #6f7278;
-  --color-gray-600: #83868c;
-  --color-gray-700: #9497a0;
-  --color-gray-800: #c0c2c7;
-  --color-gray-900: #edeef0;
+  /* ===== Skala abu =====
+     Perannya tetap: 50-300 tint permukaan/garis, 400-900 teks dari paling
+     redup ke paling tegas. Arah nilainya yang terbalik dibanding tema gelap,
+     dan justru itu yang membuat halaman lama otomatis benar. */
+  --color-gray-50: #fcfcfd;
+  --color-gray-100: #f2f4f7;
+  --color-gray-200: #eaecf0;
+  --color-gray-300: #d0d5dd;
+  --color-gray-400: #98a2b3;
+  --color-gray-500: #667085;
+  --color-gray-600: #475467;
+  --color-gray-700: #344054;
+  --color-gray-800: #1d2939;
+  --color-gray-900: #101828;
 
-  /* ===== Status (soft bg untuk badge/tombol soft) ===== */
-  --color-warning: #332711;
-  --color-warning-hover: #453516;
-  --color-danger: #33181b;
-  --color-danger-hover: #452226;
-  /* Teks di atas warning-solid/gold (selalu terang→gelap, tidak ikut tema,
-     karena warning-solid selalu warna terang). Dipakai di global.css. */
+  /* ===== Status (latar lembut untuk badge/tombol soft) ===== */
+  --color-warning: #fffaeb;
+  --color-warning-hover: #fef0c7;
+  --color-danger: #fef3f2;
+  --color-danger-hover: #fee4e2;
+  /* Teks di atas warning-solid/emas. Tidak ikut tema karena latarnya selalu
+     warna terang di kedua tema. */
   --color-ink-on-warning: #1a1710;
 
-  /* ===== Kategori transaksi (semantic) ===== */
-  --color-income: #57c98a;
-  --color-income-soft: #10281c;
-  --color-income-deep: #15803d;
-  --color-expense: #e2666f;
-  --color-expense-soft: #33181b;
-  --color-expense-deep: #b91c1c;
-  --color-medical: #8b93f6;
-  --color-medical-soft: #1c2040;
-  --color-voucher: #f2a94e;
-  --color-voucher-soft: #332711;
-  --color-voucher-deep: #a16207;
+  /* ===== Kategori transaksi =====
+     Di tema terang warnanya harus lebih pekat: nilai gelap di bawah dipilih
+     untuk kontras di atas latar hitam, dan akan pudar di atas putih. */
+  --color-income: #067647;
+  --color-income-soft: #ecfdf3;
+  --color-income-deep: #05603a;
+  --color-expense: #b42318;
+  --color-expense-soft: #fef3f2;
+  --color-expense-deep: #912018;
+  --color-medical: #5925dc;
+  --color-medical-soft: #f4f3ff;
+  --color-voucher: #b54708;
+  --color-voucher-soft: #fffaeb;
+  --color-voucher-deep: #93370d;
 
-  /* Aksen ke-4 untuk kartu statistik yang butuh lebih dari 3 warna kategori
-     di atas (mis. "Total Didapat" di RekapVoucherPage). */
-  --color-purple: #a78bfa;
-  --color-purple-soft: #2a2340;
+  /* Aksen ke-4 untuk kartu statistik yang butuh lebih dari 3 warna kategori. */
+  --color-purple: #6941c6;
+  --color-purple-soft: #f4f3ff;
 
   /* ===== Semantic UI state =====
-     Satu-satunya sumber warna primary/success/warning/danger di seluruh app.
-     Dipakai juga untuk override variabel Bootstrap di global.css — jangan
-     tambah warna baru di halaman lain, pakai token ini. Varian *-rgb dipakai
-     untuk box-shadow/focus-ring yang butuh format "r, g, b". */
-  --color-primary: var(--color-accent);
-  --color-primary-rgb: 47, 79, 143;
-  --color-primary-hover: #24407a;
+     Dipakai juga untuk menimpa variabel Bootstrap di global.css. Varian *-rgb
+     dipakai box-shadow/focus-ring yang butuh format "r, g, b" dan karena itu
+     tidak bisa berupa alias. */
+  --color-primary: var(--color-brand);
+  --color-primary-rgb: 79, 70, 229;
+  --color-primary-hover: var(--color-brand-hover);
   --color-success: var(--color-income);
-  --color-success-rgb: 87, 201, 138;
+  --color-success-rgb: 6, 118, 71;
   --color-warning-solid: var(--color-voucher);
-  --color-warning-solid-rgb: 242, 169, 78;
+  --color-warning-solid-rgb: 181, 71, 8;
   --color-danger-solid: var(--color-expense);
-  --color-danger-solid-rgb: 226, 102, 111;
+  --color-danger-solid-rgb: 180, 35, 24;
 
   /* ===== Tipografi ===== */
-  --font-base: 'Segoe UI', sans-serif;
+  --font-base: var(--font-sans);
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
@@ -120,13 +131,65 @@
   --radius: 0.75rem;
   --radius-full: 999px;
 
-  /* ===== Shadow scale (--shadow dipertahankan untuk kompatibilitas) ===== */
-  --shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.14);
-  --shadow-xl: 0 16px 40px rgba(0, 0, 0, 0.18);
-  /* Shadow "glow" bertema brand, pengganti rgba hijau yang di-hardcode ulang
+  /* ===== Shadow ===== */
+  --shadow: 0 1px 3px rgba(16, 24, 40, 0.1), 0 1px 2px rgba(16, 24, 40, 0.06);
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
+  --shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
+  --shadow-xl: 0 20px 24px -4px rgba(16, 24, 40, 0.08), 0 8px 8px -4px rgba(16, 24, 40, 0.03);
+  /* Shadow "glow" bertema brand, pengganti rgba yang di-hardcode ulang
      per halaman (mis. hero card). */
-  --shadow-brand: 0 10px 30px rgba(var(--color-primary-rgb), 0.18);
+  --shadow-brand: 0 8px 16px -4px rgba(var(--color-primary-rgb), 0.24);
+}
+
+/* ===========================================================================
+   TEMA GELAP — nilai yang berlaku sebelum Fase 2a.
+   Hanya token dengan nilai harfiah yang perlu diulang di sini; yang berupa
+   alias sudah mengikuti token baru di theme.css.
+   =========================================================================== */
+:root[data-theme='dark'] {
+  --color-bg-rgb: 14, 14, 16;
+
+  --color-gray-50: #0b0c0d;
+  --color-gray-100: #1c1d20;
+  --color-gray-200: #24252a;
+  --color-gray-300: #2f3136;
+  --color-gray-400: #5a5d63;
+  --color-gray-500: #6f7278;
+  --color-gray-600: #83868c;
+  --color-gray-700: #9497a0;
+  --color-gray-800: #c0c2c7;
+  --color-gray-900: #edeef0;
+
+  --color-warning: #332711;
+  --color-warning-hover: #453516;
+  --color-danger: #33181b;
+  --color-danger-hover: #452226;
+
+  --color-income: #57c98a;
+  --color-income-soft: #10281c;
+  --color-income-deep: #15803d;
+  --color-expense: #e2666f;
+  --color-expense-soft: #33181b;
+  --color-expense-deep: #b91c1c;
+  --color-medical: #8b93f6;
+  --color-medical-soft: #1c2040;
+  --color-voucher: #f2a94e;
+  --color-voucher-soft: #332711;
+  --color-voucher-deep: #a16207;
+
+  --color-purple: #a78bfa;
+  --color-purple-soft: #2a2340;
+
+  --color-primary-rgb: 47, 79, 143;
+  --color-success-rgb: 87, 201, 138;
+  --color-warning-solid-rgb: 242, 169, 78;
+  --color-danger-solid-rgb: 226, 102, 111;
+
+  /* Bayangan perlu lebih pekat di atas latar gelap supaya tetap terbaca. */
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 12px 16px -4px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 24px -4px rgba(0, 0, 0, 0.55);
 }

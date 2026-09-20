@@ -128,3 +128,61 @@ describe('skala tipografi', () => {
     expect(kurang, `tanpa line-height: ${kurang.join(', ')}`).toEqual([]);
   });
 });
+
+describe('token lama peka tema', () => {
+  /**
+   * Halaman yang belum dimigrasi masih memakai token di variable.css. Supaya
+   * ikut berganti saat tema berganti, setiap token yang nilainya HARFIAH
+   * (bukan alias `var(...)`) wajib punya pasangan di blok gelap. Token yang
+   * berupa alias tidak perlu — ia mengikuti token baru yang sudah dwi-tema.
+   */
+  function ambilBlokDari(sumber: string, penanda: string): string {
+    const mulai = sumber.indexOf(penanda);
+    if (mulai === -1) throw new Error(`Blok "${penanda}" tidak ditemukan di variable.css`);
+    const buka = sumber.indexOf('{', mulai);
+    const tutup = sumber.indexOf('\n}', buka);
+    return sumber.slice(buka, tutup);
+  }
+
+  function deklarasi(blok: string): { nama: string; nilai: string }[] {
+    return [...blok.matchAll(/(--color-[a-z0-9-]+)\s*:\s*([^;]+);/g)].map((m) => ({
+      nama: m[1],
+      nilai: m[2].trim(),
+    }));
+  }
+
+  /** Sengaja sama di kedua tema: putih literal di atas gradient, dan tinta
+      di atas warna emas yang memang selalu terang. */
+  const SENGAJA_SAMA_LAMA = ['--color-white', '--color-ink-on-warning'];
+
+  const terang = deklarasi(ambilBlokDari(cssLama, ':root {'));
+  const gelap = deklarasi(ambilBlokDari(cssLama, "[data-theme='dark']"));
+  const namaGelap = new Set(gelap.map((d) => d.nama));
+
+  it('blok gelap ada dan berisi token', () => {
+    expect(gelap.length).toBeGreaterThan(20);
+  });
+
+  it('setiap token berwarna harfiah punya pasangan gelap', () => {
+    const kurang = terang
+      .filter((d) => !d.nilai.startsWith('var('))
+      .filter((d) => !SENGAJA_SAMA_LAMA.includes(d.nama))
+      .filter((d) => !namaGelap.has(d.nama))
+      .map((d) => d.nama);
+
+    expect(kurang, `token tanpa nilai gelap: ${kurang.join(', ')}`).toEqual([]);
+  });
+
+  it('blok gelap tidak memperkenalkan token yang tidak ada di terang', () => {
+    const namaTerang = new Set(terang.map((d) => d.nama));
+    const asing = gelap.map((d) => d.nama).filter((n) => !namaTerang.has(n));
+    expect(asing, `token hanya ada di gelap: ${asing.join(', ')}`).toEqual([]);
+  });
+
+  it('skala abu terbalik arah — gray-900 jadi teks gelap di tema terang', () => {
+    const g900 = terang.find((d) => d.nama === '--color-gray-900')?.nilai;
+    const g50 = terang.find((d) => d.nama === '--color-gray-50')?.nilai;
+    expect(g900).toBe('#101828');
+    expect(g50).toBe('#fcfcfd');
+  });
+});
