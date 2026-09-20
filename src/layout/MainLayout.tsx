@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { motion, AnimatePresence } from 'framer-motion';
 import { RootState } from '../app/store';
 
 import Sidebar from '../components/Sidebar/Sidebar';
@@ -84,17 +83,11 @@ function MainLayout({ children }: { children: React.ReactNode }) {
                 : undefined,
             }}
           >
-            <AnimatePresence mode="popLayout" initial={false}>
-              <motion.div
-                key={location.pathname}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.18, ease: 'easeOut' }}
-              >
-                {children}
-              </motion.div>
-            </AnimatePresence>
+            {/* Tanpa animasi transisi: ia menambah jeda ~180ms di setiap
+                perpindahan halaman tanpa memberi informasi apa pun. Animasi
+                yang tersisa di aplikasi hanyalah yang menanggapi aksi
+                pengguna secara langsung. */}
+            {children}
           </main>
         </div>
       </div>
