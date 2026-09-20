@@ -68,9 +68,14 @@ describe('tidak bertabrakan dengan token lama', () => {
    * dan hanya terlihat di perangkat ber-OS terang, sehingga lolos pengecekan.
    *
    * Selama masa transisi, kedua berkas HARUS memakai nama yang berbeda.
+   *
+   * Memeriksa SEMUA custom property, bukan hanya `--color-*`: versi pertama
+   * test ini hanya melihat warna, dan karena itu melewatkan tabrakan kedua
+   * pada `--radius-md/lg/xl` yang diam-diam mengecilkan sudut di seluruh
+   * halaman lama.
    */
   function namaToken(sumber: string): string[] {
-    return [...sumber.matchAll(/(--color-[a-z0-9-]+)\s*:/g)].map((m) => m[1]);
+    return [...sumber.matchAll(/(--[a-z][a-z0-9-]*)\s*:/g)].map((m) => m[1]);
   }
 
   it('tidak ada satu pun nama token yang dipakai kedua berkas', () => {

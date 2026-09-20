@@ -117,7 +117,12 @@ per rute. Selama masa transisi, keduanya aktif bersamaan.
   lama (gelap), sehingga kartu di halaman lama jadi putih di atas latar hampir
   hitam — dan hanya kelihatan di perangkat ber-OS terang. Karena itu token baru
   bernama `--color-card` dan `--color-danger-strong`. Dijaga oleh
-  `src/styles/tokens.test.ts`.
+  `src/styles/tokens.test.ts`, yang memeriksa **semua** custom property, bukan
+  hanya warna — versi pertama test itu cuma melihat `--color-*` dan karena itu
+  melewatkan tabrakan kedua pada `--radius-md/lg/xl`.
+- **Skala radius dimiliki `theme.css`** (6/8/12/16px) dan berlaku untuk halaman
+  lama juga; `variable.css` hanya menyimpan `--radius` dan `--radius-full` yang
+  tidak punya padanan di sana.
 - **Preflight Tailwind sengaja dimatikan** di `src/styles/theme.css` — reset
   bawaannya menimpa gaya dasar Bootstrap yang masih aktif. Jangan ganti tiga
   baris `@import` di sana menjadi `@import "tailwindcss";` sebelum Bootstrap
