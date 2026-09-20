@@ -16,8 +16,10 @@ export default defineConfig({
         short_name: 'SR Agency',
         start_url: '/',
         display: 'standalone',
-        background_color: '#0e0e10',
-        theme_color: '#0e0e10',
+        // Terang, mengikuti tema bawaan. Manifest hanya menerima satu nilai,
+        // jadi ini selalu memakai tema bawaan aplikasi.
+        background_color: '#ffffff',
+        theme_color: '#ffffff',
         // Nama file harus persis sama dengan isi public/icons —
         // sebelumnya menunjuk sr-green*.png yang tidak pernah ada, jadi
         // ikon PWA 404 dan app tidak bisa di-install dengan benar.

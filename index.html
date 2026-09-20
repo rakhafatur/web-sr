@@ -17,14 +17,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SR Agency</title>
 
-    <!-- ✅ Tambahan anti blink putih -->
+    <!-- Anti-kedip. Nilainya harus sama dengan token tema, tapi ditulis
+         harfiah karena berjalan sebelum CSS aplikasi termuat. Tumpukan font
+         sengaja identik dengan --font-sans supaya huruf tidak bergeser antara
+         paint pertama dan setelah CSS masuk. -->
     <style>
       html, body {
         margin: 0;
         padding: 0;
-        background-color: #0e0e10;
-        color: white;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background-color: #ffffff;
+        color: #101828;
+        font-family: 'Inter Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      }
+      html[data-theme='dark'], html[data-theme='dark'] body {
+        background-color: #09090b;
+        color: #fafafa;
       }
     </style>
 
@@ -44,6 +51,17 @@
             (pref === 'system' &&
               window.matchMedia('(prefers-color-scheme: dark)').matches);
           html.setAttribute('data-theme', gelap ? 'dark' : 'light');
+
+          // Bilah status browser/PWA. Meta TANPA atribut media menang atas
+          // yang bermedia di bawah, jadi pilihan manual pengguna tetap
+          // dihormati — bukan sekadar mengikuti preferensi sistem.
+          var meta = document.querySelector('meta[name="theme-color"]:not([media])');
+          if (!meta) {
+            meta = document.createElement('meta');
+            meta.setAttribute('name', 'theme-color');
+            document.head.appendChild(meta);
+          }
+          meta.setAttribute('content', gelap ? '#09090b' : '#ffffff');
         } catch (e) {
           // localStorage melempar di mode privat / cookie diblokir.
           html.setAttribute('data-theme', 'light');
@@ -51,8 +69,11 @@
       })();
     </script>
 
-    <!-- ✅ Fix neon Safari + iOS bar -->
-    <meta name="theme-color" content="#0e0e10" />
+    <!-- ✅ Fix neon Safari + iOS bar.
+         Dua baris sesuai preferensi sistem; script di atas menambahkan satu
+         meta tanpa media yang menimpa keduanya saat pengguna memilih manual. -->
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#09090b" media="(prefers-color-scheme: dark)" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="SR Agency" />
