@@ -16,7 +16,7 @@ type Props = {
  * penuh, teks putih), dan dua kartu inline di RekapVoucher & PerformaLadies.
  */
 const StatCard = ({ label, nilai, catatan, ikon }: Props) => (
-  <div className="bg-surface border border-line rounded-lg p-3.5">
+  <div className="bg-card border border-line rounded-lg p-3.5">
     <div className="flex items-start justify-between gap-2">
       <p className="text-xs font-medium uppercase tracking-wide text-fg-faint">{label}</p>
       {ikon && (

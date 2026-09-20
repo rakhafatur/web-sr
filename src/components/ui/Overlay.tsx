@@ -61,7 +61,7 @@ const Overlay = ({
         aria-modal="true"
         className={[
           'fixed z-50 flex flex-col',
-          'bg-surface border-line text-fg shadow-2xl',
+          'bg-card border-line text-fg shadow-2xl',
           'focus-visible:outline-none',
           POSISI[penyajian],
         ].join(' ')}
@@ -87,7 +87,7 @@ const Overlay = ({
               'size-9 rounded-md text-fg-muted hover:bg-hover hover:text-fg',
               'transition-colors duration-150',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand',
-              'focus-visible:ring-offset-1 focus-visible:ring-offset-surface',
+              'focus-visible:ring-offset-1 focus-visible:ring-offset-card',
             ].join(' ')}
           >
             <FiX aria-hidden="true" />

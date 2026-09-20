@@ -44,7 +44,7 @@ describe('Input', () => {
   it('state invalid memakai warna danger, bukan biru brand', () => {
     render(<Input aria-label="Cari" invalid />);
     const kelas = screen.getByLabelText('Cari').className;
-    expect(kelas).toContain('border-danger-solid');
+    expect(kelas).toContain('border-danger-strong');
     expect(kelas).not.toContain('border-line-strong');
   });
 

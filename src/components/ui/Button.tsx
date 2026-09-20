@@ -17,9 +17,9 @@ type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className' | 'style'
    seperti template. Penekanan datang dari warna isian, bukan dari efek. */
 const VARIAN: Record<VarianTombol, string> = {
   primary: 'bg-brand text-fg-on-brand hover:bg-brand-hover',
-  secondary: 'bg-surface text-fg border border-line-strong hover:bg-hover',
+  secondary: 'bg-card text-fg border border-line-strong hover:bg-hover',
   ghost: 'text-fg-muted hover:bg-hover',
-  danger: 'bg-danger-solid text-fg-on-brand hover:brightness-95',
+  danger: 'bg-danger-strong text-fg-on-brand hover:brightness-95',
 };
 
 /* Tinggi 44px di ukuran lg karena itu target sentuh minimum di mobile. */

@@ -19,7 +19,7 @@ type Props = {
  * elemen yang benar-benar melayang (dropdown, modal, sheet).
  */
 const SectionCard = ({ title, subtitle, actions, padding = true, children }: Props) => (
-  <div className="bg-surface border border-line rounded-lg overflow-hidden">
+  <div className="bg-card border border-line rounded-lg overflow-hidden">
     {(title || actions) && (
       <header className="flex items-start justify-between gap-3 px-4 py-3 border-b border-line">
         <div className="min-w-0">

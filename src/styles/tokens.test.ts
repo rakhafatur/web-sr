@@ -7,6 +7,11 @@ const css = readFileSync(
   'utf-8',
 );
 
+const cssLama = readFileSync(
+  fileURLToPath(new URL('./variable.css', import.meta.url)),
+  'utf-8',
+);
+
 /** Ambil isi satu blok `{ ... }` yang diawali penanda tertentu. */
 function ambilBlok(penanda: string): string {
   const mulai = css.indexOf(penanda);
@@ -16,8 +21,11 @@ function ambilBlok(penanda: string): string {
   return css.slice(buka, tutup);
 }
 
+/** Hanya DEKLARASI (diikuti titik dua), bukan penyebutan di komentar —
+    komentar di theme.css menyebut nama token lama untuk menjelaskan kenapa
+    nama barunya berbeda, dan itu bukan token yang benar-benar dideklarasikan. */
 function namaToken(blok: string): string[] {
-  return [...blok.matchAll(/--color-[a-z0-9-]+/g)].map((m) => m[0]);
+  return [...blok.matchAll(/(--color-[a-z0-9-]+)\s*:/g)].map((m) => m[1]);
 }
 
 /** Token yang sengaja sama di kedua tema karena selalu di atas warna brand. */
@@ -45,6 +53,34 @@ describe('token tema', () => {
 
   it('tema gelap mengumumkan color-scheme supaya kontrol native ikut gelap', () => {
     expect(ambilBlok("[data-theme='dark']")).toContain('color-scheme: dark');
+  });
+});
+
+describe('tidak bertabrakan dengan token lama', () => {
+  /**
+   * variable.css (tema lama) dan theme.css (tema baru) sama-sama mendeklarasikan
+   * variabel di :root, dan theme.css diimpor belakangan sehingga selalu menang.
+   *
+   * Nama yang sama di kedua berkas berarti halaman lama diam-diam memakai nilai
+   * dari tema baru. Ini pernah benar-benar terjadi: `--color-surface` lama
+   * (#17181a, gelap) tertimpa nilai baru (#fcfcfd, terang), sehingga kartu di
+   * halaman yang belum dimigrasi berubah jadi putih di atas latar hampir hitam —
+   * dan hanya terlihat di perangkat ber-OS terang, sehingga lolos pengecekan.
+   *
+   * Selama masa transisi, kedua berkas HARUS memakai nama yang berbeda.
+   */
+  function namaToken(sumber: string): string[] {
+    return [...sumber.matchAll(/(--color-[a-z0-9-]+)\s*:/g)].map((m) => m[1]);
+  }
+
+  it('tidak ada satu pun nama token yang dipakai kedua berkas', () => {
+    const baru = new Set(namaToken(ambilBlok('@theme')));
+    const bentrok = [...new Set(namaToken(cssLama))].filter((nama) => baru.has(nama));
+
+    expect(
+      bentrok,
+      `nama token dipakai variable.css DAN theme.css: ${bentrok.join(', ')}`,
+    ).toEqual([]);
   });
 });
 

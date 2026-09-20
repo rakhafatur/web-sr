@@ -64,9 +64,13 @@
   --text-display: 36px;
   --text-display--line-height: 40px;
 
-  /* Permukaan */
+  /* Permukaan.
+     Namanya `card`, bukan `surface`, karena variable.css lama sudah memakai
+     `--color-surface` dan theme.css diimpor belakangan — nama yang sama akan
+     diam-diam mengubah halaman yang belum dimigrasi. Dijaga oleh
+     src/styles/tokens.test.ts. */
   --color-canvas: #ffffff;
-  --color-surface: #fcfcfd;
+  --color-card: #fcfcfd;
   --color-subtle: #f9fafb;
   --color-hover: #f2f4f7;
 
@@ -102,7 +106,9 @@
   --color-danger-bg: #fef3f2;
   --color-danger-line: #fecdca;
   --color-danger-fg: #b42318;
-  --color-danger-solid: #d92d20;
+  /* `strong`, bukan `solid`: variable.css lama sudah punya
+     `--color-danger-solid` dan Bootstrap bridge di global.css membacanya. */
+  --color-danger-strong: #d92d20;
 }
 
 /* Cukup satu selektor tanpa menduplikasi apa pun ke dalam @media: script
@@ -112,7 +118,7 @@
   color-scheme: dark;
 
   --color-canvas: #09090b;
-  --color-surface: #101012;
+  --color-card: #101012;
   --color-subtle: #18181b;
   --color-hover: #1f1f23;
 
@@ -141,7 +147,7 @@
   --color-danger-bg: #20110f;
   --color-danger-line: #4a1f1c;
   --color-danger-fg: #f87171;
-  --color-danger-solid: #e5484d;
+  --color-danger-strong: #e5484d;
 }
 
 /* Angka uang harus sejajar antar baris supaya kolom nominal bisa dibandingkan

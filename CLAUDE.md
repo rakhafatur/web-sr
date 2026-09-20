@@ -110,6 +110,14 @@ per rute. Selama masa transisi, keduanya aktif bersamaan.
   ketahuan, karena yang berganti saat tema berganti hanyalah isi token.
 - **Token lama di `src/styles/variable.css` masih dipakai halaman yang belum
   dimigrasi.** Jangan hapus sampai halaman terakhir pindah.
+- **Nama token di `theme.css` tidak boleh sama dengan yang di `variable.css`.**
+  Keduanya mendeklarasikan variabel di `:root` dan `theme.css` diimpor
+  belakangan, jadi nama kembar membuat halaman lama diam-diam memakai nilai
+  tema baru. Ini pernah terjadi: `--color-surface` baru (terang) menimpa yang
+  lama (gelap), sehingga kartu di halaman lama jadi putih di atas latar hampir
+  hitam — dan hanya kelihatan di perangkat ber-OS terang. Karena itu token baru
+  bernama `--color-card` dan `--color-danger-strong`. Dijaga oleh
+  `src/styles/tokens.test.ts`.
 - **Preflight Tailwind sengaja dimatikan** di `src/styles/theme.css` — reset
   bawaannya menimpa gaya dasar Bootstrap yang masih aktif. Jangan ganti tiga
   baris `@import` di sana menjadi `@import "tailwindcss";` sebelum Bootstrap

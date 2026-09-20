@@ -57,7 +57,7 @@ function SegmentedControl<T extends string>({
             fullWidth ? 'flex-1' : '',
             'text-fg-muted hover:text-fg',
             // Penanda aktif: permukaan terangkat + teks penuh. Tanpa gradient.
-            'data-[state=on]:bg-surface data-[state=on]:text-fg',
+            'data-[state=on]:bg-card data-[state=on]:text-fg',
             'data-[state=on]:border data-[state=on]:border-line',
             'transition-colors duration-150',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand',

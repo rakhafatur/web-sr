@@ -39,7 +39,7 @@ const DASAR = [
 ].join(' ');
 
 const NORMAL = 'border-line-strong focus-visible:ring-brand focus-visible:border-brand';
-const GALAT = 'border-danger-solid focus-visible:ring-danger-solid';
+const GALAT = 'border-danger-strong focus-visible:ring-danger-strong';
 
 const Input = ({
   type = 'text',
