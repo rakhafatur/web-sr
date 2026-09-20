@@ -6,17 +6,6 @@ import 'react-toastify/dist/ReactToastify.css';
 const LoginPage = lazy(() => import('./features/auth/pages/LoginPage'));
 const SignUpPage = lazy(() => import('./features/auth/pages/SignUpPage'));
 const HomePage = lazy(() => import('./features/home/pages/HomePage'));
-
-/* Panduan gaya — khusus mode dev.
-
-   Guard-nya membungkus `lazy()`, bukan cuma <Route>-nya. Kalau hanya JSX yang
-   dijaga, `import()` tetap berdiri di level modul dan Rollup tetap membuat
-   chunk-nya (terbukti: 8,8 KB ikut terkirim), cuma tidak pernah dipanggil.
-   Dengan bentuk ternary ini `import.meta.env.DEV` diganti `false` saat build,
-   cabangnya mati, dan chunk-nya tidak pernah lahir. */
-const UiPreviewPage = import.meta.env.DEV
-  ? lazy(() => import('./features/dev/pages/UiPreviewPage'))
-  : null;
 const UserListPage = lazy(() => import('./features/user/pages/UserListPage'));
 const UserApprovalPage = lazy(() => import('./features/user/pages/UserApprovalPage'));
 const CreateUserPage = lazy(() => import('./features/user/pages/CreateUser'));
@@ -132,8 +121,6 @@ function App() {
               <Route path="/ladies/peraturan" element={<PeraturanPage />} />
               <Route path="/ladies/profile" element={<ProfilePage />} />
             </Route>
-
-            {UiPreviewPage && <Route path="/ui" element={<UiPreviewPage />} />}
 
             {/* 404 fallback */}
             <Route path="*" element={<NotFoundPage />} />

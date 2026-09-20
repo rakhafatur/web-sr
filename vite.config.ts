@@ -1,14 +1,10 @@
-// Dari 'vitest/config', bukan 'vite' — supaya blok `test` di bawah ikut
-// ter-type. Selebihnya identik dengan defineConfig milik Vite.
-import { defineConfig } from 'vitest/config'
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
   plugins: [
     react(),
-    tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
@@ -16,10 +12,8 @@ export default defineConfig({
         short_name: 'SR Agency',
         start_url: '/',
         display: 'standalone',
-        // Terang, mengikuti tema bawaan. Manifest hanya menerima satu nilai,
-        // jadi ini selalu memakai tema bawaan aplikasi.
-        background_color: '#ffffff',
-        theme_color: '#ffffff',
+        background_color: '#0e0e10',
+        theme_color: '#0e0e10',
         // Nama file harus persis sama dengan isi public/icons —
         // sebelumnya menunjuk sr-green*.png yang tidak pernah ada, jadi
         // ikon PWA 404 dan app tidak bisa di-install dengan benar.
@@ -44,13 +38,4 @@ export default defineConfig({
       },
     }),
   ],
-
-  test: {
-    // Testing Library membersihkan DOM antar test lewat `afterEach` GLOBAL.
-    // Tanpa ini pembersihannya tidak pernah terdaftar, render menumpuk, dan
-    // kueri seperti getByRole('button') menemukan sisa render test sebelumnya.
-    // Test yang sudah ada tetap mengimpor describe/it/expect secara eksplisit;
-    // opsi ini hanya menambah, tidak memaksa.
-    globals: true,
-  },
 })

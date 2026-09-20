@@ -1,25 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-// Font di-bundle lokal (bukan CDN) supaya PWA tetap benar saat offline.
-// SENGAJA belum diterapkan ke body — --font-base di variable.css masih
-// 'Segoe UI' sampai Fase 2. Fase ini wajib nol perubahan visual.
-import '@fontsource-variable/inter';
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import './styles/variable.css';
 import './styles/global.css';
 import './styles/reset.css';
-// Paling akhir supaya utility Tailwind menang atas kelas Bootstrap pada
-// spesifisitas yang sama. Urutan ini penting mulai Fase 1 ketika utility
-// benar-benar dipakai di komponen.
-import './styles/theme.css';
 
 import { Provider } from 'react-redux';
 import { store } from './app/store';
 import { AuthProvider } from './context/AuthContext';
-import { ThemeProvider } from './context/ThemeContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './lib/queryClient';
@@ -31,17 +21,14 @@ pasangPenangkapGlobal();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    {/* Di luar ErrorBoundary supaya tema tetap berlaku di layar error. */}
-    <ThemeProvider>
-      <ErrorBoundary>
-        <QueryClientProvider client={queryClient}>
-          <Provider store={store}>
-            <AuthProvider>
-              <App />
-            </AuthProvider>
-          </Provider>
-        </QueryClientProvider>
-      </ErrorBoundary>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </Provider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   </React.StrictMode>
 );

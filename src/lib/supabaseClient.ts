@@ -19,12 +19,12 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
   document.body.innerHTML = `
     <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;
-                padding:24px;background:var(--color-bg);color:var(--color-dark);
-                font-family:var(--font-base);text-align:center">
+                padding:24px;background:#0e0e10;color:#edeef0;
+                font-family:'Segoe UI',system-ui,sans-serif;text-align:center">
       <div style="max-width:420px">
         <div style="font-size:40px;margin-bottom:16px">⚙️</div>
         <h1 style="font-size:20px;margin:0 0 12px">Konfigurasi belum lengkap</h1>
-        <p style="font-size:14px;line-height:1.6;color:var(--color-gray-600);margin:0">
+        <p style="font-size:14px;line-height:1.6;color:#9497a0;margin:0">
           Aplikasi tidak bisa terhubung ke server karena ${missing} tidak terpasang
           saat build. Hubungi admin untuk mengatur environment variable di hosting.
         </p>
