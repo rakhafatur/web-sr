@@ -1,99 +1,85 @@
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+
 import { RootState } from '../app/store';
+import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabaseClient';
+import AppShell from './AppShell';
 
-import Sidebar from '../components/Sidebar/Sidebar';
-import Header from '../components/Header/Header';
-import BottomNavbarAdmin from '../components/Bottombar/BottomNavbarAdmin';
-import BottomNavbarLadies from '../components/Bottombar/BottomNavbarLadies';
-
-import {
-  SIDEBAR_WIDTH,
-  SIDEBAR_COLLAPSED_WIDTH,
-} from '../constant';
-
+/**
+ * Menyuntikkan identitas pengguna ke AppShell.
+ *
+ * Pengambilan nama tampilan mengikuti perilaku Header lama persis: ladies
+ * memakai `nama_ladies`, pengawas memakai `nama_panggilan`, selebihnya
+ * memakai `nama` di baris user.
+ */
 function MainLayout({ children }: { children: React.ReactNode }) {
-  const user = useSelector((state: RootState) => state.user.currentUser);
-  const isLadies = !!user?.ladies_id;
+  const currentUser = useSelector((state: RootState) => state.user.currentUser);
+  const { logout, user } = useAuth();
+  const navigate = useNavigate();
 
-  const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 768);
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const location = useLocation();
+  const isLadies = !!currentUser?.ladies_id;
+
+  const [namaUser, setNamaUser] = useState('User');
+  const [peran, setPeran] = useState('User');
 
   useEffect(() => {
-    const handleResize = () => {
-      const nowMobile = window.innerWidth < 768;
-      setIsMobile(nowMobile);
-      setSidebarOpen(!nowMobile);
-      setIsCollapsed(false);
+    let batal = false;
+
+    const ambil = async () => {
+      if (!user) return;
+
+      const { data: grup } = await supabase
+        .from('user_group')
+        .select('group_name')
+        .eq('id', user.user_group_id)
+        .single();
+
+      if (batal || !grup) return;
+
+      const role = grup.group_name.toLowerCase();
+      setPeran(grup.group_name);
+
+      if (role === 'ladies') {
+        const { data } = await supabase
+          .from('ladies')
+          .select('nama_ladies')
+          .eq('id', user.ladies_id)
+          .single();
+        if (!batal) setNamaUser(data?.nama_ladies || user.nama || 'User');
+      } else if (role === 'pengawas') {
+        const { data } = await supabase
+          .from('pengawas')
+          .select('nama_panggilan')
+          .eq('id', user.pengawas_id)
+          .single();
+        if (!batal) setNamaUser(data?.nama_panggilan || user.nama || 'User');
+      } else if (!batal) {
+        setNamaUser(user.nama || 'User');
+      }
     };
 
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    ambil();
+    return () => {
+      batal = true;
+    };
+  }, [user]);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
-
-  const isHomePage = location.pathname === '/' || location.pathname === '/ladies/home';
-  const sidebarWidth = isCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH;
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
-    <div
-      className="layout-container"
-      style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}
+    <AppShell
+      isLadies={isLadies}
+      namaUser={namaUser}
+      peran={peran}
+      onLogout={handleLogout}
     >
-      <Header />
-
-      <div className="d-flex" style={{ width: '100%' }}>
-        {!isMobile && (
-          isLadies ? (
-            <div style={{ width: sidebarWidth, padding: '1rem' }}>
-              <div style={{ fontWeight: 600 }}>SR Ladies</div>
-              <div style={{ marginTop: '0.5rem' }}>Sidebar khusus ladies belum tersedia</div>
-            </div>
-          ) : (
-            <Sidebar
-              isCollapsed={isCollapsed}
-              onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
-            />
-          )
-        )}
-
-        <div
-          className="flex-grow-1 d-flex flex-column"
-          style={{
-            marginLeft: !isMobile && sidebarOpen ? sidebarWidth : 0,
-            transition: 'margin 0.3s ease',
-            width: '100%',
-          }}
-        >
-          <main
-            className="main-content"
-            style={{
-              flex: 1,
-              minHeight: '100vh',
-              padding: isHomePage ? '0' : '2rem',
-              paddingBottom: isMobile
-                ? 'calc(80px + env(safe-area-inset-bottom))'
-                : undefined,
-            }}
-          >
-            {/* Tanpa animasi transisi: ia menambah jeda ~180ms di setiap
-                perpindahan halaman tanpa memberi informasi apa pun. Animasi
-                yang tersisa di aplikasi hanyalah yang menanggapi aksi
-                pengguna secara langsung. */}
-            {children}
-          </main>
-        </div>
-      </div>
-
-      {isMobile && (isLadies ? <BottomNavbarLadies /> : <BottomNavbarAdmin />)}
-    </div>
+      {children}
+    </AppShell>
   );
 }
 
