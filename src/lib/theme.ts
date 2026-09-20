@@ -25,9 +25,17 @@ export function isThemePreference(value: unknown): value is ThemePreference {
   return value === 'light' || value === 'dark' || value === 'system';
 }
 
+/** Tema bawaan produk.
+
+    Sengaja 'dark', bukan 'system': gelap adalah identitas aplikasi ini —
+    dataset UI/UX Pro Max memilih latar gelap untuk seluruh tiga palet teratas
+    kategori "admin dashboard finance", dan aplikasi ini memang sudah gelap
+    sejak sebelum redesign. Tema terang tetap tersedia lewat pengalih. */
+const BAWAAN: ThemePreference = 'dark';
+
 export function readPreference(getItem: (key: string) => string | null): ThemePreference {
   const tersimpan = getItem(THEME_STORAGE_KEY);
-  return isThemePreference(tersimpan) ? tersimpan : 'system';
+  return isThemePreference(tersimpan) ? tersimpan : BAWAAN;
 }
 
 export function resolveTheme(

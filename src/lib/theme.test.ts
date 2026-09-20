@@ -32,12 +32,12 @@ describe('readPreference', () => {
     expect(readPreference(() => 'system')).toBe('system');
   });
 
-  it('jatuh ke "system" kalau belum pernah disimpan', () => {
-    expect(readPreference(() => null)).toBe('system');
+  it('jatuh ke "dark" kalau belum pernah disimpan — gelap adalah tema bawaan produk', () => {
+    expect(readPreference(() => null)).toBe('dark');
   });
 
-  it('jatuh ke "system" kalau isinya rusak', () => {
-    expect(readPreference(() => 'bukan-tema')).toBe('system');
+  it('jatuh ke "dark" kalau isinya rusak', () => {
+    expect(readPreference(() => 'bukan-tema')).toBe('dark');
   });
 
   it('membaca dari kunci penyimpanan yang benar', () => {

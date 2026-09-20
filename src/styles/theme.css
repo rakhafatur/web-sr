@@ -77,20 +77,30 @@
   /* Teks */
   --color-fg: #101828;
   --color-fg-muted: #475467;
-  --color-fg-faint: #98a2b3;
+  /* slate-500, bukan slate-400: #98a2b3 hanya mencapai 2,5:1 di atas kartu —
+     gagal untuk teks apa pun, padahal token ini dipakai untuk label grup,
+     teks meta, dan awalan "Rp". Dijaga src/styles/kontras.test.ts. */
+  --color-fg-faint: #64748b;
   --color-fg-on-brand: #ffffff;
 
-  /* Garis */
-  --color-line: #eaecf0;
-  --color-line-subtle: #f2f4f7;
-  --color-line-strong: #d0d5dd;
+  /* Garis.
+     Dikuatkan dari ramp semula (#eaecf0): selisih canvas putih dan kartu
+     #fcfcfd hanya 1,02:1, jadi garislah satu-satunya yang mendefinisikan tepi
+     kartu — dan pada nilai lama ia cuma 1,18:1 alias nyaris tak terlihat. */
+  --color-line: #dde1e7;
+  --color-line-subtle: #eef0f3;
+  --color-line-strong: #c6ccd6;
 
   /* Brand — hanya untuk aksi utama & item navigasi aktif. Bukan untuk
-     kartu, header halaman, atau badge. */
-  --color-brand: #4f46e5;
-  --color-brand-hover: #4338ca;
-  --color-brand-subtle: #eef0ff;
-  --color-brand-fg: #3730a3;
+     kartu, header halaman, atau badge.
+
+     Biru, bukan indigo: mendekati identitas warna aplikasi sebelum redesign.
+     #2563eb dipilih karena teks putih di atasnya mencapai 5,2:1 — blue-500
+     (#3b82f6) hanya 3,7:1 dan gagal AA untuk teks normal. */
+  --color-brand: #2563eb;
+  --color-brand-hover: #1d4ed8;
+  --color-brand-subtle: #eff6ff;
+  --color-brand-fg: #1d4ed8;
 
   /* Uang */
   --color-money-in: #067647;
@@ -117,23 +127,33 @@
 :root[data-theme='dark'] {
   color-scheme: dark;
 
-  --color-canvas: #09090b;
-  --color-card: #101012;
-  --color-subtle: #18181b;
-  --color-hover: #1f1f23;
+  /* Slate, bukan near-black netral: dataset UI/UX Pro Max memilih latar
+     bertint biru (#0F172A) untuk seluruh tiga palet teratas kategori
+     "admin dashboard finance", dan ia berpadu jauh lebih baik dengan aksen
+     biru daripada abu netral yang terasa mati. */
+  --color-canvas: #0f172a;
+  --color-card: #1b2336;
+  --color-subtle: #212b40;
+  --color-hover: #2a3550;
 
-  --color-fg: #fafafa;
-  --color-fg-muted: #a1a1aa;
-  --color-fg-faint: #52525b;
+  /* fg-muted sengaja slate-300, bukan slate-400: di atas kartu #1b2336 ia
+     mencapai 10,3:1, sementara slate-400 hanya 6,1:1 — cukup untuk teks meta
+     tapi terlalu redup untuk teks isi. */
+  --color-fg: #f8fafc;
+  --color-fg-muted: #cbd5e1;
+  --color-fg-faint: #94a3b8;
 
-  --color-line: #1f1f23;
-  --color-line-subtle: #131316;
-  --color-line-strong: #27272a;
+  --color-line: #334155;
+  --color-line-subtle: #232c40;
+  --color-line-strong: #475569;
 
-  --color-brand: #6d5cf0;
-  --color-brand-hover: #7c6ff5;
-  --color-brand-subtle: #1a1730;
-  --color-brand-fg: #a79bff;
+  /* Brand tetap #2563eb supaya teks putih di atas tombol tetap 5,2:1.
+     brand-fg dinaikkan ke blue-400 untuk teks/ikon di atas latar gelap
+     (7,1:1 di atas canvas). */
+  --color-brand: #2563eb;
+  --color-brand-hover: #1d4ed8;
+  --color-brand-subtle: #172554;
+  --color-brand-fg: #60a5fa;
 
   --color-money-in: #4ade80;
   --color-money-out: #f87171;
