@@ -89,6 +89,13 @@
   --color-danger-solid: var(--color-expense);
   --color-danger-solid-rgb: 180, 35, 24;
 
+  /* Dipakai jembatan Bootstrap di global.css yang menuntut format "r, g, b". */
+  --color-fg-rgb: 16, 24, 40;
+  --color-gray-500-rgb: 102, 112, 133;
+  --color-gray-600-rgb: 71, 84, 103;
+  --color-surface-rgb: 252, 252, 253;
+  --color-subtle-rgb: 249, 250, 251;
+
   /* ===== Tipografi ===== */
   --font-base: var(--font-sans);
   --font-size-xs: 0.75rem;
@@ -185,6 +192,12 @@
   --color-success-rgb: 87, 201, 138;
   --color-warning-solid-rgb: 242, 169, 78;
   --color-danger-solid-rgb: 226, 102, 111;
+
+  --color-fg-rgb: 237, 238, 240;
+  --color-gray-500-rgb: 111, 114, 120;
+  --color-gray-600-rgb: 131, 134, 140;
+  --color-surface-rgb: 23, 24, 26;
+  --color-subtle-rgb: 30, 31, 34;
 
   /* Bayangan perlu lebih pekat di atas latar gelap supaya tetap terbaca. */
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
