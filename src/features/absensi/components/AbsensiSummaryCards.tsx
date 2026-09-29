@@ -45,7 +45,7 @@ const AbsensiSummaryCards = ({ rekap }: Props) => {
             <div
               style={{
                 fontSize: isMobile ? '1.4rem' : '2rem',
-                fontWeight: 800,
+                fontWeight: 700,
                 lineHeight: 1.1,
                 marginTop: 2,
                 color: item.color,

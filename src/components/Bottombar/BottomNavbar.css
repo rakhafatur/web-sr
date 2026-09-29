@@ -223,7 +223,7 @@
 
 .bottom-sheet-title {
   font-size: 1.05rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-dark);
 }
 
@@ -249,7 +249,7 @@
 
 .sheet-section-title {
   font-size: 0.68rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 1px;
   text-transform: uppercase;
 
@@ -366,7 +366,7 @@
   color: var(--color-income);
 
   font-size: 0.62rem;
-  font-weight: 700;
+  font-weight: 600;
 
   width: fit-content;
 }

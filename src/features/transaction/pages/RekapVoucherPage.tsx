@@ -406,7 +406,7 @@ const RekapVoucherPage = () => {
                                 ? '0.95rem'
                                 : '1.5rem',
 
-                            fontWeight: 800,
+                            fontWeight: 700,
 
                             lineHeight: 1.2,
 

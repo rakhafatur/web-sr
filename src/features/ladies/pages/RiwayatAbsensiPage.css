@@ -34,7 +34,7 @@ body {
   height: 42px;
   border-radius: 14px;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-dark);
   transition: all 0.2s ease;
 }
@@ -52,7 +52,7 @@ body {
   flex-grow: 1 !important;
   background: transparent !important;
   font-size: 16px !important;
-  font-weight: 700 !important;
+  font-weight: 600 !important;
   color: var(--color-dark);
 }
 
@@ -64,7 +64,7 @@ body {
 .react-calendar__month-view__weekdays__weekday {
   text-align: center;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-gray-500);
   text-transform: uppercase;
 }

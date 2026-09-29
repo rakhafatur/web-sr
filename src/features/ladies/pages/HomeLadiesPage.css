@@ -67,7 +67,7 @@
 
 .ladies-home-hero-label {
   font-size: var(--font-size-xs);
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   opacity: 0.85;
@@ -91,8 +91,8 @@
   position: relative;
   z-index: 2;
   font-size: 2.4rem;
-  font-weight: 800;
-  letter-spacing: -0.01em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   line-height: 1.15;
   margin-top: 10px;
 }
@@ -173,7 +173,7 @@
 
 .ladies-home-hero-breakdown-value {
   font-size: var(--font-size-lg);
-  font-weight: 800;
+  font-weight: 700;
 }
 
 /* =========================
@@ -213,7 +213,7 @@
 
 .ladies-home-cta-title {
   font-size: var(--font-size-sm);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-dark);
 }
 
@@ -235,7 +235,7 @@
 
 .ladies-home-section-label {
   font-size: var(--font-size-sm);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-dark);
   margin: 4px 4px 10px;
 }

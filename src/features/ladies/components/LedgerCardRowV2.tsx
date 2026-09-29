@@ -64,7 +64,7 @@ const LedgerCardRowV2 = ({
           style={{
             background: colorSoft,
             fontSize: 14,
-            fontWeight: 800,
+            fontWeight: 700,
             color,
             padding: '3px 0',
           }}
@@ -106,7 +106,7 @@ const LedgerCardRowV2 = ({
         <div
           style={{
             fontSize: 'var(--font-size-sm)',
-            fontWeight: 800,
+            fontWeight: 700,
             color,
             lineHeight: 1.15,
             whiteSpace: 'nowrap',

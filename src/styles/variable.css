@@ -79,7 +79,9 @@
   --color-danger-solid-rgb: 226, 102, 111;
 
   /* ===== Tipografi ===== */
-  --font-base: 'Segoe UI', sans-serif;
+  /* Inter di semua platform — dulu 'Segoe UI' yang tidak ada di iPhone/Android,
+     jadi tiap perangkat menampilkan huruf yang berbeda. */
+  --font-base: 'Inter Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
