@@ -11,7 +11,8 @@ import {
   FiEye,
   FiEyeOff,
   FiMessageCircle,
-  FiChevronRight,
+  FiArrowRight,
+  FiActivity,
   FiGift,
   FiCreditCard,
   FiHeart,
@@ -23,6 +24,13 @@ import { motion } from 'framer-motion';
 import type { UserWithLadies } from '../../../types/user';
 import HomeLadiesSkeleton from '../components/HomeLadiesSkeleton';
 import PullToRefresh from '../../../components/PullToRefresh';
+
+const sapaanWaktu = (jam: number) => {
+  if (jam < 11) return 'Selamat pagi';
+  if (jam < 15) return 'Selamat siang';
+  if (jam < 18) return 'Selamat sore';
+  return 'Selamat malam';
+};
 
 const HomeLadiesPage = () => {
   const user = useSelector(
@@ -45,6 +53,7 @@ const HomeLadiesPage = () => {
         { data: absensi, error: absensiError },
         { data: vouchers, error: vouchersError },
         { data: kasbon, error: kasbonError },
+        { data: ladies },
       ] = await Promise.all([
         supabase
           .from('absensi')
@@ -67,6 +76,14 @@ const HomeLadiesPage = () => {
           .eq('ladies_id', ladiesId as string)
           .gte('tanggal', tanggalAwal)
           .lte('tanggal', tanggalAkhir),
+
+        // Hanya untuk sapaan — kalau gagal, jatuh ke user.nama, jadi error-nya
+        // sengaja tidak menggagalkan seluruh halaman.
+        supabase
+          .from('ladies')
+          .select('nama_ladies')
+          .eq('id', ladiesId as string)
+          .maybeSingle(),
       ]);
 
       if (absensiError || vouchersError || kasbonError) {
@@ -84,6 +101,7 @@ const HomeLadiesPage = () => {
         voucherPcs: totalVoucherPcs,
         voucherNominal: totalVoucherNominal,
         pengeluaran: kasbon?.reduce((sum, k) => sum + k.jumlah, 0) || 0,
+        nama: ladies?.nama_ladies ?? null,
       };
     },
     enabled: !!ladiesId,
@@ -94,9 +112,11 @@ const HomeLadiesPage = () => {
   const voucherPcs = data?.voucherPcs ?? 0;
   const voucherNominal = data?.voucherNominal ?? 0;
   const pengeluaran = data?.pengeluaran ?? 0;
+  const nama = data?.nama || user?.nama || 'Ladies';
   const loading = isLoading;
 
   const persenHadir = Math.min(100, Math.round((hariMasuk / 18) * 100));
+  const bulanIni = new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
 
   const formatRpNumber = (n: number) => `Rp${Math.round(n).toLocaleString('id-ID')}`;
 
@@ -123,6 +143,19 @@ const HomeLadiesPage = () => {
     },
   ];
 
+  // Pola "angka besar + satuan kecil" dari kartu Health Overview referensi.
+  const ringkasan = [
+    { label: 'Hari Masuk', nilai: hariMasuk, satuan: 'dari 18 hari', icon: <FiCalendar /> },
+    { label: 'Voucher', nilai: voucherPcs, satuan: 'pcs', icon: <FiGift /> },
+    { label: 'Kehadiran', nilai: persenHadir, satuan: '%', icon: <FiActivity /> },
+  ];
+
+  const muncul = (delay: number) => ({
+    initial: { opacity: 0, y: 16 },
+    animate: { opacity: 1, y: 0 },
+    transition: { delay },
+  });
+
   if (loading) {
     return <HomeLadiesSkeleton />;
   }
@@ -131,13 +164,14 @@ const HomeLadiesPage = () => {
     <PullToRefresh onRefresh={async () => { await refetch(); }}>
       <div className="ladies-home-wrapper">
         <div className="content-container d-flex flex-column gap-3">
+          {/* SAPAAN */}
+          <motion.div {...muncul(0)} className="ladies-home-greeting">
+            <div className="ladies-home-greeting-time">{sapaanWaktu(new Date().getHours())},</div>
+            <h1 className="ladies-home-greeting-name">{nama}</h1>
+          </motion.div>
+
           {/* HERO */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="ladies-home-hero"
-          >
+          <motion.div {...muncul(0.05)} className="ladies-home-hero">
             <div className="ladies-home-hero-circle" />
 
             <div className="ladies-home-hero-top">
@@ -155,64 +189,40 @@ const HomeLadiesPage = () => {
             <div className="ladies-home-hero-amount">
               {hideAmount ? '••••••••' : formatRpNumber(voucherNominal)}
             </div>
-            <div className="ladies-home-hero-sub">dari voucher bulan ini</div>
+            <div className="ladies-home-hero-sub">Dari voucher · {bulanIni}</div>
 
-            <div className="ladies-home-hero-progress">
-              <div className="ladies-home-hero-progress-labels">
-                <span>Kehadiran</span>
-                <span>{hariMasuk}/18 hari</span>
-              </div>
-              <div className="ladies-home-hero-progress-bar">
-                <div
-                  className="ladies-home-hero-progress-fill"
-                  style={{ width: `${persenHadir}%` }}
-                />
-              </div>
-            </div>
-
-            <div className="ladies-home-hero-divider" />
-
-            <div className="ladies-home-hero-breakdown">
-              <div className="ladies-home-hero-breakdown-item">
-                <span className="ladies-home-hero-breakdown-label">Voucher</span>
-                <span className="ladies-home-hero-breakdown-value">{voucherPcs} pcs</span>
-              </div>
-              <div className="ladies-home-hero-breakdown-sep" />
-              <div className="ladies-home-hero-breakdown-item">
-                <span className="ladies-home-hero-breakdown-label">Kasbon</span>
-                <span className="ladies-home-hero-breakdown-value">
-                  {hideAmount ? '••••••••' : formatRpNumber(pengeluaran)}
-                </span>
-              </div>
+            <div className="ladies-home-hero-foot">
+              <span>Kasbon bulan ini</span>
+              <span className="ladies-home-hero-foot-value">
+                {hideAmount ? '••••••••' : formatRpNumber(pengeluaran)}
+              </span>
             </div>
           </motion.div>
 
-          {/* SMART CHAT CTA */}
-          <motion.button
-            type="button"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="ladies-home-cta tap-scale"
-            onClick={() => navigate('/smart-chat-ladies')}
-          >
-            <div className="ladies-home-cta-icon">
-              <FiMessageCircle />
+          {/* RINGKASAN */}
+          <motion.section {...muncul(0.1)} className="ladies-home-overview" aria-label="Ringkasan bulan ini">
+            <div className="ladies-home-card-head">
+              <h2 className="ladies-home-card-title">Ringkasan Bulan Ini</h2>
+              <span className="ladies-home-chip">{bulanIni}</span>
             </div>
-            <div className="ladies-home-cta-text">
-              <div className="ladies-home-cta-title">Tanya Smart Assistant</div>
-              <div className="ladies-home-cta-subtitle">Cek voucher & absensi kamu</div>
-            </div>
-            <FiChevronRight className="ladies-home-cta-chevron" />
-          </motion.button>
 
-          {/* MENU GRID */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-          >
-            <div className="ladies-home-section-label">Menu Cepat</div>
+            <div className="ladies-home-stats">
+              {ringkasan.map((s) => (
+                <div key={s.label} className="ladies-home-stat">
+                  <span className="ladies-home-stat-label">{s.label}</span>
+                  <span className="ladies-home-stat-value">{s.nilai}</span>
+                  <div className="ladies-home-stat-foot">
+                    <span className="ladies-home-stat-unit">{s.satuan}</span>
+                    <span className="ladies-home-stat-icon" aria-hidden>{s.icon}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.section>
+
+          {/* MENU CEPAT */}
+          <motion.section {...muncul(0.15)} className="ladies-home-card" aria-label="Menu cepat">
+            <h2 className="ladies-home-card-title">Menu Cepat</h2>
             <div className="ladies-home-menu-grid">
               {menuItems.map((item) => (
                 <button
@@ -228,7 +238,26 @@ const HomeLadiesPage = () => {
                 </button>
               ))}
             </div>
-          </motion.div>
+          </motion.section>
+
+          {/* SMART CHAT CTA */}
+          <motion.button
+            type="button"
+            {...muncul(0.2)}
+            className="ladies-home-cta tap-scale"
+            onClick={() => navigate('/smart-chat-ladies')}
+          >
+            <div className="ladies-home-cta-icon">
+              <FiMessageCircle />
+            </div>
+            <div className="ladies-home-cta-text">
+              <div className="ladies-home-cta-title">Tanya Smart Assistant</div>
+              <div className="ladies-home-cta-subtitle">Cek voucher & absensi kamu</div>
+            </div>
+            <span className="ladies-home-arrow-btn" aria-hidden>
+              <FiArrowRight />
+            </span>
+          </motion.button>
         </div>
       </div>
     </PullToRefresh>
