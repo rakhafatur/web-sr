@@ -80,7 +80,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
               minHeight: '100vh',
               padding: isHomePage ? '0' : '2rem',
               paddingBottom: isMobile
-                ? 'calc(80px + env(safe-area-inset-bottom))'
+                ? 'calc(96px + env(safe-area-inset-bottom))'
                 : undefined,
             }}
           >
