@@ -42,8 +42,10 @@
 ========================= */
 
 .ladies-home-top {
-  /* 0 kalau iOS tidak melaporkan status bar — aman di semua kondisi. */
-  padding-top: env(safe-area-inset-top);
+  /* Tanpa header, avatar butuh ruang napas dari tepi atas layar
+     (8px container + 16px di sini = 24px). safe-area bernilai 0 kalau iOS
+     tidak melaporkan status bar — aman di semua kondisi. */
+  padding-top: calc(env(safe-area-inset-top) + var(--space-4));
 }
 
 .ladies-home-topbar {
