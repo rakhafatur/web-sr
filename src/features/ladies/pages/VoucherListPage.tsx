@@ -88,7 +88,7 @@ const VoucherListPage = () => {
         />
 
         {vouchers.length === 0 ? (
-          <LedgerEmptyState message="Belum ada voucher di bulan ini ✨" />
+          <LedgerEmptyState message="Belum ada voucher di bulan ini" />
         ) : (
           <CardTable
             data={vouchers}

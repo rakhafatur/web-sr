@@ -104,29 +104,21 @@ const HomeLadiesPage = () => {
     {
       label: 'Voucher',
       icon: <FiGift />,
-      color: 'var(--color-voucher)',
-      bg: 'var(--color-voucher-soft)',
       path: '/ladies/voucher',
     },
     {
       label: 'Kasbon',
       icon: <FiCreditCard />,
-      color: 'var(--color-expense)',
-      bg: 'var(--color-expense-soft)',
       path: '/ladies/kasbon',
     },
     {
       label: 'Dokter',
       icon: <FiHeart />,
-      color: 'var(--color-medical)',
-      bg: 'var(--color-medical-soft)',
       path: '/ladies/dokter',
     },
     {
       label: 'Absensi',
       icon: <FiCalendar />,
-      color: 'var(--color-green)',
-      bg: 'var(--color-green-light)',
       path: '/ladies/absensi',
     },
   ];
@@ -163,7 +155,7 @@ const HomeLadiesPage = () => {
             <div className="ladies-home-hero-amount">
               {hideAmount ? '••••••••' : formatRpNumber(voucherNominal)}
             </div>
-            <div className="ladies-home-hero-sub">dari voucher bulan ini ✨</div>
+            <div className="ladies-home-hero-sub">dari voucher bulan ini</div>
 
             <div className="ladies-home-hero-progress">
               <div className="ladies-home-hero-progress-labels">
@@ -209,7 +201,7 @@ const HomeLadiesPage = () => {
             </div>
             <div className="ladies-home-cta-text">
               <div className="ladies-home-cta-title">Tanya Smart Assistant</div>
-              <div className="ladies-home-cta-subtitle">Cek voucher & absensi kamu ✨</div>
+              <div className="ladies-home-cta-subtitle">Cek voucher & absensi kamu</div>
             </div>
             <FiChevronRight className="ladies-home-cta-chevron" />
           </motion.button>
@@ -229,10 +221,7 @@ const HomeLadiesPage = () => {
                   className="ladies-home-menu-item tap-scale"
                   onClick={() => navigate(item.path)}
                 >
-                  <div
-                    className="ladies-home-menu-icon"
-                    style={{ background: item.bg, color: item.color }}
-                  >
+                  <div className="ladies-home-menu-icon">
                     {item.icon}
                   </div>
                   <span className="ladies-home-menu-label">{item.label}</span>

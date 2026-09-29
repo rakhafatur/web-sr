@@ -31,7 +31,7 @@ function HomePageDesktop() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6, ease: 'easeOut' }}
             >
-              Work hard, party harder ✨<br />
+              Work hard, party harder<br />
               Kelola absensi, voucher, dan performa langsung dari dashboard SR Agency.
             </motion.p>
 

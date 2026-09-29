@@ -9,6 +9,7 @@ import { validasiWajib } from '../../../utils/validasiForm';
 import {
   FiCalendar,
   FiEdit2,
+  FiInfo,
   FiSave,
 } from 'react-icons/fi';
 
@@ -232,14 +233,14 @@ const AddAbsensiModal = ({
           }}
         >
           <div className="d-flex gap-3">
-            <div
+            <FiInfo
+              aria-hidden
               style={{
-                fontSize:
-                  '1.3rem',
+                fontSize: '1.3rem',
+                flexShrink: 0,
+                color: 'var(--color-voucher)',
               }}
-            >
-              ✨
-            </div>
+            />
 
             <div>
               <div className="fw-bold mb-1">

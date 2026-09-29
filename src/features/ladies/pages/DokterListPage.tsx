@@ -79,7 +79,7 @@ const DokterListPage = () => {
         />
 
         {dokterList.length === 0 ? (
-          <LedgerEmptyState message="Belum ada data dokter di bulan ini ✨" />
+          <LedgerEmptyState message="Belum ada data dokter di bulan ini" />
         ) : (
           <CardTable
             data={dokterList}

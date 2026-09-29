@@ -190,7 +190,7 @@ const PeraturanPage = () => {
             dengan baik agar
             aktivitas kerja
             berjalan nyaman dan
-            lancar ✨
+            lancar
           </div>
         </div>
       </div>

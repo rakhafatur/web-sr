@@ -191,7 +191,7 @@ const RiwayatAbsensiPage = () => {
           </div>
 
           <div style={{ fontSize: 'var(--font-size-sm)', opacity: 0.92, marginTop: 8 }}>
-            Pantau riwayat kerja dan aktivitas bulanan kamu ✨
+            Pantau riwayat kerja dan aktivitas bulanan kamu
           </div>
         </div>
       </div>

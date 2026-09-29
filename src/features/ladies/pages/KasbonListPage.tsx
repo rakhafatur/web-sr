@@ -79,7 +79,7 @@ const KasbonListPage = () => {
         />
 
         {kasbonList.length === 0 ? (
-          <LedgerEmptyState message="Belum ada kasbon di bulan ini ✨" />
+          <LedgerEmptyState message="Belum ada kasbon di bulan ini" />
         ) : (
           <CardTable
             data={kasbonList}

@@ -79,7 +79,7 @@ const PemasukanLainListPage = () => {
         />
 
         {pemasukanList.length === 0 ? (
-          <LedgerEmptyState message="Belum ada data pemasukan bulan ini ✨" />
+          <LedgerEmptyState message="Belum ada data pemasukan bulan ini" />
         ) : (
           <CardTable
             data={pemasukanList}
