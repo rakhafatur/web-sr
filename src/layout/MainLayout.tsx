@@ -48,7 +48,9 @@ function MainLayout({ children }: { children: React.ReactNode }) {
       className="layout-container"
       style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}
     >
-      <Header />
+      {/* Home Ladies di mobile tanpa header (pola referensi): avatar, lonceng,
+          dan sapaan jadi bagian halaman itu sendiri — lihat HomeLadiesPage. */}
+      {!(isMobile && isLadies && location.pathname === '/ladies/home') && <Header />}
 
       <div className="d-flex" style={{ width: '100%' }}>
         {!isMobile && (

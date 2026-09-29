@@ -12,7 +12,7 @@ import {
   FiEyeOff,
   FiMessageCircle,
   FiArrowRight,
-  FiActivity,
+  FiTrendingUp,
   FiGift,
   FiCreditCard,
   FiHeart,
@@ -24,6 +24,7 @@ import { motion } from 'framer-motion';
 import type { UserWithLadies } from '../../../types/user';
 import HomeLadiesSkeleton from '../components/HomeLadiesSkeleton';
 import PullToRefresh from '../../../components/PullToRefresh';
+import NotificationBell from '../../../components/Header/NotificationBell';
 
 const sapaanWaktu = (jam: number) => {
   if (jam < 11) return 'Selamat pagi';
@@ -115,7 +116,8 @@ const HomeLadiesPage = () => {
   const nama = data?.nama || user?.nama || 'Ladies';
   const loading = isLoading;
 
-  const persenHadir = Math.min(100, Math.round((hariMasuk / 18) * 100));
+  // null (tampil "–") kalau belum ada hari masuk, supaya tidak membagi dengan nol.
+  const rataVoucherPerHari = hariMasuk > 0 ? voucherPcs / hariMasuk : null;
   const bulanIni = new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
 
   const formatRpNumber = (n: number) => `Rp${Math.round(n).toLocaleString('id-ID')}`;
@@ -147,7 +149,15 @@ const HomeLadiesPage = () => {
   const ringkasan = [
     { label: 'Hari Masuk', nilai: hariMasuk, satuan: 'dari 18 hari', icon: <FiCalendar /> },
     { label: 'Voucher', nilai: voucherPcs, satuan: 'pcs', icon: <FiGift /> },
-    { label: 'Kehadiran', nilai: persenHadir, satuan: '%', icon: <FiActivity /> },
+    {
+      label: 'Rata-rata',
+      nilai:
+        rataVoucherPerHari === null
+          ? '–'
+          : rataVoucherPerHari.toLocaleString('id-ID', { maximumFractionDigits: 1 }),
+      satuan: 'pcs/hari',
+      icon: <FiTrendingUp />,
+    },
   ];
 
   const muncul = (delay: number) => ({
@@ -163,9 +173,22 @@ const HomeLadiesPage = () => {
   return (
     <PullToRefresh onRefresh={async () => { await refetch(); }}>
       <div className="ladies-home-wrapper">
-        <div className="content-container d-flex flex-column gap-3">
-          {/* SAPAAN */}
-          <motion.div {...muncul(0)} className="ladies-home-greeting">
+        <div className="content-container d-flex flex-column">
+          {/* ATAS: avatar + lonceng + sapaan (pola referensi). Di mobile,
+              MainLayout tidak merender Header di halaman ini. */}
+          <motion.div {...muncul(0)} className="ladies-home-top">
+            <div className="ladies-home-topbar">
+              <button
+                type="button"
+                className="ladies-home-avatar tap-scale"
+                onClick={() => navigate('/ladies/profile')}
+                aria-label="Buka profil"
+              >
+                {nama.charAt(0).toUpperCase()}
+              </button>
+              {ladiesId && <NotificationBell ladiesId={ladiesId} />}
+            </div>
+
             <div className="ladies-home-greeting-time">{sapaanWaktu(new Date().getHours())},</div>
             <h1 className="ladies-home-greeting-name">{nama}</h1>
           </motion.div>
