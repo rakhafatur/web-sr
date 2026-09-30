@@ -1,69 +1,19 @@
 /* Shell bersama untuk halaman Login & SignUp — sengaja satu file supaya
-   keduanya otomatis konsisten (bukan copy-paste terpisah yang gampang drift). */
+   keduanya otomatis konsisten (bukan copy-paste terpisah yang gampang drift).
+
+   Tampilan layar penuh tanpa kartu/ilustrasi (pola referensi): form langsung
+   di atas latar halaman, input & tombol berbentuk pil. */
 .auth-page {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
-  background:
-    radial-gradient(circle at 15% 20%, rgba(var(--color-primary-rgb), 0.16), transparent 45%),
-    radial-gradient(circle at 85% 80%, rgba(var(--color-success-rgb), 0.08), transparent 40%),
-    var(--color-bg);
-}
-
-.auth-container {
-  display: flex;
-  width: 100%;
-  max-width: 1000px;
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-gray-200);
-  box-shadow: var(--shadow-xl);
-}
-
-.auth-illustration {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2.5rem;
-  background: linear-gradient(160deg, var(--color-surface-2), var(--color-bg));
-  position: relative;
-}
-
-.auth-illustration::after {
-  content: '';
-  position: absolute;
-  width: 260px;
-  height: 260px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(var(--color-primary-rgb), 0.25), transparent 70%);
-  top: -60px;
-  right: -60px;
-  pointer-events: none;
-}
-
-.auth-illustration img {
-  max-width: 100%;
-  height: auto;
-  border-radius: var(--radius-lg);
-  position: relative;
-}
-
-@media (max-width: 768px) {
-  .auth-illustration {
-    display: none;
-  }
-}
-
-.auth-form-wrapper {
-  flex: 1;
-  padding: 2.5rem 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding:
+    calc(env(safe-area-inset-top) + var(--space-8))
+    var(--space-6)
+    calc(env(safe-area-inset-bottom) + var(--space-8));
+  background: var(--color-bg);
 }
 
 .auth-card {
@@ -71,56 +21,143 @@
   max-width: 400px;
 }
 
-.auth-title {
-  color: var(--color-dark);
+/* =========================
+   JUDUL
+========================= */
+
+.auth-mark {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto var(--space-5);
+  border-radius: var(--radius-full);
+  background: var(--color-green-lighter);
+  border: 1px solid var(--color-green-light);
+  color: var(--color-green);
+  font-size: var(--font-size-lg);
   font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.auth-brand {
-  color: var(--color-green);
+.auth-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-dark);
+  text-align: center;
+  margin: 0;
 }
 
 .auth-subtitle {
+  font-size: var(--font-size-sm);
   color: var(--color-gray-600);
-  font-size: 0.9rem;
+  text-align: center;
+  margin: var(--space-2) 0 0;
 }
 
-.auth-field-label {
-  color: var(--color-gray-700);
-  font-size: 0.86rem;
-  font-weight: 600;
-  margin-bottom: 0.4rem;
+/* =========================
+   FORM
+========================= */
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-8);
 }
 
-.auth-input-group {
+.auth-field {
   position: relative;
 }
 
-.auth-input-group .auth-input-icon {
+.auth-input {
+  width: 100%;
+  height: 52px;
+  padding: 0 var(--space-5) 0 48px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface);
+  color: var(--color-dark);
+  font-family: inherit;
+  /* Minimal 16px: di bawah itu Safari iOS men-zoom halaman saat fokus. */
+  font-size: 16px;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-input::placeholder {
+  color: var(--color-gray-600);
+}
+
+.auth-input:focus {
+  border-color: var(--color-green);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.3);
+}
+
+.auth-input.is-invalid {
+  border-color: var(--color-danger-solid);
+}
+
+/* Ruang kanan untuk tombol mata / chevron select. */
+.auth-input--trailing {
+  padding-right: 52px;
+}
+
+.auth-field-icon {
   position: absolute;
-  top: 50%;
-  left: 14px;
+  top: 26px;
+  left: 18px;
   transform: translateY(-50%);
-  color: var(--color-gray-500);
+  color: var(--color-gray-600);
+  font-size: 18px;
   pointer-events: none;
 }
 
-.auth-input-group .form-control,
-.auth-input-group .form-select {
-  padding-left: 40px;
-  height: 46px;
-  border-radius: var(--radius-md);
+.auth-field-trailing {
+  position: absolute;
+  top: 26px;
+  right: 4px;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-gray-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
 }
 
-.auth-input-group .eye-toggle {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  padding-inline: 0.75rem;
+span.auth-field-trailing {
+  pointer-events: none;
 }
+
+.auth-field-error {
+  color: var(--color-danger-solid);
+  font-size: var(--font-size-xs);
+  margin-top: var(--space-1);
+  padding-left: var(--space-5);
+}
+
+.auth-submit-gap {
+  margin-top: var(--space-3);
+}
+
+/* =========================
+   KAKI
+========================= */
 
 .auth-footer-text {
+  display: block;
+  text-align: center;
+  margin-top: var(--space-6);
   color: var(--color-gray-600);
-  font-size: 0.88rem;
+  font-size: var(--font-size-sm);
 }
 
 .auth-link {
