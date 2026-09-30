@@ -36,7 +36,7 @@ const SmartChatLadiesPage: React.FC = () => {
     {
       sender: "ai",
       message:
-        "👋 Hai! Aku Smart Assistant SR.\n\nAku bisa bantu lihat rincian voucher & absen kamu bulan ini.",
+        "Hai! Aku Smart Assistant SR.\n\nAku bisa bantu lihat rincian voucher & absen kamu bulan ini.",
       waktu: jamSekarang(),
     },
   ]);
@@ -148,10 +148,12 @@ const SmartChatLadiesPage: React.FC = () => {
 
   const questions = [
     {
+      icon: <FiGift />,
       label: "Berapa jumlah voucher bulan ini?",
       answer: getJumlahVoucherBulanIni,
     },
     {
+      icon: <FiCalendar />,
       label: "Berikan absen bulan ini!",
       answer: getAbsenBulanIni,
     },

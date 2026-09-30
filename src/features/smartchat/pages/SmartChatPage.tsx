@@ -100,7 +100,7 @@ const SmartChatPage: React.FC = () => {
     {
       sender: "ai",
       message:
-        "👋 Hai! Aku Smart Assistant SR.\n\nAku bisa bantu melihat statistik voucher, performa ladies, absensi, dan insight lainnya.",
+        "Hai! Aku Smart Assistant SR.\n\nAku bisa bantu melihat statistik voucher, performa ladies, absensi, dan insight lainnya.",
       waktu: jamSekarang(),
     },
   ]);
@@ -323,23 +323,28 @@ const SmartChatPage: React.FC = () => {
   // =========================================================
   const questions = [
     {
+      icon: <FiTrendingUp />,
       label: "Berapa jumlah voucher minggu ini?",
       answer: getJumlahVoucherMingguIni,
     },
     {
+      icon: <FiRotateCcw />,
       label: "Berapa jumlah voucher minggu lalu?",
       answer: getJumlahVoucherMingguLalu,
     },
     {
+      icon: <FiCalendar />,
       label: "Berapa jumlah voucher bulan ini?",
       answer: getJumlahVoucherBulanIni,
     },
     {
+      icon: <FiAward />,
       label:
         "Siapa ladies dengan voucher terbanyak & paling sedikit bulan ini?",
       answer: getLadiesVoucherStatBulanIni,
     },
     {
+      icon: <FiActivity />,
       label:
         "Siapa ladies dengan absen terbanyak & paling sedikit bulan ini?",
       answer: getLadiesAbsenStatBulanIni,

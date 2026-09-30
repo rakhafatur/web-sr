@@ -245,45 +245,160 @@ button.sc-icon-btn:focus-visible {
   min-width: 0;
 }
 
-.sc-pick-select {
+/* Pemicu picklist — tampil seperti kolom pesan di referensi. */
+.sc-pick-trigger {
   width: 100%;
   height: 48px;
-  padding: 0 44px 0 var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
   border-radius: var(--radius-full);
   border: 1px solid var(--color-gray-200);
   background: var(--color-surface);
-  color: var(--color-dark);
+  color: var(--color-gray-600);
   font-family: inherit;
-  /* Minimal 16px: di bawah itu Safari iOS men-zoom halaman saat fokus. */
-  font-size: 16px;
-  appearance: none;
-  -webkit-appearance: none;
-  outline: none;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
+  font-size: 15px;
+  text-align: left;
   cursor: pointer;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.sc-pick-select:focus {
+.sc-pick-trigger.has-value {
+  color: var(--color-dark);
+}
+
+.sc-pick-trigger[aria-expanded='true'],
+.sc-pick-trigger:focus-visible {
+  outline: none;
   border-color: var(--color-green);
   box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.3);
 }
 
-.sc-pick-select:disabled {
+.sc-pick-trigger:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
 
+.sc-pick-trigger-icon {
+  display: flex;
+  flex-shrink: 0;
+  color: var(--color-green);
+  font-size: 16px;
+}
+
+.sc-pick-trigger-label {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .sc-pick-chevron {
-  position: absolute;
-  top: 50%;
-  right: 16px;
-  transform: translateY(-50%);
+  flex-shrink: 0;
   color: var(--color-gray-600);
   font-size: 18px;
-  pointer-events: none;
+  transition: transform 0.2s ease;
+}
+
+.sc-pick-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+/* Panel pilihan — muncul di atas dok, gaya kartu gelap seperti bubble. */
+.sc-pick-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + var(--space-2));
+  max-height: min(60vh, 420px);
+  overflow-y: auto;
+  padding: var(--space-2);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface-2);
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+  animation: sc-panel-in 0.16s ease-out;
+}
+
+@keyframes sc-panel-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-pick-panel {
+    animation: none;
+  }
+}
+
+.sc-pick-panel-title {
+  padding: var(--space-2) var(--space-3) var(--space-1);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-gray-600);
+}
+
+.sc-pick-option {
+  width: 100%;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border: none;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  color: var(--color-dark);
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.sc-pick-option:active,
+.sc-pick-option.is-active {
+  background: rgba(var(--color-primary-rgb), 0.22);
+}
+
+@media (hover: hover) {
+  .sc-pick-option:hover {
+    background: rgba(var(--color-primary-rgb), 0.16);
+  }
+}
+
+.sc-pick-option:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: -2px;
+}
+
+.sc-pick-option-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: var(--color-green-lighter);
+  border: 1px solid var(--color-green-light);
+  color: var(--color-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.sc-pick-option-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.sc-pick-option-check {
+  flex-shrink: 0;
+  color: var(--color-green);
+  font-size: 18px;
 }
 
 .sc-send {
