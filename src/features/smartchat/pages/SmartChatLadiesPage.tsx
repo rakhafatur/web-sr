@@ -3,6 +3,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
 import type { UserWithLadies } from "../../../types/user";
 import SmartChatBox, { ChatReport } from "../components/SmartChatBox";
+import SmartChatMobile from "../components/SmartChatMobile";
+import { useMediaQuery } from "react-responsive";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
 import { supabase } from "../../../lib/supabaseClient";
@@ -21,7 +23,10 @@ type Message = {
   sender: "ai" | "user";
   message: string;
   report?: ChatReport;
+  waktu?: string;
 };
+
+const jamSekarang = () => dayjs().format("HH:mm");
 
 const SmartChatLadiesPage: React.FC = () => {
   const user = useSelector(
@@ -29,12 +34,15 @@ const SmartChatLadiesPage: React.FC = () => {
   ) as UserWithLadies;
 
   const ladiesId = user?.ladies_id;
+  // Mobile: layar penuh (SmartChatMobile). Desktop: tampilan kartu lama.
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
-  const [messages, setMessages] = useState<Message[]>([
+  const [messages, setMessages] = useState<Message[]>(() => [
     {
       sender: "ai",
       message:
         "👋 Hai! Aku Smart Assistant SR.\n\nAku bisa bantu lihat rincian voucher & absen kamu bulan ini.",
+      waktu: jamSekarang(),
     },
   ]);
 
@@ -174,7 +182,7 @@ const SmartChatLadiesPage: React.FC = () => {
 
     setMessages((prev) => [
       ...prev,
-      { sender: "user", message: question.label },
+      { sender: "user", message: question.label, waktu: jamSekarang() },
     ]);
 
     setLoading(true);
@@ -188,13 +196,24 @@ const SmartChatLadiesPage: React.FC = () => {
     setMessages((prev) => [
       ...prev,
       typeof result === "string"
-        ? { sender: "ai", message: result }
-        : { sender: "ai", message: result.title, report: result },
+        ? { sender: "ai", message: result, waktu: jamSekarang() }
+        : { sender: "ai", message: result.title, report: result, waktu: jamSekarang() },
     ]);
 
     setLoading(false);
     setSelectedQuestion("");
   };
+
+  if (isMobile) {
+    return (
+      <SmartChatMobile
+        messages={messages}
+        loading={loading}
+        questions={questions}
+        onPick={handlePickQuestion}
+      />
+    );
+  }
 
   return (
     <div

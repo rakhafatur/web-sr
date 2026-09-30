@@ -41,16 +41,21 @@ function MainLayout({ children }: { children: React.ReactNode }) {
   }, [location.pathname]);
 
   const isHomePage = location.pathname === '/' || location.pathname === '/ladies/home';
+  // Smart Chat ladies di mobile tampil layar penuh (bar atas & dok pertanyaan
+  // milik halaman itu sendiri), jadi header, navbar bawah, dan padding dicabut.
+  const isChatLayarPenuh = isMobile && location.pathname === '/smart-chat-ladies';
   const sidebarWidth = isCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH;
 
   return (
     <div
       className="layout-container"
-      style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}
+      // Chat layar penuh mengatur tingginya sendiri (100dvh); 100vh di Safari
+      // lebih tinggi dari layar terlihat dan membuat halaman bisa ter-scroll.
+      style={{ backgroundColor: 'var(--color-bg)', minHeight: isChatLayarPenuh ? undefined : '100vh' }}
     >
       {/* Home Ladies di mobile tanpa header (pola referensi): avatar, lonceng,
           dan sapaan jadi bagian halaman itu sendiri — lihat HomeLadiesPage. */}
-      {!(isMobile && isLadies && location.pathname === '/ladies/home') && <Header />}
+      {!(isMobile && isLadies && location.pathname === '/ladies/home') && !isChatLayarPenuh && <Header />}
 
       <div className="d-flex" style={{ width: '100%' }}>
         {!isMobile && (
@@ -79,11 +84,13 @@ function MainLayout({ children }: { children: React.ReactNode }) {
             className="main-content"
             style={{
               flex: 1,
-              minHeight: '100vh',
-              padding: isHomePage ? '0' : '2rem',
-              paddingBottom: isMobile
-                ? 'calc(96px + env(safe-area-inset-bottom))'
-                : undefined,
+              minHeight: isChatLayarPenuh ? undefined : '100vh',
+              padding: isHomePage || isChatLayarPenuh ? '0' : '2rem',
+              paddingBottom: isChatLayarPenuh
+                ? 0
+                : isMobile
+                  ? 'calc(96px + env(safe-area-inset-bottom))'
+                  : undefined,
             }}
           >
             <AnimatePresence mode="popLayout" initial={false}>
@@ -101,7 +108,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      {isMobile && (isLadies ? <BottomNavbarLadies /> : <BottomNavbarAdmin />)}
+      {isMobile && !isChatLayarPenuh && (isLadies ? <BottomNavbarLadies /> : <BottomNavbarAdmin />)}
     </div>
   );
 }
