@@ -41,9 +41,11 @@ function MainLayout({ children }: { children: React.ReactNode }) {
   }, [location.pathname]);
 
   const isHomePage = location.pathname === '/' || location.pathname === '/ladies/home';
-  // Smart Chat ladies di mobile tampil layar penuh (bar atas & dok pertanyaan
-  // milik halaman itu sendiri), jadi header, navbar bawah, dan padding dicabut.
-  const isChatLayarPenuh = isMobile && location.pathname === '/smart-chat-ladies';
+  // Smart Chat (ladies & admin) mengisi penuh area konten, jadi padding dan
+  // min-height main dicabut di semua ukuran. Di mobile tampil layar penuh:
+  // header & navbar bawah ikut dicabut (bar atas & dok milik halaman itu).
+  const isRuteChat = location.pathname === '/smart-chat-ladies' || location.pathname === '/smart-chat';
+  const isChatLayarPenuh = isMobile && isRuteChat;
   const sidebarWidth = isCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH;
 
   return (
@@ -84,8 +86,8 @@ function MainLayout({ children }: { children: React.ReactNode }) {
             className="main-content"
             style={{
               flex: 1,
-              minHeight: isChatLayarPenuh ? undefined : '100vh',
-              padding: isHomePage || isChatLayarPenuh ? '0' : '2rem',
+              minHeight: isRuteChat ? undefined : '100vh',
+              padding: isHomePage || isRuteChat ? '0' : '2rem',
               paddingBottom: isChatLayarPenuh
                 ? 0
                 : isMobile
