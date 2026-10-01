@@ -12,6 +12,8 @@ import LedgerLoadingState from '../components/LedgerLoadingState';
 import LedgerCardRowV2 from '../components/LedgerCardRowV2';
 import { useMonthNavigation } from '../hooks/useMonthNavigation';
 import { useLedgerData } from '../hooks/useLedgerData';
+import { useMediaQuery } from 'react-responsive';
+import LedgerPageMobile from '../components/LedgerPageMobile';
 
 type Kasbon = {
   id: string;
@@ -36,6 +38,8 @@ const KasbonListPage = () => {
     nextMonth,
     isNextDisabled,
   } = useMonthNavigation();
+  // Mobile: tampilan baru (LedgerPageMobile). Desktop: tampilan lama di bawah.
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const { list: kasbonList, loading, refetch } = useLedgerData<Kasbon>(
     'kasbon',
@@ -49,6 +53,32 @@ const KasbonListPage = () => {
     () => kasbonList.reduce((sum, item) => sum + (item.jumlah || 0), 0),
     [kasbonList]
   );
+
+  if (isMobile) {
+    return (
+      <LedgerPageMobile
+        title="Kasbon"
+        icon={<FiCreditCard />}
+        loading={loading}
+        onRefresh={refetch}
+        selectedMonth={selectedMonth}
+        onMonthChange={handleMonthChange}
+        onPrev={prevMonth}
+        onNext={nextMonth}
+        nextDisabled={isNextDisabled}
+        summaryLabel="Total Kasbon"
+        summaryValue={<>Rp{totalJumlah.toLocaleString('id-ID')}</>}
+        items={kasbonList.map((item) => ({
+          id: item.id,
+          tanggal: item.tanggal,
+          mainValue: <>- Rp{item.jumlah.toLocaleString('id-ID')}</>,
+          keterangan: item.keterangan,
+        }))}
+        valueColor="var(--color-expense)"
+        emptyMessage="Belum ada kasbon di bulan ini"
+      />
+    );
+  }
 
   if (loading) {
     return <LedgerLoadingState text="Memuat data kasbon..." />;

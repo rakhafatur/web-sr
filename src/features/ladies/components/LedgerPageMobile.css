@@ -1,0 +1,345 @@
+/* Halaman riwayat ladies versi mobile — kelas berprefix lp- supaya tidak
+   bentrok dengan tampilan desktop. Gaya mengikuti Home Ladies (hero navy,
+   kartu radius-xl) dan Smart Chat (bar atas). */
+
+.lp {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 16px var(--space-4);
+}
+
+.lp-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* =========================
+   BAR ATAS
+========================= */
+
+.lp-bar {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  min-height: 56px;
+  padding-top: env(safe-area-inset-top);
+  margin: 0 -8px var(--space-2);
+}
+
+.lp-bar-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  text-align: center;
+  margin: 0;
+  color: var(--color-dark);
+}
+
+.lp-icon-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-dark);
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button.lp-icon-btn:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* =========================
+   PEMILIH BULAN
+========================= */
+
+.lp-month {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 4px;
+  margin-bottom: var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface);
+}
+
+.lp-month-btn {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-2);
+  color: var(--color-dark);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+}
+
+.lp-month-btn:active:not(:disabled) {
+  transform: scale(0.94);
+}
+
+.lp-month-btn:disabled {
+  opacity: 0.35;
+}
+
+.lp-month-label {
+  position: relative;
+  flex: 1;
+  height: 40px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-dark);
+  cursor: pointer;
+}
+
+/* Transparan tapi tetap menerima tap — membuka pemilih bulan bawaan. */
+.lp-month-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  /* 16px: di bawah itu Safari iOS men-zoom halaman saat fokus. */
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.lp-hero {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(145deg, var(--color-accent), var(--color-green-light));
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-xl);
+  padding: var(--space-4) var(--space-5);
+  color: var(--color-white);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+.lp-hero-circle {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: 28px solid rgba(255, 255, 255, 0.05);
+  top: -70px;
+  right: -60px;
+  pointer-events: none;
+}
+
+.lp-hero-top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.lp-hero-label {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.lp-hero-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.lp-hero-value {
+  position: relative;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-top: var(--space-2);
+}
+
+.lp-hero-sub {
+  position: relative;
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.72);
+  margin-top: var(--space-1);
+}
+
+.lp-hero-foot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.lp-hero-foot-value {
+  color: var(--color-white);
+  font-weight: 600;
+}
+
+/* =========================
+   RIWAYAT — daftar berkelompok
+========================= */
+
+.lp-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-2);
+  padding: 0 4px;
+}
+
+.lp-section-title {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-dark);
+  margin: 0;
+}
+
+.lp-group {
+  background: var(--color-surface);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.lp-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 12px var(--space-4);
+  position: relative;
+}
+
+/* Garis pemisah menjorok (mulai setelah tile tanggal), gaya daftar iOS. */
+.lp-row + .lp-row::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: calc(var(--space-4) + 44px + var(--space-3));
+  right: 0;
+  height: 1px;
+  background: var(--color-gray-200);
+}
+
+.lp-date {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-gray-200);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.lp-date-day {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-dark);
+}
+
+.lp-date-month {
+  font-size: 11px;
+  color: var(--color-gray-600);
+  margin-top: 3px;
+}
+
+.lp-row-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.lp-row-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-dark);
+}
+
+.lp-row-note {
+  font-size: 13px;
+  color: var(--color-gray-600);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lp-row-value {
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.lp-row-amount {
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.lp-row-sub {
+  font-size: 12px;
+  color: var(--color-gray-600);
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+.lp-empty {
+  padding: var(--space-8) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.lp-empty-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-full);
+  background: var(--color-green-lighter);
+  border: 1px solid var(--color-green-light);
+  color: var(--color-green);
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-3);
+}
+
+.lp-empty-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-dark);
+}
+
+.lp-empty-hint {
+  font-size: 13px;
+  color: var(--color-gray-600);
+  margin-top: 4px;
+}

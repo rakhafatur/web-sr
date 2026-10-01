@@ -12,6 +12,8 @@ import LedgerLoadingState from '../components/LedgerLoadingState';
 import LedgerCardRowV2 from '../components/LedgerCardRowV2';
 import { useMonthNavigation } from '../hooks/useMonthNavigation';
 import { useLedgerData } from '../hooks/useLedgerData';
+import { useMediaQuery } from 'react-responsive';
+import LedgerPageMobile from '../components/LedgerPageMobile';
 
 type Dokter = {
   id: string;
@@ -36,6 +38,8 @@ const DokterListPage = () => {
     nextMonth,
     isNextDisabled,
   } = useMonthNavigation();
+  // Mobile: tampilan baru (LedgerPageMobile). Desktop: tampilan lama di bawah.
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const { list: dokterList, loading, refetch } = useLedgerData<Dokter>(
     'dokter',
@@ -49,6 +53,32 @@ const DokterListPage = () => {
     () => dokterList.reduce((sum, item) => sum + (item.jumlah || 0), 0),
     [dokterList]
   );
+
+  if (isMobile) {
+    return (
+      <LedgerPageMobile
+        title="Dokter"
+        icon={<FiHeart />}
+        loading={loading}
+        onRefresh={refetch}
+        selectedMonth={selectedMonth}
+        onMonthChange={handleMonthChange}
+        onPrev={prevMonth}
+        onNext={nextMonth}
+        nextDisabled={isNextDisabled}
+        summaryLabel="Total Dokter"
+        summaryValue={<>Rp{totalJumlah.toLocaleString('id-ID')}</>}
+        items={dokterList.map((item) => ({
+          id: item.id,
+          tanggal: item.tanggal,
+          mainValue: <>- Rp{item.jumlah.toLocaleString('id-ID')}</>,
+          keterangan: item.keterangan,
+        }))}
+        valueColor="var(--color-medical)"
+        emptyMessage="Belum ada data dokter di bulan ini"
+      />
+    );
+  }
 
   if (loading) {
     return <LedgerLoadingState text="Memuat data dokter..." />;

@@ -12,6 +12,8 @@ import LedgerLoadingState from '../components/LedgerLoadingState';
 import LedgerCardRowV2 from '../components/LedgerCardRowV2';
 import { useMonthNavigation } from '../hooks/useMonthNavigation';
 import { useLedgerData } from '../hooks/useLedgerData';
+import { useMediaQuery } from 'react-responsive';
+import LedgerPageMobile from '../components/LedgerPageMobile';
 
 type Voucher = {
   id: string;
@@ -37,6 +39,8 @@ const VoucherListPage = () => {
     nextMonth,
     isNextDisabled,
   } = useMonthNavigation();
+  // Mobile: tampilan baru (LedgerPageMobile). Desktop: tampilan lama di bawah.
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const { list: vouchers, loading, refetch } = useLedgerData<Voucher>(
     'vouchers',
@@ -55,6 +59,34 @@ const VoucherListPage = () => {
     () => vouchers.reduce((sum, v) => sum + (v.jumlah || 0), 0),
     [vouchers]
   );
+
+  if (isMobile) {
+    return (
+      <LedgerPageMobile
+        title="Voucher"
+        icon={<FiGift />}
+        loading={loading}
+        onRefresh={refetch}
+        selectedMonth={selectedMonth}
+        onMonthChange={handleMonthChange}
+        onPrev={prevMonth}
+        onNext={nextMonth}
+        nextDisabled={isNextDisabled}
+        summaryLabel="Total Voucher"
+        summaryValue={<>{totalPcs} pcs</>}
+        summaryFoot={{ label: 'Estimasi Pendapatan', value: <>Rp{totalRp.toLocaleString('id-ID')}</> }}
+        items={vouchers.map((item) => ({
+          id: item.id,
+          tanggal: item.tanggal,
+          mainValue: <>{item.jumlah_voucher} pcs</>,
+          subValue: <>Rp{(item.jumlah || 0).toLocaleString('id-ID')}</>,
+          keterangan: item.keterangan,
+        }))}
+        valueColor="var(--color-voucher)"
+        emptyMessage="Belum ada voucher di bulan ini"
+      />
+    );
+  }
 
   if (loading) {
     return <LedgerLoadingState text="Memuat voucher..." />;

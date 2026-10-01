@@ -12,6 +12,8 @@ import LedgerLoadingState from '../components/LedgerLoadingState';
 import LedgerCardRowV2 from '../components/LedgerCardRowV2';
 import { useMonthNavigation } from '../hooks/useMonthNavigation';
 import { useLedgerData } from '../hooks/useLedgerData';
+import { useMediaQuery } from 'react-responsive';
+import LedgerPageMobile from '../components/LedgerPageMobile';
 
 type PemasukanLain = {
   id: string;
@@ -36,6 +38,8 @@ const PemasukanLainListPage = () => {
     nextMonth,
     isNextDisabled,
   } = useMonthNavigation();
+  // Mobile: tampilan baru (LedgerPageMobile). Desktop: tampilan lama di bawah.
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const { list: pemasukanList, loading, refetch } = useLedgerData<PemasukanLain>(
     'pemasukan_lain',
@@ -49,6 +53,32 @@ const PemasukanLainListPage = () => {
     () => pemasukanList.reduce((sum, item) => sum + (item.jumlah || 0), 0),
     [pemasukanList]
   );
+
+  if (isMobile) {
+    return (
+      <LedgerPageMobile
+        title="Pemasukan Lain"
+        icon={<FiDollarSign />}
+        loading={loading}
+        onRefresh={refetch}
+        selectedMonth={selectedMonth}
+        onMonthChange={handleMonthChange}
+        onPrev={prevMonth}
+        onNext={nextMonth}
+        nextDisabled={isNextDisabled}
+        summaryLabel="Total Pemasukan"
+        summaryValue={<>Rp{totalJumlah.toLocaleString('id-ID')}</>}
+        items={pemasukanList.map((item) => ({
+          id: item.id,
+          tanggal: item.tanggal,
+          mainValue: <>+ Rp{item.jumlah.toLocaleString('id-ID')}</>,
+          keterangan: item.keterangan,
+        }))}
+        valueColor="var(--color-income)"
+        emptyMessage="Belum ada pemasukan di bulan ini"
+      />
+    );
+  }
 
   if (loading) {
     return <LedgerLoadingState text="Memuat data pemasukan..." />;
