@@ -15,43 +15,7 @@
   gap: var(--space-3);
 }
 
-/* =========================
-   BAR ATAS
-========================= */
-
-.lp-bar {
-  display: grid;
-  grid-template-columns: 44px 1fr 44px;
-  align-items: center;
-  min-height: 56px;
-  padding-top: env(safe-area-inset-top);
-  margin: 0 -8px var(--space-2);
-}
-
-.lp-bar-title {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-  text-align: center;
-  margin: 0;
-  color: var(--color-dark);
-}
-
-.lp-icon-btn {
-  width: 44px;
-  height: 44px;
-  border: none;
-  border-radius: var(--radius-full);
-  background: transparent;
-  color: var(--color-dark);
-  font-size: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-button.lp-icon-btn:active {
-  background: rgba(255, 255, 255, 0.08);
-}
+/* Bar atas: komponen MobilePageBar (src/components). */
 
 /* Pembungkus MonthPill (komponen bersama). */
 .lp-month {

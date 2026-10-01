@@ -12,7 +12,19 @@ import {
   FiTrendingUp,
   FiFileText,
   FiPlus,
+  FiCalendar,
+  FiEdit3,
 } from 'react-icons/fi';
+import './TransaksiMobile.css';
+
+/** Tombol simpan versi mobile: pil solid tanpa gradien (selaras layar lain). */
+const TOMBOL_PIL: React.CSSProperties = {
+  height: 52,
+  borderRadius: 'var(--radius-full)',
+  background: 'var(--color-primary)',
+  boxShadow: 'none',
+  fontWeight: 600,
+};
 
 type Props = {
   pengawasId: string;
@@ -202,6 +214,113 @@ const TransaksiFormPengawas = ({
     },
   ];
 
+  const tombolSimpan = (style?: React.CSSProperties) => (
+    <Button
+      variant="primary"
+      fullWidth
+      onClick={handleSubmit}
+      disabled={mutation.isPending}
+      icon={mutation.isPending ? <div className="spinner-border spinner-border-sm" role="status" /> : <FiPlus />}
+      style={style}
+    >
+      {mutation.isPending ? 'Menyimpan...' : 'Tambah Transaksi'}
+    </Button>
+  );
+
+  // Mobile: tampilan baru (jumlah besar ala aplikasi bank). State, validasi,
+  // dan penyimpanan sama persis dengan desktop di bawah.
+  if (isMobile) {
+    const wajib = (
+      <>
+        <span className="tm-req" aria-hidden="true">*</span>
+        <span className="visually-hidden"> (wajib diisi)</span>
+      </>
+    );
+
+    return (
+      <div>
+        <div className="tm-types" role="radiogroup" aria-label="Tipe transaksi">
+          {transactionTypes.map((item) => {
+            const active = form.tipe === item.value;
+            return (
+              <button
+                key={item.value}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                className={`tm-type ${active ? 'is-active' : ''}`}
+                style={active ? { background: item.bg, borderColor: item.color, color: item.color } : undefined}
+                onClick={() => setForm((prev) => ({ ...prev, tipe: item.value }))}
+              >
+                {item.icon}
+                {item.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className={`tm-amount ${fieldSalah === 'jumlah' ? 'is-invalid' : ''}`}>
+          <label htmlFor="tm-jumlah" className="tm-amount-label">
+            Jumlah{wajib}
+          </label>
+          <div className="tm-amount-row">
+            <span className="tm-amount-prefix" aria-hidden>Rp</span>
+            <input
+              id="tm-jumlah"
+              name="jumlah"
+              type="text"
+              inputMode="numeric"
+              autoComplete="off"
+              placeholder="0"
+              value={form.jumlah}
+              onChange={handleChange}
+              className="tm-amount-input"
+              aria-invalid={fieldSalah === 'jumlah' || undefined}
+            />
+          </div>
+        </div>
+
+        <div className="tm-field">
+          <label htmlFor="tm-tanggal" className="tm-label">
+            Tanggal{wajib}
+          </label>
+          <div className="tm-input-wrap">
+            <FiCalendar className="tm-input-icon" aria-hidden />
+            <input
+              id="tm-tanggal"
+              name="tanggal"
+              type="date"
+              value={form.tanggal}
+              onChange={handleChange}
+              className={`tm-input ${fieldSalah === 'tanggal' ? 'is-invalid' : ''}`}
+              aria-invalid={fieldSalah === 'tanggal' || undefined}
+            />
+          </div>
+        </div>
+
+        <div className="tm-field">
+          <label htmlFor="tm-keterangan" className="tm-label">
+            Keterangan (opsional)
+          </label>
+          <div className="tm-input-wrap">
+            <FiEdit3 className="tm-input-icon" aria-hidden />
+            <input
+              id="tm-keterangan"
+              name="keterangan"
+              type="text"
+              placeholder="Catatan singkat"
+              value={form.keterangan}
+              onChange={handleChange}
+              className="tm-input"
+            />
+          </div>
+        </div>
+
+        <div className="tm-submit">{tombolSimpan(TOMBOL_PIL)}</div>
+      </div>
+    );
+  }
+
   return (
     <div>
       {/* TYPE SELECT (CARD STYLE LIKE LADIES) */}
@@ -302,17 +421,7 @@ const TransaksiFormPengawas = ({
       </div>
 
       {/* BUTTON */}
-      <div className="mt-4">
-        <Button
-          variant="primary"
-          fullWidth
-          onClick={handleSubmit}
-          disabled={mutation.isPending}
-          icon={mutation.isPending ? <div className="spinner-border spinner-border-sm" role="status" /> : <FiPlus />}
-        >
-          {mutation.isPending ? 'Menyimpan...' : 'Tambah Transaksi'}
-        </Button>
-      </div>
+      <div className="mt-4">{tombolSimpan()}</div>
     </div>
   );
 };

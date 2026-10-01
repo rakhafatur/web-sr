@@ -25,6 +25,11 @@ const RUTE_LADIES_TANPA_HEADER = [
   '/ladies/peraturan',
 ];
 
+/** Halaman admin yang di mobile punya bar atas sendiri (MobilePageBar). */
+const RUTE_ADMIN_TANPA_HEADER = [
+  '/add-transaksi-pengawas',
+];
+
 function MainLayout({ children }: { children: React.ReactNode }) {
   const user = useSelector((state: RootState) => state.user.currentUser);
   const isLadies = !!user?.ladies_id;
@@ -57,10 +62,14 @@ function MainLayout({ children }: { children: React.ReactNode }) {
   // header & navbar bawah ikut dicabut (bar atas & dok milik halaman itu).
   const isRuteChat = location.pathname === '/smart-chat-ladies' || location.pathname === '/smart-chat';
   const isChatLayarPenuh = isMobile && isRuteChat;
-  // Halaman ladies yang di mobile punya bar atas sendiri (pola referensi),
-  // jadi Header app dan padding main dicabut — lihat HomeLadiesPage &
-  // LedgerPageMobile. Navbar bawah tetap tampil.
-  const isLadiesTanpaHeader = isMobile && isLadies && RUTE_LADIES_TANPA_HEADER.includes(location.pathname);
+  // Halaman yang di mobile punya bar atas sendiri (pola referensi), jadi
+  // Header app dan padding main dicabut — lihat MobilePageBar. Navbar bawah
+  // tetap tampil.
+  const isTanpaHeader = isMobile && (
+    isLadies
+      ? RUTE_LADIES_TANPA_HEADER.includes(location.pathname)
+      : RUTE_ADMIN_TANPA_HEADER.includes(location.pathname)
+  );
   const sidebarWidth = isCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH;
 
   return (
@@ -70,7 +79,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
       // lebih tinggi dari layar terlihat dan membuat halaman bisa ter-scroll.
       style={{ backgroundColor: 'var(--color-bg)', minHeight: isChatLayarPenuh ? undefined : '100vh' }}
     >
-      {!isLadiesTanpaHeader && !isChatLayarPenuh && <Header />}
+      {!isTanpaHeader && !isChatLayarPenuh && <Header />}
 
       <div className="d-flex" style={{ width: '100%' }}>
         {!isMobile && (
@@ -100,7 +109,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
             style={{
               flex: 1,
               minHeight: isRuteChat ? undefined : '100vh',
-              padding: isHomePage || isRuteChat || isLadiesTanpaHeader ? '0' : '2rem',
+              padding: isHomePage || isRuteChat || isTanpaHeader ? '0' : '2rem',
               paddingBottom: isChatLayarPenuh
                 ? 0
                 : isMobile

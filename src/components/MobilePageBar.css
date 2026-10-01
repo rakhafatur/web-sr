@@ -1,0 +1,38 @@
+.mpb {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  min-height: 56px;
+  padding-top: env(safe-area-inset-top);
+  margin: 0 -8px var(--space-2);
+}
+
+.mpb-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  text-align: center;
+  margin: 0;
+  color: var(--color-dark);
+}
+
+.mpb-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-dark);
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button.mpb-btn:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+button.mpb-btn:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: 2px;
+}

@@ -12,6 +12,7 @@ import { useMediaQuery } from 'react-responsive';
 import CardTableRiwayatTransaksi from './CardTableRiwayatTransaksi';
 import TransaksiFilterBar from './TransaksiFilterBar';
 import MonthNavigator from '../../ladies/components/MonthNavigator';
+import MonthPill from '../../ladies/components/MonthPill';
 import { useMonthNavigation } from '../../ladies/hooks/useMonthNavigation';
 import dayjs from 'dayjs';
 
@@ -176,7 +177,7 @@ const RiwayatTransaksiPengawas = ({ pengawasId }: Props) => {
   };
 
   const handleDelete = async (row: Transaksi) => {
-    if (!(await confirmDialog('❗ Yakin ingin menghapus transaksi ini?'))) return;
+    if (!(await confirmDialog('Hapus transaksi ini?'))) return;
 
     const table = getTableName(row.tipe);
 
@@ -239,13 +240,25 @@ const RiwayatTransaksiPengawas = ({ pengawasId }: Props) => {
   return (
     <div className="mt-3">
       <div className="mb-3" style={{ maxWidth: isMobile ? undefined : 320 }}>
-        <MonthNavigator
-          selectedMonth={selectedMonth}
-          onChange={handleMonthChangeAndResetPage}
-          onPrev={handlePrevMonth}
-          onNext={handleNextMonth}
-          nextDisabled={isNextDisabled}
-        />
+        {isMobile ? (
+          <MonthPill
+            label={selectedMonth.toDate().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
+            value={selectedMonth.format('YYYY-MM')}
+            max={dayjs().format('YYYY-MM')}
+            onChange={handleMonthChangeAndResetPage}
+            onPrev={handlePrevMonth}
+            onNext={handleNextMonth}
+            nextDisabled={isNextDisabled}
+          />
+        ) : (
+          <MonthNavigator
+            selectedMonth={selectedMonth}
+            onChange={handleMonthChangeAndResetPage}
+            onPrev={handlePrevMonth}
+            onNext={handleNextMonth}
+            nextDisabled={isNextDisabled}
+          />
+        )}
       </div>
 
       {/* FILTER + SEARCH */}

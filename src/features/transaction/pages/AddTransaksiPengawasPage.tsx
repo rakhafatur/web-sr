@@ -7,6 +7,8 @@ import TransaksiFormPengawas from '../components/TransaksiFormPengawas';
 import RiwayatTransaksiPengawas from '../components/RiwayatTransaksiPengawas';
 import FeaturePageHeader from '../../../components/FeaturePageHeader';
 import SearchableSelect from '../../../components/SearchableSelect';
+import MobilePageBar from '../../../components/MobilePageBar';
+import '../components/TransaksiMobile.css';
 
 import { FiUsers, FiCreditCard, FiClock } from 'react-icons/fi';
 
@@ -50,6 +52,100 @@ const AddTransaksiPagePengawas = () => {
     fetchPengawas();
   }, []);
 
+  const opsiPengawas = pengawasList.map((p) => ({
+    value: p.id,
+    label: `${p.nama_lengkap}${p.nama_panggilan ? ` (${p.nama_panggilan})` : ''}`,
+  }));
+
+  // Mobile: tampilan baru selaras layar ladies (Header app dicabut di
+  // MainLayout). Desktop: tampilan lama di bawah. Form & riwayat tetap
+  // komponen yang sama.
+  if (isMobile) {
+    return (
+      <div className="tm-page">
+        <MobilePageBar title="Transaksi Pengawas" backTo="/" />
+
+        <div className="tm-stack">
+          <h2 className="tm-section-title">Pengawas</h2>
+          <SearchableSelect
+            value={selectedPengawasId}
+            onChange={(v) => {
+              setSelectedPengawasId(v);
+              setActiveTab('tambah');
+            }}
+            options={opsiPengawas}
+            placeholder="Pilih pengawas"
+            searchPlaceholder="Cari nama pengawas..."
+            height={52}
+            borderRadius={999}
+            fontSize="1rem"
+          />
+
+          {/* Pengecualian yang disengaja dari aturan "skeleton untuk daftar":
+              ini status pilihan dropdown yang sedang dimuat, bukan isi halaman. */}
+          {loading && (
+            <div className="tm-loading" role="status" aria-label="Mengambil data pengawas">
+              <div className="spinner-border spinner-border-sm" />
+              <span>Mengambil data pengawas...</span>
+            </div>
+          )}
+
+          {!selectedPengawasId && !loading && (
+            <div className="tm-group">
+              <div className="tm-empty">
+                <span className="tm-empty-icon" aria-hidden><FiUsers /></span>
+                <div className="tm-empty-title">Pilih pengawas dulu</div>
+                <div className="tm-empty-text">
+                  Form transaksi dan riwayat akan muncul setelah pengawas dipilih.
+                </div>
+              </div>
+            </div>
+          )}
+
+          {selectedPengawas && (
+            <>
+              <div className="tm-segmented" role="tablist" aria-label="Tampilan">
+                {[
+                  { key: 'tambah' as const, label: 'Tambah' },
+                  { key: 'riwayat' as const, label: 'Riwayat' },
+                ].map((tab) => (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTab === tab.key}
+                    className={`tm-segment ${activeTab === tab.key ? 'is-active' : ''}`}
+                    onClick={() => setActiveTab(tab.key)}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={activeTab}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.16, ease: 'easeOut' }}
+                >
+                  {activeTab === 'tambah' ? (
+                    <div className="tm-card">
+                      <TransaksiFormPengawas pengawasId={selectedPengawasId} />
+                    </div>
+                  ) : (
+                    <RiwayatTransaksiPengawas pengawasId={selectedPengawasId} />
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="page-shell py-4 px-md-4 px-3">
       <FeaturePageHeader
@@ -87,10 +183,7 @@ const AddTransaksiPagePengawas = () => {
               setSelectedPengawasId(v);
               setActiveTab('tambah');
             }}
-            options={pengawasList.map((p) => ({
-              value: p.id,
-              label: `${p.nama_lengkap}${p.nama_panggilan ? ` (${p.nama_panggilan})` : ''}`,
-            }))}
+            options={opsiPengawas}
             placeholder="-- Pilih Pengawas --"
             searchPlaceholder="Cari nama pengawas..."
             height={isMobile ? 50 : 58}
@@ -208,66 +301,11 @@ const AddTransaksiPagePengawas = () => {
           </div>
         );
 
-        if (!isMobile) {
-          return (
-            <div className="row g-4">
-              <div className="col-12 col-xl-4">{formCard}</div>
-              <div className="col-12 col-xl-8">{riwayatCard}</div>
-            </div>
-          );
-        }
-
         return (
-          <>
-            {/* TAB SWITCHER */}
-            <div className="d-flex gap-2 mb-3">
-              {[
-                { key: 'tambah' as const, label: 'Tambah Transaksi' },
-                { key: 'riwayat' as const, label: 'Riwayat' },
-              ].map((tab) => {
-                const active = activeTab === tab.key;
-
-                return (
-                  <button
-                    key={tab.key}
-                    type="button"
-                    onClick={() => setActiveTab(tab.key)}
-                    className="flex-fill tap-scale"
-                    style={{
-                      border: 'none',
-                      borderRadius: 999,
-                      padding: '10px 12px',
-                      fontWeight: 700,
-                      fontSize: '0.85rem',
-                      background: active
-                        ? 'var(--color-green)'
-                        : 'var(--color-surface)',
-                      color: active
-                        ? '#fff'
-                        : 'var(--color-gray-700)',
-                      boxShadow: active
-                        ? 'var(--shadow-brand)'
-                        : '0 1px 4px rgba(0,0,0,0.04)',
-                    }}
-                  >
-                    {tab.label}
-                  </button>
-                );
-              })}
-            </div>
-
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={activeTab}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.18, ease: 'easeOut' }}
-              >
-                {activeTab === 'tambah' ? formCard : riwayatCard}
-              </motion.div>
-            </AnimatePresence>
-          </>
+          <div className="row g-4">
+            <div className="col-12 col-xl-4">{formCard}</div>
+            <div className="col-12 col-xl-8">{riwayatCard}</div>
+          </div>
         );
       })()}
     </div>
