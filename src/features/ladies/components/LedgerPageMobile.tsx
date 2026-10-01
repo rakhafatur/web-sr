@@ -1,10 +1,10 @@
 import { ReactNode } from 'react';
 import dayjs, { type Dayjs } from 'dayjs';
-import { useNavigate } from 'react-router-dom';
-import { FiArrowLeft, FiInbox } from 'react-icons/fi';
+import { FiInbox } from 'react-icons/fi';
 import PullToRefresh from '../../../components/PullToRefresh';
 import Skeleton from '../../../components/Skeleton';
 import MonthPill from './MonthPill';
+import LadiesPageBar from './LadiesPageBar';
 import './LedgerPageMobile.css';
 
 export type LedgerItemMobile = {
@@ -71,24 +71,12 @@ const LedgerPageMobile = ({
   valueColor,
   emptyMessage,
 }: Props) => {
-  const navigate = useNavigate();
   const bulan = namaBulan(selectedMonth);
 
   return (
     <PullToRefresh onRefresh={async () => { await onRefresh(); }}>
       <div className="lp">
-        <header className="lp-bar">
-          <button
-            type="button"
-            className="lp-icon-btn"
-            onClick={() => navigate('/ladies/home')}
-            aria-label="Kembali ke Home"
-          >
-            <FiArrowLeft />
-          </button>
-          <h1 className="lp-bar-title">{title}</h1>
-          <span className="lp-icon-btn" aria-hidden />
-        </header>
+        <LadiesPageBar title={title} />
 
         <div className="lp-month">
           <MonthPill

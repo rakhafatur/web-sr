@@ -1,0 +1,179 @@
+/* Profil ladies mobile — kelas pf-. Bar, tumpukan, & kartu berkelompok
+   memakai kelas lp- dari LedgerPageMobile.css. */
+
+.pf-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-2) 0 var(--space-5);
+}
+
+.pf-avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: var(--radius-full);
+  background: var(--color-green-lighter);
+  border: 1px solid var(--color-green-light);
+  color: var(--color-green);
+  font-size: 2rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 32px rgba(var(--color-primary-rgb), 0.25);
+}
+
+.pf-name {
+  font-size: var(--font-size-2xl);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--color-dark);
+  margin: var(--space-3) 0 0;
+}
+
+.pf-outlet {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-600);
+}
+
+.pf-status {
+  margin-top: var(--space-3);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+.pf-section-title {
+  padding: 0 4px;
+  margin-bottom: calc(var(--space-1) * -1);
+}
+
+/* Baris data akun di dalam .lp-group */
+.pf-row {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 60px;
+  padding: 10px var(--space-4);
+  border: none;
+  background: transparent;
+  color: var(--color-dark);
+  font-family: inherit;
+  text-align: left;
+}
+
+.pf-row + .pf-row::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: calc(var(--space-4) + 36px + var(--space-3));
+  right: 0;
+  height: 1px;
+  background: var(--color-gray-200);
+}
+
+.pf-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-gray-200);
+  color: var(--color-green);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pf-row-label {
+  flex: 1;
+  font-size: 15px;
+  color: var(--color-gray-700);
+}
+
+.pf-row-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-dark);
+  text-align: right;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pf-pin {
+  letter-spacing: 2px;
+}
+
+.pf-eye {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  margin: -6px -10px -6px 0;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-gray-600);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pf-note {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-xl);
+  background: var(--color-green-lighter);
+  border: 1px solid var(--color-green-light);
+}
+
+.pf-note-icon {
+  flex-shrink: 0;
+  color: var(--color-green);
+  font-size: 18px;
+  margin-top: 1px;
+}
+
+.pf-note-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-dark);
+}
+
+.pf-note-text {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-gray-700);
+  margin-top: 2px;
+}
+
+.pf-logout {
+  cursor: pointer;
+}
+
+.pf-logout:active {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.pf-logout .pf-icon {
+  background: var(--color-expense-soft);
+  border-color: var(--color-danger);
+  color: var(--color-expense);
+}
+
+.pf-logout .pf-row-label {
+  color: var(--color-expense);
+  font-weight: 500;
+}

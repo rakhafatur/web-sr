@@ -1,9 +1,9 @@
 import dayjs from 'dayjs';
-import { useNavigate } from 'react-router-dom';
-import { FiArrowLeft, FiCalendar } from 'react-icons/fi';
+import { FiCalendar } from 'react-icons/fi';
 import PullToRefresh from '../../../components/PullToRefresh';
 import Skeleton from '../../../components/Skeleton';
 import MonthPill from './MonthPill';
+import LadiesPageBar from './LadiesPageBar';
 import { buatGridBulan } from '../../absensi/utils/gridKalender';
 import {
   hitungRekapAbsensi,
@@ -42,7 +42,6 @@ const statusDikenal = (s: string | undefined): s is StatusAbsensi =>
  * Senin, lingkaran berwarna per status, cincin di hari ini).
  */
 const RiwayatAbsensiMobile = ({ currentDate, onMonthChange, absensi, loading, onRefresh }: Props) => {
-  const navigate = useNavigate();
   const bulan = dayjs(currentDate);
   const labelBulan = currentDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
   const hariIni = dayjs().format('YYYY-MM-DD');
@@ -55,18 +54,7 @@ const RiwayatAbsensiMobile = ({ currentDate, onMonthChange, absensi, loading, on
   return (
     <PullToRefresh onRefresh={async () => { await onRefresh(); }}>
       <div className="lp">
-        <header className="lp-bar">
-          <button
-            type="button"
-            className="lp-icon-btn"
-            onClick={() => navigate('/ladies/home')}
-            aria-label="Kembali ke Home"
-          >
-            <FiArrowLeft />
-          </button>
-          <h1 className="lp-bar-title">Riwayat Absensi</h1>
-          <span className="lp-icon-btn" aria-hidden />
-        </header>
+        <LadiesPageBar title="Riwayat Absensi" />
 
         <div className="lp-month">
           <MonthPill

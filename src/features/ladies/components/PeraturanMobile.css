@@ -1,0 +1,82 @@
+/* Peraturan ladies mobile — kelas pr-. Bar & kartu memakai kelas lp-. */
+
+.pr-intro {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-gray-600);
+  margin: 0 4px var(--space-4);
+}
+
+.pr-section {
+  padding: var(--space-4);
+}
+
+.pr-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.pr-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--color-green-lighter);
+  border: 1px solid var(--color-green-light);
+  color: var(--color-green);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pr-title {
+  flex: 1;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-dark);
+  margin: 0;
+}
+
+.pr-count {
+  font-size: 12px;
+  color: var(--color-gray-600);
+}
+
+.pr-list {
+  list-style: none;
+  margin: var(--space-3) 0 0;
+  padding: var(--space-3) 0 0;
+  border-top: 1px solid var(--color-gray-200);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pr-item {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.pr-num {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  margin-top: 1px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-gray-200);
+  color: var(--color-gray-700);
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pr-text {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-gray-800);
+}

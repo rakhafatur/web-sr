@@ -15,6 +15,8 @@ import Skeleton from '../../../components/Skeleton';
 import ProfileHeroCard from '../../../components/ProfileHeroCard';
 import InfoRow from '../../../components/InfoRow';
 import { STATUS_VARIANT_COLORS, StatusVariant } from '../../../components/StatusBadge';
+import { useMediaQuery } from 'react-responsive';
+import ProfileMobile from '../components/ProfileMobile';
 
 type LadiesData = {
   nama_ladies: string;
@@ -23,12 +25,20 @@ type LadiesData = {
   status: string;
 };
 
+// Nilai yang disimpan form admin (DetailLadies/CreateLadies): 'active',
+// 'not active', 'resign'. 'AKTIF'/'NONAKTIF' tetap dikenali untuk data lama —
+// sebelumnya hanya dua itu yang dipetakan, jadi status 'active' tampil
+// sebagai teks mentah berwarna abu-abu.
 const getStatusInfo = (status?: string): { variant: StatusVariant; label: string } => {
-  switch (status?.toUpperCase()) {
+  switch (status?.trim().toUpperCase()) {
+    case 'ACTIVE':
     case 'AKTIF':
       return { variant: 'success', label: 'Aktif' };
+    case 'NOT ACTIVE':
     case 'NONAKTIF':
       return { variant: 'danger', label: 'Nonaktif' };
+    case 'RESIGN':
+      return { variant: 'danger', label: 'Resign' };
     default:
       return { variant: 'neutral', label: status || '-' };
   }
@@ -58,6 +68,22 @@ const ProfilePage = () => {
 
   const statusInfo = getStatusInfo(ladies?.status);
   const statusColors = STATUS_VARIANT_COLORS[statusInfo.variant];
+  // Mobile: tampilan baru (ProfileMobile). Desktop: tampilan lama di bawah.
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+
+  if (isMobile) {
+    return (
+      <ProfileMobile
+        loading={loading}
+        nama={ladies?.nama_ladies}
+        outlet={ladies?.nama_outlet}
+        username={user?.username}
+        pin={ladies?.pin}
+        statusLabel={statusInfo.label}
+        statusColors={statusColors}
+      />
+    );
+  }
 
   if (loading) {
     // Bentuknya mengikuti tata letak asli: kartu identitas, tiga baris info,
@@ -120,8 +146,9 @@ const ProfilePage = () => {
 
       <div
         style={{
-          background: 'var(--color-white)',
-          border: '1px solid var(--color-gray-100)',
+          // Dulu --color-white: di tema gelap teks terangnya nyaris tak terbaca.
+          background: 'var(--color-surface)',
+          border: '1px solid var(--color-gray-200)',
           borderRadius: 'var(--radius-lg)',
           padding: 16,
           marginTop: 2,

@@ -8,6 +8,8 @@ import {
   FiCreditCard,
   FiShield,
 } from 'react-icons/fi';
+import { useMediaQuery } from 'react-responsive';
+import PeraturanMobile from '../components/PeraturanMobile';
 
 type RuleSection = {
   title: string;
@@ -83,6 +85,8 @@ const PeraturanPage = () => {
     useState<number | null>(
       0
     );
+  // Mobile: tampilan baru (PeraturanMobile). Desktop: tampilan lama di bawah.
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const toggleIndex = (
     index: number
@@ -94,6 +98,10 @@ const PeraturanPage = () => {
           : index
     );
   };
+
+  if (isMobile) {
+    return <PeraturanMobile sections={ruleSections} />;
+  }
 
   return (
     <div
