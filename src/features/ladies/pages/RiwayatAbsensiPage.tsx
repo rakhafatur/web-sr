@@ -14,6 +14,8 @@ import {
   FiHeart,
 } from 'react-icons/fi';
 import ListLoadingState from '../../../components/ListLoadingState';
+import { useMediaQuery } from 'react-responsive';
+import RiwayatAbsensiMobile from '../components/RiwayatAbsensiMobile';
 
 import 'react-calendar/dist/Calendar.css';
 import './RiwayatAbsensiPage.css';
@@ -74,9 +76,11 @@ const RiwayatAbsensiPage = () => {
   ) as UserWithLadies;
 
   const [currentDate, setCurrentDate] = useState(new Date());
+  // Mobile: tampilan baru (RiwayatAbsensiMobile). Desktop: tampilan lama di bawah.
+  const isMobile = useMediaQuery({ maxWidth: 768 });
   const monthKey = dayjs(currentDate).format('YYYY-MM');
 
-  const { data: absensi = {}, isLoading: loading } = useQuery({
+  const { data: absensi = {}, isLoading: loading, refetch } = useQuery({
     queryKey: ['absensi', user?.ladies_id, monthKey],
     queryFn: async () => {
       const start = dayjs(currentDate).startOf('month').format('YYYY-MM-DD');
@@ -102,6 +106,18 @@ const RiwayatAbsensiPage = () => {
     enabled: !!user?.ladies_id,
     meta: { errorLabel: 'absensi' },
   });
+
+  if (isMobile) {
+    return (
+      <RiwayatAbsensiMobile
+        currentDate={currentDate}
+        onMonthChange={setCurrentDate}
+        absensi={absensi}
+        loading={loading}
+        onRefresh={refetch}
+      />
+    );
+  }
 
   const getTileContent = ({ date, view }: { date: Date; view: string }) => {
     if (view !== 'month') return null;

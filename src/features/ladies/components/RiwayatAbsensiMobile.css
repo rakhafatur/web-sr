@@ -1,0 +1,145 @@
+/* Riwayat Absensi mobile — kelas ra-. Bar atas & hero memakai kelas lp-
+   dari LedgerPageMobile.css. */
+
+/* =========================
+   RINGKASAN (pola "Ringkasan Bulan Ini" di Home)
+========================= */
+
+.ra-overview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: var(--color-green-lighter);
+  border: 1px solid var(--color-green-light);
+  border-radius: var(--radius-xl);
+  padding: var(--space-4);
+}
+
+.ra-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 var(--space-3);
+  min-width: 0;
+}
+
+.ra-stat:first-child {
+  padding-left: 0;
+}
+
+.ra-stat:last-child {
+  padding-right: 0;
+}
+
+.ra-stat + .ra-stat {
+  border-left: 1px solid var(--color-green-light);
+}
+
+.ra-stat-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-600);
+}
+
+.ra-stat-value {
+  font-size: var(--font-size-2xl);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--color-dark);
+  line-height: 1.2;
+  margin-top: var(--space-1);
+}
+
+.ra-stat-unit {
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-600);
+}
+
+.ra-dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+}
+
+/* =========================
+   KALENDER
+========================= */
+
+.ra-calendar {
+  background: var(--color-surface);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-xl);
+  padding: var(--space-3) var(--space-3) var(--space-4);
+}
+
+.ra-weekdays,
+.ra-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.ra-weekdays {
+  margin-bottom: var(--space-1);
+}
+
+.ra-weekdays span {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-gray-600);
+  padding: var(--space-1) 0;
+}
+
+.ra-grid {
+  row-gap: 4px;
+}
+
+.ra-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  max-height: 48px;
+}
+
+.ra-day {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-dark);
+}
+
+.ra-day.is-future {
+  color: var(--color-gray-500);
+}
+
+/* Hari ini: cincin aksen, di atas warna status kalau ada. */
+.ra-day.is-today {
+  box-shadow: 0 0 0 2px var(--color-green);
+  font-weight: 700;
+}
+
+.ra-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2) var(--space-4);
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.ra-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-gray-700);
+}

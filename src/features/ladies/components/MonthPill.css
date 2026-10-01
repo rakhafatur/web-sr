@@ -1,0 +1,59 @@
+.mp {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 4px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface);
+}
+
+.mp-btn {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-2);
+  color: var(--color-dark);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+}
+
+.mp-btn:active:not(:disabled) {
+  transform: scale(0.94);
+}
+
+.mp-btn:disabled {
+  opacity: 0.35;
+}
+
+.mp-label {
+  position: relative;
+  flex: 1;
+  height: 40px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-dark);
+  cursor: pointer;
+}
+
+/* Transparan tapi tetap menerima tap — membuka pemilih bulan bawaan. */
+.mp-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  /* 16px: di bawah itu Safari iOS men-zoom halaman saat fokus. */
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}

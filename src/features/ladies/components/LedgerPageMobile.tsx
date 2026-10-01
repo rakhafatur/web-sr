@@ -1,9 +1,10 @@
 import { ReactNode } from 'react';
 import dayjs, { type Dayjs } from 'dayjs';
 import { useNavigate } from 'react-router-dom';
-import { FiArrowLeft, FiChevronLeft, FiChevronRight, FiInbox } from 'react-icons/fi';
+import { FiArrowLeft, FiInbox } from 'react-icons/fi';
 import PullToRefresh from '../../../components/PullToRefresh';
 import Skeleton from '../../../components/Skeleton';
+import MonthPill from './MonthPill';
 import './LedgerPageMobile.css';
 
 export type LedgerItemMobile = {
@@ -89,32 +90,16 @@ const LedgerPageMobile = ({
           <span className="lp-icon-btn" aria-hidden />
         </header>
 
-        {/* PEMILIH BULAN — ketuk nama bulan untuk lompat ke bulan mana pun
-            (input month transparan di atas label). */}
         <div className="lp-month">
-          <button type="button" className="lp-month-btn" onClick={onPrev} aria-label="Bulan sebelumnya">
-            <FiChevronLeft />
-          </button>
-          <label className="lp-month-label">
-            <span>{bulan}</span>
-            <input
-              type="month"
-              className="lp-month-input"
-              value={selectedMonth.format('YYYY-MM')}
-              onChange={onMonthChange}
-              max={dayjs().format('YYYY-MM')}
-              aria-label="Pilih bulan"
-            />
-          </label>
-          <button
-            type="button"
-            className="lp-month-btn"
-            onClick={onNext}
-            disabled={nextDisabled}
-            aria-label="Bulan berikutnya"
-          >
-            <FiChevronRight />
-          </button>
+          <MonthPill
+            label={bulan}
+            value={selectedMonth.format('YYYY-MM')}
+            max={dayjs().format('YYYY-MM')}
+            onChange={onMonthChange}
+            onPrev={onPrev}
+            onNext={onNext}
+            nextDisabled={nextDisabled}
+          />
         </div>
 
         {loading ? (

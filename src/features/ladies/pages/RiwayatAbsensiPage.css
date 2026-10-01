@@ -1,9 +1,7 @@
-body {
-  background: var(--color-bg);
-  font-family: 'Inter', sans-serif;
-  margin: 0;
-  padding: 0;
-}
+/* Catatan: dulu ada aturan `body { font-family: 'Inter' }` di sini. Karena
+   file ini global, aturan itu menimpa font seluruh app setelah halaman ini
+   dibuka (dan 'Inter' bukan nama font yang dimuat — 'Inter Variable').
+   Font & latar body cukup diatur global.css. */
 
 /* WRAPPER */
 .absensi-wrapper {
@@ -16,7 +14,7 @@ body {
   width: 100% !important;
   border: none !important;
   background: transparent !important;
-  font-family: 'Inter', sans-serif;
+  font-family: inherit;
 }
 
 /* HEADER */

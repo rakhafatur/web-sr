@@ -20,6 +20,7 @@ const RUTE_LADIES_TANPA_HEADER = [
   '/ladies/kasbon',
   '/ladies/dokter',
   '/ladies/pemasukan_lain',
+  '/ladies/absensi',
 ];
 
 function MainLayout({ children }: { children: React.ReactNode }) {
