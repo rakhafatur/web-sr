@@ -19,7 +19,19 @@ import {
   FiTrendingDown,
   FiFileText,
   FiPlus,
+  FiCalendar,
+  FiEdit3,
 } from 'react-icons/fi';
+import './TransaksiMobile.css';
+
+/** Tombol simpan versi mobile: pil solid tanpa gradien (selaras layar lain). */
+const TOMBOL_PIL: React.CSSProperties = {
+  height: 52,
+  borderRadius: 'var(--radius-full)',
+  background: 'var(--color-primary)',
+  boxShadow: 'none',
+  fontWeight: 600,
+};
 
 type Props = {
   ladiesId: string;
@@ -314,6 +326,186 @@ const TransaksiForm = ({
       bg: 'var(--color-medical-soft)',
     },
   ];
+
+  const tombolSimpan = (style?: React.CSSProperties) => (
+    <Button
+      variant="primary"
+      fullWidth
+      onClick={handleSubmit}
+      disabled={mutation.isPending}
+      icon={mutation.isPending ? <div className="spinner-border spinner-border-sm" role="status" /> : <FiPlus size={isMobile ? 16 : 18} />}
+      style={style}
+    >
+      {mutation.isPending ? 'Menyimpan...' : 'Tambah Transaksi'}
+    </Button>
+  );
+
+  // Mobile: tampilan baru, selaras Transaksi Pengawas. State, validasi,
+  // resolusi harga (pilihTier), dan penyimpanan sama persis dengan desktop.
+  if (isMobile) {
+    const wajib = (
+      <>
+        <span className="tm-req" aria-hidden="true">*</span>
+        <span className="visually-hidden"> (wajib diisi)</span>
+      </>
+    );
+    const isVoucher = form.tipe === 'voucher';
+    // Pratinjau memakai fungsi yang sama dengan saat menyimpan, jadi angka
+    // yang tampil = angka yang tersimpan.
+    const pratinjauTotal =
+      activeTier && !isNaN(jumlahVoucherRaw)
+        ? hitungJumlahVoucher(jumlahVoucherRaw, activeTier)
+        : 0;
+
+    return (
+      <div>
+        <div
+          className="tm-types"
+          role="radiogroup"
+          aria-label="Tipe transaksi"
+          style={{ gridTemplateColumns: `repeat(${transactionTypes.length}, 1fr)` }}
+        >
+          {transactionTypes.map((item) => {
+            const active = form.tipe === item.value;
+            return (
+              <button
+                key={item.value}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                className={`tm-type ${active ? 'is-active' : ''}`}
+                style={active ? { background: item.bg, borderColor: item.color, color: item.color } : undefined}
+                onClick={() => setForm({ ...form, tipe: item.value })}
+              >
+                {item.icon}
+                {item.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {isVoucher ? (
+          <div className={`tm-amount ${fieldSalah === 'jumlah_voucher' ? 'is-invalid' : ''}`}>
+            <label htmlFor="tm-jumlah-voucher" className="tm-amount-label">
+              Jumlah voucher{wajib}
+            </label>
+            <div className="tm-amount-row">
+              <input
+                id="tm-jumlah-voucher"
+                name="jumlah_voucher"
+                type="text"
+                inputMode="numeric"
+                autoComplete="off"
+                placeholder="0"
+                value={form.jumlah_voucher}
+                onChange={handleChange}
+                className="tm-amount-input"
+                aria-invalid={fieldSalah === 'jumlah_voucher' || undefined}
+              />
+              <span className="tm-amount-suffix" aria-hidden>pcs</span>
+            </div>
+          </div>
+        ) : (
+          <div className={`tm-amount ${fieldSalah === 'jumlah' ? 'is-invalid' : ''}`}>
+            <label htmlFor="tm-jumlah" className="tm-amount-label">
+              Jumlah{wajib}
+            </label>
+            <div className="tm-amount-row">
+              <span className="tm-amount-prefix" aria-hidden>Rp</span>
+              <input
+                id="tm-jumlah"
+                name="jumlah"
+                type="text"
+                inputMode="numeric"
+                autoComplete="off"
+                placeholder="0"
+                value={form.jumlah}
+                onChange={handleChange}
+                className="tm-amount-input"
+                aria-invalid={fieldSalah === 'jumlah' || undefined}
+              />
+            </div>
+          </div>
+        )}
+
+        {isVoucher && perluPilihTier(tiers) && (
+          <div className="tm-field">
+            <span className="tm-label" id="tm-tier-label">Tipe harga</span>
+            <div className="tm-chips" role="radiogroup" aria-labelledby="tm-tier-label">
+              {tiers.map((t) => {
+                const active = activeTier?.tier_name === t.tier_name;
+                return (
+                  <button
+                    key={t.tier_name}
+                    type="button"
+                    role="radio"
+                    aria-checked={active}
+                    className={`tm-chip ${active ? 'is-active' : ''}`}
+                    onClick={() => setSelectedTierName(t.tier_name)}
+                  >
+                    {t.tier_name}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {isVoucher && (
+          <div className="tm-total" aria-live="polite">
+            <div>
+              <div className="tm-total-label">Total untuk ladies</div>
+              <div className="tm-total-detail">
+                {jumlahVoucherRaw || 0} × Rp{formatNumber(hargaVoucher.toString())}
+              </div>
+            </div>
+            <div className="tm-total-value">Rp{formatNumber(pratinjauTotal.toString())}</div>
+          </div>
+        )}
+
+        <div className="tm-field">
+          <label htmlFor="tm-tanggal" className="tm-label">
+            Tanggal{wajib}
+          </label>
+          <div className="tm-input-wrap">
+            <FiCalendar className="tm-input-icon" aria-hidden />
+            <input
+              id="tm-tanggal"
+              name="tanggal"
+              type="date"
+              value={form.tanggal}
+              onChange={handleChange}
+              className={`tm-input ${fieldSalah === 'tanggal' ? 'is-invalid' : ''}`}
+              aria-invalid={fieldSalah === 'tanggal' || undefined}
+            />
+          </div>
+        </div>
+
+        {/* Voucher tidak punya keterangan (kolomnya tidak ada di tabel vouchers). */}
+        {!isVoucher && (
+          <div className="tm-field">
+            <label htmlFor="tm-keterangan" className="tm-label">
+              Keterangan (opsional)
+            </label>
+            <div className="tm-input-wrap">
+              <FiEdit3 className="tm-input-icon" aria-hidden />
+              <input
+                id="tm-keterangan"
+                name="keterangan"
+                type="text"
+                placeholder="Catatan singkat"
+                value={form.keterangan}
+                onChange={handleChange}
+                className="tm-input"
+              />
+            </div>
+          </div>
+        )}
+
+        <div className="tm-submit">{tombolSimpan(TOMBOL_PIL)}</div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -659,17 +851,7 @@ const TransaksiForm = ({
       </div>
 
       {/* BUTTON */}
-      <div className="mt-4">
-        <Button
-          variant="primary"
-          fullWidth
-          onClick={handleSubmit}
-          disabled={mutation.isPending}
-          icon={mutation.isPending ? <div className="spinner-border spinner-border-sm" role="status" /> : <FiPlus size={isMobile ? 16 : 18} />}
-        >
-          {mutation.isPending ? 'Menyimpan...' : 'Tambah Transaksi'}
-        </Button>
-      </div>
+      <div className="mt-4">{tombolSimpan()}</div>
     </div>
   );
 };

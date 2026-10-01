@@ -239,7 +239,12 @@ const TransaksiFormPengawas = ({
 
     return (
       <div>
-        <div className="tm-types" role="radiogroup" aria-label="Tipe transaksi">
+        <div
+          className="tm-types"
+          role="radiogroup"
+          aria-label="Tipe transaksi"
+          style={{ gridTemplateColumns: `repeat(${transactionTypes.length}, 1fr)` }}
+        >
           {transactionTypes.map((item) => {
             const active = form.tipe === item.value;
             return (

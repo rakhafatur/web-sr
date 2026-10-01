@@ -127,30 +127,65 @@
    FORM
 ========================= */
 
+.tm-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.tm-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-dark);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tm-pill {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: var(--color-green-lighter);
+  border: 1px solid var(--color-green-light);
+  color: var(--color-green);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Chip tipe — selalu satu baris (jumlah kolom di-set inline sesuai jumlah
+   opsi: 3 pengawas, 4 ladies). Ikon di atas label supaya label terpanjang
+   ("Pemasukan") tetap muat di 4 kolom layar HP. */
 .tm-types {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: var(--space-2);
 }
 
 .tm-type {
-  min-height: 48px;
+  min-height: 64px;
+  min-width: 0;
+  padding: 8px 4px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  border-radius: var(--radius-full);
+  gap: 4px;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--color-gray-200);
   background: var(--color-surface-2);
   color: var(--color-gray-700);
   font-family: inherit;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
+  line-height: 1.15;
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .tm-type svg {
-  font-size: 16px;
+  font-size: 18px;
 }
 
 /* Warna aktif per tipe di-set inline (semantik kasbon/gaji/lainnya). */
@@ -276,6 +311,69 @@
 .tm-input[type='date'] {
   line-height: 52px;
   color-scheme: dark;
+}
+
+.tm-amount-suffix {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-gray-600);
+}
+
+/* Pilihan tier harga (kalau outlet punya lebih dari satu). */
+.tm-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.tm-chip {
+  min-height: 40px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface-2);
+  color: var(--color-gray-700);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.tm-chip.is-active {
+  background: var(--color-green-lighter);
+  border-color: var(--color-green);
+  color: var(--color-green);
+  font-weight: 600;
+}
+
+/* Ringkasan total voucher (pratinjau sebelum simpan). */
+.tm-total {
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--color-income-soft);
+  border: 1px solid rgba(var(--color-success-rgb), 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.tm-total-label {
+  font-size: 13px;
+  color: var(--color-gray-700);
+}
+
+.tm-total-detail {
+  font-size: 12px;
+  color: var(--color-gray-600);
+  margin-top: 2px;
+}
+
+.tm-total-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-income);
+  white-space: nowrap;
 }
 
 .tm-submit {

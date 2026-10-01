@@ -27,6 +27,7 @@ const RUTE_LADIES_TANPA_HEADER = [
 
 /** Halaman admin yang di mobile punya bar atas sendiri (MobilePageBar). */
 const RUTE_ADMIN_TANPA_HEADER = [
+  '/add-transaksi',
   '/add-transaksi-pengawas',
 ];
 
