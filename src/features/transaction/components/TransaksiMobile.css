@@ -448,3 +448,132 @@
   text-align: center;
   margin-top: var(--space-2);
 }
+
+/* =========================
+   BUKU KUNING — hero saldo, aksi, baris saldo berjalan
+========================= */
+
+.tm-hero {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(145deg, var(--color-accent), var(--color-green-light));
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-xl);
+  padding: var(--space-4) var(--space-5);
+  color: var(--color-white);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+.tm-hero::before {
+  content: '';
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: 28px solid rgba(255, 255, 255, 0.05);
+  top: -70px;
+  right: -60px;
+  pointer-events: none;
+}
+
+.tm-hero-label {
+  position: relative;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.tm-hero-value {
+  position: relative;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-top: var(--space-2);
+}
+
+.tm-hero-sub {
+  position: relative;
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.72);
+  margin-top: var(--space-1);
+}
+
+.tm-hero-split {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.tm-hero-split > div + div {
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+  padding-left: var(--space-4);
+}
+
+.tm-hero-split-label {
+  font-size: var(--font-size-xs);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.tm-hero-split-value {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.tm-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.tm-btn {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-full);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface);
+  color: var(--color-dark);
+  transition: transform 0.1s ease, opacity 0.2s ease;
+}
+
+.tm-btn:active {
+  transform: scale(0.97);
+}
+
+.tm-btn--primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.tm-btn:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: 2px;
+}
+
+.tm-row-value {
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.tm-row-saldo {
+  font-size: 12px;
+  color: var(--color-gray-600);
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+/* Baris pembuka (saldo bulan lalu) */
+.tm-row--opening .tm-row-title {
+  color: var(--color-gray-700);
+}

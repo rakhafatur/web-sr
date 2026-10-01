@@ -66,3 +66,31 @@ export function hitungSaldoBerjalan(
 export function saldoAkhir(rows: SaldoRow[]): number {
   return rows.length > 0 ? rows[rows.length - 1].saldo : 0;
 }
+
+export type RingkasanBukuKuning = {
+  totalPemasukan: number;
+  totalPengeluaran: number;
+  saldoAwal: number;
+  saldoAkhir: number;
+  /** Jumlah baris transaksi, tidak termasuk baris pembuka. */
+  jumlahTransaksi: number;
+};
+
+/**
+ * Angka ringkasan satu periode buku kuning dari hasil `hitungSaldoBerjalan`.
+ * Dipakai tampilan mobile dan laporan PDF supaya keduanya pasti sama.
+ *
+ * Baris pertama dianggap baris pembuka (saldo awal, tanpa nominal), sesuai
+ * keluaran `hitungSaldoBerjalan`.
+ */
+export function ringkasanBukuKuning(rows: SaldoRow[]): RingkasanBukuKuning {
+  const transaksi = rows.slice(1);
+
+  return {
+    totalPemasukan: transaksi.reduce((sum, r) => sum + toAngka(r.pemasukan), 0),
+    totalPengeluaran: transaksi.reduce((sum, r) => sum + toAngka(r.pengeluaran), 0),
+    saldoAwal: rows[0]?.saldo ?? 0,
+    saldoAkhir: saldoAkhir(rows),
+    jumlahTransaksi: transaksi.length,
+  };
+}

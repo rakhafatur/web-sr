@@ -29,6 +29,7 @@ const RUTE_LADIES_TANPA_HEADER = [
 const RUTE_ADMIN_TANPA_HEADER = [
   '/add-transaksi',
   '/add-transaksi-pengawas',
+  '/buku-kuning-pengawas',
 ];
 
 function MainLayout({ children }: { children: React.ReactNode }) {

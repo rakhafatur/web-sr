@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { hitungSaldoBerjalan, saldoAkhir, type SaldoRow } from './saldoBerjalan';
+import { hitungSaldoBerjalan, ringkasanBukuKuning, saldoAkhir, type SaldoRow } from './saldoBerjalan';
 
 /** Pembantu ringkas supaya tiap kasus uji fokus ke angkanya saja. */
 const pemasukan = (tanggal: string, jumlah: number): SaldoRow => ({
@@ -130,5 +130,45 @@ describe('saldoAkhir', () => {
 
   it('sama dengan saldo awal kalau tidak ada transaksi sama sekali', () => {
     expect(saldoAkhir(hitungSaldoBerjalan(75_000, []))).toBe(75_000);
+  });
+});
+
+describe('ringkasanBukuKuning', () => {
+  it('menjumlah pemasukan & pengeluaran, mengabaikan baris pembuka', () => {
+    const rows = hitungSaldoBerjalan(-100_000, [
+      pemasukan('2026-10-05', 500_000),
+      pengeluaran('2026-10-03', 200_000),
+      pengeluaran('2026-10-09', 50_000),
+    ]);
+
+    expect(ringkasanBukuKuning(rows)).toEqual({
+      totalPemasukan: 500_000,
+      totalPengeluaran: 250_000,
+      saldoAwal: -100_000,
+      saldoAkhir: 150_000,
+      jumlahTransaksi: 3,
+    });
+  });
+
+  it('saldo akhir = saldo awal kalau belum ada transaksi', () => {
+    const rows = hitungSaldoBerjalan(75_000, []);
+
+    expect(ringkasanBukuKuning(rows)).toEqual({
+      totalPemasukan: 0,
+      totalPengeluaran: 0,
+      saldoAwal: 75_000,
+      saldoAkhir: 75_000,
+      jumlahTransaksi: 0,
+    });
+  });
+
+  it('aman untuk daftar kosong', () => {
+    expect(ringkasanBukuKuning([])).toEqual({
+      totalPemasukan: 0,
+      totalPengeluaran: 0,
+      saldoAwal: 0,
+      saldoAkhir: 0,
+      jumlahTransaksi: 0,
+    });
   });
 });
