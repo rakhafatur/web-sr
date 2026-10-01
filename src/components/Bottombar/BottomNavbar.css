@@ -140,7 +140,7 @@
   position: fixed;
   inset: 0;
 
-  background: rgba(0, 0, 0, 0.28);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
 
   display: flex;
@@ -170,14 +170,16 @@
 
   background: var(--color-surface);
 
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
+  border-top: 1px solid var(--color-gray-200);
+  border-top-left-radius: var(--radius-xl);
+  border-top-right-radius: var(--radius-xl);
 
-  padding: 10px 16px calc(90px + env(safe-area-inset-bottom));
+  /* 96px = ruang untuk navbar pil mengambang (64px + jarak 12px + napas). */
+  padding: 10px 16px calc(96px + env(safe-area-inset-bottom));
 
-  animation: slideUp 0.24s ease;
+  animation: slideUp 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
 
-  max-height: 76vh;
+  max-height: 80vh;
   overflow-y: auto;
 
   box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.4);
@@ -213,191 +215,187 @@
   background: var(--color-gray-300);
 }
 
-/* =========================================================
-   HEADER
-========================================================= */
-
-.bottom-sheet-header {
-  margin-bottom: 18px;
-}
-
-.bottom-sheet-title {
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: var(--color-dark);
-}
-
-.bottom-sheet-subtitle {
-  font-size: 0.78rem;
-  color: var(--color-gray-500);
-  margin-top: 2px;
+@media (prefers-reduced-motion: reduce) {
+  .bottom-modal,
+  .bottom-modal-backdrop {
+    animation: none;
+  }
 }
 
 /* =========================================================
-   CONTENT
+   ISI SHEET (BottomSheetMenu) — kelas bs-
+   Satu kartu berkelompok per bagian, ikon lingkaran, penjelasan singkat,
+   penanda halaman aktif. Selaras dengan daftar Riwayat & Menu Cepat.
 ========================================================= */
 
-.bottom-sheet-content {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-/* =========================================================
-   SECTION
-========================================================= */
-
-.sheet-section-title {
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-
-  color: var(--color-gray-500);
-
-  margin-top: 10px;
-  margin-bottom: 2px;
-
-  padding-left: 4px;
-}
-
-/* =========================================================
-   MENU ITEM
-========================================================= */
-
-.bottom-sheet-item {
-  width: 100%;
-
+.bs-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: var(--space-3);
+  padding: 0 4px;
+}
 
-  padding: 12px 14px;
+.bs-title {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--color-dark);
+  margin: 0;
+}
 
-  border-radius: 16px;
+.bs-close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-2);
+  color: var(--color-gray-700);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
 
+/* Tampil 36px, area sentuh 44px. */
+.bs-close::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+}
+
+.bs-section + .bs-section {
+  margin-top: var(--space-4);
+}
+
+.bs-section-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-gray-600);
+  margin: 0 4px var(--space-2);
+}
+
+.bs-group {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.bs-item {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 12px var(--space-4);
+  border: none;
+  background: transparent;
+  color: var(--color-dark);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+/* Garis pemisah menjorok (mulai setelah ikon), gaya daftar iOS. */
+.bs-item + .bs-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: calc(var(--space-4) + 40px + var(--space-3));
+  right: 0;
+  height: 1px;
+  background: var(--color-gray-200);
+}
+
+.bs-item:active {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+@media (hover: hover) {
+  .bs-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+  }
+}
+
+.bs-item:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: -2px;
+}
+
+.bs-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
   background: var(--color-surface);
   border: 1px solid var(--color-gray-200);
-
-  /* Sama seperti .nav-item: ini <button>, jadi font & perataan teksnya harus
-     dikembalikan ke milik aplikasi. */
-  font-family: inherit;
-  color: inherit;
-  text-align: left;
-
-  transition: all 0.18s ease;
-
-  cursor: pointer;
+  color: var(--color-green);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.bottom-sheet-item:active {
-  transform: scale(0.985);
+.bs-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-.bottom-sheet-item:hover {
+.bs-label {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.bs-desc {
+  font-size: 13px;
+  color: var(--color-gray-600);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bs-chevron {
+  flex-shrink: 0;
+  color: var(--color-gray-600);
+  font-size: 18px;
+}
+
+/* Halaman yang sedang dibuka. */
+.bs-item.is-active {
+  background: rgba(var(--color-primary-rgb), 0.16);
+}
+
+.bs-item.is-active .bs-icon {
   background: var(--color-green-lighter);
   border-color: var(--color-green-light);
 }
 
-/* =========================================================
-   LEFT
-========================================================= */
-
-.bottom-sheet-item-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* =========================================================
-   ICON
-========================================================= */
-
-.bottom-sheet-icon {
-  width: 38px;
-  height: 38px;
-
-  border-radius: 12px;
-
-  background:
-    linear-gradient(
-      135deg,
-      rgba(var(--color-primary-rgb), 0.24),
-      rgba(var(--color-primary-rgb), 0.1)
-    );
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
+.bs-item.is-active .bs-label {
   color: var(--color-green);
+  font-weight: 600;
+}
 
-  font-size: 1rem;
-
+.bs-active-dot {
   flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-green);
 }
 
-/* =========================================================
-   LABEL
-========================================================= */
-
-.bottom-sheet-label {
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--color-dark);
+/* Keluar */
+.bs-item--danger .bs-icon {
+  background: var(--color-expense-soft);
+  border-color: var(--color-danger);
+  color: var(--color-expense);
 }
 
-/* =========================================================
-   BADGE
-========================================================= */
-
-.bottom-sheet-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  margin-top: 4px;
-
-  padding: 2px 7px;
-
-  border-radius: 999px;
-
-  background: var(--color-income-soft);
-  color: var(--color-income);
-
-  font-size: 0.62rem;
-  font-weight: 600;
-
-  width: fit-content;
-}
-
-/* =========================================================
-   ARROW
-========================================================= */
-
-.bottom-sheet-arrow {
-  color: var(--color-gray-500);
-  font-size: 0.95rem;
-}
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 768px) {
-  .bottom-sheet-item {
-    padding: 11px 12px;
-    border-radius: 14px;
-  }
-
-  .bottom-sheet-icon {
-    width: 34px;
-    height: 34px;
-    border-radius: 11px;
-    font-size: 0.95rem;
-  }
-
-  .bottom-sheet-label {
-    font-size: 0.84rem;
-  }
+.bs-item--danger .bs-label {
+  color: var(--color-expense);
 }

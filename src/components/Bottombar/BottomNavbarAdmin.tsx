@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
-import ReactDOM from 'react-dom';
+import { useState } from 'react';
 import {
   FiHome,
   FiDollarSign,
@@ -16,10 +15,13 @@ import {
   FiActivity,
   FiBriefcase,
   FiMapPin,
-  FiChevronRight,
 } from 'react-icons/fi';
 
 import { useLocation, useNavigate } from 'react-router-dom';
+
+import { useAuth } from '../../context/AuthContext';
+import { confirmDialog } from '../ConfirmDialog';
+import BottomSheetMenu, { type SheetSection } from './BottomSheetMenu';
 
 import './BottomNavbar.css';
 
@@ -77,13 +79,23 @@ const tabDariRute = (pathname: string): Tab | null => {
   return null;
 };
 
+/** Halaman Tambah/Detail milik tiap item menu — supaya item tetap menyala
+    saat membuka mis. `/ladies-detail/:id`, bukan hanya di `/ladies`. */
+const TURUNAN: Record<string, string[]> = {
+  '/users': ['/user-create', '/user-detail'],
+  '/pengawas': ['/pengawas-create', '/pengawas-detail'],
+  '/ladies': ['/ladies-create', '/ladies-detail'],
+  '/agent': ['/agent-create', '/agent-detail'],
+};
+
+const itemAktif = (pathname: string, path: string) =>
+  [path, ...(TURUNAN[path] ?? [])].some((rute) => cocok(pathname, rute));
+
 function BottomNavbarAdmin() {
   const location = useLocation();
   const navigate = useNavigate();
 
   const [activeModal, setActiveModal] = useState<Tab | null>(null);
-
-  const modalRef = useRef<HTMLDivElement | null>(null);
 
   const tabAktif = tabDariRute(location.pathname);
   const diHome = location.pathname === '/';
@@ -96,219 +108,74 @@ function BottomNavbarAdmin() {
     setActiveModal(null);
   };
 
-  useEffect(() => {
-    if (!activeModal) return;
-
-    modalRef.current?.focus();
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closeModal();
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [activeModal]);
-
   const handleNavigate = (path: string) => {
     navigate(path);
     closeModal();
   };
 
-  const renderMenuItem = (
-    icon: React.ReactNode,
-    label: string,
-    path: string,
-    badge?: string
-  ) => (
-    <button
-      type="button"
-      className="bottom-sheet-item"
-      onClick={() => handleNavigate(path)}
-    >
-      <div className="bottom-sheet-item-left">
-        <div className="bottom-sheet-icon">
-          {icon}
-        </div>
+  const { logout } = useAuth();
 
-        <div>
-          <div className="bottom-sheet-label">
-            {label}
-          </div>
+  const handleLogout = async () => {
+    if (!(await confirmDialog('Keluar dari akun ini?'))) return;
+    closeModal();
+    logout();
+    navigate('/login');
+  };
 
-          {badge && (
-            <div className="bottom-sheet-badge">
-              {badge}
-            </div>
-          )}
-        </div>
-      </div>
-
-      <FiChevronRight className="bottom-sheet-arrow" />
-    </button>
-  );
-
-  const renderModalContent = () => {
-    const title =
-      activeModal === 'transaksi'
-        ? 'Transaksi'
-        : activeModal === 'report'
-        ? 'Laporan'
-        : 'Menu';
-
-    return (
-    <div
-      className="bottom-modal-backdrop"
-      onClick={closeModal}
-    >
-      <div
-        className="bottom-modal"
-        role="dialog"
-        aria-modal="true"
-        aria-label={title}
-        tabIndex={-1}
-        ref={modalRef}
-        data-ptr-ignore
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* HANDLE */}
-        <div className="bottom-sheet-handle-wrapper">
-          <div className="bottom-sheet-handle" />
-        </div>
-
-        {/* TITLE */}
-        <div className="bottom-sheet-header">
-          <div>
-            <div className="bottom-sheet-title">
-              {title}
-            </div>
-
-            <div className="bottom-sheet-subtitle">
-              Kelola fitur dan navigasi aplikasi
-            </div>
-          </div>
-        </div>
-
-        {/* CONTENT */}
-        <div className="bottom-sheet-content">
-          {activeModal === 'transaksi' && (
-            <>
-              <div className="sheet-section-title">
-                Ladies
-              </div>
-
-              {renderMenuItem(
-                <FiDollarSign />,
-                'Transaksi Ladies',
-                '/add-transaksi'
-              )}
-
-              {renderMenuItem(
-                <FiBookOpen />,
-                'Buku Kuning Ladies',
-                '/buku-kuning'
-              )}
-
-              <div className="sheet-section-title">
-                Pengawas
-              </div>
-
-              {renderMenuItem(
-                <FiDollarSign />,
-                'Transaksi Pengawas',
-                '/add-transaksi-pengawas'
-              )}
-
-              {renderMenuItem(
-                <FiBookOpen />,
-                'Buku Kuning Pengawas',
-                '/buku-kuning-pengawas'
-              )}
-            </>
-          )}
-
-          {activeModal === 'report' && (
-            <>
-              <div className="sheet-section-title">
-                Statistik & Laporan
-              </div>
-
-              {renderMenuItem(
-                <FiClipboard />,
-                'Absensi',
-                '/absensi'
-              )}
-
-              {renderMenuItem(
-                <FiTrendingUp />,
-                'Rekap Voucher',
-                '/rekap-voucher'
-              )}
-
-              {renderMenuItem(
-                <FiActivity />,
-                'Performa Ladies',
-                '/performa-ladies'
-              )}
-            </>
-          )}
-
-          {activeModal === 'menu' && (
-            <>
-              <div className="sheet-section-title">
-                Parameter
-              </div>
-
-              {renderMenuItem(
-                <FiUsers />,
-                'Users',
-                '/users'
-              )}
-
-              {renderMenuItem(
-                <FiShield />,
-                'Approval User',
-                '/user-approval',
-              )}
-
-              {renderMenuItem(
-                <FiUserCheck />,
-                'Pengawas',
-                '/pengawas'
-              )}
-
-              {renderMenuItem(
-                <FiUser />,
-                'Ladies',
-                '/ladies'
-              )}
-
-              {renderMenuItem(
-                <FiBriefcase />,
-                'Agent',
-                '/agent'
-              )}
-
-              {renderMenuItem(
-                <FiMapPin />,
-                'Outlet',
-                '/outlet'
-              )}
-
-              <div className="sheet-section-title">
-                AI Assistant
-              </div>
-
-              {renderMenuItem(
-                <FiMessageCircle />,
-                'Chat SR',
-                '/smart-chat'
-              )}
-            </>
-          )}
-        </div>
-      </div>
-    </div>
-    );
+  const SHEET: Record<Tab, { title: string; sections: SheetSection[] }> = {
+    transaksi: {
+      title: 'Transaksi',
+      sections: [
+        {
+          judul: 'Ladies',
+          items: [
+            { icon: <FiDollarSign />, label: 'Transaksi Ladies', desc: 'Catat transaksi baru', path: '/add-transaksi' },
+            { icon: <FiBookOpen />, label: 'Buku Kuning Ladies', desc: 'Riwayat & saldo berjalan', path: '/buku-kuning' },
+          ],
+        },
+        {
+          judul: 'Pengawas',
+          items: [
+            { icon: <FiDollarSign />, label: 'Transaksi Pengawas', desc: 'Catat transaksi baru', path: '/add-transaksi-pengawas' },
+            { icon: <FiBookOpen />, label: 'Buku Kuning Pengawas', desc: 'Riwayat & saldo berjalan', path: '/buku-kuning-pengawas' },
+          ],
+        },
+      ],
+    },
+    report: {
+      title: 'Laporan',
+      sections: [
+        {
+          items: [
+            { icon: <FiClipboard />, label: 'Absensi', desc: 'Kehadiran ladies', path: '/absensi' },
+            { icon: <FiTrendingUp />, label: 'Rekap Voucher', desc: 'Rekap voucher per periode', path: '/rekap-voucher' },
+            { icon: <FiActivity />, label: 'Performa Ladies', desc: 'Perbandingan performa ladies', path: '/performa-ladies' },
+          ],
+        },
+      ],
+    },
+    menu: {
+      title: 'Menu',
+      sections: [
+        {
+          judul: 'Data master',
+          items: [
+            { icon: <FiUsers />, label: 'Users', desc: 'Akun pengguna', path: '/users' },
+            { icon: <FiShield />, label: 'Approval User', desc: 'Persetujuan akun baru', path: '/user-approval' },
+            { icon: <FiUserCheck />, label: 'Pengawas', desc: 'Data pengawas', path: '/pengawas' },
+            { icon: <FiUser />, label: 'Ladies', desc: 'Data ladies', path: '/ladies' },
+            { icon: <FiBriefcase />, label: 'Agent', desc: 'Data agent', path: '/agent' },
+            { icon: <FiMapPin />, label: 'Outlet', desc: 'Data outlet', path: '/outlet' },
+          ],
+        },
+        {
+          judul: 'Asisten',
+          items: [
+            { icon: <FiMessageCircle />, label: 'Chat SR', desc: 'Tanya statistik & insight', path: '/smart-chat' },
+          ],
+        },
+      ],
+    },
   };
 
   return (
@@ -393,11 +260,16 @@ function BottomNavbarAdmin() {
         </div>
       </div>
 
-      {activeModal &&
-        ReactDOM.createPortal(
-          renderModalContent(),
-          document.body
-        )}
+      {activeModal && (
+        <BottomSheetMenu
+          title={SHEET[activeModal].title}
+          sections={SHEET[activeModal].sections}
+          isAktif={(path) => itemAktif(location.pathname, path)}
+          onNavigate={handleNavigate}
+          onClose={closeModal}
+          onLogout={activeModal === 'menu' ? handleLogout : undefined}
+        />
+      )}
     </>
   );
 }
