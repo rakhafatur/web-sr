@@ -14,13 +14,13 @@ import {
   FiCalendar,
   FiActivity,
   FiDollarSign,
-  FiGift,
-  FiTrendingUp,
-  FiTrendingDown,
-  FiAward,
   FiUsers,
+  FiSearch,
 } from 'react-icons/fi';
 import ListLoadingState from '../../../components/ListLoadingState';
+import MobilePageBar from '../../../components/MobilePageBar';
+import MonthPill from '../../ladies/components/MonthPill';
+import '../../../styles/mobile-admin.css';
 
 const monthNames = [
   'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
@@ -54,6 +54,7 @@ const PerformaLadiesPage = () => {
   const [bulan, setBulan] = useState(dayjs().month() + 1);
   const [tahun, setTahun] = useState(dayjs().year());
   const [mode, setMode] = useState<'aktivitas' | 'pendapatan'>('aktivitas');
+  const [cari, setCari] = useState('');
 
   const { data: ladiesList = [] } = useQuery({
     queryKey: ['performa-ladies-aktif'],
@@ -136,6 +137,144 @@ const PerformaLadiesPage = () => {
     { value: 'aktivitas' as const, label: 'Aktivitas', icon: <FiActivity size={14} /> },
     { value: 'pendapatan' as const, label: 'Pendapatan', icon: <FiDollarSign size={14} /> },
   ];
+
+  // Mobile: tampilan baru selaras halaman admin lain (Header app dicabut di
+  // MainLayout) — daftar peringkat per mode. Angka dari perhitungan di atas,
+  // hanya diurutkan untuk tampilan. Desktop (grafik + tabel): lama.
+  if (isMobile) {
+    const labelBulan = new Date(tahun, bulan - 1, 1).toLocaleDateString('id-ID', {
+      month: 'long',
+      year: 'numeric',
+    });
+    const sekarang = dayjs();
+    const diBulanIni = tahun === sekarang.year() && bulan === sekarang.month() + 1;
+    const geserBulan = (arah: -1 | 1) => {
+      const d = new Date(tahun, bulan - 1 + arah, 1);
+      setBulan(d.getMonth() + 1);
+      setTahun(d.getFullYear());
+    };
+
+    const kataKunci = cari.trim().toLowerCase();
+    const peringkat = [...data]
+      .sort((a, b) =>
+        mode === 'aktivitas'
+          ? b.voucherTotal - a.voucherTotal || b.masuk - a.masuk
+          : b.total - a.total
+      )
+      .map((row, i) => ({ ...row, rank: i + 1 }))
+      .filter(
+        (row) =>
+          !kataKunci ||
+          row.nama_ladies.toLowerCase().includes(kataKunci) ||
+          row.nama_outlet.toLowerCase().includes(kataKunci)
+      );
+
+    return (
+      <div className="tm-page">
+        <MobilePageBar title="Performa Ladies" backTo="/" />
+
+        <div className="tm-stack">
+          <MonthPill
+            label={labelBulan}
+            value={`${tahun}-${String(bulan).padStart(2, '0')}`}
+            max={dayjs().format('YYYY-MM')}
+            onChange={(e) => {
+              if (!e.target.value) return;
+              const [y, m] = e.target.value.split('-').map(Number);
+              setTahun(y);
+              setBulan(m);
+            }}
+            onPrev={() => geserBulan(-1)}
+            onNext={() => geserBulan(1)}
+            nextDisabled={diBulanIni}
+          />
+
+          <div className="tm-segmented" role="tablist" aria-label="Mode tampilan">
+            {modeOptions.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                role="tab"
+                aria-selected={mode === opt.value}
+                className={`tm-segment ${mode === opt.value ? 'is-active' : ''}`}
+                onClick={() => setMode(opt.value)}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="tm-search">
+            <FiSearch aria-hidden />
+            <input
+              type="search"
+              placeholder="Cari nama atau outlet..."
+              aria-label="Cari ladies"
+              value={cari}
+              onChange={(e) => setCari(e.target.value)}
+            />
+          </div>
+
+          {loading ? (
+            <ListLoadingState label="Memuat performa ladies" />
+          ) : data.length === 0 ? (
+            <div className="tm-group">
+              <div className="tm-empty">
+                <span className="tm-empty-icon" aria-hidden><FiUsers /></span>
+                <div className="tm-empty-title">Belum ada ladies aktif</div>
+                <div className="tm-empty-text">Tambahkan data ladies untuk melihat performanya di sini.</div>
+              </div>
+            </div>
+          ) : peringkat.length === 0 ? (
+            <div className="tm-group">
+              <div className="tm-empty">
+                <span className="tm-empty-icon" aria-hidden><FiSearch /></span>
+                <div className="tm-empty-title">Ladies tidak ditemukan</div>
+                <div className="tm-empty-text">Coba kata kunci lain.</div>
+              </div>
+            </div>
+          ) : (
+            <>
+              <h2 className="tm-section-title">
+                Peringkat {mode === 'aktivitas' ? 'voucher' : 'pendapatan'} · {labelBulan}
+              </h2>
+              <div className="tm-group tm-list">
+                {peringkat.map((row) => (
+                  <div key={row.id}>
+                    <div className="tm-row">
+                      <span className={`tm-rank ${row.rank <= 3 ? 'is-top' : ''}`} aria-label={`Peringkat ${row.rank}`}>
+                        {row.rank}
+                      </span>
+                      <div className="tm-row-main">
+                        <div className="tm-row-title">{row.nama_ladies}</div>
+                        <div className="tm-row-sub" style={{ whiteSpace: 'normal' }}>
+                          {mode === 'aktivitas'
+                            ? `${row.nama_outlet} · ${row.masuk} hari masuk · ${row.voucherAvg.toFixed(1)}/hari`
+                            : `Voucher ${formatRupiah(row.pendapatanVoucher)} · Lain ${formatRupiah(row.pemasukan)} · Kasbon ${formatRupiah(row.kasbon)}`}
+                        </div>
+                      </div>
+                      <span
+                        className="tm-row-amount"
+                        style={
+                          mode === 'pendapatan'
+                            ? { color: row.total < 0 ? 'var(--color-expense)' : 'var(--color-income)' }
+                            : undefined
+                        }
+                      >
+                        {mode === 'aktivitas'
+                          ? `${row.voucherTotal.toFixed(0)} pcs`
+                          : formatRupiah(row.total)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="page-shell py-4 px-md-4 px-3">
@@ -312,113 +451,8 @@ const PerformaLadiesPage = () => {
             </div>
           )}
 
-          {/* MOBILE — kartu per ladies, bukan tabel lebar yang bikin geser ke kanan */}
-          {isMobile ? (
-            <div className="d-flex flex-column gap-3">
-              {data.map((row) => (
-                <div
-                  key={row.id}
-                  className="card border-0 shadow-sm rounded-4 p-3"
-                >
-                  <div className="d-flex align-items-center gap-2 mb-3">
-                    <div
-                      style={{
-                        width: 38,
-                        height: 38,
-                        minWidth: 38,
-                        borderRadius: 12,
-                        background: 'linear-gradient(135deg, var(--color-green), var(--color-accent))',
-                        color: 'white',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontWeight: 700,
-                        fontSize: '0.9rem',
-                      }}
-                    >
-                      {row.nama_ladies.charAt(0).toUpperCase()}
-                    </div>
-
-                    <div style={{ minWidth: 0 }}>
-                      <div
-                        className="fw-bold"
-                        style={{
-                          color: 'var(--color-dark)',
-                          fontSize: '0.92rem',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
-                        {row.nama_ladies}
-                      </div>
-
-                      <div style={{ fontSize: '0.74rem', color: 'var(--color-gray-500)' }}>
-                        {row.nama_outlet}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: mode === 'aktivitas' ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)',
-                      gap: 8,
-                    }}
-                  >
-                    {(mode === 'aktivitas'
-                      ? [
-                          { icon: <FiCalendar size={12} />, label: 'Masuk', value: `${row.masuk}`, bg: 'var(--color-income-soft)', color: 'var(--color-income)' },
-                          { icon: <FiGift size={12} />, label: 'Voucher', value: `${row.voucherTotal.toFixed(0)} pcs`, bg: 'var(--color-voucher-soft)', color: 'var(--color-voucher)' },
-                          { icon: <FiTrendingUp size={12} />, label: 'Voucher/Hari', value: row.voucherAvg.toFixed(2), bg: 'var(--color-medical-soft)', color: 'var(--color-medical)' },
-                        ]
-                      : [
-                          { icon: <FiDollarSign size={12} />, label: 'Pemasukan Lain', value: formatRupiah(row.pemasukan), bg: 'var(--color-medical-soft)', color: 'var(--color-medical)' },
-                          { icon: <FiGift size={12} />, label: 'Dari Voucher', value: formatRupiah(row.pendapatanVoucher), bg: 'var(--color-voucher-soft)', color: 'var(--color-voucher)' },
-                          { icon: <FiTrendingDown size={12} />, label: 'Kasbon', value: formatRupiah(row.kasbon), bg: 'var(--color-expense-soft)', color: 'var(--color-expense)' },
-                          { icon: <FiAward size={12} />, label: 'Total Pendapatan', value: formatRupiah(row.total), bg: 'var(--color-income-soft)', color: 'var(--color-income)' },
-                        ]
-                    ).map((stat) => (
-                      <div
-                        key={stat.label}
-                        style={{
-                          background: stat.bg,
-                          borderRadius: 12,
-                          padding: '8px 10px',
-                        }}
-                      >
-                        <div
-                          className="d-flex align-items-center gap-1"
-                          style={{
-                            fontSize: '0.62rem',
-                            fontWeight: 700,
-                            color: stat.color,
-                            opacity: 0.85,
-                            textTransform: 'uppercase',
-                            marginBottom: 3,
-                          }}
-                        >
-                          {stat.icon}
-                          <span>{stat.label}</span>
-                        </div>
-
-                        <div
-                          style={{
-                            fontSize: '0.82rem',
-                            fontWeight: 700,
-                            color: stat.color,
-                            wordBreak: 'break-word',
-                          }}
-                        >
-                          {stat.value}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
+          {/* TABEL */}
+          {(
             <div className="card border-0 shadow-sm rounded-4" style={{ overflow: 'hidden' }}>
               <div
                 className="px-4 py-3 border-bottom d-flex align-items-center gap-2"
