@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import { AnimatePresence, motion } from 'framer-motion';
 import { supabase } from '../../../lib/supabaseClient';
@@ -26,11 +25,7 @@ const AddTransaksiPagePengawas = () => {
   // Pilihan pengawas dibawa antar halaman (URL + sesi) — lihat usePilihanTerakhir.
   const [selectedPengawasId, setSelectedPengawasId] = usePilihanTerakhir('pengawas');
   const [loading, setLoading] = useState(true);
-  // ?tab=riwayat (mis. dari tombol "Lihat riwayat transaksi" di Buku Kuning).
-  const [params] = useSearchParams();
-  const [activeTab, setActiveTab] = useState<'tambah' | 'riwayat'>(() =>
-    params.get('tab') === 'riwayat' ? 'riwayat' : 'tambah'
-  );
+  const [activeTab, setActiveTab] = useState<'tambah' | 'riwayat'>('tambah');
 
   const isMobile = useMediaQuery({ maxWidth: 768 });
 

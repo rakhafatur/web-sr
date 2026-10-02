@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
@@ -30,11 +29,7 @@ const AddTransaksiPage = () => {
   // Pilihan ladies dibawa antar halaman (URL + sesi) — lihat usePilihanTerakhir.
   const [selectedLadyId, setSelectedLadyId] = usePilihanTerakhir('ladies');
   const [loading, setLoading] = useState(true);
-  // ?tab=riwayat (mis. dari tombol "Lihat riwayat transaksi" di Buku Kuning).
-  const [params] = useSearchParams();
-  const [activeTab, setActiveTab] = useState<'tambah' | 'riwayat'>(() =>
-    params.get('tab') === 'riwayat' ? 'riwayat' : 'tambah'
-  );
+  const [activeTab, setActiveTab] = useState<'tambah' | 'riwayat'>('tambah');
 
   const isMobile = useMediaQuery({ maxWidth: 768 });
 

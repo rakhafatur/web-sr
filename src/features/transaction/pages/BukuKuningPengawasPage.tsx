@@ -434,7 +434,6 @@ const BukuKuningPengawasPage = () => {
         labelPengeluaran="Kasbon"
         onTutupBuku={handleTutupBuku}
         onCetak={handleExportPDF}
-        riwayatTo={`/add-transaksi-pengawas?pengawas=${selectedId}&tab=riwayat`}
       />
     );
   }

@@ -260,7 +260,6 @@ const BukuKuningPage = () => {
           labelPengeluaran="Pengeluaran"
           onTutupBuku={handleTutupBuku}
           onCetak={handleExportPDF}
-          riwayatTo={`/add-transaksi?ladies=${selectedLadyId}&tab=riwayat`}
           aksiTambahan={
             <button type="button" className="tm-btn" onClick={() => setShowGenerateModal(true)}>
               <FiRepeat aria-hidden />
