@@ -1031,3 +1031,56 @@
   height: 8px;
   border-radius: var(--radius-full);
 }
+
+/* =========================
+   REKAP — rentang tanggal, kepala & kaki kartu per grup
+========================= */
+
+.tm-date-range {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.tm-outlet-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 12px var(--space-4);
+  background: var(--color-surface-2);
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.tm-outlet-foot {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 10px var(--space-4) 12px;
+  background: var(--color-surface-2);
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.tm-outlet-foot > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tm-outlet-foot > div + div {
+  padding-left: var(--space-3);
+  border-left: 1px solid var(--color-gray-200);
+}
+
+.tm-outlet-foot span {
+  font-size: 12px;
+  color: var(--color-gray-600);
+}
+
+.tm-outlet-foot strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
