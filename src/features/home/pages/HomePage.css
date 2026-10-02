@@ -12,67 +12,6 @@
     var(--color-bg);
 }
 
-/* === SEMBUNYIKAN BG DI DESKTOP === */
-.home-bg-mobile {
-  display: none !important;
-}
-
-/* === MOBILE ONLY === */
-@media (max-width: 768px) {
-  .home-bg-mobile {
-    display: block !important;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    object-fit: cover;
-    object-position: center;
-    z-index: 0;
-    /* Foto asli terang & hangat — diredupkan + didesaturasi supaya
-       menyatu dengan latar gelap tema Mono, bokeh keemasan dipertahankan
-       samar sebagai aksen, bukan diubah jadi biru penuh. */
-    filter: brightness(0.38) saturate(0.75) contrast(1.05);
-    pointer-events: none;
-  }
-
-  .home-wrapper::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    background: linear-gradient(to bottom, rgba(var(--color-bg-rgb), 0.35) 0%, var(--color-bg) 92%);
-    pointer-events: none;
-  }
-
-  .home-overlay {
-    position: relative;
-    z-index: 2;
-    padding: 1.5rem 1rem;
-    border-radius: var(--radius-xl);
-    max-width: 720px;
-    width: 90%;
-    text-align: center;
-    background-color: rgba(var(--color-bg-rgb), 0.78);
-    color: var(--color-dark);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--color-gray-200);
-    box-shadow: var(--shadow-lg);
-  }
-
-  .home-title {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: var(--color-dark);
-  }
-
-  .home-subtitle {
-    font-size: 1rem;
-    color: var(--color-gray-600);
-  }
-}
-
 /* === DESKTOP ONLY === */
 @media (min-width: 769px) {
   .home-content {
@@ -163,4 +102,113 @@
     border-color: var(--color-green-light);
     color: var(--color-green);
   }
+}
+
+/* =========================================================
+   MOBILE — Home admin polos tanpa header (HomePageMobile, kelas ah-)
+========================================================= */
+
+.ah {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  /* Sisa ruang setelah padding bawah main (ruang navbar pil). */
+  min-height: calc(100vh - 96px - env(safe-area-inset-bottom));
+  min-height: calc(100dvh - 96px - env(safe-area-inset-bottom));
+  padding: calc(env(safe-area-inset-top) + var(--space-5)) 20px var(--space-6);
+  background: var(--color-bg);
+}
+
+.ah-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  /* Foto asli terang & hangat — diredupkan supaya menyatu dengan tema gelap. */
+  filter: brightness(0.42) saturate(0.8);
+  pointer-events: none;
+}
+
+/* Memudar ke warna latar di bawah, supaya teks terbaca & menyatu dengan
+   area navbar. */
+.ah::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(var(--color-bg-rgb), 0.15) 0%,
+    rgba(var(--color-bg-rgb), 0.35) 45%,
+    var(--color-bg) 100%
+  );
+  pointer-events: none;
+}
+
+.ah-top,
+.ah-hero {
+  position: relative;
+  z-index: 1;
+}
+
+.ah-top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.ah-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--color-white);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ah-brand {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-white);
+}
+
+/* Sapaan di bagian bawah layar. */
+.ah-hero {
+  margin-top: auto;
+}
+
+.ah-date {
+  font-size: 13px;
+  color: var(--color-gray-700);
+  margin-bottom: var(--space-3);
+}
+
+.ah-greet {
+  font-size: var(--font-size-lg);
+  color: var(--color-gray-800);
+}
+
+.ah-name {
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--color-dark);
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.ah-tagline {
+  font-size: 15px;
+  color: var(--color-gray-600);
+  margin: var(--space-3) 0 0;
 }
