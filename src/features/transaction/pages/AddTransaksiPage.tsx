@@ -12,7 +12,7 @@ import RiwayatTransaksi from '../components/RiwayatTransaksi';
 import FeaturePageHeader from '../../../components/FeaturePageHeader';
 import SearchableSelect from '../../../components/SearchableSelect';
 import MobilePageBar from '../../../components/MobilePageBar';
-import '../components/TransaksiMobile.css';
+import '../../../styles/mobile-admin.css';
 
 type Lady = {
   id: string;

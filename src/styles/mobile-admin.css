@@ -1,4 +1,4 @@
-/* Tampilan mobile halaman transaksi admin (mulai dari Transaksi Pengawas) —
+/* Tampilan mobile halaman admin (transaksi, buku kuning, data master) —
    kelas tm-. Gaya selaras dengan layar ladies: kartu radius-xl, pil, daftar
    berkelompok. Desktop tidak memakai kelas ini. */
 
@@ -576,4 +576,251 @@
 /* Baris pembuka (saldo bulan lalu) */
 .tm-row--opening .tm-row-title {
   color: var(--color-gray-700);
+}
+
+/* =========================
+   DATA MASTER — cari, daftar bisa dibuka, saklar, form di bottom sheet
+========================= */
+
+.tm-search {
+  position: relative;
+}
+
+.tm-search svg {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-gray-600);
+  font-size: 17px;
+  pointer-events: none;
+}
+
+.tm-search input {
+  width: 100%;
+  height: 48px;
+  padding: 0 var(--space-4) 0 44px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface);
+  color: var(--color-dark);
+  font-family: inherit;
+  /* 16px: di bawah itu Safari iOS men-zoom halaman saat fokus. */
+  font-size: 16px;
+  outline: none;
+}
+
+.tm-search input:focus {
+  border-color: var(--color-green);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.25);
+}
+
+/* Baris yang bisa dibuka (akordeon) di dalam .tm-group */
+.tm-item + .tm-item {
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.tm-row-btn {
+  width: 100%;
+  border: none;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tm-row-btn:active {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.tm-row-btn:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: -2px;
+}
+
+.tm-chevron {
+  flex-shrink: 0;
+  color: var(--color-gray-600);
+  font-size: 18px;
+  transition: transform 0.2s ease;
+}
+
+.tm-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+.tm-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.tm-status.is-on {
+  background: var(--color-income-soft);
+  color: var(--color-income);
+}
+
+.tm-status.is-off {
+  background: var(--color-gray-200);
+  color: var(--color-gray-700);
+}
+
+.tm-detail {
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  background: var(--color-surface-2);
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.tm-detail-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-gray-600);
+  margin-bottom: var(--space-2);
+}
+
+.tm-subitem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 10px 12px;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-gray-200);
+}
+
+.tm-subitem + .tm-subitem {
+  margin-top: var(--space-2);
+}
+
+.tm-icon-btn {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-2);
+  color: var(--color-gray-700);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tm-icon-btn--danger {
+  color: var(--color-expense);
+}
+
+.tm-icon-btn:active {
+  transform: scale(0.94);
+}
+
+.tm-dashed-btn {
+  width: 100%;
+  height: 44px;
+  margin-top: var(--space-2);
+  border: 1px dashed var(--color-gray-300);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-green);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.tm-btn--danger {
+  color: var(--color-expense);
+  border-color: var(--color-danger);
+}
+
+.tm-actions--top {
+  margin-top: var(--space-3);
+}
+
+/* Saklar on/off (pengganti checkbox) */
+.tm-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 52px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface-2);
+  font-size: 15px;
+  color: var(--color-dark);
+}
+
+.tm-switch {
+  position: relative;
+  flex-shrink: 0;
+  width: 50px;
+  height: 30px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--color-gray-300);
+  transition: background-color 0.2s ease;
+}
+
+.tm-switch::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: var(--color-white);
+  transition: transform 0.2s ease;
+}
+
+.tm-switch[aria-checked='true'] {
+  background: var(--color-income);
+}
+
+.tm-switch[aria-checked='true']::after {
+  transform: translateX(20px);
+}
+
+.tm-switch:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: 2px;
+}
+
+.tm-help {
+  font-size: 12px;
+  color: var(--color-gray-600);
+  margin-top: 6px;
+}
+
+/* Input dengan awalan (mis. Rp) */
+.tm-prefix {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-gray-600);
+  pointer-events: none;
+}
+
+.tm-input--prefix {
+  padding-left: 48px;
+}
+
+/* Isi form di dalam bottom sheet (ModalWrapper) — field pertama tanpa jarak atas. */
+.tm-sheet-form > .tm-field:first-child {
+  margin-top: 0;
+}
+
+.tm-sheet-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
 }

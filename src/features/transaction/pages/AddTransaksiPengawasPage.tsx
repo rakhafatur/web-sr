@@ -8,7 +8,7 @@ import RiwayatTransaksiPengawas from '../components/RiwayatTransaksiPengawas';
 import FeaturePageHeader from '../../../components/FeaturePageHeader';
 import SearchableSelect from '../../../components/SearchableSelect';
 import MobilePageBar from '../../../components/MobilePageBar';
-import '../components/TransaksiMobile.css';
+import '../../../styles/mobile-admin.css';
 
 import { FiUsers, FiCreditCard, FiClock } from 'react-icons/fi';
 

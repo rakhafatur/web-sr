@@ -10,7 +10,7 @@ import {
 } from 'react-icons/fi';
 import Pagination from '../../../components/Pagination';
 import SwipeToDelete from '../../../components/SwipeToDelete';
-import './TransaksiMobile.css';
+import '../../../styles/mobile-admin.css';
 
 type Transaksi = {
   id: string;

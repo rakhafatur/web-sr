@@ -36,3 +36,18 @@ button.mpb-btn:focus-visible {
   outline: 2px solid var(--color-green);
   outline-offset: 2px;
 }
+
+/* Aksi utama (mis. +): lingkaran biru solid, tampil 40px dalam area 44px. */
+.mpb-btn--action {
+  background: var(--color-primary);
+  color: var(--color-white);
+  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  margin: 2px;
+}
+
+button.mpb-btn--action:active {
+  background: var(--color-primary-hover);
+  transform: scale(0.95);
+}

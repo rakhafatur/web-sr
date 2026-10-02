@@ -31,6 +31,7 @@ const RUTE_ADMIN_TANPA_HEADER = [
   '/add-transaksi-pengawas',
   '/buku-kuning',
   '/buku-kuning-pengawas',
+  '/outlet',
 ];
 
 function MainLayout({ children }: { children: React.ReactNode }) {

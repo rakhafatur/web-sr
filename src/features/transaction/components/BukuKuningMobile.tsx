@@ -5,7 +5,7 @@ import SearchableSelect, { type SearchableOption } from '../../../components/Sea
 import ListLoadingState from '../../../components/ListLoadingState';
 import MonthPill from '../../ladies/components/MonthPill';
 import { ringkasanBukuKuning, type SaldoRow } from '../utils/saldoBerjalan';
-import './TransaksiMobile.css';
+import '../../../styles/mobile-admin.css';
 
 export type GayaBaris = {
   label: string;

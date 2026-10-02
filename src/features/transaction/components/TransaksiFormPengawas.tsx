@@ -15,7 +15,7 @@ import {
   FiCalendar,
   FiEdit3,
 } from 'react-icons/fi';
-import './TransaksiMobile.css';
+import '../../../styles/mobile-admin.css';
 
 /** Tombol simpan versi mobile: pil solid tanpa gradien (selaras layar lain). */
 const TOMBOL_PIL: React.CSSProperties = {

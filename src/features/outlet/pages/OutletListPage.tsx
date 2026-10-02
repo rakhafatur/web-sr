@@ -9,6 +9,7 @@ import {
   FiTrash2,
   FiChevronDown,
   FiChevronUp,
+  FiSearch,
 } from 'react-icons/fi';
 
 import { supabase } from '../../../lib/supabaseClient';
@@ -26,6 +27,8 @@ import FormField from '../../../components/FormField';
 import Button from '../../../components/Button';
 import Pagination from '../../../components/Pagination';
 import EmptyState from '../../../components/EmptyState';
+import MobilePageBar from '../../../components/MobilePageBar';
+import '../../../styles/mobile-admin.css';
 
 type Outlet = {
   id: string;
@@ -147,7 +150,7 @@ const OutletListPage = () => {
   const handleDeleteOutlet = (o: Outlet) =>
     remove(
       o.id,
-      `❗ Hapus outlet "${o.nama_outlet}"? Tier harganya juga akan ikut terhapus.`
+      `Hapus outlet "${o.nama_outlet}"? Tier harganya juga akan ikut terhapus.`
     );
 
   // ===== Tier modal =====
@@ -210,7 +213,7 @@ const OutletListPage = () => {
   };
 
   const handleDeleteTier = async (t: OutletTier) => {
-    if (!(await confirmDialog(`❗ Hapus tier "${t.tier_name || 'Flat'}"?`))) return;
+    if (!(await confirmDialog(`Hapus tier "${t.tier_name || 'Flat'}"?`))) return;
 
     const { error } = await supabase.from('outlet_pricing').delete().eq('id', t.id);
 
@@ -221,6 +224,400 @@ const OutletListPage = () => {
 
     invalidateTiers(t.outlet_id);
   };
+
+  const wajib = (
+    <>
+      <span className="tm-req" aria-hidden="true">*</span>
+      <span className="visually-hidden"> (wajib diisi)</span>
+    </>
+  );
+
+  const tutupOutletModal = () => setOutletModal({ show: false, editId: null });
+
+  /** Footer bottom sheet versi mobile: dua tombol pil sama lebar. */
+  const footerMobile = (onBatal: () => void, onSimpan: () => void) => (
+    <div className="tm-sheet-footer">
+      <button type="button" className="tm-btn" onClick={onBatal}>Batal</button>
+      <button type="button" className="tm-btn tm-btn--primary" onClick={onSimpan}>Simpan</button>
+    </div>
+  );
+
+  /** Saklar Aktif (pengganti checkbox) untuk form mobile. */
+  const saklarAktif = (id: string, checked: boolean, onToggle: () => void) => (
+    <div className="tm-field">
+      <div className="tm-switch-row">
+        <span id={id}>Aktif</span>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={checked}
+          aria-labelledby={id}
+          className="tm-switch"
+          onClick={onToggle}
+        />
+      </div>
+    </div>
+  );
+
+  const modals = (
+    <>
+      {/* OUTLET MODAL */}
+      <ModalWrapper
+        show={outletModal.show}
+        title={<div className="fw-bold">{outletModal.editId ? 'Edit Outlet' : 'Tambah Outlet'}</div>}
+        onClose={tutupOutletModal}
+        footer={
+          isMobile ? (
+            footerMobile(tutupOutletModal, handleSaveOutlet)
+          ) : (
+            <div className="d-flex gap-2 justify-content-end">
+              <Button variant="secondary" onClick={tutupOutletModal}>
+                Batal
+              </Button>
+              <Button variant="primary" onClick={handleSaveOutlet}>
+                Simpan
+              </Button>
+            </div>
+          )
+        }
+      >
+        {isMobile ? (
+          <div className="tm-sheet-form">
+            <div className="tm-field">
+              <label htmlFor="outlet-nama" className="tm-label">Nama outlet{wajib}</label>
+              <div className="tm-input-wrap">
+                <FiMapPin className="tm-input-icon" aria-hidden />
+                <input
+                  id="outlet-nama"
+                  type="text"
+                  className={`tm-input ${fieldSalah === 'nama_outlet' ? 'is-invalid' : ''}`}
+                  aria-invalid={fieldSalah === 'nama_outlet' || undefined}
+                  value={outletForm.nama_outlet}
+                  onChange={(e) => {
+                    setFieldSalah(null);
+                    setOutletForm((p) => ({ ...p, nama_outlet: e.target.value }));
+                  }}
+                />
+              </div>
+            </div>
+            {saklarAktif('outlet-aktif', outletForm.is_active, () =>
+              setOutletForm((p) => ({ ...p, is_active: !p.is_active }))
+            )}
+          </div>
+        ) : (
+          <>
+            <FormField
+              label="Nama Outlet"
+              name="nama_outlet"
+              required
+              invalid={fieldSalah === 'nama_outlet'}
+              value={outletForm.nama_outlet}
+              onChange={(e) => {
+                setFieldSalah(null);
+                setOutletForm((p) => ({ ...p, nama_outlet: e.target.value }));
+              }}
+            />
+
+            <FormField label="Status">
+              <div className="form-check">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="outlet-active"
+                  checked={outletForm.is_active}
+                  onChange={(e) => setOutletForm((p) => ({ ...p, is_active: e.target.checked }))}
+                />
+                <label className="form-check-label" htmlFor="outlet-active">
+                  Aktif
+                </label>
+              </div>
+            </FormField>
+          </>
+        )}
+      </ModalWrapper>
+
+      {/* TIER MODAL */}
+      <ModalWrapper
+        show={tierModal.show}
+        title={<div className="fw-bold">{tierModal.editId ? 'Edit Tier' : 'Tambah Tier'}</div>}
+        onClose={closeTierModal}
+        footer={
+          isMobile ? (
+            footerMobile(closeTierModal, handleSaveTier)
+          ) : (
+            <div className="d-flex gap-2 justify-content-end">
+              <Button variant="secondary" onClick={closeTierModal}>
+                Batal
+              </Button>
+              <Button variant="primary" onClick={handleSaveTier}>
+                Simpan
+              </Button>
+            </div>
+          )
+        }
+      >
+        {isMobile ? (
+          <div className="tm-sheet-form">
+            <div className="tm-field">
+              <label htmlFor="tier-nama" className="tm-label">Nama tier (opsional)</label>
+              <input
+                id="tier-nama"
+                type="text"
+                className="tm-input"
+                style={{ paddingLeft: 'var(--space-4)' }}
+                placeholder="Mis. Reguler, VIP"
+                value={tierForm.tier_name}
+                onChange={(e) => setTierForm((p) => ({ ...p, tier_name: e.target.value }))}
+              />
+              <div className="tm-help">Kosongkan kalau outlet ini hanya punya satu harga.</div>
+            </div>
+
+            <div className="tm-field">
+              <label htmlFor="tier-harga" className="tm-label">Harga ladies{wajib}</label>
+              <div className="tm-input-wrap">
+                <span className="tm-prefix" aria-hidden>Rp</span>
+                <input
+                  id="tier-harga"
+                  type="number"
+                  inputMode="numeric"
+                  className={`tm-input tm-input--prefix ${fieldSalah === 'harga_ladies' ? 'is-invalid' : ''}`}
+                  aria-invalid={fieldSalah === 'harga_ladies' || undefined}
+                  value={tierForm.harga_ladies}
+                  onChange={(e) => {
+                    setFieldSalah((prev) => (prev === 'harga_ladies' ? null : prev));
+                    setTierForm((p) => ({ ...p, harga_ladies: e.target.value }));
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="tm-field">
+              <label htmlFor="tier-untung" className="tm-label">Untung{wajib}</label>
+              <div className="tm-input-wrap">
+                <span className="tm-prefix" aria-hidden>Rp</span>
+                <input
+                  id="tier-untung"
+                  type="number"
+                  inputMode="numeric"
+                  className={`tm-input tm-input--prefix ${fieldSalah === 'untung' ? 'is-invalid' : ''}`}
+                  aria-invalid={fieldSalah === 'untung' || undefined}
+                  value={tierForm.untung}
+                  onChange={(e) => {
+                    setFieldSalah((prev) => (prev === 'untung' ? null : prev));
+                    setTierForm((p) => ({ ...p, untung: e.target.value }));
+                  }}
+                />
+              </div>
+            </div>
+
+            {saklarAktif('tier-aktif', tierForm.is_active, () =>
+              setTierForm((p) => ({ ...p, is_active: !p.is_active }))
+            )}
+          </div>
+        ) : (
+          <>
+            <FormField
+              label="Nama Tier (kosongkan kalau outlet ini tidak punya tier)"
+              name="tier_name"
+              value={tierForm.tier_name}
+              onChange={(e) => setTierForm((p) => ({ ...p, tier_name: e.target.value }))}
+            />
+
+            <FormField
+              label="Harga Ladies (Rp)"
+              name="harga_ladies"
+              required
+              invalid={fieldSalah === 'harga_ladies'}
+              type="number"
+              value={tierForm.harga_ladies}
+              onChange={(e) => {
+                setFieldSalah((prev) => (prev === 'harga_ladies' ? null : prev));
+                setTierForm((p) => ({ ...p, harga_ladies: e.target.value }));
+              }}
+            />
+
+            <FormField
+              label="Untung (Rp)"
+              name="untung"
+              required
+              invalid={fieldSalah === 'untung'}
+              type="number"
+              value={tierForm.untung}
+              onChange={(e) => {
+                setFieldSalah((prev) => (prev === 'untung' ? null : prev));
+                setTierForm((p) => ({ ...p, untung: e.target.value }));
+              }}
+            />
+
+            <FormField label="Status">
+              <div className="form-check">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="tier-active"
+                  checked={tierForm.is_active}
+                  onChange={(e) => setTierForm((p) => ({ ...p, is_active: e.target.checked }))}
+                />
+                <label className="form-check-label" htmlFor="tier-active">
+                  Aktif
+                </label>
+              </div>
+            </FormField>
+          </>
+        )}
+      </ModalWrapper>
+    </>
+  );
+
+  // Mobile: tampilan baru selaras halaman admin lain (Header app dicabut di
+  // MainLayout). Desktop: tampilan lama di bawah. CRUD-nya sama.
+  if (isMobile) {
+    const tiers = tiersQuery.data ?? [];
+
+    return (
+      <PullToRefresh onRefresh={refetch}>
+        <div className="tm-page">
+          <MobilePageBar
+            title="Outlet"
+            backTo="/"
+            action={{ icon: <FiPlus />, label: 'Tambah outlet', onClick: openAddOutlet }}
+          />
+
+          <div className="tm-stack">
+            <div className="tm-search">
+              <FiSearch aria-hidden />
+              <input
+                type="search"
+                placeholder="Cari outlet..."
+                aria-label="Cari outlet"
+                value={keyword}
+                onChange={(e) => {
+                  setPage(1);
+                  setKeyword(e.target.value);
+                }}
+              />
+            </div>
+
+            {loading ? (
+              <ListLoadingState label="Memuat data outlet" />
+            ) : outlets.length === 0 ? (
+              <div className="tm-group">
+                <div className="tm-empty">
+                  <span className="tm-empty-icon" aria-hidden><FiMapPin /></span>
+                  <div className="tm-empty-title">{keyword ? 'Outlet tidak ditemukan' : 'Belum ada outlet'}</div>
+                  <div className="tm-empty-text">
+                    {keyword ? 'Coba kata kunci lain.' : 'Ketuk tombol + di kanan atas untuk menambah outlet.'}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="tm-group">
+                {outlets.map((o) => {
+                  const isExpanded = expandedId === o.id;
+
+                  return (
+                    <div key={o.id} className="tm-item">
+                      <button
+                        type="button"
+                        className="tm-row tm-row-btn"
+                        aria-expanded={isExpanded}
+                        onClick={() => setExpandedId(isExpanded ? null : o.id)}
+                      >
+                        <span
+                          className="tm-row-icon"
+                          style={{ background: 'var(--color-green-lighter)', color: 'var(--color-green)' }}
+                          aria-hidden
+                        >
+                          <FiMapPin />
+                        </span>
+                        <div className="tm-row-main">
+                          <div className="tm-row-title">{o.nama_outlet}</div>
+                          <div className="tm-row-sub">
+                            <span className={`tm-status ${o.is_active ? 'is-on' : 'is-off'}`}>
+                              {o.is_active ? 'Aktif' : 'Nonaktif'}
+                            </span>
+                          </div>
+                        </div>
+                        <FiChevronDown className={`tm-chevron ${isExpanded ? 'is-open' : ''}`} aria-hidden />
+                      </button>
+
+                      {isExpanded && (
+                        <div className="tm-detail">
+                          <div className="tm-detail-title">Tier harga</div>
+
+                          {tiersQuery.isLoading ? (
+                            <ListLoadingState label="Memuat tier harga" rows={2} />
+                          ) : tiers.length === 0 ? (
+                            <div className="tm-help" style={{ marginTop: 0 }}>
+                              Belum ada tier harga — transaksi voucher untuk outlet ini akan diblokir
+                              sampai tier ditambahkan.
+                            </div>
+                          ) : (
+                            tiers.map((t) => (
+                              <div key={t.id} className="tm-subitem">
+                                <div className="tm-row-main">
+                                  <div className="tm-row-title">
+                                    {t.tier_name || 'Flat (tanpa tier)'}{' '}
+                                    {!t.is_active && <span className="tm-status is-off">Nonaktif</span>}
+                                  </div>
+                                  <div className="tm-row-sub" style={{ whiteSpace: 'normal' }}>
+                                    Ladies Rp{t.harga_ladies.toLocaleString('id-ID')} · Untung Rp
+                                    {t.untung.toLocaleString('id-ID')}
+                                  </div>
+                                </div>
+                                <button
+                                  type="button"
+                                  className="tm-icon-btn"
+                                  onClick={() => openEditTier(t)}
+                                  aria-label={`Ubah tier ${t.tier_name || 'Flat'}`}
+                                >
+                                  <FiEdit2 />
+                                </button>
+                                <button
+                                  type="button"
+                                  className="tm-icon-btn tm-icon-btn--danger"
+                                  onClick={() => handleDeleteTier(t)}
+                                  aria-label={`Hapus tier ${t.tier_name || 'Flat'}`}
+                                >
+                                  <FiTrash2 />
+                                </button>
+                              </div>
+                            ))
+                          )}
+
+                          <button type="button" className="tm-dashed-btn" onClick={() => openAddTier(o.id)}>
+                            <FiPlus aria-hidden />
+                            Tambah tier
+                          </button>
+
+                          <div className="tm-actions tm-actions--top">
+                            <button type="button" className="tm-btn" onClick={() => openEditOutlet(o)}>
+                              <FiEdit2 aria-hidden />
+                              Ubah outlet
+                            </button>
+                            <button type="button" className="tm-btn tm-btn--danger" onClick={() => handleDeleteOutlet(o)}>
+                              <FiTrash2 aria-hidden />
+                              Hapus
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {totalPages > 1 && (
+              <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
+            )}
+          </div>
+        </div>
+
+        {modals}
+      </PullToRefresh>
+    );
+  }
 
   return (
     <PullToRefresh onRefresh={refetch}>
@@ -388,114 +785,7 @@ const OutletListPage = () => {
         </div>
       </div>
 
-      {/* OUTLET MODAL */}
-      <ModalWrapper
-        show={outletModal.show}
-        title={<div className="fw-bold">{outletModal.editId ? 'Edit Outlet' : 'Tambah Outlet'}</div>}
-        onClose={() => setOutletModal({ show: false, editId: null })}
-        footer={
-          <div className="d-flex gap-2 justify-content-end">
-            <Button variant="secondary" onClick={() => setOutletModal({ show: false, editId: null })}>
-              Batal
-            </Button>
-            <Button variant="primary" onClick={handleSaveOutlet}>
-              Simpan
-            </Button>
-          </div>
-        }
-      >
-        <FormField
-          label="Nama Outlet"
-          name="nama_outlet"
-          required
-          invalid={fieldSalah === 'nama_outlet'}
-          value={outletForm.nama_outlet}
-          onChange={(e) => {
-            setFieldSalah(null);
-            setOutletForm((p) => ({ ...p, nama_outlet: e.target.value }));
-          }}
-        />
-
-        <FormField label="Status">
-          <div className="form-check">
-            <input
-              type="checkbox"
-              className="form-check-input"
-              id="outlet-active"
-              checked={outletForm.is_active}
-              onChange={(e) => setOutletForm((p) => ({ ...p, is_active: e.target.checked }))}
-            />
-            <label className="form-check-label" htmlFor="outlet-active">
-              Aktif
-            </label>
-          </div>
-        </FormField>
-      </ModalWrapper>
-
-      {/* TIER MODAL */}
-      <ModalWrapper
-        show={tierModal.show}
-        title={<div className="fw-bold">{tierModal.editId ? 'Edit Tier' : 'Tambah Tier'}</div>}
-        onClose={closeTierModal}
-        footer={
-          <div className="d-flex gap-2 justify-content-end">
-            <Button variant="secondary" onClick={closeTierModal}>
-              Batal
-            </Button>
-            <Button variant="primary" onClick={handleSaveTier}>
-              Simpan
-            </Button>
-          </div>
-        }
-      >
-        <FormField
-          label="Nama Tier (kosongkan kalau outlet ini tidak punya tier)"
-          name="tier_name"
-          value={tierForm.tier_name}
-          onChange={(e) => setTierForm((p) => ({ ...p, tier_name: e.target.value }))}
-        />
-
-        <FormField
-          label="Harga Ladies (Rp)"
-          name="harga_ladies"
-          required
-          invalid={fieldSalah === 'harga_ladies'}
-          type="number"
-          value={tierForm.harga_ladies}
-          onChange={(e) => {
-            setFieldSalah((prev) => (prev === 'harga_ladies' ? null : prev));
-            setTierForm((p) => ({ ...p, harga_ladies: e.target.value }));
-          }}
-        />
-
-        <FormField
-          label="Untung (Rp)"
-          name="untung"
-          required
-          invalid={fieldSalah === 'untung'}
-          type="number"
-          value={tierForm.untung}
-          onChange={(e) => {
-            setFieldSalah((prev) => (prev === 'untung' ? null : prev));
-            setTierForm((p) => ({ ...p, untung: e.target.value }));
-          }}
-        />
-
-        <FormField label="Status">
-          <div className="form-check">
-            <input
-              type="checkbox"
-              className="form-check-input"
-              id="tier-active"
-              checked={tierForm.is_active}
-              onChange={(e) => setTierForm((p) => ({ ...p, is_active: e.target.checked }))}
-            />
-            <label className="form-check-label" htmlFor="tier-active">
-              Aktif
-            </label>
-          </div>
-        </FormField>
-      </ModalWrapper>
+      {modals}
     </div>
     </PullToRefresh>
   );
