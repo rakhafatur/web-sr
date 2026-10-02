@@ -123,3 +123,16 @@ export function totalPerOutlet(group: OutletGroup) {
     { totalVoucher: 0, totalNominal: 0, totalUntung: 0 }
   );
 }
+
+/** Total gabungan beberapa outlet — dipakai ringkasan mobile saat admin
+    memilih satu outlet (atau semua). */
+export function totalBeberapaOutlet(groups: OutletGroup[]) {
+  return groups.map(totalPerOutlet).reduce(
+    (acc, t) => ({
+      totalVoucher: acc.totalVoucher + t.totalVoucher,
+      totalNominal: acc.totalNominal + t.totalNominal,
+      totalUntung: acc.totalUntung + t.totalUntung,
+    }),
+    { totalVoucher: 0, totalNominal: 0, totalUntung: 0 }
+  );
+}

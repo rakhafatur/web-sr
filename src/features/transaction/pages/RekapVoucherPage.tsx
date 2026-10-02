@@ -13,6 +13,7 @@ import ListLoadingState from '../../../components/ListLoadingState';
 import {
   agregasiRekapVoucher,
   totalPerOutlet,
+  totalBeberapaOutlet,
   type VoucherRow,
   type OutletGroup,
 } from '../utils/rekapVoucher';
@@ -39,19 +40,27 @@ const RekapVoucherPage = () => {
     maxWidth: 768,
   });
 
-  const [start, setStart] = useState(
-    dayjs()
-      .startOf('week')
-      .add(1, 'day')
-      .format('YYYY-MM-DD')
+  // Desktop: bawaan minggu ini. Mobile: kosong — admin mengisi sendiri.
+  const [start, setStart] = useState(() =>
+    isMobile
+      ? ''
+      : dayjs()
+          .startOf('week')
+          .add(1, 'day')
+          .format('YYYY-MM-DD')
   );
 
-  const [end, setEnd] = useState(
-    dayjs()
-      .endOf('week')
-      .add(1, 'day')
-      .format('YYYY-MM-DD')
+  const [end, setEnd] = useState(() =>
+    isMobile
+      ? ''
+      : dayjs()
+          .endOf('week')
+          .add(1, 'day')
+          .format('YYYY-MM-DD')
   );
+
+  // Pilihan outlet di mobile ('' = semua) — muncul setelah data ditampilkan.
+  const [outletDipilih, setOutletDipilih] = useState('');
 
   const [dataPerOutlet, setDataPerOutlet] =
     useState<OutletGroup[]>([]);
@@ -108,6 +117,7 @@ const RekapVoucherPage = () => {
     setTotalNominalAll(hasil.totalNominal);
     setTotalUntungAll(hasil.totalUntung);
 
+    setOutletDipilih('');
     setSudahCari(true);
     setMemuat(false);
   };
@@ -121,20 +131,26 @@ const RekapVoucherPage = () => {
     const fmt = (d: string) =>
       new Date(`${d}T00:00:00`).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
 
-    // Pintasan periode. "Minggu ini" = definisi bawaan halaman ini (state awal).
-    const PINTASAN = [
-      {
-        label: 'Minggu ini',
-        start: dayjs().startOf('week').add(1, 'day'),
-        end: dayjs().endOf('week').add(1, 'day'),
-      },
-      { label: 'Bulan ini', start: dayjs().startOf('month'), end: dayjs().endOf('month') },
-      {
-        label: 'Bulan lalu',
-        start: dayjs().subtract(1, 'month').startOf('month'),
-        end: dayjs().subtract(1, 'month').endOf('month'),
-      },
-    ].map((p) => ({ ...p, start: p.start.format('YYYY-MM-DD'), end: p.end.format('YYYY-MM-DD') }));
+    const tanggalLengkap = !!start && !!end;
+    const tanggalTerbalik = tanggalLengkap && start > end;
+
+    const tampilkan = () => {
+      if (!tanggalLengkap) {
+        toast.error('Isi tanggal Dari dan Sampai dulu.');
+        return;
+      }
+      if (tanggalTerbalik) {
+        toast.error('Tanggal "Dari" tidak boleh setelah "Sampai".');
+        return;
+      }
+      fetchData();
+    };
+
+    // Data yang ditampilkan & dicetak mengikuti pilihan outlet.
+    const outletTampil = outletDipilih
+      ? dataPerOutlet.filter((o) => o.outlet === outletDipilih)
+      : dataPerOutlet;
+    const ringkas = totalBeberapaOutlet(outletTampil);
 
     return (
       <div className="tm-page">
@@ -142,28 +158,8 @@ const RekapVoucherPage = () => {
 
         <div className="tm-stack">
           <div className="tm-card">
-            <div className="tm-chips" role="group" aria-label="Pintasan periode">
-              {PINTASAN.map((p) => {
-                const aktif = start === p.start && end === p.end;
-                return (
-                  <button
-                    key={p.label}
-                    type="button"
-                    className={`tm-chip ${aktif ? 'is-active' : ''}`}
-                    aria-pressed={aktif}
-                    onClick={() => {
-                      setStart(p.start);
-                      setEnd(p.end);
-                    }}
-                  >
-                    {p.label}
-                  </button>
-                );
-              })}
-            </div>
-
             <div className="tm-date-range">
-              <div className="tm-field">
+              <div className="tm-field" style={{ marginTop: 0 }}>
                 <label htmlFor="rekap-dari" className="tm-label">Dari</label>
                 <input
                   id="rekap-dari"
@@ -173,12 +169,13 @@ const RekapVoucherPage = () => {
                   onChange={(e) => setStart(e.target.value)}
                 />
               </div>
-              <div className="tm-field">
+              <div className="tm-field" style={{ marginTop: 0 }}>
                 <label htmlFor="rekap-sampai" className="tm-label">Sampai</label>
                 <input
                   id="rekap-sampai"
                   type="date"
-                  className="tm-input tm-input--no-icon"
+                  min={start || undefined}
+                  className={`tm-input tm-input--no-icon ${tanggalTerbalik ? 'is-invalid' : ''}`}
                   value={end}
                   onChange={(e) => setEnd(e.target.value)}
                 />
@@ -190,14 +187,18 @@ const RekapVoucherPage = () => {
                 type="button"
                 className="tm-btn tm-btn--primary"
                 style={{ width: '100%' }}
-                onClick={fetchData}
-                disabled={memuat}
+                onClick={tampilkan}
+                disabled={memuat || !tanggalLengkap}
               >
                 <FiRefreshCw aria-hidden />
                 {memuat ? 'Memuat...' : 'Tampilkan'}
               </button>
               {dataPerOutlet.length > 0 && (
-                <button type="button" className="tm-btn" onClick={handleExportPDF}>
+                <button
+                  type="button"
+                  className="tm-btn"
+                  onClick={() => cetakRekapVoucherPdf({ dataPerOutlet: outletTampil, start, end })}
+                >
                   <FiDownload aria-hidden />
                   Unduh PDF
                 </button>
@@ -212,7 +213,7 @@ const RekapVoucherPage = () => {
               <div className="tm-empty">
                 <span className="tm-empty-icon" aria-hidden><FiCalendar /></span>
                 <div className="tm-empty-title">Pilih periode dulu</div>
-                <div className="tm-empty-text">Tentukan rentang tanggal, lalu tekan Tampilkan.</div>
+                <div className="tm-empty-text">Isi tanggal Dari dan Sampai, lalu tekan Tampilkan.</div>
               </div>
             </div>
           ) : dataPerOutlet.length === 0 ? (
@@ -225,25 +226,44 @@ const RekapVoucherPage = () => {
             </div>
           ) : (
             <>
+              <div className="tm-chips tm-chips--scroll" role="radiogroup" aria-label="Pilih outlet">
+                {[{ value: '', label: 'Semua outlet' }, ...dataPerOutlet.map((o) => ({ value: o.outlet, label: o.outlet }))].map(
+                  (o) => (
+                    <button
+                      key={o.value || 'semua'}
+                      type="button"
+                      role="radio"
+                      aria-checked={outletDipilih === o.value}
+                      className={`tm-chip ${outletDipilih === o.value ? 'is-active' : ''}`}
+                      onClick={() => setOutletDipilih(o.value)}
+                    >
+                      {o.label}
+                    </button>
+                  )
+                )}
+              </div>
+
               <section className="tm-hero" aria-label="Ringkasan rekap">
-                <div className="tm-hero-label">Total didapat</div>
-                <div className="tm-hero-value">{formatRupiah(totalNominalAll + totalUntungAll)}</div>
+                <div className="tm-hero-label">
+                  Total didapat{outletDipilih ? ` · ${outletDipilih}` : ''}
+                </div>
+                <div className="tm-hero-value">{formatRupiah(ringkas.totalNominal + ringkas.totalUntung)}</div>
                 <div className="tm-hero-sub">
-                  {totalVoucherAll.toFixed(0)} pcs · {fmt(start)} – {fmt(end)}
+                  {ringkas.totalVoucher.toFixed(0)} pcs · {fmt(start)} – {fmt(end)}
                 </div>
                 <div className="tm-hero-split">
                   <div>
                     <div className="tm-hero-split-label">Total ladies</div>
-                    <div className="tm-hero-split-value">{formatRupiah(totalNominalAll)}</div>
+                    <div className="tm-hero-split-value">{formatRupiah(ringkas.totalNominal)}</div>
                   </div>
                   <div>
                     <div className="tm-hero-split-label">Total hasil</div>
-                    <div className="tm-hero-split-value">{formatRupiah(totalUntungAll)}</div>
+                    <div className="tm-hero-split-value">{formatRupiah(ringkas.totalUntung)}</div>
                   </div>
                 </div>
               </section>
 
-              {dataPerOutlet.map((outletGroup) => {
+              {outletTampil.map((outletGroup) => {
                 const { totalVoucher, totalNominal, totalUntung } = totalPerOutlet(outletGroup);
 
                 return (

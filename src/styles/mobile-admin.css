@@ -1084,3 +1084,22 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* Chip satu baris yang bisa digeser horizontal (mis. daftar outlet). */
+.tm-chips--scroll {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 -16px;
+  padding: 0 16px 2px;
+}
+
+.tm-chips--scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.tm-chips--scroll .tm-chip {
+  flex-shrink: 0;
+  white-space: nowrap;
+}

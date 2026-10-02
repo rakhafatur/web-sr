@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   agregasiRekapVoucher,
   totalPerOutlet,
+  totalBeberapaOutlet,
   untungBaris,
   outletBaris,
   type VoucherRow,
@@ -192,5 +193,33 @@ describe('totalPerOutlet', () => {
       totalNominal: 0,
       totalUntung: 0,
     });
+  });
+});
+
+describe('totalBeberapaOutlet', () => {
+  const hasil = agregasiRekapVoucher([
+    baris({ nama: 'Mecha', outletLadies: 'SA', pcs: 2, jumlah: 300_000, untung: 150_000 }),
+    baris({ nama: 'Jovanka', outletLadies: 'SB', pcs: 1, jumlah: 150_000, untung: 75_000 }),
+  ]);
+
+  it('semua outlet = total keseluruhan dari agregasi', () => {
+    expect(totalBeberapaOutlet(hasil.perOutlet)).toEqual({
+      totalVoucher: hasil.totalVoucher,
+      totalNominal: hasil.totalNominal,
+      totalUntung: hasil.totalUntung,
+    });
+  });
+
+  it('satu outlet = total outlet itu saja', () => {
+    const sb = hasil.perOutlet.filter((o) => o.outlet === 'SB');
+    expect(totalBeberapaOutlet(sb)).toEqual({
+      totalVoucher: 1,
+      totalNominal: 150_000,
+      totalUntung: 75_000,
+    });
+  });
+
+  it('nol untuk daftar kosong', () => {
+    expect(totalBeberapaOutlet([])).toEqual({ totalVoucher: 0, totalNominal: 0, totalUntung: 0 });
   });
 });
