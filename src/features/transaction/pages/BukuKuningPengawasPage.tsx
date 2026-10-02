@@ -21,6 +21,7 @@ import {
 } from '../utils/pdfReport';
 import { hitungSaldoBerjalan, ringkasanBukuKuning, type SaldoRow } from '../utils/saldoBerjalan';
 import BukuKuningMobile from '../components/BukuKuningMobile';
+import { usePilihanTerakhir } from '../../../hooks/usePilihanTerakhir';
 
 const monthNames = [
   'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
@@ -36,7 +37,8 @@ const formatRupiah = (value: number | string) => {
 type Row = SaldoRow;
 
 const BukuKuningPengawasPage = () => {
-  const [selectedId, setSelectedId] = useState('');
+  // Pilihan pengawas dibawa antar halaman (URL + sesi) — lihat usePilihanTerakhir.
+  const [selectedId, setSelectedId] = usePilihanTerakhir('pengawas');
   const [bulan, setBulan] = useState(new Date().getMonth() + 1);
   const [tahun, setTahun] = useState(new Date().getFullYear());
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -432,6 +434,7 @@ const BukuKuningPengawasPage = () => {
         labelPengeluaran="Kasbon"
         onTutupBuku={handleTutupBuku}
         onCetak={handleExportPDF}
+        riwayatTo={`/add-transaksi-pengawas?pengawas=${selectedId}&tab=riwayat`}
       />
     );
   }

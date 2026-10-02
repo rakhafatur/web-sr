@@ -15,6 +15,7 @@ import { monthNames, formatRupiah, pad, getLastDay } from '../utils/biayaBulanan
 import { hitungSaldoBerjalan, type SaldoRow } from '../utils/saldoBerjalan';
 import { cetakBukuKuningPdf } from '../utils/bukuKuningPdf';
 import BukuKuningMobile from '../components/BukuKuningMobile';
+import { usePilihanTerakhir } from '../../../hooks/usePilihanTerakhir';
 
 type Lady = {
   id: string;
@@ -33,7 +34,8 @@ type Absensi = {
 };
 
 const BukuKuningPage = () => {
-  const [selectedLadyId, setSelectedLadyId] = useState('');
+  // Pilihan ladies dibawa antar halaman (URL + sesi) — lihat usePilihanTerakhir.
+  const [selectedLadyId, setSelectedLadyId] = usePilihanTerakhir('ladies');
   const [bulan, setBulan] = useState(new Date().getMonth() + 1);
   const [tahun, setTahun] = useState(new Date().getFullYear());
   const [showGenerateModal, setShowGenerateModal] = useState(false);
@@ -258,6 +260,7 @@ const BukuKuningPage = () => {
           labelPengeluaran="Pengeluaran"
           onTutupBuku={handleTutupBuku}
           onCetak={handleExportPDF}
+          riwayatTo={`/add-transaksi?ladies=${selectedLadyId}&tab=riwayat`}
           aksiTambahan={
             <button type="button" className="tm-btn" onClick={() => setShowGenerateModal(true)}>
               <FiRepeat aria-hidden />

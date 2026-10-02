@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
-import { FiBook, FiPrinter, FiUsers } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
+import { FiBook, FiChevronRight, FiList, FiPrinter, FiUsers } from 'react-icons/fi';
 import MobilePageBar from '../../../components/MobilePageBar';
 import SearchableSelect, { type SearchableOption } from '../../../components/SearchableSelect';
 import ListLoadingState from '../../../components/ListLoadingState';
@@ -28,6 +29,9 @@ type Props = {
   onCetak: () => void;
   /** Aksi tambahan di atas (mis. Generate Biaya Bulanan). */
   aksiTambahan?: ReactNode;
+  /** Tujuan tombol "Lihat riwayat transaksi" (tab Riwayat halaman Transaksi
+      untuk orang yang sama). */
+  riwayatTo?: string;
 };
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -60,7 +64,9 @@ const BukuKuningMobile = ({
   onTutupBuku,
   onCetak,
   aksiTambahan,
+  riwayatTo,
 }: Props) => {
+  const navigate = useNavigate();
   const ringkasan = ringkasanBukuKuning(rows);
   const labelPeriode = new Date(tahun, bulan - 1, 1).toLocaleDateString('id-ID', {
     month: 'long',
@@ -150,6 +156,19 @@ const BukuKuningMobile = ({
                 Cetak PDF
               </button>
             </div>
+
+            {riwayatTo && (
+              <button type="button" className="tm-link-row" onClick={() => navigate(riwayatTo)}>
+                <span className="tm-row-icon" style={{ background: 'var(--color-green-lighter)', color: 'var(--color-green)' }} aria-hidden>
+                  <FiList />
+                </span>
+                <span className="tm-row-main">
+                  <span className="tm-row-title">Lihat riwayat transaksi</span>
+                  <span className="tm-row-sub" style={{ display: 'block' }}>Daftar lengkap transaksi orang ini</span>
+                </span>
+                <FiChevronRight className="tm-chevron" aria-hidden />
+              </button>
+            )}
 
           </>
         )}

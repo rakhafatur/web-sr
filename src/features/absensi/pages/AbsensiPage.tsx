@@ -20,6 +20,7 @@ import Button from '../../../components/Button';
 import FeaturePageHeader from '../../../components/FeaturePageHeader';
 import SearchableSelect from '../../../components/SearchableSelect';
 import MobilePageBar from '../../../components/MobilePageBar';
+import { usePilihanTerakhir } from '../../../hooks/usePilihanTerakhir';
 import ModalWrapper from '../../../components/ModalWrapper';
 import SwipeToDelete from '../../../components/SwipeToDelete';
 import MonthPill from '../../ladies/components/MonthPill';
@@ -114,8 +115,8 @@ const AbsensiPage = () => {
     maxWidth: 768,
   });
 
-  const [selectedLadyId, setSelectedLadyId] =
-    useState('');
+  // Pilihan ladies dibawa antar halaman (URL + sesi) — lihat usePilihanTerakhir.
+  const [selectedLadyId, setSelectedLadyId] = usePilihanTerakhir('ladies');
 
   const [tanggal, setTanggal] = useState(
     dayjs().format('YYYY-MM-DD')

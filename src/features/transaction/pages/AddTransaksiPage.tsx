@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
@@ -12,6 +13,7 @@ import RiwayatTransaksi from '../components/RiwayatTransaksi';
 import FeaturePageHeader from '../../../components/FeaturePageHeader';
 import SearchableSelect from '../../../components/SearchableSelect';
 import MobilePageBar from '../../../components/MobilePageBar';
+import { usePilihanTerakhir } from '../../../hooks/usePilihanTerakhir';
 import '../../../styles/mobile-admin.css';
 
 type Lady = {
@@ -24,9 +26,14 @@ type Lady = {
 
 const AddTransaksiPage = () => {
   const [ladiesList, setLadiesList] = useState<Lady[]>([]);
-  const [selectedLadyId, setSelectedLadyId] = useState('');
+  // Pilihan ladies dibawa antar halaman (URL + sesi) — lihat usePilihanTerakhir.
+  const [selectedLadyId, setSelectedLadyId] = usePilihanTerakhir('ladies');
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'tambah' | 'riwayat'>('tambah');
+  // ?tab=riwayat (mis. dari tombol "Lihat riwayat transaksi" di Buku Kuning).
+  const [params] = useSearchParams();
+  const [activeTab, setActiveTab] = useState<'tambah' | 'riwayat'>(() =>
+    params.get('tab') === 'riwayat' ? 'riwayat' : 'tambah'
+  );
 
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
@@ -55,6 +62,15 @@ const AddTransaksiPage = () => {
 
     fetchLadies();
   }, []);
+
+  // Pilihan yang diingat bisa sudah tidak ada di daftar (mis. ladies
+  // dinonaktifkan) — kosongkan supaya muncul "Pilih ladies dulu", bukan
+  // layar kosong.
+  useEffect(() => {
+    if (!loading && selectedLadyId && !ladiesList.some((l) => l.id === selectedLadyId)) {
+      setSelectedLadyId('');
+    }
+  }, [loading, selectedLadyId, ladiesList, setSelectedLadyId]);
 
   const opsiLadies = ladiesList.map((lady) => ({
     value: lady.id,

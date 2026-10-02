@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import { AnimatePresence, motion } from 'framer-motion';
 import { supabase } from '../../../lib/supabaseClient';
@@ -8,6 +9,7 @@ import RiwayatTransaksiPengawas from '../components/RiwayatTransaksiPengawas';
 import FeaturePageHeader from '../../../components/FeaturePageHeader';
 import SearchableSelect from '../../../components/SearchableSelect';
 import MobilePageBar from '../../../components/MobilePageBar';
+import { usePilihanTerakhir } from '../../../hooks/usePilihanTerakhir';
 import '../../../styles/mobile-admin.css';
 
 import { FiUsers, FiCreditCard, FiClock } from 'react-icons/fi';
@@ -21,9 +23,14 @@ type Pengawas = {
 
 const AddTransaksiPagePengawas = () => {
   const [pengawasList, setPengawasList] = useState<Pengawas[]>([]);
-  const [selectedPengawasId, setSelectedPengawasId] = useState('');
+  // Pilihan pengawas dibawa antar halaman (URL + sesi) — lihat usePilihanTerakhir.
+  const [selectedPengawasId, setSelectedPengawasId] = usePilihanTerakhir('pengawas');
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'tambah' | 'riwayat'>('tambah');
+  // ?tab=riwayat (mis. dari tombol "Lihat riwayat transaksi" di Buku Kuning).
+  const [params] = useSearchParams();
+  const [activeTab, setActiveTab] = useState<'tambah' | 'riwayat'>(() =>
+    params.get('tab') === 'riwayat' ? 'riwayat' : 'tambah'
+  );
 
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
@@ -51,6 +58,15 @@ const AddTransaksiPagePengawas = () => {
 
     fetchPengawas();
   }, []);
+
+  // Pilihan yang diingat bisa sudah tidak ada di daftar (mis. pengawas
+  // dinonaktifkan) — kosongkan supaya muncul "Pilih pengawas dulu", bukan
+  // layar kosong.
+  useEffect(() => {
+    if (!loading && selectedPengawasId && !pengawasList.some((p) => p.id === selectedPengawasId)) {
+      setSelectedPengawasId('');
+    }
+  }, [loading, selectedPengawasId, pengawasList, setSelectedPengawasId]);
 
   const opsiPengawas = pengawasList.map((p) => ({
     value: p.id,
