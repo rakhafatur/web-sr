@@ -85,6 +85,9 @@
   }
 
   .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     background-color: var(--color-surface-2);
     color: var(--color-dark);
     padding: 0.5rem 1rem;

@@ -6,7 +6,7 @@ import '../../styles/mobile-admin.css';
 type Props = {
   title: string;
   backTo: string;
-  /** Diisi di halaman detail saat mode lihat — tombol ✏️ di bar atas. */
+  /** Diisi di halaman detail saat mode lihat — tombol ubah (pensil) di bar atas. */
   onEdit?: () => void;
   /** Identitas di atas form (halaman detail). */
   identity?: { name: string; sub?: string };

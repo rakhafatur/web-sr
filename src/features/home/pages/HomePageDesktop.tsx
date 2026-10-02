@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { FiBarChart2, FiCalendar, FiCreditCard } from 'react-icons/fi';
 import './HomePage.css';
 import heroImage from '../../../assets/sr-home-char2.jpg';
 
@@ -43,9 +44,9 @@ function HomePageDesktop() {
             >
               <p className="home-action-label">Hari ini mau cek apa dulu?</p>
               <div className="home-pills">
-                <button className="pill" onClick={() => navigate('/add-transaksi')}>🎟️ Transaksi Ladies</button>
-                <button className="pill" onClick={() => navigate('/absensi')}>📅 Absensi</button>
-                <button className="pill" onClick={() => navigate('/rekap-voucher')}>📊 Rekap Voucher</button>
+                <button className="pill" onClick={() => navigate('/add-transaksi')}><FiCreditCard aria-hidden /> Transaksi Ladies</button>
+                <button className="pill" onClick={() => navigate('/absensi')}><FiCalendar aria-hidden /> Absensi</button>
+                <button className="pill" onClick={() => navigate('/rekap-voucher')}><FiBarChart2 aria-hidden /> Rekap Voucher</button>
               </div>
             </motion.div>
           </div>

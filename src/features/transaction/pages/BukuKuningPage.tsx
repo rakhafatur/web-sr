@@ -444,7 +444,7 @@ const BukuKuningPage = () => {
 
       {!selectedLadyId && (
         <div className="alert alert-warning text-dark bg-warning-subtle border-warning">
-          ⚠️ Silakan pilih ladies
+          Silakan pilih ladies
           terlebih dahulu.
         </div>
       )}
@@ -516,7 +516,6 @@ const BukuKuningPage = () => {
             )
           ) : (
             <EmptyState
-              icon="ℹ️"
               title="Tidak ada transaksi di bulan ini"
             />
           )}

@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
+import { useMediaQuery } from 'react-responsive';
 import 'react-toastify/dist/ReactToastify.css';
 
 const LoginPage = lazy(() => import('./features/auth/pages/LoginPage'));
@@ -50,6 +51,7 @@ import ConfirmDialogHost from './components/ConfirmDialog';
 import SessionGuard from './components/SessionGuard';
 
 function App() {
+  const isMobile = useMediaQuery({ maxWidth: 768 });
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
@@ -128,7 +130,17 @@ function App() {
         </Suspense>
       </BrowserRouter>
 
-      <ToastContainer position="top-right" autoClose={4000} newestOnTop />
+      {/* Gaya toast di global.css (bagian TOAST). Mobile: atas-tengah di bawah
+          notch supaya tidak menutupi tombol kembali di bar atas. */}
+      <ToastContainer
+        position={isMobile ? 'top-center' : 'top-right'}
+        autoClose={3000}
+        hideProgressBar
+        closeButton={false}
+        newestOnTop
+        limit={3}
+        theme="dark"
+      />
       <ConfirmDialogHost />
     </>
   );

@@ -44,7 +44,7 @@ const SmartChatLadiesPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const getJumlahVoucherBulanIni = async (): Promise<ChatReport | string> => {
-    if (!ladiesId) return "❌ Data ladies tidak ditemukan.";
+    if (!ladiesId) return "Data ladies tidak ditemukan.";
 
     const startOfMonth = dayjs().startOf("month").format("YYYY-MM-DD");
     const endOfMonth = dayjs().endOf("month").format("YYYY-MM-DD");
@@ -56,7 +56,7 @@ const SmartChatLadiesPage: React.FC = () => {
       .gte("tanggal", startOfMonth)
       .lte("tanggal", endOfMonth);
 
-    if (error || !data) return "❌ Gagal mengambil data voucher.";
+    if (error || !data) return "Gagal mengambil data voucher.";
 
     const totalPcs = data.reduce(
       (sum, v) => sum + (v.jumlah_voucher || 0),
@@ -87,7 +87,7 @@ const SmartChatLadiesPage: React.FC = () => {
   };
 
   const getAbsenBulanIni = async (): Promise<ChatReport | string> => {
-    if (!ladiesId) return "❌ Data ladies tidak ditemukan.";
+    if (!ladiesId) return "Data ladies tidak ditemukan.";
 
     const startOfMonth = dayjs().startOf("month").format("YYYY-MM-DD");
     const endOfMonth = dayjs().endOf("month").format("YYYY-MM-DD");
@@ -99,7 +99,7 @@ const SmartChatLadiesPage: React.FC = () => {
       .gte("tanggal", startOfMonth)
       .lte("tanggal", endOfMonth);
 
-    if (error || !data) return "❌ Gagal mengambil data absen.";
+    if (error || !data) return "Gagal mengambil data absen.";
 
     const totalHadir = data.filter((a) => a.status === "KERJA").length;
     const totalMens = data.filter((a) => a.status === "MENS").length;

@@ -6,6 +6,7 @@ import {
   FiUsers,
   FiCreditCard,
   FiClock,
+  FiAlertCircle,
 } from 'react-icons/fi';
 import { supabase } from '../../../lib/supabaseClient';
 import TransaksiForm from '../components/TransaksiForm';
@@ -233,9 +234,10 @@ const AddTransaksiPage = () => {
               }}
             >
               <div className="d-flex align-items-start gap-3">
-                <div style={{ fontSize: 24 }}>
-                  ⚠️
-                </div>
+                <FiAlertCircle
+                  aria-hidden
+                  style={{ fontSize: 22, flexShrink: 0, color: 'var(--color-voucher)', marginTop: 2 }}
+                />
 
                 <div>
                   <div className="fw-bold mb-1">

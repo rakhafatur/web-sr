@@ -519,7 +519,7 @@ const BukuKuningPengawasPage = () => {
         </div>
       )}
 
-      {!selectedId && <div className="alert alert-warning text-dark bg-warning-subtle border-warning">⚠️ Silakan pilih pengawas terlebih dahulu.</div>}
+      {!selectedId && <div className="alert alert-warning text-dark bg-warning-subtle border-warning">Silakan pilih pengawas terlebih dahulu.</div>}
 
       {selectedId && (
         <>
@@ -553,7 +553,6 @@ const BukuKuningPengawasPage = () => {
             )
           ) : (
             <EmptyState
-              icon="ℹ️"
               title="Tidak ada transaksi di bulan ini"
             />
           )}

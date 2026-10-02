@@ -12,7 +12,7 @@ import MobilePageBar from '../../../components/MobilePageBar';
 import { usePilihanTerakhir } from '../../../hooks/usePilihanTerakhir';
 import '../../../styles/mobile-admin.css';
 
-import { FiUsers, FiCreditCard, FiClock } from 'react-icons/fi';
+import { FiUsers, FiCreditCard, FiClock, FiAlertCircle } from 'react-icons/fi';
 
 type Pengawas = {
   id: string;
@@ -217,7 +217,10 @@ const AddTransaksiPagePengawas = () => {
               }}
             >
               <div className="d-flex align-items-start gap-3">
-                <div style={{ fontSize: 24 }}>⚠️</div>
+                <FiAlertCircle
+                  aria-hidden
+                  style={{ fontSize: 22, flexShrink: 0, color: 'var(--color-voucher)', marginTop: 2 }}
+                />
 
                 <div>
                   <div className="fw-bold mb-1">

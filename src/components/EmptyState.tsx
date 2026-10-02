@@ -1,5 +1,9 @@
+import { ReactNode } from 'react';
+import { FiInbox } from 'react-icons/fi';
+
 type Props = {
-  icon?: string;
+  /** Ikon vektor (react-icons). Bawaan: kotak masuk. */
+  icon?: ReactNode;
   title: string;
   description?: string;
 };
@@ -9,9 +13,23 @@ type Props = {
     halaman pakai versi custom emoji+judul (RiwayatTransaksi), sebagian pakai
     <div className="alert alert-info"> polos satu baris (PerformaLadies,
     BukuKuning) — sekarang satu bahasa visual. */
-const EmptyState = ({ icon = '📭', title, description }: Props) => (
-  <div className="text-center py-5" style={{ color: 'var(--color-gray-500)' }}>
-    <div style={{ fontSize: 60 }}>{icon}</div>
+const EmptyState = ({ icon = <FiInbox />, title, description }: Props) => (
+  <div className="text-center py-5" style={{ color: 'var(--color-gray-600)' }}>
+    <div
+      aria-hidden
+      className="d-inline-flex align-items-center justify-content-center"
+      style={{
+        width: 64,
+        height: 64,
+        borderRadius: 'var(--radius-full)',
+        background: 'var(--color-green-lighter)',
+        border: '1px solid var(--color-green-light)',
+        color: 'var(--color-green)',
+        fontSize: 26,
+      }}
+    >
+      {icon}
+    </div>
 
     <h5 className="fw-bold mt-3" style={{ color: 'var(--color-dark)' }}>
       {title}

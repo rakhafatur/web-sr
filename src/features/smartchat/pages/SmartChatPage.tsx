@@ -116,7 +116,7 @@ const SmartChatPage: React.FC = () => {
       dayjs().endOf("month").format("YYYY-MM-DD")
     );
 
-    if (error) return "❌ Gagal mengambil data voucher bulan ini.";
+    if (error) return "Gagal mengambil data voucher bulan ini.";
 
     return {
       title: "Voucher Bulan Ini",
@@ -137,7 +137,7 @@ const SmartChatPage: React.FC = () => {
       akhir.format("YYYY-MM-DD")
     );
 
-    if (error) return "❌ Gagal mengambil data voucher minggu ini.";
+    if (error) return "Gagal mengambil data voucher minggu ini.";
 
     return {
       title: "Voucher Minggu Ini",
@@ -158,7 +158,7 @@ const SmartChatPage: React.FC = () => {
       akhir.format("YYYY-MM-DD")
     );
 
-    if (error) return "❌ Gagal mengambil data voucher minggu lalu.";
+    if (error) return "Gagal mengambil data voucher minggu lalu.";
 
     return {
       title: "Voucher Minggu Lalu",
@@ -181,7 +181,7 @@ const SmartChatPage: React.FC = () => {
       .eq("status", "active");
 
     if (ladiesError || !ladiesData)
-      return "❌ Gagal mengambil data ladies.";
+      return "Gagal mengambil data ladies.";
 
     const { data: voucherData } = await supabase
       .from("vouchers")
@@ -254,7 +254,7 @@ const SmartChatPage: React.FC = () => {
       .eq("status", "active");
 
     if (ladiesError || !ladiesData)
-      return "❌ Gagal mengambil data ladies.";
+      return "Gagal mengambil data ladies.";
 
     const { data: absenData } = await supabase
       .from("absensi")

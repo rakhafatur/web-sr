@@ -484,7 +484,7 @@ const RekapVoucherPage = () => {
 
       {!memuat && !sudahCari && (
         <EmptyState
-          icon="🗓️"
+          icon={<FiCalendar />}
           title="Pilih periode dulu"
           description="Tentukan rentang tanggal di atas, lalu tekan Tampilkan untuk melihat rekapnya."
         />
@@ -492,7 +492,6 @@ const RekapVoucherPage = () => {
 
       {!memuat && sudahCari && dataPerOutlet.length === 0 && (
         <EmptyState
-          icon="📭"
           title="Tidak ada voucher di periode ini"
           description="Coba ubah rentang tanggalnya."
         />

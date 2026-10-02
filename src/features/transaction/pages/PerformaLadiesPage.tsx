@@ -396,7 +396,7 @@ const PerformaLadiesPage = () => {
       {/* EMPTY STATE */}
       {!loading && data.length === 0 && (
         <EmptyState
-          icon="ℹ️"
+          icon={<FiUsers />}
           title="Belum ada data ladies aktif"
           description="Tambahkan data ladies untuk melihat performa di halaman ini"
         />
