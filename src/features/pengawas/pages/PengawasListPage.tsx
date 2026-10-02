@@ -3,7 +3,7 @@ import { useEntityList } from '../../../hooks/useEntityList';
 import DataTable from '../../../components/DataTable';
 import ActionIconButton from '../../../components/ActionIconButton';
 import Pagination from '../../../components/Pagination';
-import PengawasCardList from '../components/PengawasCardList';
+import MobileListPage from '../../../components/mobile/MobileListPage';
 import { useMediaQuery } from 'react-responsive';
 import { FiPlus, FiEdit2, FiTrash2, FiUser } from 'react-icons/fi';
 import ListPageHeader from '../../../components/ListPageHeader';
@@ -46,6 +46,38 @@ const PengawasListPage = () => {
 
   const handleDelete = (id: string) => remove(id, 'Yakin ingin hapus pengawas ini?');
 
+  // Mobile: MobileListPage (Header app dicabut di MainLayout). Desktop: lama.
+  if (isMobile) {
+    return (
+      <MobileListPage
+        title="Pengawas"
+        backTo="/"
+        addLabel="Tambah pengawas"
+        onAdd={() => navigate('/pengawas-create')}
+        keyword={keyword}
+        onKeywordChange={(v) => {
+          setPage(1);
+          setKeyword(v);
+        }}
+        searchPlaceholder="Cari pengawas..."
+        loading={loading}
+        items={pengawasList.map((p) => ({
+          id: p.id,
+          title: p.nama_lengkap,
+          sub: p.nama_panggilan ? `Panggilan: ${p.nama_panggilan}` : undefined,
+        }))}
+        onOpen={(id) => navigate(`/pengawas-detail/${id}`)}
+        onDelete={handleDelete}
+        emptyIcon={<FiUser />}
+        emptyTitle="Belum ada pengawas"
+        page={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        onRefresh={refetch}
+      />
+    );
+  }
+
   return (
     <PullToRefresh onRefresh={refetch}>
     <div
@@ -62,7 +94,6 @@ const PengawasListPage = () => {
           <HeaderActionButton
             icon={<FiPlus />}
             onClick={() => navigate('/pengawas-create')}
-            fullWidth={isMobile}
           >
             Tambah Pengawas
           </HeaderActionButton>
@@ -85,12 +116,6 @@ const PengawasListPage = () => {
         <div className="p-2 p-md-3">
           {loading ? (
             <ListLoadingState label="Memuat data pengawas" />
-          ) : isMobile ? (
-            <PengawasCardList
-              pengawas={pengawasList}
-              onEdit={(p) => navigate(`/pengawas-detail/${p.id}`)}
-              onDelete={handleDelete}
-            />
           ) : (
             <DataTable
               columns={[

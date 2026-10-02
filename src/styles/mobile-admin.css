@@ -964,3 +964,39 @@
 .tm-input--trailing {
   padding-right: 52px;
 }
+
+/* =========================
+   KOLOM FORM UMUM (src/components/mobile/MobileFields)
+========================= */
+
+.tm-input--no-icon {
+  padding-left: var(--space-4);
+}
+
+.tm-input--no-icon[readonly] {
+  padding-left: var(--space-4);
+}
+
+/* Teks panjang (alamat). */
+.tm-input--area {
+  height: auto;
+  min-height: 96px;
+  padding-top: 14px;
+  padding-bottom: 14px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.tm-input--area[readonly] {
+  min-height: 0;
+  resize: none;
+}
+
+/* Ikon di baris pertama untuk teks panjang, bukan di tengah. */
+.tm-input-icon--top {
+  top: 26px;
+}
+
+.tm-chip:disabled {
+  opacity: 0.4;
+}

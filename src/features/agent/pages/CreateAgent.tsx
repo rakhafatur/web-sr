@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiUser } from 'react-icons/fi';
+import { FiUser, FiBriefcase } from 'react-icons/fi';
+import { useMediaQuery } from 'react-responsive';
+import MobileFormPage from '../../../components/mobile/MobileFormPage';
+import { MobileTextField } from '../../../components/mobile/MobileFields';
 import { toast } from 'react-toastify';
 
 import FormField from '../../../components/FormField';
@@ -17,6 +20,8 @@ const CreateAgent = () => {
   const [form, setForm] = useState({ nama_agent: '' });
   const [loading, setLoading] = useState(false);
   const [fieldSalah, setFieldSalah] = useState<string | null>(null);
+  // Mobile: MobileFormPage (Header app dicabut di MainLayout). Desktop: lama.
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -54,6 +59,32 @@ const CreateAgent = () => {
       setLoading(false);
     }
   };
+
+  if (isMobile) {
+    return (
+      <MobileFormPage
+        title="Tambah Agent"
+        backTo="/agent"
+        sectionTitle="Informasi agent"
+        footer={
+          <button type="button" className="tm-btn tm-btn--primary" onClick={handleSubmit} disabled={loading}>
+            {loading ? 'Menyimpan...' : 'Simpan Agent'}
+          </button>
+        }
+      >
+        <MobileTextField
+          id="agent-nama"
+          label="Nama agent"
+          name="nama_agent"
+          icon={<FiBriefcase />}
+          required
+          invalid={fieldSalah === 'nama_agent'}
+          value={form.nama_agent}
+          onChange={handleChange}
+        />
+      </MobileFormPage>
+    );
+  }
 
   return (
     <div className="page-shell py-4 px-md-4 px-3" style={{ maxWidth: 760 }}>

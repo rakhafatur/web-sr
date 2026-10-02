@@ -10,7 +10,7 @@ import HeaderActionButton from '../../../components/HeaderActionButton';
 import ListPageToolbar from '../../../components/ListPageToolbar';
 import ListLoadingState from '../../../components/ListLoadingState';
 import PullToRefresh from '../../../components/PullToRefresh';
-import LadiesCardList from '../components/LadiesCardList';
+import MobileListPage from '../../../components/mobile/MobileListPage';
 
 export type Lady = {
   id: string;
@@ -47,7 +47,46 @@ const LadiesListPage = () => {
     'id, nama_lengkap, nama_ladies, nama_outlet, pin, status'
   );
 
-  const handleDelete = (id: string) => remove(id, '❗ Yakin ingin hapus data ladies ini?');
+  const handleDelete = (id: string) => remove(id, 'Yakin ingin hapus data ladies ini?');
+
+  const BADGE_STATUS: Record<string, { label: string; tone: 'on' | 'off' | 'warn' }> = {
+    active: { label: 'Aktif', tone: 'on' },
+    'not active': { label: 'Nonaktif', tone: 'warn' },
+    resign: { label: 'Resign', tone: 'off' },
+  };
+
+  // Mobile: MobileListPage (Header app dicabut di MainLayout). Desktop: lama.
+  if (isMobile) {
+    return (
+      <MobileListPage
+        title="Ladies"
+        backTo="/"
+        addLabel="Tambah ladies"
+        onAdd={() => navigate('/ladies-create')}
+        keyword={keyword}
+        onKeywordChange={(v) => {
+          setPage(1);
+          setKeyword(v);
+        }}
+        searchPlaceholder="Cari nama atau outlet..."
+        loading={loading}
+        items={ladiesList.map((l) => ({
+          id: l.id,
+          title: l.nama_ladies,
+          sub: [l.nama_outlet, l.pin && `PIN ${l.pin}`].filter(Boolean).join(' · '),
+          badge: BADGE_STATUS[l.status],
+        }))}
+        onOpen={(id) => navigate(`/ladies-detail/${id}`)}
+        onDelete={handleDelete}
+        emptyIcon={<FiUser />}
+        emptyTitle="Belum ada ladies"
+        page={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        onRefresh={refetch}
+      />
+    );
+  }
 
   return (
     <PullToRefresh onRefresh={refetch}>
@@ -60,7 +99,6 @@ const LadiesListPage = () => {
           <HeaderActionButton
             icon={<FiPlus />}
             onClick={() => navigate('/ladies-create')}
-            fullWidth={isMobile}
           >
             Tambah Ladies
           </HeaderActionButton>
@@ -83,12 +121,6 @@ const LadiesListPage = () => {
         <div className="p-2 p-md-3">
           {loading ? (
             <ListLoadingState label="Memuat data ladies" />
-          ) : isMobile ? (
-            <LadiesCardList
-              ladies={ladiesList}
-              onEdit={(l) => navigate(`/ladies-detail/${l.id}`)}
-              onDelete={handleDelete}
-            />
           ) : (
             <DataTable
               columns={[

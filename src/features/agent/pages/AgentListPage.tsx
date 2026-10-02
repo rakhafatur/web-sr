@@ -3,7 +3,7 @@ import { useEntityList } from '../../../hooks/useEntityList';
 import DataTable from '../../../components/DataTable';
 import ActionIconButton from '../../../components/ActionIconButton';
 import Pagination from '../../../components/Pagination';
-import AgentCardList from '../components/AgentCardList';
+import MobileListPage from '../../../components/mobile/MobileListPage';
 import { useMediaQuery } from 'react-responsive';
 import { FiPlus, FiEdit2, FiTrash2, FiUser } from 'react-icons/fi';
 import ListPageHeader from '../../../components/ListPageHeader';
@@ -36,6 +36,34 @@ const AgentListPage = () => {
 
   const handleDelete = (id: string) => remove(id, 'Yakin ingin hapus agent ini?');
 
+  // Mobile: MobileListPage (Header app dicabut di MainLayout). Desktop: lama.
+  if (isMobile) {
+    return (
+      <MobileListPage
+        title="Agent"
+        backTo="/"
+        addLabel="Tambah agent"
+        onAdd={() => navigate('/agent-create')}
+        keyword={keyword}
+        onKeywordChange={(v) => {
+          setPage(1);
+          setKeyword(v);
+        }}
+        searchPlaceholder="Cari agent..."
+        loading={loading}
+        items={agentList.map((a) => ({ id: a.id, title: a.nama_agent }))}
+        onOpen={(id) => navigate(`/agent-detail/${id}`)}
+        onDelete={handleDelete}
+        emptyIcon={<FiUser />}
+        emptyTitle="Belum ada agent"
+        page={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        onRefresh={refetch}
+      />
+    );
+  }
+
   return (
     <PullToRefresh onRefresh={refetch}>
     <div
@@ -52,7 +80,6 @@ const AgentListPage = () => {
           <HeaderActionButton
             icon={<FiPlus />}
             onClick={() => navigate('/agent-create')}
-            fullWidth={isMobile}
           >
             Tambah Agent
           </HeaderActionButton>
@@ -75,12 +102,6 @@ const AgentListPage = () => {
         <div className="p-2 p-md-3">
           {loading ? (
             <ListLoadingState label="Memuat data agent" />
-          ) : isMobile ? (
-            <AgentCardList
-              agents={agentList}
-              onEdit={(a) => navigate(`/agent-detail/${a.id}`)}
-              onDelete={handleDelete}
-            />
           ) : (
             <DataTable
               columns={[

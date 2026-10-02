@@ -39,6 +39,15 @@ const RUTE_ADMIN_TANPA_HEADER = [
   '/user-create',
   '/user-approval',
   '/user-detail/',
+  '/pengawas',
+  '/pengawas-create',
+  '/pengawas-detail/',
+  '/agent',
+  '/agent-create',
+  '/agent-detail/',
+  '/ladies',
+  '/ladies-create',
+  '/ladies-detail/',
 ];
 
 const cocokRute = (daftar: string[], pathname: string) =>

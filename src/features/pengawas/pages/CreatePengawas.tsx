@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiUser } from 'react-icons/fi';
+import { FiUser, FiTag, FiCreditCard, FiCalendar, FiMapPin } from 'react-icons/fi';
+import { useMediaQuery } from 'react-responsive';
+import MobileFormPage from '../../../components/mobile/MobileFormPage';
+import { MobileTextField } from '../../../components/mobile/MobileFields';
 import { toast } from 'react-toastify';
 
 import FormField from '../../../components/FormField';
@@ -34,6 +37,8 @@ const CreatePengawas = () => {
 
   const [loading, setLoading] = useState(false);
   const [fieldSalah, setFieldSalah] = useState<string | null>(null);
+  // Mobile: MobileFormPage (Header app dicabut di MainLayout). Desktop: lama.
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -77,6 +82,76 @@ const CreatePengawas = () => {
       setLoading(false);
     }
   };
+
+  if (isMobile) {
+    return (
+      <MobileFormPage
+        title="Tambah Pengawas"
+        backTo="/pengawas"
+        sectionTitle="Informasi pengawas"
+        footer={
+          <button type="button" className="tm-btn tm-btn--primary" onClick={handleSubmit} disabled={loading}>
+            {loading ? 'Menyimpan...' : 'Simpan Pengawas'}
+          </button>
+        }
+      >
+        <MobileTextField
+          id="pengawas-nama-lengkap"
+          label="Nama lengkap"
+          name="nama_lengkap"
+          icon={<FiUser />}
+          required
+          invalid={fieldSalah === 'nama_lengkap'}
+          value={form.nama_lengkap}
+          onChange={handleChange}
+        />
+        <MobileTextField
+          id="pengawas-panggilan"
+          label="Nama panggilan"
+          name="nama_panggilan"
+          icon={<FiTag />}
+          value={form.nama_panggilan}
+          onChange={handleChange}
+        />
+        <MobileTextField
+          id="pengawas-ktp"
+          label="Nomor KTP"
+          name="nomor_ktp"
+          icon={<FiCreditCard />}
+          inputMode="numeric"
+          value={form.nomor_ktp}
+          onChange={handleChange}
+        />
+        <MobileTextField
+          id="pengawas-lahir"
+          label="Tanggal lahir"
+          name="tanggal_lahir"
+          type="date"
+          icon={<FiCalendar />}
+          value={form.tanggal_lahir}
+          onChange={handleChange}
+        />
+        <MobileTextField
+          id="pengawas-alamat"
+          label="Alamat"
+          name="alamat"
+          type="textarea"
+          icon={<FiMapPin />}
+          value={form.alamat}
+          onChange={handleChange}
+        />
+        <MobileTextField
+          id="pengawas-bergabung"
+          label="Tanggal bergabung"
+          name="tanggal_bergabung"
+          type="date"
+          icon={<FiCalendar />}
+          value={form.tanggal_bergabung}
+          onChange={handleChange}
+        />
+      </MobileFormPage>
+    );
+  }
 
   return (
     <div className="page-shell py-4 px-md-4 px-3" style={{ maxWidth: 760 }}>

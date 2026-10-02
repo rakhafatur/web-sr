@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FiUser } from 'react-icons/fi';
+import { FiUser, FiTag, FiKey, FiCreditCard, FiCalendar, FiMapPin, FiHome, FiBriefcase } from 'react-icons/fi';
+import { useMediaQuery } from 'react-responsive';
+import MobileFormPage from '../../../components/mobile/MobileFormPage';
+import { MobileTextField, MobileSelectField, MobileChoiceField } from '../../../components/mobile/MobileFields';
 import { toast } from 'react-toastify';
 
 import FormField from '../../../components/FormField';
@@ -40,6 +43,14 @@ const emptyForm: FormType = {
   agent_id: null,
 };
 
+
+/** Nilai status yang disimpan form admin; label untuk tampilan mobile. */
+const STATUS_LADIES = [
+  { value: 'active', label: 'Aktif' },
+  { value: 'not active', label: 'Nonaktif' },
+  { value: 'resign', label: 'Resign' },
+];
+
 const DetailLadies = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -51,6 +62,8 @@ const DetailLadies = () => {
   const [saving, setSaving] = useState(false);
   const [readonly, setReadonly] = useState(true);
   const [fieldSalah, setFieldSalah] = useState<string | null>(null);
+  // Mobile: MobileFormPage (Header app dicabut di MainLayout). Desktop: lama.
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const fetchLady = async () => {
     try {
@@ -100,14 +113,18 @@ const DetailLadies = () => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleOutletChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selected = outlets.find((o) => o.id === e.target.value);
+  // outlet_id & nama_outlet selalu diubah bersama — dipakai desktop (select)
+  // dan mobile (pemilih bercari).
+  const pilihOutlet = (outletId: string) => {
+    const selected = outlets.find((o) => o.id === outletId);
     setForm((prev) => ({
       ...prev,
       outlet_id: selected?.id ?? null,
       nama_outlet: selected?.nama_outlet ?? '',
     }));
   };
+
+  const handleOutletChange = (e: React.ChangeEvent<HTMLSelectElement>) => pilihOutlet(e.target.value);
 
   const handleSave = async () => {
     const error = validasiWajib([
@@ -145,6 +162,133 @@ const DetailLadies = () => {
 
   if (loading) {
     return <DetailFormSkeleton label="Mengambil data ladies" fields={6} />;
+  }
+
+  if (isMobile) {
+    return (
+      <MobileFormPage
+        title={readonly ? 'Detail Ladies' : 'Ubah Ladies'}
+        backTo="/ladies"
+        onEdit={readonly ? () => setReadonly(false) : undefined}
+        identity={{
+          name: form.nama_ladies,
+          sub: [form.nama_lengkap, form.nama_outlet].filter(Boolean).join(' · ') || undefined,
+        }}
+        sectionTitle="Informasi ladies"
+        footer={
+          !readonly && (
+            <div className="tm-actions">
+              <button
+                type="button"
+                className="tm-btn"
+                disabled={saving}
+                onClick={() => {
+                  setReadonly(true);
+                  setFieldSalah(null);
+                  fetchLady();
+                }}
+              >
+                Batal
+              </button>
+              <button type="button" className="tm-btn tm-btn--primary" onClick={handleSave} disabled={saving}>
+                {saving ? 'Menyimpan...' : 'Simpan'}
+              </button>
+            </div>
+          )
+        }
+      >
+        <MobileTextField
+          id="ladies-nama-lengkap"
+          label="Nama lengkap"
+          name="nama_lengkap"
+          icon={<FiUser />}
+          required
+          invalid={fieldSalah === 'nama_lengkap'}
+          value={form.nama_lengkap}
+          onChange={handleChange}
+          readOnly={readonly}
+        />
+        <MobileTextField
+          id="ladies-nama"
+          label="Nama ladies"
+          name="nama_ladies"
+          icon={<FiTag />}
+          required
+          invalid={fieldSalah === 'nama_ladies'}
+          value={form.nama_ladies}
+          onChange={handleChange}
+          readOnly={readonly}
+        />
+        <MobileTextField
+          id="ladies-pin"
+          label="PIN"
+          name="pin"
+          icon={<FiKey />}
+          inputMode="numeric"
+          value={form.pin}
+          onChange={handleChange}
+          readOnly={readonly}
+        />
+        <MobileTextField
+          id="ladies-ktp"
+          label="Nomor KTP"
+          name="nomor_ktp"
+          icon={<FiCreditCard />}
+          inputMode="numeric"
+          value={form.nomor_ktp}
+          onChange={handleChange}
+          readOnly={readonly}
+        />
+        <MobileTextField
+          id="ladies-bergabung"
+          label="Tanggal bergabung"
+          name="tanggal_bergabung"
+          type="date"
+          icon={<FiCalendar />}
+          value={form.tanggal_bergabung}
+          onChange={handleChange}
+          readOnly={readonly}
+        />
+        <MobileTextField
+          id="ladies-alamat"
+          label="Alamat"
+          name="alamat"
+          type="textarea"
+          icon={<FiMapPin />}
+          value={form.alamat}
+          onChange={handleChange}
+          readOnly={readonly}
+        />
+        <MobileSelectField
+          id="ladies-outlet"
+          label="Outlet"
+          icon={<FiHome />}
+          value={form.outlet_id || ''}
+          options={outlets.map((o) => ({ value: o.id, label: o.nama_outlet }))}
+          onChange={pilihOutlet}
+          placeholder="Pilih outlet"
+          readOnly={readonly}
+        />
+        <MobileSelectField
+          id="ladies-agent"
+          label="Agent"
+          icon={<FiBriefcase />}
+          value={form.agent_id || ''}
+          options={agents.map((a) => ({ value: a.id, label: a.nama_agent }))}
+          onChange={(v) => setForm((prev) => ({ ...prev, agent_id: v || null }))}
+          placeholder="Pilih agent"
+          readOnly={readonly}
+        />
+        <MobileChoiceField
+          id="ladies-status"
+          label="Status"
+          value={form.status}
+          options={STATUS_LADIES}
+          onChange={(v) => setForm((prev) => ({ ...prev, status: v }))}
+          readOnly={readonly}
+        />
+      </MobileFormPage>
+    );
   }
 
   return (

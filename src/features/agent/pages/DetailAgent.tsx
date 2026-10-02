@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FiUser } from 'react-icons/fi';
+import { FiUser, FiBriefcase } from 'react-icons/fi';
+import { useMediaQuery } from 'react-responsive';
+import MobileFormPage from '../../../components/mobile/MobileFormPage';
+import { MobileTextField } from '../../../components/mobile/MobileFields';
 import { toast } from 'react-toastify';
 
 import FormField from '../../../components/FormField';
@@ -25,6 +28,8 @@ const DetailAgent = () => {
   const [saving, setSaving] = useState(false);
   const [readonly, setReadonly] = useState(true);
   const [fieldSalah, setFieldSalah] = useState<string | null>(null);
+  // Mobile: MobileFormPage (Header app dicabut di MainLayout). Desktop: lama.
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const fetchAgent = async () => {
     try {
@@ -91,6 +96,51 @@ const DetailAgent = () => {
 
   if (loading) {
     return <DetailFormSkeleton label="Mengambil data agent" fields={1} />;
+  }
+
+  if (isMobile) {
+    return (
+      <MobileFormPage
+        title={readonly ? 'Detail Agent' : 'Ubah Agent'}
+        backTo="/agent"
+        onEdit={readonly ? () => setReadonly(false) : undefined}
+        identity={{ name: form.nama_agent }}
+        sectionTitle="Informasi agent"
+        footer={
+          !readonly && (
+            <div className="tm-actions">
+              <button
+                type="button"
+                className="tm-btn"
+                disabled={saving}
+                onClick={() => {
+                  setReadonly(true);
+                  setFieldSalah(null);
+                  fetchAgent();
+                }}
+              >
+                Batal
+              </button>
+              <button type="button" className="tm-btn tm-btn--primary" onClick={handleSave} disabled={saving}>
+                {saving ? 'Menyimpan...' : 'Simpan'}
+              </button>
+            </div>
+          )
+        }
+      >
+        <MobileTextField
+          id="agent-nama"
+          label="Nama agent"
+          name="nama_agent"
+          icon={<FiBriefcase />}
+          required
+          invalid={fieldSalah === 'nama_agent'}
+          value={form.nama_agent}
+          onChange={handleChange}
+          readOnly={readonly}
+        />
+      </MobileFormPage>
+    );
   }
 
   return (

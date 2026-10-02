@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FiUser } from 'react-icons/fi';
+import { FiUser, FiTag, FiCreditCard, FiCalendar, FiMapPin } from 'react-icons/fi';
+import { useMediaQuery } from 'react-responsive';
+import MobileFormPage from '../../../components/mobile/MobileFormPage';
+import { MobileTextField } from '../../../components/mobile/MobileFields';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 
@@ -40,6 +43,8 @@ const DetailPengawas = () => {
   const [saving, setSaving] = useState(false);
   const [readonly, setReadonly] = useState(true);
   const [fieldSalah, setFieldSalah] = useState<string | null>(null);
+  // Mobile: MobileFormPage (Header app dicabut di MainLayout). Desktop: lama.
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const fetchPengawas = async () => {
     try {
@@ -119,6 +124,100 @@ const DetailPengawas = () => {
 
   if (loading) {
     return <DetailFormSkeleton label="Mengambil data pengawas" fields={6} />;
+  }
+
+  if (isMobile) {
+    return (
+      <MobileFormPage
+        title={readonly ? 'Detail Pengawas' : 'Ubah Pengawas'}
+        backTo="/pengawas"
+        onEdit={readonly ? () => setReadonly(false) : undefined}
+        identity={{ name: form.nama_lengkap, sub: form.nama_panggilan || undefined }}
+        sectionTitle="Informasi pengawas"
+        footer={
+          !readonly && (
+            <div className="tm-actions">
+              <button
+                type="button"
+                className="tm-btn"
+                disabled={saving}
+                onClick={() => {
+                  setReadonly(true);
+                  setFieldSalah(null);
+                  fetchPengawas();
+                }}
+              >
+                Batal
+              </button>
+              <button type="button" className="tm-btn tm-btn--primary" onClick={handleSave} disabled={saving}>
+                {saving ? 'Menyimpan...' : 'Simpan'}
+              </button>
+            </div>
+          )
+        }
+      >
+        <MobileTextField
+          id="pengawas-nama-lengkap"
+          label="Nama lengkap"
+          name="nama_lengkap"
+          icon={<FiUser />}
+          required
+          invalid={fieldSalah === 'nama_lengkap'}
+          value={form.nama_lengkap}
+          onChange={handleChange}
+            readOnly={readonly}
+        />
+        <MobileTextField
+          id="pengawas-panggilan"
+          label="Nama panggilan"
+          name="nama_panggilan"
+          icon={<FiTag />}
+          value={form.nama_panggilan}
+          onChange={handleChange}
+            readOnly={readonly}
+        />
+        <MobileTextField
+          id="pengawas-ktp"
+          label="Nomor KTP"
+          name="nomor_ktp"
+          icon={<FiCreditCard />}
+          inputMode="numeric"
+          value={form.nomor_ktp}
+          onChange={handleChange}
+            readOnly={readonly}
+        />
+        <MobileTextField
+          id="pengawas-lahir"
+          label="Tanggal lahir"
+          name="tanggal_lahir"
+          type="date"
+          icon={<FiCalendar />}
+          value={form.tanggal_lahir}
+          onChange={handleChange}
+            readOnly={readonly}
+        />
+        <MobileTextField
+          id="pengawas-alamat"
+          label="Alamat"
+          name="alamat"
+          type="textarea"
+          icon={<FiMapPin />}
+          value={form.alamat}
+          onChange={handleChange}
+            readOnly={readonly}
+        />
+        <MobileTextField
+          id="pengawas-bergabung"
+          label="Tanggal bergabung"
+          name="tanggal_bergabung"
+          type="date"
+          icon={<FiCalendar />}
+          value={form.tanggal_bergabung}
+          onChange={handleChange}
+            readOnly={readonly}
+        />
+      </MobileFormPage>
+    );
   }
 
   return (
