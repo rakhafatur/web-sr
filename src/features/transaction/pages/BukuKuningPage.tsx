@@ -5,7 +5,7 @@ import { supabase } from '../../../lib/supabaseClient';
 import { confirmDialog } from '../../../components/ConfirmDialog';
 import DataTable from '../../../components/DataTable';
 import { useMediaQuery } from 'react-responsive';
-import { FiBook, FiPrinter, FiRepeat } from 'react-icons/fi';
+import { FiBook, FiPrinter, FiRepeat, FiGift, FiDollarSign, FiCreditCard, FiHeart } from 'react-icons/fi';
 import ListPageHeader from '../../../components/ListPageHeader';
 import HeaderActionButton from '../../../components/HeaderActionButton';
 import EmptyState from '../../../components/EmptyState';
@@ -14,6 +14,7 @@ import GenerateBiayaBulananModal from '../components/GenerateBiayaBulananModal';
 import { monthNames, formatRupiah, pad, getLastDay } from '../utils/biayaBulanan';
 import { hitungSaldoBerjalan, type SaldoRow } from '../utils/saldoBerjalan';
 import { cetakBukuKuningPdf } from '../utils/bukuKuningPdf';
+import BukuKuningMobile, { type GayaBaris } from '../components/BukuKuningMobile';
 
 type Lady = {
   id: string;
@@ -120,6 +121,7 @@ const BukuKuningPage = () => {
         transaksi.push({
           tanggal: v.tanggal,
           keterangan: 'Voucher',
+          tipe: 'voucher',
           voucher: v.jumlah_voucher,
           pemasukan: Number(v.jumlah),
           pengeluaran: '',
@@ -131,6 +133,7 @@ const BukuKuningPage = () => {
         transaksi.push({
           tanggal: p.tanggal,
           keterangan: p.keterangan || '',
+          tipe: 'pemasukan_lain',
           voucher: '',
           pemasukan: Number(p.jumlah),
           pengeluaran: '',
@@ -142,6 +145,7 @@ const BukuKuningPage = () => {
         transaksi.push({
           tanggal: k.tanggal,
           keterangan: k.keterangan || '',
+          tipe: 'kasbon',
           voucher: '',
           pemasukan: '',
           pengeluaran: Number(k.jumlah),
@@ -153,6 +157,7 @@ const BukuKuningPage = () => {
         transaksi.push({
           tanggal: d.tanggal,
           keterangan: `Dokter - ${d.keterangan || ''}`,
+          tipe: 'dokter',
           voucher: '',
           pemasukan: '',
           pengeluaran: Number(d.jumlah),
@@ -187,8 +192,7 @@ const BukuKuningPage = () => {
       : 'Unknown';
 
     const confirm = await confirmDialog(
-      `❗ Yakin tutup buku - ${nama} - ${monthNames[bulan - 1]
-      } - ${tahun}?`
+      `Tutup buku ${nama} untuk ${monthNames[bulan - 1]} ${tahun}?`
     );
 
     if (!confirm) return;
@@ -230,6 +234,64 @@ const BukuKuningPage = () => {
       bulan,
       tahun,
     });
+
+  // Mobile: BukuKuningMobile (dipakai bersama Buku Kuning Pengawas). Desktop:
+  // tabel lama. Sebelumnya mobile sama sekali tidak menampilkan daftar
+  // transaksi (DataTable hanya untuk desktop).
+  if (isMobile) {
+    const gayaBaris = (r: Row): GayaBaris => {
+      switch (r.tipe) {
+        case 'voucher':
+          return { label: 'Voucher', icon: <FiGift />, color: 'var(--color-income)', soft: 'var(--color-income-soft)', tanda: '+', nominal: r.pemasukan, catatan: `${r.voucher} pcs` };
+        case 'pemasukan_lain':
+          return { label: 'Pemasukan lain', icon: <FiDollarSign />, color: 'var(--color-income)', soft: 'var(--color-income-soft)', tanda: '+', nominal: r.pemasukan, catatan: r.keterangan };
+        case 'dokter':
+          return { label: 'Dokter', icon: <FiHeart />, color: 'var(--color-medical)', soft: 'var(--color-medical-soft)', tanda: '−', nominal: r.pengeluaran, catatan: r.keterangan.replace(/^Dokter - /, '') };
+        default:
+          return { label: 'Kasbon', icon: <FiCreditCard />, color: 'var(--color-expense)', soft: 'var(--color-expense-soft)', tanda: '−', nominal: r.pengeluaran, catatan: r.keterangan };
+      }
+    };
+
+    return (
+      <>
+        <BukuKuningMobile
+          title="Buku Kuning Ladies"
+          entitas="Ladies"
+          options={ladiesList.map((lady) => ({
+            value: lady.id,
+            label: `${lady.nama_ladies} • ${lady.nama_outlet} (${lady.pin})`,
+          }))}
+          selectedId={selectedLadyId}
+          onSelect={setSelectedLadyId}
+          bulan={bulan}
+          tahun={tahun}
+          onPeriodeChange={(b, t) => {
+            setBulan(b);
+            setTahun(t);
+          }}
+          loading={loadingBuku}
+          rows={rows}
+          labelPemasukan="Pemasukan"
+          labelPengeluaran="Pengeluaran"
+          gayaBaris={gayaBaris}
+          onTutupBuku={handleTutupBuku}
+          onCetak={handleExportPDF}
+          aksiTambahan={
+            <button type="button" className="tm-btn" onClick={() => setShowGenerateModal(true)}>
+              <FiRepeat aria-hidden />
+              Generate Biaya Bulanan
+            </button>
+          }
+        />
+
+        <GenerateBiayaBulananModal
+          show={showGenerateModal}
+          onClose={() => setShowGenerateModal(false)}
+          onGenerated={() => setRefreshKey((k) => k + 1)}
+        />
+      </>
+    );
+  }
 
   return (
     <div className="page-shell py-4">

@@ -6,7 +6,7 @@ import { confirmDialog } from '../../../components/ConfirmDialog';
 import DataTable from '../../../components/DataTable';
 import logo from '../../../assets/logosr-black.png';
 import { useMediaQuery } from 'react-responsive';
-import { FiBook, FiPrinter, FiTrendingDown, FiTrendingUp, FiRotateCcw, FiUsers } from 'react-icons/fi';
+import { FiBook, FiPrinter, FiTrendingDown, FiTrendingUp } from 'react-icons/fi';
 import ListPageHeader from '../../../components/ListPageHeader';
 import EmptyState from '../../../components/EmptyState';
 import ListLoadingState from '../../../components/ListLoadingState';
@@ -20,10 +20,7 @@ import {
   drawProfileCard,
 } from '../utils/pdfReport';
 import { hitungSaldoBerjalan, ringkasanBukuKuning, type SaldoRow } from '../utils/saldoBerjalan';
-import MobilePageBar from '../../../components/MobilePageBar';
-import SearchableSelect from '../../../components/SearchableSelect';
-import MonthPill from '../../ladies/components/MonthPill';
-import '../components/TransaksiMobile.css';
+import BukuKuningMobile from '../components/BukuKuningMobile';
 
 const monthNames = [
   'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
@@ -412,175 +409,36 @@ const BukuKuningPengawasPage = () => {
     };
   };
 
-  // Mobile: tampilan baru selaras Transaksi Pengawas. Desktop: tabel lama.
-  // Sebelumnya mobile sama sekali tidak menampilkan daftar transaksi
-  // (DataTable hanya untuk desktop) — admin hanya melihat tombol Tutup Buku.
+  // Mobile: BukuKuningMobile (dipakai bersama Buku Kuning Ladies). Desktop:
+  // tabel lama. Sebelumnya mobile sama sekali tidak menampilkan daftar
+  // transaksi (DataTable hanya untuk desktop).
   if (isMobile) {
-    const ringkasan = ringkasanBukuKuning(rows);
-    const labelPeriode = new Date(tahun, bulan - 1, 1).toLocaleDateString('id-ID', {
-      month: 'long',
-      year: 'numeric',
-    });
-    const sekarang = new Date();
-    const diBulanIni = tahun === sekarang.getFullYear() && bulan === sekarang.getMonth() + 1;
-
-    const geserBulan = (arah: -1 | 1) => {
-      const d = new Date(tahun, bulan - 1 + arah, 1);
-      setBulan(d.getMonth() + 1);
-      setTahun(d.getFullYear());
-    };
-
-    const tanggalSingkat = (t: string) =>
-      new Date(`${t}T00:00:00`).toLocaleDateString('id-ID', {
-        weekday: 'short',
-        day: 'numeric',
-        month: 'short',
-      });
-
     return (
-      <div className="tm-page">
-        <MobilePageBar title="Buku Kuning Pengawas" backTo="/" />
-
-        <div className="tm-stack">
-          <h2 className="tm-section-title">Pengawas</h2>
-          <SearchableSelect
-            value={selectedId}
-            onChange={setSelectedId}
-            options={pengawasList.map((p) => ({ value: p.id, label: p.nama_panggilan ?? '-' }))}
-            placeholder="Pilih pengawas"
-            searchPlaceholder="Cari nama pengawas..."
-            height={52}
-            borderRadius={999}
-            fontSize="1rem"
-          />
-
-          <h2 className="tm-section-title">Periode</h2>
-          <MonthPill
-            label={labelPeriode}
-            value={`${tahun}-${pad(bulan)}`}
-            max={`${sekarang.getFullYear()}-${pad(sekarang.getMonth() + 1)}`}
-            onChange={(e) => {
-              if (!e.target.value) return;
-              const [y, m] = e.target.value.split('-').map(Number);
-              setTahun(y);
-              setBulan(m);
-            }}
-            onPrev={() => geserBulan(-1)}
-            onNext={() => geserBulan(1)}
-            nextDisabled={diBulanIni}
-          />
-
-          {!selectedId ? (
-            <div className="tm-group">
-              <div className="tm-empty">
-                <span className="tm-empty-icon" aria-hidden><FiUsers /></span>
-                <div className="tm-empty-title">Pilih pengawas dulu</div>
-                <div className="tm-empty-text">
-                  Saldo dan daftar transaksi akan muncul setelah pengawas dipilih.
-                </div>
-              </div>
-            </div>
-          ) : loadingBuku ? (
-            <ListLoadingState label="Memuat buku kuning" rows={4} />
-          ) : (
-            <>
-              <section className="tm-hero" aria-label="Ringkasan saldo">
-                <div className="tm-hero-label">Saldo akhir</div>
-                <div className="tm-hero-value">{formatRupiah(ringkasan.saldoAkhir) || 'Rp0'}</div>
-                <div className="tm-hero-sub">
-                  Saldo awal {formatRupiah(ringkasan.saldoAwal) || 'Rp0'} · {labelPeriode}
-                </div>
-                <div className="tm-hero-split">
-                  <div>
-                    <div className="tm-hero-split-label">Gaji</div>
-                    <div className="tm-hero-split-value">+ {formatRupiah(ringkasan.totalPemasukan) || 'Rp0'}</div>
-                  </div>
-                  <div>
-                    <div className="tm-hero-split-label">Kasbon</div>
-                    <div className="tm-hero-split-value">− {formatRupiah(ringkasan.totalPengeluaran) || 'Rp0'}</div>
-                  </div>
-                </div>
-              </section>
-
-              <div className="tm-actions">
-                <button type="button" className="tm-btn tm-btn--primary" onClick={handleTutupBuku}>
-                  <FiBook aria-hidden />
-                  Tutup Buku
-                </button>
-                <button type="button" className="tm-btn" onClick={handleExportPDF}>
-                  <FiPrinter aria-hidden />
-                  Cetak PDF
-                </button>
-              </div>
-
-              <h2 className="tm-section-title">Transaksi ({ringkasan.jumlahTransaksi})</h2>
-              <div className="tm-group tm-list">
-                {/* Baris pembuka: saldo bawaan bulan lalu */}
-                <div>
-                  <div className="tm-row tm-row--opening">
-                    <span
-                      className="tm-row-icon"
-                      style={{ background: 'var(--color-surface-2)', color: 'var(--color-gray-700)' }}
-                      aria-hidden
-                    >
-                      <FiRotateCcw />
-                    </span>
-                    <div className="tm-row-main">
-                      <div className="tm-row-title">Saldo bulan lalu</div>
-                      <div className="tm-row-sub">Sisa kasbon dari tutup buku sebelumnya</div>
-                    </div>
-                    <div className="tm-row-value">
-                      <div className="tm-row-amount">{formatRupiah(ringkasan.saldoAwal) || 'Rp0'}</div>
-                    </div>
-                  </div>
-                </div>
-
-                {rows.slice(1).map((r, i) => {
-                  const isGaji = typeof r.pemasukan === 'number' && r.pemasukan !== 0;
-                  const nominal = isGaji ? r.pemasukan : r.pengeluaran;
-                  const warna = isGaji ? 'var(--color-income)' : 'var(--color-expense)';
-                  return (
-                    <div key={`${r.tanggal}-${i}`}>
-                      <div className="tm-row">
-                        <span
-                          className="tm-row-icon"
-                          style={{
-                            background: isGaji ? 'var(--color-income-soft)' : 'var(--color-expense-soft)',
-                            color: warna,
-                          }}
-                          aria-hidden
-                        >
-                          {isGaji ? <FiTrendingUp /> : <FiTrendingDown />}
-                        </span>
-                        <div className="tm-row-main">
-                          <div className="tm-row-title">{isGaji ? 'Gaji' : 'Kasbon'}</div>
-                          <div className="tm-row-sub">
-                            {tanggalSingkat(r.tanggal)}
-                            {r.keterangan ? ` · ${r.keterangan}` : ''}
-                          </div>
-                        </div>
-                        <div className="tm-row-value">
-                          <div className="tm-row-amount" style={{ color: warna }}>
-                            {isGaji ? '+' : '−'} {formatRupiah(nominal)}
-                          </div>
-                          <div className="tm-row-saldo">Saldo {formatRupiah(r.saldo) || 'Rp0'}</div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-
-                {ringkasan.jumlahTransaksi === 0 && (
-                  <div className="tm-empty" style={{ paddingTop: 'var(--space-5)' }}>
-                    <div className="tm-empty-title">Belum ada transaksi</div>
-                    <div className="tm-empty-text">Tidak ada gaji atau kasbon di periode ini.</div>
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-        </div>
-      </div>
+      <BukuKuningMobile
+        title="Buku Kuning Pengawas"
+        entitas="Pengawas"
+        options={pengawasList.map((p) => ({ value: p.id, label: p.nama_panggilan ?? '-' }))}
+        selectedId={selectedId}
+        onSelect={setSelectedId}
+        bulan={bulan}
+        tahun={tahun}
+        onPeriodeChange={(b, t) => {
+          setBulan(b);
+          setTahun(t);
+        }}
+        loading={loadingBuku}
+        rows={rows}
+        labelPemasukan="Gaji"
+        labelPengeluaran="Kasbon"
+        gayaBaris={(r) => {
+          const isGaji = typeof r.pemasukan === 'number' && r.pemasukan !== 0;
+          return isGaji
+            ? { label: 'Gaji', icon: <FiTrendingUp />, color: 'var(--color-income)', soft: 'var(--color-income-soft)', tanda: '+', nominal: r.pemasukan, catatan: r.keterangan }
+            : { label: 'Kasbon', icon: <FiTrendingDown />, color: 'var(--color-expense)', soft: 'var(--color-expense-soft)', tanda: '−', nominal: r.pengeluaran, catatan: r.keterangan };
+        }}
+        onTutupBuku={handleTutupBuku}
+        onCetak={handleExportPDF}
+      />
     );
   }
 
