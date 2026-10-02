@@ -1,23 +1,11 @@
 import { ReactNode } from 'react';
-import { FiBook, FiPrinter, FiRotateCcw, FiUsers } from 'react-icons/fi';
+import { FiBook, FiPrinter, FiUsers } from 'react-icons/fi';
 import MobilePageBar from '../../../components/MobilePageBar';
 import SearchableSelect, { type SearchableOption } from '../../../components/SearchableSelect';
 import ListLoadingState from '../../../components/ListLoadingState';
 import MonthPill from '../../ladies/components/MonthPill';
 import { ringkasanBukuKuning, type SaldoRow } from '../utils/saldoBerjalan';
 import '../../../styles/mobile-admin.css';
-
-export type GayaBaris = {
-  label: string;
-  icon: ReactNode;
-  color: string;
-  soft: string;
-  /** '+' pemasukan, '−' pengeluaran. */
-  tanda: '+' | '−';
-  nominal: number | string;
-  /** Teks tambahan setelah tanggal (keterangan, jumlah pcs, dst.). */
-  catatan?: string;
-};
 
 type Props = {
   title: string;
@@ -35,7 +23,6 @@ type Props = {
   rows: SaldoRow[];
   labelPemasukan: string;
   labelPengeluaran: string;
-  gayaBaris: (row: SaldoRow) => GayaBaris;
 
   onTutupBuku: () => void;
   onCetak: () => void;
@@ -50,17 +37,11 @@ const rupiah = (n: number | string) => {
   return `Rp${(angka || 0).toLocaleString('id-ID')}`;
 };
 
-const tanggalSingkat = (t: string) =>
-  new Date(`${t}T00:00:00`).toLocaleDateString('id-ID', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-  });
-
 /**
  * Buku Kuning versi mobile (ladies & pengawas) — selaras Transaksi: bar atas,
  * pemilih entitas & periode berbentuk pil, hero saldo, tombol Tutup Buku &
- * Cetak, dan daftar transaksi dengan saldo berjalan per baris.
+ * Cetak. Daftar transaksi sengaja tidak ditampilkan di mobile: riwayat
+ * lengkapnya sudah ada di halaman Transaksi (tab Riwayat).
  * Data & aksi datang dari halaman; komponen ini hanya menampilkan.
  */
 const BukuKuningMobile = ({
@@ -76,7 +57,6 @@ const BukuKuningMobile = ({
   rows,
   labelPemasukan,
   labelPengeluaran,
-  gayaBaris,
   onTutupBuku,
   onCetak,
   aksiTambahan,
@@ -146,7 +126,7 @@ const BukuKuningMobile = ({
               <div className="tm-hero-label">Saldo akhir</div>
               <div className="tm-hero-value">{rupiah(ringkasan.saldoAkhir)}</div>
               <div className="tm-hero-sub">
-                Saldo awal {rupiah(ringkasan.saldoAwal)} · {labelPeriode}
+                Saldo awal {rupiah(ringkasan.saldoAwal)} · {ringkasan.jumlahTransaksi} transaksi
               </div>
               <div className="tm-hero-split">
                 <div>
@@ -171,61 +151,6 @@ const BukuKuningMobile = ({
               </button>
             </div>
 
-            <h2 className="tm-section-title">Transaksi ({ringkasan.jumlahTransaksi})</h2>
-            <div className="tm-group tm-list">
-              {/* Baris pembuka: saldo bawaan bulan lalu */}
-              <div>
-                <div className="tm-row tm-row--opening">
-                  <span
-                    className="tm-row-icon"
-                    style={{ background: 'var(--color-surface-2)', color: 'var(--color-gray-700)' }}
-                    aria-hidden
-                  >
-                    <FiRotateCcw />
-                  </span>
-                  <div className="tm-row-main">
-                    <div className="tm-row-title">Saldo bulan lalu</div>
-                    <div className="tm-row-sub">Sisa kasbon dari tutup buku sebelumnya</div>
-                  </div>
-                  <div className="tm-row-value">
-                    <div className="tm-row-amount">{rupiah(ringkasan.saldoAwal)}</div>
-                  </div>
-                </div>
-              </div>
-
-              {rows.slice(1).map((r, i) => {
-                const g = gayaBaris(r);
-                return (
-                  <div key={`${r.tanggal}-${i}`}>
-                    <div className="tm-row">
-                      <span className="tm-row-icon" style={{ background: g.soft, color: g.color }} aria-hidden>
-                        {g.icon}
-                      </span>
-                      <div className="tm-row-main">
-                        <div className="tm-row-title">{g.label}</div>
-                        <div className="tm-row-sub">
-                          {tanggalSingkat(r.tanggal)}
-                          {g.catatan ? ` · ${g.catatan}` : ''}
-                        </div>
-                      </div>
-                      <div className="tm-row-value">
-                        <div className="tm-row-amount" style={{ color: g.color }}>
-                          {g.tanda} {rupiah(g.nominal)}
-                        </div>
-                        <div className="tm-row-saldo">Saldo {rupiah(r.saldo)}</div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-
-              {ringkasan.jumlahTransaksi === 0 && (
-                <div className="tm-empty" style={{ paddingTop: 'var(--space-5)' }}>
-                  <div className="tm-empty-title">Belum ada transaksi</div>
-                  <div className="tm-empty-text">Tidak ada transaksi di periode ini.</div>
-                </div>
-              )}
-            </div>
           </>
         )}
       </div>

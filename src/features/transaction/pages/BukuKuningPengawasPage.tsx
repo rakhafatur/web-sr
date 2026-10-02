@@ -6,7 +6,7 @@ import { confirmDialog } from '../../../components/ConfirmDialog';
 import DataTable from '../../../components/DataTable';
 import logo from '../../../assets/logosr-black.png';
 import { useMediaQuery } from 'react-responsive';
-import { FiBook, FiPrinter, FiTrendingDown, FiTrendingUp } from 'react-icons/fi';
+import { FiBook, FiPrinter } from 'react-icons/fi';
 import ListPageHeader from '../../../components/ListPageHeader';
 import EmptyState from '../../../components/EmptyState';
 import ListLoadingState from '../../../components/ListLoadingState';
@@ -409,9 +409,9 @@ const BukuKuningPengawasPage = () => {
     };
   };
 
-  // Mobile: BukuKuningMobile (dipakai bersama Buku Kuning Ladies). Desktop:
-  // tabel lama. Sebelumnya mobile sama sekali tidak menampilkan daftar
-  // transaksi (DataTable hanya untuk desktop).
+  // Mobile: BukuKuningMobile (dipakai bersama Buku Kuning Ladies) — ringkasan
+  // saldo + Tutup Buku/Cetak; riwayat transaksi ada di halaman Transaksi.
+  // Desktop: tabel lama.
   if (isMobile) {
     return (
       <BukuKuningMobile
@@ -430,12 +430,6 @@ const BukuKuningPengawasPage = () => {
         rows={rows}
         labelPemasukan="Gaji"
         labelPengeluaran="Kasbon"
-        gayaBaris={(r) => {
-          const isGaji = typeof r.pemasukan === 'number' && r.pemasukan !== 0;
-          return isGaji
-            ? { label: 'Gaji', icon: <FiTrendingUp />, color: 'var(--color-income)', soft: 'var(--color-income-soft)', tanda: '+', nominal: r.pemasukan, catatan: r.keterangan }
-            : { label: 'Kasbon', icon: <FiTrendingDown />, color: 'var(--color-expense)', soft: 'var(--color-expense-soft)', tanda: '−', nominal: r.pengeluaran, catatan: r.keterangan };
-        }}
         onTutupBuku={handleTutupBuku}
         onCetak={handleExportPDF}
       />

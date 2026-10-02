@@ -18,10 +18,6 @@ export type SaldoRow = {
   pemasukan: number | string;
   pengeluaran: number | string;
   saldo: number;
-  /** Label jenis transaksi untuk tampilan (mis. 'voucher', 'kasbon'). Tidak
-      dipakai dalam perhitungan — hanya dibawa apa adanya oleh
-      hitungSaldoBerjalan. */
-  tipe?: string;
 };
 
 /** Ubah nilai kolom nominal jadi angka; string kosong dianggap nol. */
