@@ -8,7 +8,6 @@ import { useMediaQuery } from 'react-responsive';
 import { toast } from 'react-toastify';
 
 import AddAbsensiModal from '../components/AddAbsensiModal';
-import CardTableAbsensi from '../components/CardTableAbsensi';
 import AbsensiSummaryCards from '../components/AbsensiSummaryCards';
 import AbsensiMonthHeader from '../components/AbsensiMonthHeader';
 import StatusPicker from '../components/StatusPicker';
@@ -20,6 +19,12 @@ import ListLoadingState from '../../../components/ListLoadingState';
 import Button from '../../../components/Button';
 import FeaturePageHeader from '../../../components/FeaturePageHeader';
 import SearchableSelect from '../../../components/SearchableSelect';
+import MobilePageBar from '../../../components/MobilePageBar';
+import ModalWrapper from '../../../components/ModalWrapper';
+import SwipeToDelete from '../../../components/SwipeToDelete';
+import MonthPill from '../../ladies/components/MonthPill';
+import { STATUS_ABSENSI } from '../utils/rekapAbsensi';
+import '../../../styles/mobile-admin.css';
 
 import {
   FiPlus,
@@ -27,6 +32,13 @@ import {
   FiTrash2,
   FiCalendar,
   FiUsers,
+  FiCheckCircle,
+  FiHeart,
+  FiMoon,
+  FiCoffee,
+  FiEdit3,
+  FiChevronRight,
+  FiInbox,
 } from 'react-icons/fi';
 
 type Lady = {
@@ -56,6 +68,46 @@ const monthNames = [
   'November',
   'Desember',
 ];
+
+/** Tampilan status absensi di mobile (ikon & warna semantik). */
+const GAYA_STATUS: Record<string, { label: string; icon: React.ReactNode; color: string; soft: string }> = {
+  KERJA: { label: 'Kerja', icon: <FiCheckCircle />, color: 'var(--color-income)', soft: 'var(--color-income-soft)' },
+  MENS: { label: 'Mens', icon: <FiHeart />, color: 'var(--color-expense)', soft: 'var(--color-expense-soft)' },
+  OFF: { label: 'Off', icon: <FiMoon />, color: 'var(--color-gray-700)', soft: 'var(--color-gray-200)' },
+  SAKIT: { label: 'Sakit', icon: <FiCoffee />, color: 'var(--color-voucher)', soft: 'var(--color-voucher-soft)' },
+};
+
+const gayaStatus = (status: string) =>
+  GAYA_STATUS[status] ?? { label: status, icon: <FiCheckCircle />, color: 'var(--color-gray-700)', soft: 'var(--color-gray-200)' };
+
+/** Chip status 4 sejajar (mobile) — dipakai form input & sheet ubah. */
+const PilihStatusMobile = ({ value, onChange }: { value: string; onChange: (s: string) => void }) => (
+  <div
+    className="tm-types"
+    role="radiogroup"
+    aria-label="Status absensi"
+    style={{ gridTemplateColumns: `repeat(${STATUS_ABSENSI.length}, 1fr)` }}
+  >
+    {STATUS_ABSENSI.map((st) => {
+      const g = gayaStatus(st);
+      const aktif = value === st;
+      return (
+        <button
+          key={st}
+          type="button"
+          role="radio"
+          aria-checked={aktif}
+          className={`tm-type ${aktif ? 'is-active' : ''}`}
+          style={aktif ? { background: g.soft, borderColor: g.color, color: g.color } : undefined}
+          onClick={() => onChange(st)}
+        >
+          {g.icon}
+          {g.label}
+        </button>
+      );
+    })}
+  </div>
+);
 
 const AbsensiPage = () => {
   const isMobile = useMediaQuery({
@@ -102,6 +154,11 @@ const AbsensiPage = () => {
     'input' | 'riwayat'
   >('input');
 
+  // Sheet ubah absensi versi mobile (sebelumnya mobile hanya bisa hapus).
+  const [ubahMobile, setUbahMobile] = useState<Absensi | null>(null);
+  const [ubahStatus, setUbahStatus] = useState('KERJA');
+  const [ubahKeterangan, setUbahKeterangan] = useState('');
+
   const queryClient = useQueryClient();
   const monthKey = `${tahun}-${String(bulan).padStart(2, '0')}`;
   const rekapQueryKey = ['absensi-rekap', selectedLadyId, monthKey];
@@ -125,7 +182,7 @@ const AbsensiPage = () => {
 
   // Sengaja satu query buat sebulan penuh (maksimal ~31 baris, ringan) —
   // riwayat (paginated, dipakai DataTable desktop) & rekapRiwayat (dipakai
-  // summary + CardTableAbsensi mobile) sebelumnya 2 fetch terpisah yang
+  // summary + daftar mobile) sebelumnya 2 fetch terpisah yang
   // datanya tumpang tindih, sekarang cukup di-derive dari satu cache.
   const { data: rekapRiwayat = [], isLoading: loadingRiwayat } = useQuery({
     queryKey: rekapQueryKey,
@@ -262,7 +319,7 @@ const AbsensiPage = () => {
   ) => {
     const confirm =
       await confirmDialog(
-        '❗ Yakin ingin menghapus absensi ini?'
+        'Hapus absensi ini?'
       );
 
     if (
@@ -301,6 +358,30 @@ const AbsensiPage = () => {
   };
 
   const rekap = hitungRekapAbsensi(rekapRiwayat);
+
+  /** Simpan perubahan status/keterangan satu tanggal — dipakai modal desktop
+      dan sheet mobile. */
+  const simpanPerubahan = async (
+    tanggalTarget: string,
+    data: { status: string; keterangan?: string | null }
+  ) => {
+    if (!selectedLadyId) return;
+
+    const { error } = await supabase
+      .from('absensi')
+      .update({
+        status: data.status,
+        keterangan: data.keterangan ?? null,
+      })
+      .eq('ladies_id', selectedLadyId)
+      .eq('tanggal', tanggalTarget);
+
+    if (error) {
+      toast.error('Gagal update data: ' + error.message);
+    }
+
+    queryClient.invalidateQueries({ queryKey: ['absensi-rekap', selectedLadyId] });
+  };
 
   const riwayatWithId = riwayat.map(
     (row, idx) => ({
@@ -364,7 +445,7 @@ const AbsensiPage = () => {
         >
           {loadingRiwayat ? (
             <ListLoadingState label="Memuat histori absensi" rows={4} />
-          ) : !isMobile ? (
+          ) : (
             <>
               <DataTable
                 columns={[
@@ -446,35 +527,283 @@ const AbsensiPage = () => {
                 <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
               )}
             </>
-          ) : (
-            <CardTableAbsensi
-              data={
-                rekapRiwayat
-              }
-              page={page - 1}
-              rowsPerPage={limit}
-              onPageChange={(
-                p
-              ) => {
-                if (
-                  p >= 0 &&
-                  p <
-                  totalPages
-                ) {
-                  setPage(
-                    p + 1
-                  );
-                }
-              }}
-              onDelete={
-                handleDelete
-              }
-            />
           )}
         </div>
       </div>
     </>
   );
+
+  const opsiLadies = ladies.map((l) => ({
+    value: l.id,
+    label: `${l.nama_ladies} • ${l.nama_outlet} (${l.pin})`,
+  }));
+
+  // Mobile: tampilan baru selaras Transaksi (Header app dicabut di MainLayout).
+  // Desktop: tampilan lama di bawah.
+  if (isMobile) {
+    const labelBulan = new Date(tahun, bulan - 1, 1).toLocaleDateString('id-ID', {
+      month: 'long',
+      year: 'numeric',
+    });
+    const sekarang = dayjs();
+    const diBulanIni = tahun === sekarang.year() && bulan === sekarang.month() + 1;
+    const tanggalPanjang = (t: string) =>
+      new Date(`${t}T00:00:00`).toLocaleDateString('id-ID', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'short',
+      });
+
+    const bukaUbah = (a: Absensi) => {
+      setUbahMobile(a);
+      setUbahStatus(a.status);
+      setUbahKeterangan(a.keterangan ?? '');
+    };
+
+    return (
+      <div className="tm-page">
+        <MobilePageBar title="Absensi" backTo="/" />
+
+        <div className="tm-stack">
+          <h2 className="tm-section-title">Ladies</h2>
+          <SearchableSelect
+            value={selectedLadyId}
+            onChange={(v) => {
+              setSelectedLadyId(v);
+              setPage(1);
+              setActiveTab('input');
+            }}
+            options={opsiLadies}
+            placeholder="Pilih ladies"
+            searchPlaceholder="Cari nama ladies..."
+            height={52}
+            borderRadius={999}
+            fontSize="1rem"
+          />
+
+          {!selectedLadyId ? (
+            <div className="tm-group">
+              <div className="tm-empty">
+                <span className="tm-empty-icon" aria-hidden><FiUsers /></span>
+                <div className="tm-empty-title">Pilih ladies dulu</div>
+                <div className="tm-empty-text">
+                  Form absensi dan riwayat akan muncul setelah ladies dipilih.
+                </div>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="tm-segmented" role="tablist" aria-label="Tampilan">
+                {[
+                  { key: 'input' as const, label: 'Input' },
+                  { key: 'riwayat' as const, label: 'Riwayat' },
+                ].map((tab) => (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTab === tab.key}
+                    className={`tm-segment ${activeTab === tab.key ? 'is-active' : ''}`}
+                    onClick={() => setActiveTab(tab.key)}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={activeTab}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.16, ease: 'easeOut' }}
+                  className="tm-stack"
+                >
+                  {activeTab === 'input' ? (
+                    <div className="tm-card">
+                      <div className="tm-card-head">
+                        <span className="tm-card-title">{selectedLady?.nama_ladies}</span>
+                        {selectedLady?.nama_outlet && <span className="tm-pill">{selectedLady.nama_outlet}</span>}
+                      </div>
+
+                      <div className="tm-field" style={{ marginTop: 0 }}>
+                        <label htmlFor="absen-tanggal" className="tm-label">Tanggal</label>
+                        <div className="tm-input-wrap">
+                          <FiCalendar className="tm-input-icon" aria-hidden />
+                          <input
+                            id="absen-tanggal"
+                            type="date"
+                            className="tm-input"
+                            value={tanggal}
+                            max={dayjs().format('YYYY-MM-DD')}
+                            onChange={(e) => setTanggal(e.target.value)}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="tm-field">
+                        <span className="tm-label">Status</span>
+                        <PilihStatusMobile value={status} onChange={setStatus} />
+                      </div>
+
+                      <div className="tm-field">
+                        <label htmlFor="absen-keterangan" className="tm-label">Keterangan (opsional)</label>
+                        <div className="tm-input-wrap">
+                          <span className="tm-input-icon tm-input-icon--top" aria-hidden><FiEdit3 /></span>
+                          <textarea
+                            id="absen-keterangan"
+                            rows={2}
+                            className="tm-input tm-input--area"
+                            placeholder="Tambahkan catatan..."
+                            value={keterangan}
+                            onChange={(e) => setKeterangan(e.target.value)}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="tm-submit">
+                        <button
+                          type="button"
+                          className="tm-btn tm-btn--primary"
+                          style={{ width: '100%' }}
+                          onClick={handleSubmit}
+                          disabled={addMutation.isPending}
+                        >
+                          <FiPlus aria-hidden />
+                          {addMutation.isPending ? 'Menyimpan...' : 'Simpan Absensi'}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <MonthPill
+                        label={labelBulan}
+                        value={monthKey}
+                        max={dayjs().format('YYYY-MM')}
+                        onChange={(e) => {
+                          if (!e.target.value) return;
+                          const [y, m] = e.target.value.split('-').map(Number);
+                          setTahun(y);
+                          setBulan(m);
+                          setPage(1);
+                        }}
+                        onPrev={handlePrevMonth}
+                        onNext={handleNextMonth}
+                        nextDisabled={diBulanIni}
+                      />
+
+                      <section className="tm-stats" aria-label="Ringkasan absensi">
+                        {STATUS_ABSENSI.map((st) => {
+                          const g = gayaStatus(st);
+                          return (
+                            <div key={st} className="tm-stat">
+                              <span className="tm-stat-label">
+                                <span className="tm-dot" style={{ background: g.color }} />
+                                {g.label}
+                              </span>
+                              <span className="tm-stat-value">{rekap[st]}</span>
+                            </div>
+                          );
+                        })}
+                      </section>
+
+                      {loadingRiwayat ? (
+                        <ListLoadingState label="Memuat histori absensi" rows={4} />
+                      ) : rekapRiwayat.length === 0 ? (
+                        <div className="tm-group">
+                          <div className="tm-empty">
+                            <span className="tm-empty-icon" aria-hidden><FiInbox /></span>
+                            <div className="tm-empty-title">Belum ada absensi</div>
+                            <div className="tm-empty-text">Tidak ada catatan absensi di {labelBulan}.</div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <div className="tm-group tm-list">
+                            {rekapRiwayat.map((a) => {
+                              const g = gayaStatus(a.status);
+                              return (
+                                <SwipeToDelete key={a.tanggal} onDelete={() => handleDelete(a.tanggal)} borderRadius={0}>
+                                  <button type="button" className="tm-row tm-row-btn" onClick={() => bukaUbah(a)}>
+                                    <span className="tm-row-icon" style={{ background: g.soft, color: g.color }} aria-hidden>
+                                      {g.icon}
+                                    </span>
+                                    <div className="tm-row-main">
+                                      <div className="tm-row-title">{tanggalPanjang(a.tanggal)}</div>
+                                      <div className="tm-row-sub">
+                                        <span style={{ color: g.color, fontWeight: 600 }}>{g.label}</span>
+                                        {a.keterangan ? ` · ${a.keterangan}` : ''}
+                                      </div>
+                                    </div>
+                                    <FiChevronRight className="tm-chevron" aria-hidden />
+                                  </button>
+                                </SwipeToDelete>
+                              );
+                            })}
+                          </div>
+                          <div className="tm-hint">Ketuk untuk mengubah · geser ke kiri untuk menghapus</div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </>
+          )}
+        </div>
+
+        <ModalWrapper
+          show={!!ubahMobile}
+          title={
+            <div className="fw-bold">
+              Ubah absensi{ubahMobile ? ` · ${tanggalPanjang(ubahMobile.tanggal)}` : ''}
+            </div>
+          }
+          onClose={() => setUbahMobile(null)}
+          footer={
+            <div className="tm-sheet-footer">
+              <button type="button" className="tm-btn" onClick={() => setUbahMobile(null)}>Batal</button>
+              <button
+                type="button"
+                className="tm-btn tm-btn--primary"
+                onClick={async () => {
+                  if (!ubahMobile) return;
+                  await simpanPerubahan(ubahMobile.tanggal, {
+                    status: ubahStatus,
+                    keterangan: ubahKeterangan || null,
+                  });
+                  setUbahMobile(null);
+                }}
+              >
+                Simpan
+              </button>
+            </div>
+          }
+        >
+          <div className="tm-sheet-form">
+            <div className="tm-field">
+              <span className="tm-label">Status</span>
+              <PilihStatusMobile value={ubahStatus} onChange={setUbahStatus} />
+            </div>
+            <div className="tm-field">
+              <label htmlFor="ubah-keterangan" className="tm-label">Keterangan (opsional)</label>
+              <div className="tm-input-wrap">
+                <span className="tm-input-icon tm-input-icon--top" aria-hidden><FiEdit3 /></span>
+                <textarea
+                  id="ubah-keterangan"
+                  rows={2}
+                  className="tm-input tm-input--area"
+                  value={ubahKeterangan}
+                  onChange={(e) => setUbahKeterangan(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+        </ModalWrapper>
+      </div>
+    );
+  }
 
   return (
     <div className="page-shell py-4 px-md-4 px-3">
@@ -484,7 +813,7 @@ const AbsensiPage = () => {
         description="Kelola absensi ladies harian"
       />
 
-      {!isMobile ? (
+      {(
         <>
           {/* FORM CARD (DESKTOP — TIDAK DIUBAH) */}
           <div
@@ -640,242 +969,6 @@ const AbsensiPage = () => {
           {/* CONTENT */}
           {selectedLadyId && riwayatSection}
         </>
-      ) : (
-        <>
-          {/* PILIH LADIES (MOBILE — TERPISAH, IKUT SCROLL) */}
-          <div
-            className="card border-0 shadow-sm rounded-4 mb-4"
-            style={{
-              overflow: 'hidden',
-            }}
-          >
-            <div
-              className="px-4 py-3 border-bottom"
-              style={{
-                background: 'var(--color-surface-2)',
-              }}
-            >
-              <div className="d-flex align-items-center gap-2">
-                <FiUsers
-                  size={18}
-                  style={{ color: 'var(--color-green)' }}
-                />
-
-                <span
-                  className="fw-semibold"
-                  style={{ color: 'var(--color-dark)' }}
-                >
-                  Pilih Ladies
-                </span>
-              </div>
-            </div>
-
-            <div className="p-4">
-              <SearchableSelect
-                value={selectedLadyId}
-                onChange={(v) => {
-                  setSelectedLadyId(v);
-                  setPage(1);
-                  setActiveTab('input');
-                }}
-                options={ladies.map((l) => ({
-                  value: l.id,
-                  label: `${l.nama_ladies} • ${l.nama_outlet} (${l.pin})`,
-                }))}
-                placeholder="-- Pilih Ladies --"
-                searchPlaceholder="Cari nama ladies..."
-                height={50}
-                borderRadius={14}
-                fontSize="0.82rem"
-              />
-
-              {/* EMPTY STATE */}
-              {!selectedLadyId && (
-                <div
-                  className="mt-4 p-4 rounded-4"
-                  style={{
-                    background: 'var(--color-warning)',
-                    border: '1px solid var(--color-warning-hover)',
-                  }}
-                >
-                  <div className="d-flex align-items-start gap-3">
-                    <div style={{ fontSize: 24 }}>⚠️</div>
-
-                    <div>
-                      <div className="fw-bold mb-1">
-                        Ladies belum dipilih
-                      </div>
-
-                      <div
-                        style={{
-                          fontSize: '0.92rem',
-                          color: 'var(--color-gray-500)',
-                        }}
-                      >
-                        Pilih salah satu ladies untuk
-                        input absensi dan lihat riwayat.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* CONTENT */}
-          {selectedLadyId && (
-            <>
-              {/* TAB SWITCHER */}
-              <div className="d-flex gap-2 mb-3">
-                {[
-                  { key: 'input' as const, label: 'Input Absensi' },
-                  { key: 'riwayat' as const, label: 'Riwayat' },
-                ].map((tab) => {
-                  const active = activeTab === tab.key;
-
-                  return (
-                    <button
-                      key={tab.key}
-                      type="button"
-                      onClick={() => setActiveTab(tab.key)}
-                      className="flex-fill tap-scale"
-                      style={{
-                        border: 'none',
-                        borderRadius: 999,
-                        padding: '10px 12px',
-                        fontWeight: 700,
-                        fontSize: '0.85rem',
-                        background: active
-                          ? 'var(--color-green)'
-                          : 'var(--color-surface)',
-                        color: active
-                          ? '#fff'
-                          : 'var(--color-gray-700)',
-                        boxShadow: active
-                          ? 'var(--shadow-brand)'
-                          : '0 1px 4px rgba(0,0,0,0.04)',
-                      }}
-                    >
-                      {tab.label}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={activeTab}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.18, ease: 'easeOut' }}
-              >
-              {activeTab === 'input' ? (
-                <div
-                  className="card border-0 shadow-sm rounded-4"
-                  style={{ overflow: 'hidden' }}
-                >
-                  <div
-                    className="px-4 py-3 border-bottom"
-                    style={{
-                      background:
-                        'linear-gradient(to right, var(--color-green-lighter), var(--color-surface))',
-                    }}
-                  >
-                    <div className="fw-bold">Input Absensi</div>
-                    <div
-                      style={{
-                        fontSize: '0.85rem',
-                        color: 'var(--color-gray-500)',
-                      }}
-                    >
-                      {selectedLady?.nama_ladies}
-                    </div>
-                  </div>
-
-                  <div className="p-4">
-                    <div className="row g-4">
-                      {/* DATE */}
-                      <div className="col-12">
-                        <label className="fw-semibold mb-2">
-                          Tanggal
-                        </label>
-
-                        <input
-                          type="date"
-                          className="form-control shadow-none"
-                          value={tanggal}
-                          onChange={(e) =>
-                            setTanggal(e.target.value)
-                          }
-                          style={{
-                            height: 50,
-                            borderRadius: 14,
-                            border: '2px solid var(--color-green-light)',
-                            paddingInline: 14,
-                            // 16px — di bawah itu iOS otomatis nge-zoom saat difokus.
-                            fontSize: 16,
-                          }}
-                        />
-                      </div>
-
-                      {/* STATUS */}
-                      <div className="col-12">
-                        <label className="fw-semibold mb-2">
-                          Status
-                        </label>
-
-                        {statusButtons}
-                      </div>
-
-                      {/* KETERANGAN */}
-                      <div className="col-12">
-                        <label className="fw-semibold mb-2">
-                          Keterangan
-                        </label>
-
-                        <textarea
-                          className="form-control shadow-none"
-                          rows={2}
-                          value={keterangan}
-                          onChange={(e) =>
-                            setKeterangan(e.target.value)
-                          }
-                          placeholder="Tambahkan catatan..."
-                          style={{
-                            borderRadius: 16,
-                            border: '2px solid var(--color-green-light)',
-                            padding: '12px 14px',
-                            fontSize: '0.82rem',
-                            minHeight: 80,
-                            resize: 'none',
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* BUTTON */}
-                    <div className="mt-4 d-flex justify-content-center">
-                      <Button
-                        variant="primary"
-                        icon={addMutation.isPending ? <div className="spinner-border spinner-border-sm" role="status" /> : <FiPlus size={18} />}
-                        onClick={handleSubmit}
-                        disabled={addMutation.isPending}
-                        fullWidth
-                      >
-                        {addMutation.isPending ? 'Menyimpan...' : 'Simpan Absensi'}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                riwayatSection
-              )}
-              </motion.div>
-              </AnimatePresence>
-            </>
-          )}
-        </>
       )}
 
       {/* MODAL */}
@@ -888,43 +981,13 @@ const AbsensiPage = () => {
         }}
         absensi={editAbsensi}
         onSubmit={async (data) => {
-          if (
-            !selectedLadyId ||
-            !selectedTanggal
-          )
-            return;
+          if (!selectedTanggal) return;
 
-          const { error } =
-            await supabase
-              .from('absensi')
-              .update({
-                status:
-                  data.status,
-                keterangan:
-                  data.keterangan ??
-                  null,
-              })
-              .eq(
-                'ladies_id',
-                selectedLadyId
-              )
-              .eq(
-                'tanggal',
-                selectedTanggal
-              );
-
-          if (error) {
-            toast.error(
-              'Gagal update data: ' +
-              error.message
-            );
-          }
+          await simpanPerubahan(selectedTanggal, data);
 
           setShowModal(false);
           setEditAbsensi(null);
           setSelectedTanggal(null);
-
-          queryClient.invalidateQueries({ queryKey: ['absensi-rekap', selectedLadyId] });
         }}
       />
     </div>

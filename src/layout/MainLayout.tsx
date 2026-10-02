@@ -48,6 +48,7 @@ const RUTE_ADMIN_TANPA_HEADER = [
   '/ladies',
   '/ladies-create',
   '/ladies-detail/',
+  '/absensi',
 ];
 
 const cocokRute = (daftar: string[], pathname: string) =>
