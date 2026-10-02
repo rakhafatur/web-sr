@@ -10,7 +10,14 @@ import {
   FiLock,
   FiUser,
   FiUsers,
+  FiAtSign,
+  FiEdit2,
+  FiEye,
+  FiEyeOff,
 } from 'react-icons/fi';
+import { useMediaQuery } from 'react-responsive';
+import MobilePageBar from '../../../components/MobilePageBar';
+import '../../../styles/mobile-admin.css';
 
 import FormField from '../../../components/FormField';
 import EntityPageHeader from '../../../components/EntityPageHeader';
@@ -50,6 +57,11 @@ const DetailUser = () => {
 
   const [fieldSalah, setFieldSalah] =
     useState<string | null>(null);
+
+  const [lihatPassword, setLihatPassword] = useState(false);
+
+  // Mobile: tampilan baru (Header app dicabut di MainLayout). Desktop: lama.
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const fetchUser = async () => {
     try {
@@ -179,6 +191,123 @@ const DetailUser = () => {
 
   if (loading) {
     return <DetailFormSkeleton label="Mengambil data user" fields={2} />;
+  }
+
+  const wajib = (
+    <>
+      <span className="tm-req" aria-hidden="true">*</span>
+      <span className="visually-hidden"> (wajib diisi)</span>
+    </>
+  );
+
+  if (isMobile) {
+    const batal = () => {
+      setReadonly(true);
+      setFieldSalah(null);
+      fetchUser();
+    };
+
+    return (
+      <div className="tm-page">
+        <MobilePageBar
+          title={readonly ? 'Detail User' : 'Ubah User'}
+          backTo="/users"
+          action={
+            readonly
+              ? { icon: <FiEdit2 />, label: 'Ubah user', onClick: () => setReadonly(false) }
+              : undefined
+          }
+        />
+
+        <section className="tm-identity" aria-label="Identitas user">
+          <span className="tm-avatar" aria-hidden>
+            {(form.nama || form.username || '?').charAt(0).toUpperCase()}
+          </span>
+          <h2 className="tm-identity-name">{form.nama || '-'}</h2>
+          <div className="tm-identity-sub">@{form.username}</div>
+        </section>
+
+        <div className="tm-stack">
+          <h2 className="tm-section-title">Informasi akun</h2>
+          <div className="tm-card tm-sheet-form">
+            <div className="tm-field">
+              <label htmlFor="detail-username" className="tm-label">Username{!readonly && wajib}</label>
+              <div className="tm-input-wrap">
+                <FiAtSign className="tm-input-icon" aria-hidden />
+                <input
+                  id="detail-username"
+                  name="username"
+                  type="text"
+                  autoComplete="off"
+                  autoCapitalize="none"
+                  readOnly={readonly}
+                  className={`tm-input ${fieldSalah === 'username' ? 'is-invalid' : ''}`}
+                  aria-invalid={fieldSalah === 'username' || undefined}
+                  value={form.username}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            <div className="tm-field">
+              <label htmlFor="detail-nama" className="tm-label">Nama lengkap{!readonly && wajib}</label>
+              <div className="tm-input-wrap">
+                <FiUser className="tm-input-icon" aria-hidden />
+                <input
+                  id="detail-nama"
+                  name="nama"
+                  type="text"
+                  autoComplete="off"
+                  readOnly={readonly}
+                  className={`tm-input ${fieldSalah === 'nama' ? 'is-invalid' : ''}`}
+                  aria-invalid={fieldSalah === 'nama' || undefined}
+                  value={form.nama}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            {!readonly && (
+              <div className="tm-field">
+                <label htmlFor="detail-password" className="tm-label">Password baru (opsional)</label>
+                <div className="tm-input-wrap">
+                  <FiLock className="tm-input-icon" aria-hidden />
+                  <input
+                    id="detail-password"
+                    name="password"
+                    type={lihatPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    className="tm-input tm-input--trailing"
+                    value={form.password}
+                    onChange={handleChange}
+                  />
+                  <button
+                    type="button"
+                    className="tm-input-trailing"
+                    onClick={() => setLihatPassword((v) => !v)}
+                    aria-label={lihatPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                  >
+                    {lihatPassword ? <FiEyeOff /> : <FiEye />}
+                  </button>
+                </div>
+                <div className="tm-help">Kosongkan kalau password tidak ingin diganti.</div>
+              </div>
+            )}
+          </div>
+
+          {!readonly && (
+            <div className="tm-actions">
+              <button type="button" className="tm-btn" onClick={batal} disabled={saving}>
+                Batal
+              </button>
+              <button type="button" className="tm-btn tm-btn--primary" onClick={handleSave} disabled={saving}>
+                {saving ? 'Menyimpan...' : 'Simpan'}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
   }
 
   return (

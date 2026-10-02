@@ -25,7 +25,9 @@ const RUTE_LADIES_TANPA_HEADER = [
   '/ladies/peraturan',
 ];
 
-/** Halaman admin yang di mobile punya bar atas sendiri (MobilePageBar). */
+/** Halaman admin yang di mobile punya bar atas sendiri (MobilePageBar).
+    Entri yang diakhiri '/' dicocokkan sebagai awalan (rute ber-parameter,
+    mis. '/user-detail/' untuk '/user-detail/:id'). */
 const RUTE_ADMIN_TANPA_HEADER = [
   '/',
   '/add-transaksi',
@@ -33,7 +35,14 @@ const RUTE_ADMIN_TANPA_HEADER = [
   '/buku-kuning',
   '/buku-kuning-pengawas',
   '/outlet',
+  '/users',
+  '/user-create',
+  '/user-approval',
+  '/user-detail/',
 ];
+
+const cocokRute = (daftar: string[], pathname: string) =>
+  daftar.some((r) => (r.endsWith('/') && r !== '/' ? pathname.startsWith(r) : pathname === r));
 
 function MainLayout({ children }: { children: React.ReactNode }) {
   const user = useSelector((state: RootState) => state.user.currentUser);
@@ -72,8 +81,8 @@ function MainLayout({ children }: { children: React.ReactNode }) {
   // tetap tampil.
   const isTanpaHeader = isMobile && (
     isLadies
-      ? RUTE_LADIES_TANPA_HEADER.includes(location.pathname)
-      : RUTE_ADMIN_TANPA_HEADER.includes(location.pathname)
+      ? cocokRute(RUTE_LADIES_TANPA_HEADER, location.pathname)
+      : cocokRute(RUTE_ADMIN_TANPA_HEADER, location.pathname)
   );
   const sidebarWidth = isCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH;
 

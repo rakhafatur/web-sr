@@ -15,7 +15,9 @@ import HeaderActionButton from '../../../components/HeaderActionButton';
 import ListPageToolbar from '../../../components/ListPageToolbar';
 import ListLoadingState from '../../../components/ListLoadingState';
 import PullToRefresh from '../../../components/PullToRefresh';
-import UserCardList from '../components/UserCardList';
+import MobilePageBar from '../../../components/MobilePageBar';
+import SwipeToDelete from '../../../components/SwipeToDelete';
+import '../../../styles/mobile-admin.css';
 
 import { useMediaQuery } from 'react-responsive';
 
@@ -24,6 +26,9 @@ import {
   FiUsers,
   FiEdit2,
   FiTrash2,
+  FiSearch,
+  FiChevronRight,
+  FiUserCheck,
 } from 'react-icons/fi';
 
 type User = {
@@ -104,6 +109,107 @@ const UserListPage = () => {
 
   const totalPages = Math.ceil(total / limit);
 
+  // Jumlah user yang menunggu persetujuan — untuk pengingat di mobile.
+  // Kunci diawali 'user-approval' supaya ikut disegarkan saat ada yang
+  // di-approve (UserApprovalPage meng-invalidate awalan itu).
+  const { data: jumlahMenunggu = 0 } = useQuery({
+    queryKey: ['user-approval', 'jumlah'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('users')
+        .select('id', { count: 'exact', head: true })
+        .eq('is_active', false);
+      if (error) throw error;
+      return count ?? 0;
+    },
+    enabled: isMobile,
+    meta: { errorLabel: 'jumlah user menunggu persetujuan' },
+  });
+
+  // Mobile: tampilan baru selaras halaman admin lain (Header app dicabut di
+  // MainLayout). Desktop: tampilan lama di bawah.
+  if (isMobile) {
+    return (
+      <PullToRefresh onRefresh={async () => { await refetch(); }}>
+        <div className="tm-page">
+          <MobilePageBar
+            title="Users"
+            backTo="/"
+            action={{ icon: <FiPlus />, label: 'Tambah user', onClick: () => navigate('/user-create') }}
+          />
+
+          <div className="tm-stack">
+            {jumlahMenunggu > 0 && (
+              <button type="button" className="tm-banner" onClick={() => navigate('/user-approval')}>
+                <span className="tm-banner-icon" aria-hidden><FiUserCheck /></span>
+                <span className="tm-banner-text">
+                  {jumlahMenunggu} user menunggu persetujuan
+                </span>
+                <FiChevronRight className="tm-chevron" aria-hidden />
+              </button>
+            )}
+
+            <div className="tm-search">
+              <FiSearch aria-hidden />
+              <input
+                type="search"
+                placeholder="Cari username atau nama..."
+                aria-label="Cari user"
+                value={keyword}
+                onChange={(e) => {
+                  setPage(1);
+                  setKeyword(e.target.value);
+                }}
+              />
+            </div>
+
+            {loading ? (
+              <ListLoadingState label="Memuat data user" />
+            ) : userList.length === 0 ? (
+              <div className="tm-group">
+                <div className="tm-empty">
+                  <span className="tm-empty-icon" aria-hidden><FiUsers /></span>
+                  <div className="tm-empty-title">{keyword ? 'User tidak ditemukan' : 'Belum ada user aktif'}</div>
+                  <div className="tm-empty-text">
+                    {keyword ? 'Coba kata kunci lain.' : 'Ketuk tombol + di kanan atas untuk menambah user.'}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div className="tm-group tm-list">
+                  {userList.map((u) => (
+                    <SwipeToDelete key={u.id} onDelete={() => handleDelete(u.id)} borderRadius={0}>
+                      <button
+                        type="button"
+                        className="tm-row tm-row-btn"
+                        onClick={() => navigate(`/user-detail/${u.id}`)}
+                      >
+                        <span className="tm-avatar" aria-hidden>
+                          {(u.nama || u.username || '?').charAt(0).toUpperCase()}
+                        </span>
+                        <div className="tm-row-main">
+                          <div className="tm-row-title">{u.nama || u.username}</div>
+                          <div className="tm-row-sub">@{u.username}</div>
+                        </div>
+                        <FiChevronRight className="tm-chevron" aria-hidden />
+                      </button>
+                    </SwipeToDelete>
+                  ))}
+                </div>
+                <div className="tm-hint">Ketuk untuk detail · geser ke kiri untuk menghapus</div>
+              </div>
+            )}
+
+            {totalPages > 1 && (
+              <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
+            )}
+          </div>
+        </div>
+      </PullToRefresh>
+    );
+  }
+
   return (
     <PullToRefresh onRefresh={async () => { await refetch(); }}>
     <div className="page-shell py-4 px-3 px-md-4">
@@ -115,7 +221,6 @@ const UserListPage = () => {
           <HeaderActionButton
             icon={<FiPlus />}
             onClick={() => navigate('/user-create')}
-            fullWidth={isMobile}
           >
             Tambah User
           </HeaderActionButton>
@@ -139,12 +244,6 @@ const UserListPage = () => {
         <div className="p-2 p-md-3">
           {loading ? (
             <ListLoadingState label="Memuat data user" />
-          ) : isMobile ? (
-            <UserCardList
-              users={userList}
-              onEdit={(u) => navigate(`/user-detail/${u.id}`)}
-              onDelete={handleDelete}
-            />
           ) : (
             <DataTable
               columns={[

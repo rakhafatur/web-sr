@@ -9,8 +9,12 @@ import Pagination from '../../../components/Pagination';
 import Button from '../../../components/Button';
 import ListPageHeader from '../../../components/ListPageHeader';
 import ListPageToolbar from '../../../components/ListPageToolbar';
-import { FiCheck, FiUserCheck } from 'react-icons/fi';
-import UserApprovalCardList from '../components/UserApprovalCardList';
+import { FiCheck, FiUserCheck, FiSearch } from 'react-icons/fi';
+import MobilePageBar from '../../../components/MobilePageBar';
+import ModalWrapper from '../../../components/ModalWrapper';
+import SearchableSelect from '../../../components/SearchableSelect';
+import ListLoadingState from '../../../components/ListLoadingState';
+import '../../../styles/mobile-admin.css';
 
 type User = {
   id: string;
@@ -49,7 +53,7 @@ const UserApprovalPage = () => {
 
   const limit = isMobile ? 5 : 10;
 
-  const { data: userData } = useQuery({
+  const { data: userData, isLoading: loading } = useQuery({
     queryKey: ['user-approval', page, limit, keyword],
     queryFn: async () => {
       const from = (page - 1) * limit;
@@ -131,6 +135,153 @@ const UserApprovalPage = () => {
 
   const totalPages = Math.ceil(total / limit);
 
+  const labelAssign = (item: AssignItem) =>
+    assignType === 'ladies'
+      ? `${item.nama_ladies} - ${item.nama_outlet} - ${item.pin}`
+      : assignType === 'pengawas'
+      ? `${item.nama_panggilan}`
+      : `${item.nama_agent}`;
+
+  const tutupAssign = () => setAssignModal({ id: '', show: false });
+
+  // Mobile: tampilan baru (Header app dicabut di MainLayout) — daftar dengan
+  // tombol Setujui, dan penugasan lewat bottom sheet (chip peran + pemilih
+  // bercari) menggantikan modal Bootstrap berisi dua <select>. Desktop: lama.
+  if (isMobile) {
+    const userDipilih = userList.find((u) => u.id === assignModal.id);
+    const PERAN: { value: AssignType; label: string }[] = [
+      { value: 'ladies', label: 'Ladies' },
+      { value: 'pengawas', label: 'Pengawas' },
+      { value: 'agent', label: 'Agent' },
+    ];
+    const labelPeran = PERAN.find((r) => r.value === assignType)?.label ?? '';
+
+    return (
+      <div className="tm-page">
+        <MobilePageBar title="Persetujuan User" backTo="/users" />
+
+        <div className="tm-stack">
+          <div className="tm-search">
+            <FiSearch aria-hidden />
+            <input
+              type="search"
+              placeholder="Cari username atau nama..."
+              aria-label="Cari user"
+              value={keyword}
+              onChange={(e) => {
+                setPage(1);
+                setKeyword(e.target.value);
+              }}
+            />
+          </div>
+
+          {loading ? (
+            <ListLoadingState label="Memuat user menunggu persetujuan" />
+          ) : userList.length === 0 ? (
+            <div className="tm-group">
+              <div className="tm-empty">
+                <span className="tm-empty-icon" aria-hidden><FiUserCheck /></span>
+                <div className="tm-empty-title">
+                  {keyword ? 'User tidak ditemukan' : 'Tidak ada yang menunggu'}
+                </div>
+                <div className="tm-empty-text">
+                  {keyword
+                    ? 'Coba kata kunci lain.'
+                    : 'Semua pendaftar sudah disetujui. User baru akan muncul di sini setelah mendaftar.'}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="tm-group tm-list">
+              {userList.map((u) => (
+                <div key={u.id}>
+                  <div className="tm-row">
+                    <span className="tm-avatar" aria-hidden>
+                      {(u.nama || u.username || '?').charAt(0).toUpperCase()}
+                    </span>
+                    <div className="tm-row-main">
+                      <div className="tm-row-title">{u.nama || u.username}</div>
+                      <div className="tm-row-sub">@{u.username}</div>
+                    </div>
+                    <button type="button" className="tm-btn-sm" onClick={() => handleApproveClick(u.id)}>
+                      <FiCheck aria-hidden />
+                      Setujui
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {totalPages > 1 && (
+            <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
+          )}
+        </div>
+
+        <ModalWrapper
+          show={assignModal.show}
+          title={<div className="fw-bold">Setujui {userDipilih?.nama || userDipilih?.username || 'user'}</div>}
+          onClose={tutupAssign}
+          footer={
+            <div className="tm-sheet-footer">
+              <button type="button" className="tm-btn" onClick={tutupAssign}>Batal</button>
+              <button
+                type="button"
+                className="tm-btn tm-btn--primary"
+                onClick={handleAssign}
+                disabled={!selectedAssignId}
+              >
+                Aktifkan
+              </button>
+            </div>
+          }
+        >
+          <div className="tm-sheet-form">
+            <div className="tm-field">
+              <span className="tm-label" id="assign-peran-label">Jadikan sebagai</span>
+              <div className="tm-chips" role="radiogroup" aria-labelledby="assign-peran-label">
+                {PERAN.map((r) => (
+                  <button
+                    key={r.value}
+                    type="button"
+                    role="radio"
+                    aria-checked={assignType === r.value}
+                    className={`tm-chip ${assignType === r.value ? 'is-active' : ''}`}
+                    onClick={() => {
+                      setAssignType(r.value);
+                      setSelectedAssignId('');
+                    }}
+                  >
+                    {r.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {assignType && (
+              <div className="tm-field">
+                <span className="tm-label">Pilih {labelPeran.toLowerCase()}</span>
+                <SearchableSelect
+                  value={selectedAssignId}
+                  onChange={setSelectedAssignId}
+                  options={assignList.map((item) => ({ value: item.id, label: labelAssign(item) }))}
+                  placeholder={`Pilih ${labelPeran.toLowerCase()}`}
+                  searchPlaceholder={`Cari ${labelPeran.toLowerCase()}...`}
+                  height={52}
+                  borderRadius={16}
+                  fontSize="1rem"
+                />
+                <div className="tm-help">
+                  Setelah diaktifkan, user bisa login sebagai {labelPeran.toLowerCase()} ini.
+                </div>
+              </div>
+            )}
+          </div>
+        </ModalWrapper>
+      </div>
+    );
+  }
+
   return (
     <div
       className="page-shell p-4"
@@ -158,9 +309,6 @@ const UserApprovalPage = () => {
 
         {/* BODY */}
         <div className="p-2 p-md-3">
-          {isMobile ? (
-            <UserApprovalCardList users={userList} onApprove={handleApproveClick} />
-          ) : (
             <DataTable
               columns={[
                 { key: 'username', label: 'Username' },
@@ -180,7 +328,6 @@ const UserApprovalPage = () => {
               ]}
               data={userList}
             />
-          )}
 
           {totalPages > 1 && (
             <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
@@ -230,11 +377,7 @@ const UserApprovalPage = () => {
                       <option value="">-- Pilih {assignType} --</option>
                       {assignList.map((item) => (
                         <option key={item.id} value={item.id}>
-                          {assignType === 'ladies'
-                            ? `${item.nama_ladies} - ${item.nama_outlet} - ${item.pin}`
-                            : assignType === 'pengawas'
-                            ? `${item.nama_panggilan}`
-                            : `${item.nama_agent}`}
+                          {labelAssign(item)}
                         </option>
                       ))}
                     </select>
