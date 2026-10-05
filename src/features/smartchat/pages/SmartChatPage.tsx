@@ -14,6 +14,15 @@ import type { ChatReport, ChatStat } from "../components/ChatReport";
 import SmartChatLayarPenuh from "../components/SmartChatLayarPenuh";
 import dayjs from "dayjs";
 import { supabase } from "../../../lib/supabaseClient";
+import { untungBaris, type VoucherRow } from "../../transaction/utils/rekapVoucher";
+import {
+  SENIN,
+  SELASA,
+  hariAwalMingguOutlet,
+  kelompokkanPerOutlet,
+  labelPeriodeMinggu,
+  rentangMinggu,
+} from "../utils/voucherPerOutlet";
 
 type Message = {
   sender: "ai" | "user";
@@ -24,40 +33,21 @@ type Message = {
 
 const jamSekarang = () => dayjs().format("HH:mm");
 
-/** Bentuk baris voucher yang dipakai laporan chat. `untung` bisa null untuk
-    transaksi lama yang dibuat sebelum kolom itu ada — penanganannya lewat
-    fallback di tiap perhitungan. */
-type VoucherRow = {
-  jumlah: number;
-  jumlah_voucher: number | null;
-  untung: number | null;
-};
-
-const untungDariBaris = (v: VoucherRow) =>
-  v.untung != null ? Number(v.untung) : Number(v.jumlah_voucher || 0) * 75000;
-
-/** Minggu operasional SR dimulai hari Selasa. `mundur` dihitung dalam minggu:
-    0 = minggu yang sedang berjalan, 1 = minggu sebelumnya, dst. */
-const rentangMingguSR = (mundur = 0) => {
-  const today = dayjs();
-  const awalMingguIni =
-    today.day() >= 2 ? today.day(2) : today.subtract(1, "week").day(2);
-
-  const awal = awalMingguIni.subtract(mundur, "week");
-
-  return { awal, akhir: awal.add(6, "day") };
-};
+/** Jawaban sebuah pertanyaan: satu laporan, beberapa laporan (mis. satu per
+    outlet — dikirim sebagai pesan terpisah), atau pesan teks (gagal). */
+type Jawaban = ChatReport | ChatReport[] | string;
 
 /** Empat angka ringkasan yang sama untuk semua laporan voucher. Nilainya
     dibaca dari kolom yang tersimpan di baris transaksi, bukan dihitung ulang
-    dari harga yang berlaku sekarang. */
+    dari harga yang berlaku sekarang (untungBaris: tarif lama untuk baris
+    tanpa kolom untung). */
 const statVoucher = (rows: VoucherRow[]): ChatStat[] => {
   const totalVoucher = rows.reduce(
     (sum, v) => sum + Number(v.jumlah_voucher || 0),
     0
   );
   const totalLadies = rows.reduce((sum, v) => sum + Number(v.jumlah), 0);
-  const totalKeuntungan = rows.reduce((sum, v) => sum + untungDariBaris(v), 0);
+  const totalKeuntungan = rows.reduce((sum, v) => sum + untungBaris(v), 0);
 
   return [
     {
@@ -83,17 +73,35 @@ const statVoucher = (rows: VoucherRow[]): ChatStat[] => {
   ];
 };
 
-/** Ambil baris voucher milik ladies dalam satu rentang tanggal (inklusif). */
+/** Ambil baris voucher milik ladies dalam satu rentang tanggal (inklusif),
+    lengkap dengan outlet & tanggal untuk dikelompokkan per outlet. */
 const ambilBarisVoucher = async (awal: string, akhir: string) => {
   const { data, error } = await supabase
     .from("vouchers")
-    .select("jumlah, jumlah_voucher, untung")
+    .select("jumlah, jumlah_voucher, untung, outlet, tanggal, ladies ( id, nama_ladies, nama_outlet )")
     .gte("tanggal", awal)
     .lte("tanggal", akhir)
     .not("ladies_id", "is", null);
 
-  return { rows: (data ?? []) as VoucherRow[], error };
+  // Supabase mengetik relasi `ladies` sebagai array untuk nested select,
+  // padahal selalu satu baris — dinormalkan lewat unknown (sama seperti
+  // RekapVoucherPage).
+  return { rows: (data ?? []) as unknown as VoucherRow[], error };
 };
+
+/** Nama outlet aktif — supaya tiap outlet tetap dijawab walau tanpa voucher. */
+const ambilDaftarOutlet = async () => {
+  const { data, error } = await supabase
+    .from("outlets")
+    .select("nama_outlet")
+    .eq("is_active", true)
+    .order("nama_outlet", { ascending: true });
+
+  return { daftar: (data ?? []).map((o) => o.nama_outlet as string), error };
+};
+
+const dalamRentang = (tanggal: string, awal: string, akhir: string) =>
+  tanggal >= awal && tanggal <= akhir;
 
 const SmartChatPage: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>(() => [
@@ -108,64 +116,72 @@ const SmartChatPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   // =========================================================
-  // JUMLAH VOUCHER BULAN INI
+  // VOUCHER MINGGU INI / MINGGU LALU — satu laporan per outlet, masing-masing
+  // dengan periode minggunya sendiri (Travel Senin–Minggu, lainnya
+  // Selasa–Senin; lihat hariAwalMingguOutlet).
   // =========================================================
-  const getJumlahVoucherBulanIni = async (): Promise<ChatReport | string> => {
+  const getVoucherMingguPerOutlet = async (mundur: 0 | 1): Promise<Jawaban> => {
+    const judul = mundur === 0 ? "Minggu Ini" : "Minggu Lalu";
+    const { daftar, error: errorOutlet } = await ambilDaftarOutlet();
+    if (errorOutlet) return "Gagal mengambil daftar outlet.";
+
+    const hariIni = dayjs();
+    // Ambil sekali untuk gabungan semua periode, lalu saring per outlet.
+    const semua = ([SENIN, SELASA] as const).map((h) => rentangMinggu(h, mundur, hariIni));
+    const awalGabungan = semua.reduce((m, r) => (r.awal.isBefore(m) ? r.awal : m), semua[0].awal);
+    const akhirGabungan = semua.reduce((m, r) => (r.akhir.isAfter(m) ? r.akhir : m), semua[0].akhir);
+
+    const { rows, error } = await ambilBarisVoucher(
+      awalGabungan.format("YYYY-MM-DD"),
+      akhirGabungan.format("YYYY-MM-DD")
+    );
+    if (error) return `Gagal mengambil data voucher ${judul.toLowerCase()}.`;
+
+    const laporan = [...kelompokkanPerOutlet(rows, daftar).entries()]
+      .map(([outlet, baris]) => {
+        const hariAwal = hariAwalMingguOutlet(outlet);
+        const { awal, akhir } = rentangMinggu(hariAwal, mundur, hariIni);
+        const dalam = baris.filter((v) =>
+          dalamRentang(v.tanggal, awal.format("YYYY-MM-DD"), akhir.format("YYYY-MM-DD"))
+        );
+        return { outlet, dalam, report: {
+          title: `Voucher ${judul} · ${outlet}`,
+          subtitle: `${awal.format("DD MMM")} – ${akhir.format("DD MMM")} (${labelPeriodeMinggu(hariAwal)})`,
+          icon: mundur === 0 ? <FiTrendingUp /> : <FiRotateCcw />,
+          stats: statVoucher(dalam),
+        } as ChatReport };
+      })
+      // Outlet di luar daftar aktif hanya ditampilkan kalau ada transaksinya.
+      .filter((x) => daftar.includes(x.outlet) || x.dalam.length > 0)
+      .map((x) => x.report);
+
+    return laporan.length > 0 ? laporan : "Belum ada outlet aktif.";
+  };
+
+  // =========================================================
+  // VOUCHER BULAN INI — satu laporan per outlet
+  // =========================================================
+  const getVoucherBulanIniPerOutlet = async (): Promise<Jawaban> => {
+    const { daftar, error: errorOutlet } = await ambilDaftarOutlet();
+    if (errorOutlet) return "Gagal mengambil daftar outlet.";
+
     const { rows, error } = await ambilBarisVoucher(
       dayjs().startOf("month").format("YYYY-MM-DD"),
       dayjs().endOf("month").format("YYYY-MM-DD")
     );
-
     if (error) return "Gagal mengambil data voucher bulan ini.";
 
-    return {
-      title: "Voucher Bulan Ini",
-      subtitle: dayjs().format("MMMM YYYY"),
-      icon: <FiCalendar />,
-      stats: statVoucher(rows),
-    };
-  };
-
-  // =========================================================
-  // JUMLAH VOUCHER MINGGU INI
-  // =========================================================
-  const getJumlahVoucherMingguIni = async (): Promise<ChatReport | string> => {
-    const { awal, akhir } = rentangMingguSR(0);
-
-    const { rows, error } = await ambilBarisVoucher(
-      awal.format("YYYY-MM-DD"),
-      akhir.format("YYYY-MM-DD")
+    const labelBulan = new Date().toLocaleDateString("id-ID", { month: "long", year: "numeric" });
+    const laporan = [...kelompokkanPerOutlet(rows, daftar).entries()].map(
+      ([outlet, baris]): ChatReport => ({
+        title: `Voucher Bulan Ini · ${outlet}`,
+        subtitle: labelBulan,
+        icon: <FiCalendar />,
+        stats: statVoucher(baris),
+      })
     );
 
-    if (error) return "Gagal mengambil data voucher minggu ini.";
-
-    return {
-      title: "Voucher Minggu Ini",
-      subtitle: `${awal.format("DD MMM")} • ${akhir.format("DD MMM")}`,
-      icon: <FiTrendingUp />,
-      stats: statVoucher(rows),
-    };
-  };
-
-  // =========================================================
-  // JUMLAH VOUCHER MINGGU LALU
-  // =========================================================
-  const getJumlahVoucherMingguLalu = async (): Promise<ChatReport | string> => {
-    const { awal, akhir } = rentangMingguSR(1);
-
-    const { rows, error } = await ambilBarisVoucher(
-      awal.format("YYYY-MM-DD"),
-      akhir.format("YYYY-MM-DD")
-    );
-
-    if (error) return "Gagal mengambil data voucher minggu lalu.";
-
-    return {
-      title: "Voucher Minggu Lalu",
-      subtitle: `${awal.format("DD MMM")} • ${akhir.format("DD MMM")}`,
-      icon: <FiRotateCcw />,
-      stats: statVoucher(rows),
-    };
+    return laporan.length > 0 ? laporan : "Belum ada outlet aktif.";
   };
 
   // =========================================================
@@ -325,17 +341,17 @@ const SmartChatPage: React.FC = () => {
     {
       icon: <FiTrendingUp />,
       label: "Berapa jumlah voucher minggu ini?",
-      answer: getJumlahVoucherMingguIni,
+      answer: () => getVoucherMingguPerOutlet(0),
     },
     {
       icon: <FiRotateCcw />,
       label: "Berapa jumlah voucher minggu lalu?",
-      answer: getJumlahVoucherMingguLalu,
+      answer: () => getVoucherMingguPerOutlet(1),
     },
     {
       icon: <FiCalendar />,
       label: "Berapa jumlah voucher bulan ini?",
-      answer: getJumlahVoucherBulanIni,
+      answer: getVoucherBulanIniPerOutlet,
     },
     {
       icon: <FiAward />,
@@ -372,14 +388,21 @@ const SmartChatPage: React.FC = () => {
 
     setLoading(true);
 
-    const result = await question.answer();
+    const result: Jawaban = await question.answer();
+    const waktu = jamSekarang();
 
-    setMessages((prev) => [
-      ...prev,
+    // Beberapa laporan (mis. per outlet) dikirim sebagai pesan terpisah.
+    const balasan: Message[] =
       typeof result === "string"
-        ? { sender: "ai", message: result, waktu: jamSekarang() }
-        : { sender: "ai", message: result.title, report: result, waktu: jamSekarang() },
-    ]);
+        ? [{ sender: "ai", message: result, waktu }]
+        : (Array.isArray(result) ? result : [result]).map((r) => ({
+            sender: "ai" as const,
+            message: r.title,
+            report: r,
+            waktu,
+          }));
+
+    setMessages((prev) => [...prev, ...balasan]);
 
     setLoading(false);
   };
