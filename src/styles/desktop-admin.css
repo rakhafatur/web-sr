@@ -328,3 +328,17 @@
 .dk-footer:empty {
   display: none;
 }
+
+/* Panah penanda baris bisa diklik (di kolom aksi). */
+.dk-row-chevron {
+  margin-left: 8px;
+  vertical-align: middle;
+  color: var(--color-gray-500);
+  font-size: 18px;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.dk-table tbody tr.is-clickable:hover .dk-row-chevron {
+  color: var(--color-green);
+  transform: translateX(2px);
+}

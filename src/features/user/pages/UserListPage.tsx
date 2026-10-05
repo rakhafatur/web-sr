@@ -21,7 +21,6 @@ import { useMediaQuery } from 'react-responsive';
 import {
   FiPlus,
   FiUsers,
-  FiEdit2,
   FiTrash2,
   FiSearch,
   FiChevronRight,
@@ -300,18 +299,6 @@ const UserListPage = () => {
                   <td className="dk-col-actions">
                     <button
                       type="button"
-                      className="dk-icon-btn"
-                      title="Ubah"
-                      aria-label={`Ubah ${u.nama || u.username}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/user-detail/${u.id}`);
-                      }}
-                    >
-                      <FiEdit2 />
-                    </button>
-                    <button
-                      type="button"
                       className="dk-icon-btn dk-icon-btn--danger"
                       title="Hapus"
                       aria-label={`Hapus ${u.nama || u.username}`}
@@ -322,6 +309,8 @@ const UserListPage = () => {
                     >
                       <FiTrash2 />
                     </button>
+                    {/* Penanda baris bisa diklik (bukan tombol) — ubah dilakukan di detail. */}
+                    <FiChevronRight className="dk-row-chevron" aria-hidden />
                   </td>
                 </tr>
               ))}
