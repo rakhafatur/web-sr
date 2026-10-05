@@ -613,7 +613,9 @@
 }
 
 .tm-row-btn:active {
-  background: rgba(255, 255, 255, 0.04);
+  /* Solid, bukan transparan: tombol hapus SwipeToDelete ada di belakang
+     baris dan dulu ikut terlihat saat baris ditekan. */
+  background: var(--color-surface-2);
 }
 
 .tm-row-btn:focus-visible {
