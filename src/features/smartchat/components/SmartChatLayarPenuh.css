@@ -430,3 +430,38 @@ button.sc-icon-btn:focus-visible {
   outline: 2px solid var(--color-green);
   outline-offset: 2px;
 }
+
+/* =========================
+   DESKTOP — isi penuh area konten (di samping sidebar, di bawah header).
+   Dulu kolom 760px di tengah terlihat kecil di monitor lebar; kini kolom
+   melebar, dan hanya bubble yang dibatasi supaya teks tetap enak dibaca.
+========================= */
+@media (min-width: 769px) {
+  .sc-inner {
+    max-width: 1100px;
+  }
+
+  .sc-bar,
+  .sc-scroll,
+  .sc-dock {
+    padding-left: var(--space-8);
+    padding-right: var(--space-8);
+  }
+
+  .sc-bubble {
+    max-width: min(78%, 640px);
+  }
+
+  .sc-bubble.is-report {
+    max-width: 560px;
+  }
+
+  .sc-hero {
+    padding-top: var(--space-8);
+  }
+
+  .sc-hero-img {
+    width: 220px;
+    height: 220px;
+  }
+}
