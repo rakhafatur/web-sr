@@ -83,3 +83,11 @@
   color: inherit;
 }
 
+
+/* Judul bagian (SidebarLadies) — huruf kecil abu, bukan kapital semua. */
+.sidebar-section {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-gray-600);
+  padding: 12px 14px 4px;
+}

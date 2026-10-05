@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { RootState } from '../app/store';
 
 import Sidebar from '../components/Sidebar/Sidebar';
+import SidebarLadies from '../components/Sidebar/SidebarLadies';
 import Header from '../components/Header/Header';
 import BottomNavbarAdmin from '../components/Bottombar/BottomNavbarAdmin';
 import BottomNavbarLadies from '../components/Bottombar/BottomNavbarLadies';
@@ -110,10 +111,10 @@ function MainLayout({ children }: { children: React.ReactNode }) {
       <div className="d-flex" style={{ width: '100%' }}>
         {!isMobile && (
           isLadies ? (
-            <div style={{ width: sidebarWidth, padding: '1rem' }}>
-              <div style={{ fontWeight: 600 }}>SR Ladies</div>
-              <div style={{ marginTop: '0.5rem' }}>Sidebar khusus ladies belum tersedia</div>
-            </div>
+            <SidebarLadies
+              isCollapsed={isCollapsed}
+              onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
+            />
           ) : (
             <Sidebar
               isCollapsed={isCollapsed}
