@@ -7,15 +7,12 @@ import { supabase } from '../../../lib/supabaseClient';
 import { confirmDialog } from '../../../components/ConfirmDialog';
 import { sanitizeSearchKeyword } from '../../../utils/sanitizeSearch';
 
-import DataTable from '../../../components/DataTable';
-import ActionIconButton from '../../../components/ActionIconButton';
 import Pagination from '../../../components/Pagination';
-import ListPageHeader from '../../../components/ListPageHeader';
-import HeaderActionButton from '../../../components/HeaderActionButton';
-import ListPageToolbar from '../../../components/ListPageToolbar';
 import ListLoadingState from '../../../components/ListLoadingState';
 import PullToRefresh from '../../../components/PullToRefresh';
 import MobilePageBar from '../../../components/MobilePageBar';
+import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
+import '../../../styles/desktop-admin.css';
 import SwipeToDelete from '../../../components/SwipeToDelete';
 import '../../../styles/mobile-admin.css';
 
@@ -109,7 +106,7 @@ const UserListPage = () => {
 
   const totalPages = Math.ceil(total / limit);
 
-  // Jumlah user yang menunggu persetujuan — untuk pengingat di mobile.
+  // Jumlah user yang menunggu persetujuan — untuk pengingat (mobile & desktop).
   // Kunci diawali 'user-approval' supaya ikut disegarkan saat ada yang
   // di-approve (UserApprovalPage meng-invalidate awalan itu).
   const { data: jumlahMenunggu = 0 } = useQuery({
@@ -122,12 +119,11 @@ const UserListPage = () => {
       if (error) throw error;
       return count ?? 0;
     },
-    enabled: isMobile,
     meta: { errorLabel: 'jumlah user menunggu persetujuan' },
   });
 
   // Mobile: tampilan baru selaras halaman admin lain (Header app dicabut di
-  // MainLayout). Desktop: tampilan lama di bawah.
+  // MainLayout). Desktop: gaya baru dk- (uji coba) di bawah.
   if (isMobile) {
     return (
       <PullToRefresh onRefresh={async () => { await refetch(); }}>
@@ -210,78 +206,136 @@ const UserListPage = () => {
     );
   }
 
+  // Desktop (uji coba gaya baru): header polos, satu kartu dengan cari &
+  // tabel beravatar; seluruh baris bisa diklik untuk membuka detail.
   return (
-    <PullToRefresh onRefresh={async () => { await refetch(); }}>
-    <div className="page-shell py-4 px-3 px-md-4">
-      <ListPageHeader
-        icon={<FiUsers />}
-        title="Management User"
-        description="Kelola user dan akses sistem SR Agency"
+    <div className="page-shell dk-page">
+      <DesktopPageHeader
+        title="Users"
+        description="Kelola akun dan akses sistem SR Agency"
         actions={
-          <HeaderActionButton
-            icon={<FiPlus />}
-            onClick={() => navigate('/user-create')}
-          >
-            Tambah User
-          </HeaderActionButton>
+          <>
+            {jumlahMenunggu > 0 && (
+              <button type="button" className="dk-btn dk-btn--warn" onClick={() => navigate('/user-approval')}>
+                <FiUserCheck aria-hidden />
+                {jumlahMenunggu} menunggu persetujuan
+                <FiChevronRight aria-hidden />
+              </button>
+            )}
+            <button type="button" className="dk-btn dk-btn--primary" onClick={() => navigate('/user-create')}>
+              <FiPlus aria-hidden />
+              Tambah user
+            </button>
+          </>
         }
       />
 
-      {/* CONTENT */}
-      <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
-        <ListPageToolbar
-          title="List User"
-          subtitle="Data user aktif"
-          placeholder="Search user..."
-          keyword={keyword}
-          onKeywordChange={(value) => {
-            setPage(1);
-            setKeyword(value);
-          }}
-        />
-
-        {/* BODY */}
-        <div className="p-2 p-md-3">
-          {loading ? (
-            <ListLoadingState label="Memuat data user" />
-          ) : (
-            <DataTable
-              columns={[
-                { key: 'username', label: 'Username' },
-                { key: 'nama', label: 'Nama' },
-                {
-                  key: 'id',
-                  label: 'Aksi',
-                  render: (u: User) => (
-                    <div className="d-flex gap-2">
-                      <ActionIconButton
-                        icon={<FiEdit2 size={16} />}
-                        variant="warning"
-                        title="Edit"
-                        onClick={() => navigate(`/user-detail/${u.id}`)}
-                      />
-                      <ActionIconButton
-                        icon={<FiTrash2 size={16} />}
-                        variant="danger"
-                        title="Hapus"
-                        onClick={() => handleDelete(u.id)}
-                      />
-                    </div>
-                  ),
-                },
-              ]}
-              data={userList}
+      <section className="dk-card" aria-label="Daftar user">
+        <div className="dk-toolbar">
+          <div className="dk-search">
+            <FiSearch aria-hidden />
+            <input
+              type="search"
+              placeholder="Cari username atau nama..."
+              aria-label="Cari user"
+              value={keyword}
+              onChange={(e) => {
+                setPage(1);
+                setKeyword(e.target.value);
+              }}
             />
-          )}
+          </div>
+          {!loading && <span className="dk-count">{total} user aktif</span>}
+        </div>
 
-          {/* PAGINATION */}
+        {loading ? (
+          <div style={{ padding: 'var(--space-4) var(--space-5)' }}>
+            <ListLoadingState label="Memuat data user" />
+          </div>
+        ) : userList.length === 0 ? (
+          <div className="dk-empty">
+            <span className="dk-empty-icon" aria-hidden><FiUsers /></span>
+            <div className="dk-empty-title">{keyword ? 'User tidak ditemukan' : 'Belum ada user aktif'}</div>
+            <div className="dk-empty-text">
+              {keyword ? 'Coba kata kunci lain.' : 'Klik "Tambah user" untuk menambah user pertama.'}
+            </div>
+          </div>
+        ) : (
+          <table className="dk-table">
+            <thead>
+              <tr>
+                <th scope="col">Nama</th>
+                <th scope="col">Username</th>
+                <th scope="col" className="dk-col-actions">
+                  <span className="visually-hidden">Aksi</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {userList.map((u) => (
+                <tr
+                  key={u.id}
+                  className="is-clickable"
+                  onClick={() => navigate(`/user-detail/${u.id}`)}
+                >
+                  <td>
+                    <div className="dk-person">
+                      <span className="dk-avatar" aria-hidden>
+                        {(u.nama || u.username || '?').charAt(0).toUpperCase()}
+                      </span>
+                      {/* Tombol supaya baris juga bisa dibuka lewat keyboard. */}
+                      <button
+                        type="button"
+                        className="dk-person-name"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/user-detail/${u.id}`);
+                        }}
+                      >
+                        {u.nama || u.username}
+                      </button>
+                    </div>
+                  </td>
+                  <td className="dk-person-sub">@{u.username}</td>
+                  <td className="dk-col-actions">
+                    <button
+                      type="button"
+                      className="dk-icon-btn"
+                      title="Ubah"
+                      aria-label={`Ubah ${u.nama || u.username}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/user-detail/${u.id}`);
+                      }}
+                    >
+                      <FiEdit2 />
+                    </button>
+                    <button
+                      type="button"
+                      className="dk-icon-btn dk-icon-btn--danger"
+                      title="Hapus"
+                      aria-label={`Hapus ${u.nama || u.username}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(u.id);
+                      }}
+                    >
+                      <FiTrash2 />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+
+        <div className="dk-footer">
           {totalPages > 1 && (
             <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
           )}
         </div>
-      </div>
+      </section>
     </div>
-    </PullToRefresh>
   );
 };
 

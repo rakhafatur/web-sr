@@ -1,0 +1,330 @@
+/* Tampilan admin DESKTOP gaya baru — kelas dk-. Bahasa visual sama dengan
+   mobile (kartu radius-xl, pil, avatar inisial) tapi memanfaatkan layar
+   lebar. Uji coba di halaman Users; halaman lain belum memakai ini. */
+
+/* MainLayout sudah memberi padding 2rem di desktop — jangan digandakan. */
+.dk-page {
+  padding: 0 0 var(--space-6);
+}
+
+/* =========================
+   HEADER HALAMAN
+========================= */
+
+.dk-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.dk-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--color-dark);
+  margin: 0;
+}
+
+.dk-desc {
+  margin: var(--space-1) 0 0;
+  font-size: 15px;
+  color: var(--color-gray-600);
+}
+
+.dk-head-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+/* =========================
+   TOMBOL
+========================= */
+
+.dk-btn {
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface);
+  color: var(--color-dark);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.dk-btn:hover {
+  background: var(--color-surface-2);
+}
+
+.dk-btn:active {
+  transform: scale(0.98);
+}
+
+.dk-btn:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: 2px;
+}
+
+.dk-btn--primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.dk-btn--primary:hover {
+  background: var(--color-primary-hover);
+}
+
+/* Pengingat (mis. user menunggu persetujuan) */
+.dk-btn--warn {
+  background: var(--color-warning);
+  border-color: var(--color-voucher-soft);
+  color: var(--color-voucher);
+}
+
+.dk-btn--warn:hover {
+  background: var(--color-warning-hover);
+}
+
+/* =========================
+   KARTU + TOOLBAR
+========================= */
+
+.dk-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.dk-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.dk-search {
+  position: relative;
+  width: 340px;
+  max-width: 100%;
+}
+
+.dk-search svg {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-gray-600);
+  pointer-events: none;
+}
+
+.dk-search input {
+  width: 100%;
+  height: 40px;
+  padding: 0 var(--space-4) 0 40px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface-2);
+  color: var(--color-dark);
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+}
+
+.dk-search input:focus {
+  border-color: var(--color-green);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.25);
+}
+
+.dk-count {
+  font-size: 13px;
+  color: var(--color-gray-600);
+}
+
+/* =========================
+   TABEL
+========================= */
+
+.dk-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dk-table th {
+  padding: 10px var(--space-5);
+  text-align: left;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-gray-600);
+  background: var(--color-surface-2);
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.dk-table td {
+  padding: 12px var(--space-5);
+  font-size: 14px;
+  color: var(--color-dark);
+  border-bottom: 1px solid var(--color-gray-200);
+  vertical-align: middle;
+}
+
+.dk-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.dk-table tbody tr.is-clickable {
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.dk-table tbody tr.is-clickable:hover {
+  background: var(--color-surface-2);
+}
+
+.dk-col-actions {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
+}
+
+/* Sel identitas: avatar + nama + sub */
+.dk-person {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.dk-avatar {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: var(--color-green-lighter);
+  border: 1px solid var(--color-green-light);
+  color: var(--color-green);
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dk-person-name {
+  font-weight: 500;
+  color: var(--color-dark);
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dk-person-name:hover {
+  color: var(--color-green);
+}
+
+.dk-person-name:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.dk-person-sub {
+  font-size: 13px;
+  color: var(--color-gray-600);
+}
+
+.dk-icon-btn {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-gray-600);
+  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.dk-icon-btn + .dk-icon-btn {
+  margin-left: 4px;
+}
+
+.dk-icon-btn:hover {
+  background: var(--color-surface);
+  color: var(--color-dark);
+}
+
+.dk-icon-btn--danger:hover {
+  background: var(--color-expense-soft);
+  color: var(--color-expense);
+}
+
+.dk-icon-btn:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: 2px;
+}
+
+/* =========================
+   KOSONG / KAKI
+========================= */
+
+.dk-empty {
+  padding: var(--space-12) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.dk-empty-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background: var(--color-green-lighter);
+  border: 1px solid var(--color-green-light);
+  color: var(--color-green);
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-3);
+}
+
+.dk-empty-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-dark);
+}
+
+.dk-empty-text {
+  font-size: 14px;
+  color: var(--color-gray-600);
+  margin-top: 4px;
+}
+
+.dk-footer {
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.dk-footer:empty {
+  display: none;
+}
