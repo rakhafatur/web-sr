@@ -551,3 +551,21 @@
   color: var(--color-dark);
   overflow-wrap: anywhere;
 }
+
+/* Pratinjau identitas di halaman Tambah (sebelum diisi). */
+.dk-avatar.is-empty {
+  background: var(--color-surface-2);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-500);
+  box-shadow: none;
+}
+
+.dk-identity-name.is-placeholder {
+  color: var(--color-gray-500);
+}
+
+.dk-identity-note {
+  margin-top: var(--space-4);
+  font-size: 12px;
+  color: var(--color-gray-600);
+}

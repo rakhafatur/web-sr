@@ -172,7 +172,8 @@ const CreateUser = () => {
     );
   }
 
-  // Desktop (gaya baru dk-): satu kartu form grid 2 kolom.
+  // Desktop (gaya baru dk-): dua kolom seperti Detail — pratinjau identitas
+  // (terisi langsung saat mengetik) & kartu form.
   return (
     <div className="page-shell dk-page">
       <DesktopPageHeader
@@ -181,7 +182,21 @@ const CreateUser = () => {
         description="Tambahkan akun baru ke sistem SR Agency"
       />
 
-      <section className="dk-card" style={{ maxWidth: 880 }} aria-label="Informasi user">
+      <div className="dk-detail-grid">
+        <aside className="dk-card" aria-label="Pratinjau user">
+          <div className="dk-identity">
+            <span className={`dk-avatar ${form.nama || form.username ? '' : 'is-empty'}`} aria-hidden>
+              {(form.nama || form.username || '?').charAt(0).toUpperCase()}
+            </span>
+            <h2 className={`dk-identity-name ${form.nama ? '' : 'is-placeholder'}`}>
+              {form.nama || 'Nama user'}
+            </h2>
+            <div className="dk-identity-sub">@{form.username || 'username'}</div>
+            <div className="dk-identity-note">Pratinjau — terisi saat kamu mengetik</div>
+          </div>
+        </aside>
+
+      <section className="dk-card" aria-label="Informasi user">
         <div className="dk-card-head">
           <h2 className="dk-card-title">Informasi user</h2>
           <div className="dk-card-sub">Kolom bertanda * wajib diisi.</div>
@@ -253,6 +268,7 @@ const CreateUser = () => {
           </button>
         </div>
       </section>
+      </div>
     </div>
   );
 };
