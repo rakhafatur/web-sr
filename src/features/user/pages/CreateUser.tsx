@@ -2,16 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-import { FiUsers, FiAtSign, FiUser, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
+import { FiAtSign, FiUser, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import { useMediaQuery } from 'react-responsive';
 import MobilePageBar from '../../../components/MobilePageBar';
+import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
+import '../../../styles/desktop-admin.css';
 import '../../../styles/mobile-admin.css';
 
-import FormField from '../../../components/FormField';
-import EntityPageHeader from '../../../components/EntityPageHeader';
-import EntityHeroCard from '../../../components/EntityHeroCard';
-import EntityFormCard from '../../../components/EntityFormCard';
-import EntitySubmitButton from '../../../components/EntitySubmitButton';
 import { supabase } from '../../../lib/supabaseClient';
 import { validasiWajib } from '../../../utils/validasiForm';
 
@@ -175,60 +172,87 @@ const CreateUser = () => {
     );
   }
 
+  // Desktop (gaya baru dk-): satu kartu form grid 2 kolom.
   return (
-    <div className="page-shell py-4 px-md-4 px-3" style={{ maxWidth: 760 }}>
-      <EntityPageHeader
-        backTo="/users"
-        icon={<FiUsers />}
-        title="Tambah User"
-        description="Tambahkan user baru ke sistem SR Agency"
+    <div className="page-shell dk-page">
+      <DesktopPageHeader
+        back={{ to: '/users', label: 'Users' }}
+        title="Tambah user"
+        description="Tambahkan akun baru ke sistem SR Agency"
       />
 
-      <EntityHeroCard
-        icon={<FiUsers />}
-        title="User Management"
-        subtitle="Lengkapi informasi user dengan benar sebelum menyimpan data"
-      />
+      <section className="dk-card" style={{ maxWidth: 880 }} aria-label="Informasi user">
+        <div className="dk-card-head">
+          <h2 className="dk-card-title">Informasi user</h2>
+          <div className="dk-card-sub">Kolom bertanda * wajib diisi.</div>
+        </div>
 
-      <EntityFormCard title="Informasi User" description="Data user yang akan ditambahkan">
-        <FormField
-          label="Username"
-          name="username"
-          required
-          invalid={fieldSalah === 'username'}
-          value={form.username}
-          onChange={handleChange}
-        />
+        <div className="dk-card-body">
+          <div className="dk-form-grid">
+            <div>
+              <label htmlFor="dk-username" className="dk-label">Username<span className="dk-req" aria-hidden="true">*</span><span className="visually-hidden"> (wajib diisi)</span></label>
+              <input
+                id="dk-username"
+                name="username"
+                type="text"
+                autoComplete="off"
+                className={`dk-input ${fieldSalah === 'username' ? 'is-invalid' : ''}`}
+                aria-invalid={fieldSalah === 'username' || undefined}
+                value={form.username}
+                onChange={handleChange}
+              />
+            </div>
 
-        <FormField
-          label="Nama Lengkap"
-          name="nama"
-          required
-          invalid={fieldSalah === 'nama'}
-          value={form.nama}
-          onChange={handleChange}
-        />
+            <div>
+              <label htmlFor="dk-nama" className="dk-label">Nama lengkap<span className="dk-req" aria-hidden="true">*</span><span className="visually-hidden"> (wajib diisi)</span></label>
+              <input
+                id="dk-nama"
+                name="nama"
+                type="text"
+                autoComplete="off"
+                className={`dk-input ${fieldSalah === 'nama' ? 'is-invalid' : ''}`}
+                aria-invalid={fieldSalah === 'nama' || undefined}
+                value={form.nama}
+                onChange={handleChange}
+              />
+            </div>
 
-        <div>
-          <FormField
-            label="Password"
-            name="password"
-            required
-            invalid={fieldSalah === 'password'}
-            type="password"
-            value={form.password}
-            onChange={handleChange}
-          />
-
-          <div style={{ fontSize: '0.75rem', color: 'var(--color-gray-500)', marginTop: 6 }}>
-            Password akan disimpan ke sistem
+            <div>
+              <label htmlFor="dk-password" className="dk-label">Password<span className="dk-req" aria-hidden="true">*</span><span className="visually-hidden"> (wajib diisi)</span></label>
+              <div className="dk-input-wrap">
+                <input
+                  id="dk-password"
+                  name="password"
+                  type={lihatPassword ? 'text' : 'password'}
+                  autoComplete="new-password"
+                  className={`dk-input dk-input--trailing ${fieldSalah === 'password' ? 'is-invalid' : ''}`}
+                  aria-invalid={fieldSalah === 'password' || undefined}
+                  value={form.password}
+                  onChange={handleChange}
+                />
+                <button
+                  type="button"
+                  className="dk-input-trailing"
+                  onClick={() => setLihatPassword((v) => !v)}
+                  aria-label={lihatPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                >
+                  {lihatPassword ? <FiEyeOff /> : <FiEye />}
+                </button>
+              </div>
+              <div className="dk-help">Disimpan dalam bentuk hash — tidak bisa dilihat lagi setelah disimpan.</div>
+            </div>
           </div>
         </div>
-      </EntityFormCard>
 
-      <EntitySubmitButton onClick={handleSubmit} loading={loading}>
-        Simpan User
-      </EntitySubmitButton>
+        <div className="dk-card-foot">
+          <button type="button" className="dk-btn" onClick={() => navigate('/users')} disabled={loading}>
+            Batal
+          </button>
+          <button type="button" className="dk-btn dk-btn--primary" onClick={handleSubmit} disabled={loading}>
+            {loading ? 'Menyimpan...' : 'Simpan user'}
+          </button>
+        </div>
+      </section>
     </div>
   );
 };

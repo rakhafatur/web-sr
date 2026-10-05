@@ -342,3 +342,212 @@
   color: var(--color-green);
   transform: translateX(2px);
 }
+
+/* =========================
+   HALAMAN TAMBAH / DETAIL
+========================= */
+
+.dk-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: var(--space-2);
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-gray-600);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.dk-back:hover {
+  color: var(--color-green);
+}
+
+.dk-back:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Detail: kartu identitas (kiri) + kartu informasi (kanan). */
+.dk-detail-grid {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .dk-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dk-card-body {
+  padding: var(--space-6);
+}
+
+.dk-card-head {
+  padding: var(--space-4) var(--space-6);
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.dk-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-dark);
+  margin: 0;
+}
+
+.dk-card-sub {
+  font-size: 13px;
+  color: var(--color-gray-600);
+  margin-top: 2px;
+}
+
+.dk-card-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--color-gray-200);
+  background: var(--color-surface-2);
+}
+
+.dk-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-8) var(--space-6);
+}
+
+.dk-identity .dk-avatar {
+  width: 88px;
+  height: 88px;
+  font-size: 2rem;
+  box-shadow: 0 12px 32px rgba(var(--color-primary-rgb), 0.25);
+}
+
+.dk-identity-name {
+  margin: var(--space-4) 0 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-dark);
+  overflow-wrap: anywhere;
+}
+
+.dk-identity-sub {
+  margin-top: 2px;
+  font-size: 14px;
+  color: var(--color-gray-600);
+}
+
+/* Form: grid 2 kolom di layar lebar. */
+.dk-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5) var(--space-6);
+}
+
+.dk-field--full {
+  grid-column: 1 / -1;
+}
+
+.dk-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-gray-700);
+}
+
+.dk-req {
+  color: var(--color-expense);
+  margin-left: 3px;
+}
+
+.dk-input-wrap {
+  position: relative;
+}
+
+.dk-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface-2);
+  color: var(--color-dark);
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dk-input:focus {
+  border-color: var(--color-green);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.25);
+}
+
+.dk-input.is-invalid {
+  border-color: var(--color-danger-solid);
+  box-shadow: 0 0 0 3px rgba(var(--color-danger-solid-rgb), 0.28);
+}
+
+.dk-input--trailing {
+  padding-right: 48px;
+}
+
+.dk-input-trailing {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-gray-600);
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.dk-input-trailing:hover {
+  color: var(--color-dark);
+}
+
+.dk-help {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--color-gray-600);
+}
+
+/* Mode lihat: daftar label–nilai, bukan input abu-abu. */
+.dk-info {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5) var(--space-6);
+}
+
+.dk-info dt {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-gray-600);
+}
+
+.dk-info dd {
+  margin: 4px 0 0;
+  font-size: 15px;
+  color: var(--color-dark);
+  overflow-wrap: anywhere;
+}

@@ -9,7 +9,6 @@ import { toast } from 'react-toastify';
 import {
   FiLock,
   FiUser,
-  FiUsers,
   FiAtSign,
   FiEdit2,
   FiEye,
@@ -17,13 +16,10 @@ import {
 } from 'react-icons/fi';
 import { useMediaQuery } from 'react-responsive';
 import MobilePageBar from '../../../components/MobilePageBar';
+import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
+import '../../../styles/desktop-admin.css';
 import '../../../styles/mobile-admin.css';
 
-import FormField from '../../../components/FormField';
-import EntityPageHeader from '../../../components/EntityPageHeader';
-import EntityHeroCard from '../../../components/EntityHeroCard';
-import EntityFormCard from '../../../components/EntityFormCard';
-import EntityDetailActions from '../../../components/EntityDetailActions';
 import DetailFormSkeleton from '../../../components/DetailFormSkeleton';
 import { supabase } from '../../../lib/supabaseClient';
 import { validasiWajib } from '../../../utils/validasiForm';
@@ -310,93 +306,132 @@ const DetailUser = () => {
     );
   }
 
+  // Desktop (gaya baru dk-): dua kolom — kartu identitas & kartu informasi.
+  // Mode lihat menampilkan daftar label–nilai; mode ubah menampilkan input.
+  const batalUbah = () => {
+    setReadonly(true);
+    setFieldSalah(null);
+    fetchUser();
+  };
+
   return (
-    <div className="page-shell py-4 px-md-4 px-3" style={{ maxWidth: 760 }}>
-      <EntityPageHeader
-        backTo="/users"
-        icon={<FiUsers />}
-        title="Detail User"
-        description="Kelola informasi user dan akses sistem"
+    <div className="page-shell dk-page">
+      <DesktopPageHeader
+        back={{ to: '/users', label: 'Users' }}
+        title={readonly ? 'Detail user' : 'Ubah user'}
+        description="Informasi akun dan akses sistem"
         actions={
-          <EntityDetailActions
-            readonly={readonly}
-            editLabel="Edit User"
-            saving={saving}
-            onEdit={() => setReadonly(false)}
-            onCancel={() => {
-              setReadonly(true);
-              fetchUser();
-            }}
-            onSave={handleSave}
-          />
+          readonly ? (
+            <button type="button" className="dk-btn dk-btn--primary" onClick={() => setReadonly(false)}>
+              <FiEdit2 aria-hidden />
+              Ubah
+            </button>
+          ) : (
+            <>
+              <button type="button" className="dk-btn" onClick={batalUbah} disabled={saving}>
+                Batal
+              </button>
+              <button type="button" className="dk-btn dk-btn--primary" onClick={handleSave} disabled={saving}>
+                {saving ? 'Menyimpan...' : 'Simpan'}
+              </button>
+            </>
+          )
         }
       />
 
-      <EntityHeroCard icon={<FiUser />} title={form.nama || '-'} subtitle={`@${form.username}`} />
-
-      <EntityFormCard title="Informasi User" description="Detail dan informasi akun user">
-        <div>
-          <div className="mb-2 fw-semibold" style={{ fontSize: '0.88rem', color: 'var(--color-dark)' }}>
-            Username
-            <span aria-hidden="true" style={{ color: 'var(--color-expense)', marginLeft: 4 }}>
-              *
+      <div className="dk-detail-grid">
+        <aside className="dk-card">
+          <div className="dk-identity">
+            <span className="dk-avatar" aria-hidden>
+              {(form.nama || form.username || '?').charAt(0).toUpperCase()}
             </span>
-            <span className="visually-hidden"> (wajib diisi)</span>
+            <h2 className="dk-identity-name">{form.nama || '-'}</h2>
+            <div className="dk-identity-sub">@{form.username}</div>
           </div>
+        </aside>
 
-          <FormField
-            label=""
-            name="username"
-            invalid={fieldSalah === 'username'}
-            value={form.username}
-            onChange={handleChange}
-            readOnly={readonly}
-          />
-        </div>
-
-        <div>
-          <div className="mb-2 fw-semibold" style={{ fontSize: '0.88rem', color: 'var(--color-dark)' }}>
-            Nama Lengkap
-            <span aria-hidden="true" style={{ color: 'var(--color-expense)', marginLeft: 4 }}>
-              *
-            </span>
-            <span className="visually-hidden"> (wajib diisi)</span>
-          </div>
-
-          <FormField
-            label=""
-            name="nama"
-            invalid={fieldSalah === 'nama'}
-            value={form.nama}
-            onChange={handleChange}
-            readOnly={readonly}
-          />
-        </div>
-
-        {!readonly && (
-          <div>
-            <div
-              className="mb-2 fw-semibold d-flex align-items-center gap-2"
-              style={{ fontSize: '0.88rem', color: 'var(--color-dark)' }}
-            >
-              <FiLock size={14} />
-              Password Baru (Opsional)
-            </div>
-
-            <FormField
-              label=""
-              name="password"
-              type="password"
-              value={form.password}
-              onChange={handleChange}
-            />
-
-            <div style={{ fontSize: '0.76rem', color: 'var(--color-gray-500)', marginTop: 6 }}>
-              Kosongkan password jika tidak ingin mengganti password user.
+        <section className="dk-card" aria-label="Informasi akun">
+          <div className="dk-card-head">
+            <h2 className="dk-card-title">Informasi akun</h2>
+            <div className="dk-card-sub">
+              {readonly ? 'Klik Ubah untuk mengganti data atau password.' : 'Kolom bertanda * wajib diisi.'}
             </div>
           </div>
-        )}
-      </EntityFormCard>
+
+          <div className="dk-card-body">
+            {readonly ? (
+              <dl className="dk-info">
+                <div>
+                  <dt>Username</dt>
+                  <dd>@{form.username || '-'}</dd>
+                </div>
+                <div>
+                  <dt>Nama lengkap</dt>
+                  <dd>{form.nama || '-'}</dd>
+                </div>
+                <div>
+                  <dt>Password</dt>
+                  <dd>••••••••</dd>
+                </div>
+              </dl>
+            ) : (
+              <div className="dk-form-grid">
+                <div>
+                  <label htmlFor="dk-username" className="dk-label">Username<span className="dk-req" aria-hidden="true">*</span><span className="visually-hidden"> (wajib diisi)</span></label>
+                  <input
+                    id="dk-username"
+                    name="username"
+                    type="text"
+                    autoComplete="off"
+                    className={`dk-input ${fieldSalah === 'username' ? 'is-invalid' : ''}`}
+                    aria-invalid={fieldSalah === 'username' || undefined}
+                    value={form.username}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="dk-nama" className="dk-label">Nama lengkap<span className="dk-req" aria-hidden="true">*</span><span className="visually-hidden"> (wajib diisi)</span></label>
+                  <input
+                    id="dk-nama"
+                    name="nama"
+                    type="text"
+                    autoComplete="off"
+                    className={`dk-input ${fieldSalah === 'nama' ? 'is-invalid' : ''}`}
+                    aria-invalid={fieldSalah === 'nama' || undefined}
+                    value={form.nama}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="dk-field--full">
+                  <label htmlFor="dk-password" className="dk-label">Password baru (opsional)</label>
+                  <div className="dk-input-wrap" style={{ maxWidth: 420 }}>
+                    <input
+                      id="dk-password"
+                      name="password"
+                      type={lihatPassword ? 'text' : 'password'}
+                      autoComplete="new-password"
+                      className="dk-input dk-input--trailing"
+                      value={form.password}
+                      onChange={handleChange}
+                    />
+                    <button
+                      type="button"
+                      className="dk-input-trailing"
+                      onClick={() => setLihatPassword((v) => !v)}
+                      aria-label={lihatPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                    >
+                      {lihatPassword ? <FiEyeOff /> : <FiEye />}
+                    </button>
+                  </div>
+                  <div className="dk-help">Kosongkan kalau password tidak ingin diganti.</div>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
     </div>
   );
 };
