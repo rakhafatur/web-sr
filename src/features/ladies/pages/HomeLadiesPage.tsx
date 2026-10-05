@@ -25,6 +25,7 @@ import type { UserWithLadies } from '../../../types/user';
 import HomeLadiesSkeleton from '../components/HomeLadiesSkeleton';
 import PullToRefresh from '../../../components/PullToRefresh';
 import NotificationBell from '../../../components/Header/NotificationBell';
+import { TARGET_HARI_KERJA } from '../../absensi/utils/targetAbsensi';
 
 const sapaanWaktu = (jam: number) => {
   if (jam < 11) return 'Selamat pagi';
@@ -147,7 +148,7 @@ const HomeLadiesPage = () => {
 
   // Pola "angka besar + satuan kecil" dari kartu Health Overview referensi.
   const ringkasan = [
-    { label: 'Hari Masuk', nilai: hariMasuk, satuan: 'dari 18 hari', icon: <FiCalendar /> },
+    { label: 'Hari Masuk', nilai: hariMasuk, satuan: `dari ${TARGET_HARI_KERJA} hari`, icon: <FiCalendar /> },
     { label: 'Voucher', nilai: voucherPcs, satuan: 'pcs', icon: <FiGift /> },
     {
       label: 'Rata-rata',

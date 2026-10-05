@@ -10,6 +10,7 @@ import {
 } from 'react-icons/fi';
 import { useMediaQuery } from 'react-responsive';
 import PeraturanMobile from '../components/PeraturanMobile';
+import { TARGET_HARI_KERJA } from '../../absensi/utils/targetAbsensi';
 
 type RuleSection = {
   title: string;
@@ -29,7 +30,7 @@ const ruleSections: RuleSection[] =
       color: 'var(--color-medical)',
       bg: 'var(--color-medical-soft)',
       rules: [
-        'Wajib kerja minimal 18 hari dalam sebulan.',
+        `Wajib kerja minimal ${TARGET_HARI_KERJA} hari dalam sebulan.`,
       ],
     },
 
