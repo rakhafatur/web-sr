@@ -19,6 +19,7 @@ type Transaksi = {
   tipeLabel: string;
   jumlah: number;
   jumlah_voucher?: number;
+  untung?: number | null;
   keterangan?: string;
   priority: number;
 };
@@ -29,6 +30,8 @@ type Props = {
   rowsPerPage: number;
   onPageChange: (page: number) => void;
   onDelete?: (row: Transaksi) => void;
+  /** Ketuk baris untuk mengubah (membuka sheet ubah di halaman). */
+  onEdit?: (row: Transaksi) => void;
 };
 
 type GayaTipe = {
@@ -72,6 +75,7 @@ const CardTableRiwayatTransaksi = ({
   rowsPerPage,
   onPageChange,
   onDelete,
+  onEdit,
 }: Props) => {
   const orderedRows = [...data].sort(
     (a, b) => dayjs(b.tanggal).valueOf() - dayjs(a.tanggal).valueOf()
@@ -101,8 +105,8 @@ const CardTableRiwayatTransaksi = ({
           const catatan =
             row.tipe === 'voucher' ? `${row.jumlah_voucher}× voucher` : row.keterangan;
 
-          const rowContent = (
-            <div className="tm-row">
+          const isiBaris = (
+            <>
               <span className="tm-row-icon" style={{ background: gaya.soft, color: gaya.color }} aria-hidden>
                 {gaya.icon}
               </span>
@@ -116,7 +120,15 @@ const CardTableRiwayatTransaksi = ({
               <span className="tm-row-amount" style={{ color: gaya.color }}>
                 {gaya.tanda} Rp{Number(row.jumlah).toLocaleString('id-ID')}
               </span>
-            </div>
+            </>
+          );
+
+          const rowContent = onEdit ? (
+            <button type="button" className="tm-row tm-row-btn" onClick={() => onEdit(row)}>
+              {isiBaris}
+            </button>
+          ) : (
+            <div className="tm-row">{isiBaris}</div>
           );
 
           return onDelete ? (
@@ -129,7 +141,14 @@ const CardTableRiwayatTransaksi = ({
         })}
       </div>
 
-      {onDelete && <div className="tm-hint">Geser baris ke kiri untuk menghapus</div>}
+      {(onDelete || onEdit) && (
+        <div className="tm-hint">
+          {[onEdit && 'Ketuk untuk mengubah', onDelete && 'geser ke kiri untuk menghapus']
+            .filter(Boolean)
+            .join(' · ')
+            .replace(/^g/, 'G')}
+        </div>
+      )}
 
       <Pagination page={page} totalPages={totalPages} onPageChange={onPageChange} />
     </div>

@@ -15,25 +15,24 @@ const SPRING = { type: 'spring', stiffness: 500, damping: 40 } as const;
 /** Geser baris ke kiri untuk menyingkap tombol hapus — pola swipe-to-delete
     ala Mail/Notes. Pakai `drag` bawaan framer-motion (bukan touch handler
     manual + setState React) supaya transform-nya digerakkan langsung tanpa
-    lewat render cycle React tiap piksel — versi sebelumnya terasa patah-patah
-    karena tiap gerakan jari memicu re-render. dragElastic ngasih efek karet
-    pas ditarik lewat batas, dan snap akhir mempertimbangkan kecepatan sentuh
-    (flek cepat langsung kebuka), bukan cuma jarak — lihat harusTerbuka.
+    lewat render cycle React tiap piksel. dragElastic memberi efek karet saat
+    ditarik lewat batas, dan snap akhir mempertimbangkan kecepatan sentuh —
+    lihat harusTerbuka.
+
+    Tombol hapus berada di LUAR baris (di kanan) dan bergeser bersama baris,
+    jadi ia meluncur masuk mengikuti jari — bukan sudah diam di belakang baris
+    lalu tersingkap. Ikonnya membesar seiring geseran.
 
     Supaya ketukan biasa tidak ikut membuka/menampakkan tombol hapus:
-    - kecepatan baru dihitung setelah jarak minimal (getaran jari saat
-      mengetuk terbaca sangat cepat),
+    - kecepatan baru dihitung setelah jarak minimal,
     - sentuhan yang sempat menggeser tidak diteruskan sebagai klik,
-    - mengetuk baris yang sedang terbuka hanya menutupnya,
-    - tombol hapus tak terlihat sampai baris benar-benar bergeser (dulu
-      tembus saat latar baris berubah transparan ketika ditekan). */
+    - mengetuk baris yang sedang terbuka hanya menutupnya. */
 const SwipeToDelete = ({ onDelete, children, borderRadius = 12 }: Props) => {
   const x = useMotionValue(0);
   const openRef = useRef(false);
   const sempatDigeserRef = useRef(false);
 
-  // Tombol hapus muncul seiring baris bergeser, bukan selalu ada di belakang.
-  const opasitasTombol = useTransform(x, [-12, 0], [1, 0]);
+  const skalaIkon = useTransform(x, [-REVEAL_WIDTH, -REVEAL_WIDTH / 3], [1, 0.5]);
 
   const tutup = () => {
     openRef.current = false;
@@ -64,30 +63,6 @@ const SwipeToDelete = ({ onDelete, children, borderRadius = 12 }: Props) => {
 
   return (
     <div style={{ position: 'relative', overflow: 'hidden', borderRadius }}>
-      <motion.button
-        type="button"
-        onClick={handleDeleteClick}
-        aria-label="Hapus"
-        style={{
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: 1,
-          width: REVEAL_WIDTH,
-          border: 'none',
-          background: 'var(--color-expense)',
-          color: 'white',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: 18,
-          opacity: opasitasTombol,
-        }}
-      >
-        <FiTrash2 />
-      </motion.button>
-
       <motion.div
         drag="x"
         dragConstraints={{ left: -REVEAL_WIDTH, right: 0 }}
@@ -101,10 +76,37 @@ const SwipeToDelete = ({ onDelete, children, borderRadius = 12 }: Props) => {
         }}
         onDragEnd={handleDragEnd}
         onClickCapture={handleClickCapture}
-        style={{ x, position: 'relative', zIndex: 2, touchAction: 'pan-y' }}
+        style={{ x, position: 'relative', touchAction: 'pan-y' }}
       >
         {children}
       </motion.div>
+
+      {/* Di luar tepi kanan baris; ikut bergeser lewat motion value yang sama. */}
+      <motion.button
+        type="button"
+        onClick={handleDeleteClick}
+        aria-label="Hapus"
+        tabIndex={-1}
+        style={{
+          x,
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          right: -REVEAL_WIDTH,
+          width: REVEAL_WIDTH,
+          border: 'none',
+          background: 'var(--color-expense)',
+          color: 'white',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 20,
+        }}
+      >
+        <motion.span style={{ scale: skalaIkon, display: 'flex' }}>
+          <FiTrash2 />
+        </motion.span>
+      </motion.button>
     </div>
   );
 };

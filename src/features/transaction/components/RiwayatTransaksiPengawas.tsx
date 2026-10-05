@@ -10,6 +10,7 @@ import EmptyState from '../../../components/EmptyState';
 import ListLoadingState from '../../../components/ListLoadingState';
 import { useMediaQuery } from 'react-responsive';
 import CardTableRiwayatTransaksi from './CardTableRiwayatTransaksi';
+import EditTransaksiSheet, { type BarisEdit, type PerubahanTransaksi } from './EditTransaksiSheet';
 import TransaksiFilterBar from './TransaksiFilterBar';
 import MonthNavigator from '../../ladies/components/MonthNavigator';
 import MonthPill from '../../ladies/components/MonthPill';
@@ -176,6 +177,31 @@ const RiwayatTransaksiPengawas = ({ pengawasId }: Props) => {
     }
   };
 
+  // Sheet ubah transaksi (mobile).
+  const [barisEdit, setBarisEdit] = useState<BarisEdit | null>(null);
+
+  const simpanEdit = async (perubahan: PerubahanTransaksi) => {
+    if (!barisEdit) return;
+
+    // Baris optimistis (baru ditambah, id belum dari server) belum bisa diubah.
+    if (barisEdit.id.startsWith('temp-')) {
+      toast.info('Transaksi ini masih disimpan. Coba lagi sebentar.');
+      return;
+    }
+
+    const table = getTableName(barisEdit.tipe);
+    const { error } = await supabase.from(table).update(perubahan).eq('id', barisEdit.id);
+
+    if (error) {
+      toast.error('Gagal menyimpan perubahan: ' + error.message);
+      return;
+    }
+
+    toast.success('Transaksi diperbarui.');
+    setBarisEdit(null);
+    queryClient.invalidateQueries({ queryKey: ['riwayat-transaksi-pengawas', pengawasId] });
+  };
+
   const handleDelete = async (row: Transaksi) => {
     if (!(await confirmDialog('Hapus transaksi ini?'))) return;
 
@@ -239,6 +265,15 @@ const RiwayatTransaksiPengawas = ({ pengawasId }: Props) => {
 
   return (
     <div className="mt-3">
+      {barisEdit && (
+        <EditTransaksiSheet
+          key={barisEdit.id}
+          row={barisEdit}
+          onClose={() => setBarisEdit(null)}
+          onSimpan={simpanEdit}
+        />
+      )}
+
       <div className="mb-3" style={{ maxWidth: isMobile ? undefined : 320 }}>
         {isMobile ? (
           <MonthPill
@@ -290,6 +325,7 @@ const RiwayatTransaksiPengawas = ({ pengawasId }: Props) => {
           rowsPerPage={limit}
           onPageChange={(p) => setPage(p + 1)}
           onDelete={handleDelete}
+          onEdit={(row) => setBarisEdit(row)}
         />
       ) : (
         <>
