@@ -80,7 +80,7 @@ const BukuKuningPage = () => {
       const [vouchers, kasbon, pemasukan, dokter, absensi] = await Promise.all([
         supabase
           .from('vouchers')
-          .select('tanggal, jumlah, jumlah_voucher')
+          .select('tanggal, jumlah, jumlah_voucher, keterangan')
           .eq('ladies_id', selectedLadyId)
           .gte('tanggal', from)
           .lte('tanggal', to),
@@ -122,7 +122,8 @@ const BukuKuningPage = () => {
       (vouchers?.data || []).forEach((v) => {
         transaksi.push({
           tanggal: v.tanggal,
-          keterangan: 'Voucher',
+          // "Voucher - Single" dst. untuk transaksi baru; transaksi lama kosong.
+          keterangan: v.keterangan || 'Voucher',
           voucher: v.jumlah_voucher,
           pemasukan: Number(v.jumlah),
           pengeluaran: '',

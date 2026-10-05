@@ -43,3 +43,11 @@ export function hitungUntungVoucher(
 ): number {
   return jumlahPcs * tier.untung;
 }
+
+/** Keterangan yang disimpan di transaksi voucher saat dibuat, mis.
+    "Voucher - Single" — supaya tipe harga terbaca saat rekapan. Outlet tanpa
+    nama tier cukup "Voucher". */
+export function labelVoucher(tier: OutletPricingTier): string {
+  const nama = tier.tier_name?.trim();
+  return nama ? `Voucher - ${nama}` : 'Voucher';
+}

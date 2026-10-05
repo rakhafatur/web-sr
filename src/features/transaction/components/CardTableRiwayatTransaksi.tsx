@@ -111,7 +111,10 @@ const CardTableRiwayatTransaksi = ({
                 {gaya.icon}
               </span>
               <div className="tm-row-main">
-                <div className="tm-row-title">{gaya.label}</div>
+                <div className="tm-row-title">
+                  {/* Voucher: tampilkan tipe harga yang tersimpan ("Voucher - Single"). */}
+                  {row.tipe === 'voucher' && row.keterangan ? row.keterangan : gaya.label}
+                </div>
                 <div className="tm-row-sub">
                   {tanggalSingkat(row.tanggal)}
                   {catatan ? ` · ${catatan}` : ''}

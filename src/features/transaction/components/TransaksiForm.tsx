@@ -12,6 +12,7 @@ import {
   perluPilihTier,
   hitungJumlahVoucher,
   hitungUntungVoucher,
+  labelVoucher,
 } from '../utils/pilihTier';
 import {
   FiGift,
@@ -262,6 +263,11 @@ const TransaksiForm = ({
         hitungJumlahVoucher(jumlahVoucher, activeTier);
 
       payload.outlet = outlet;
+
+      // Simpan tipe harga yang dipakai ("Voucher - Single", dst.) supaya
+      // terbaca saat rekapan. Butuh kolom vouchers.keterangan
+      // (supabase/sql/e1-voucher-keterangan.sql).
+      payload.keterangan = labelVoucher(activeTier);
 
       payload.untung =
         hitungUntungVoucher(jumlahVoucher, activeTier);

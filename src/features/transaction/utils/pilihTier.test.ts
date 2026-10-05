@@ -4,6 +4,7 @@ import {
   perluPilihTier,
   hitungJumlahVoucher,
   hitungUntungVoucher,
+  labelVoucher,
 } from './pilihTier';
 import type { OutletPricingTier } from '../hooks/useOutletPricing';
 
@@ -82,5 +83,20 @@ describe('perhitungan nominal voucher', () => {
   it('menghasilkan nol untuk 0 pcs, bukan NaN', () => {
     expect(hitungJumlahVoucher(0, FLAT)).toBe(0);
     expect(hitungUntungVoucher(0, FLAT)).toBe(0);
+  });
+});
+
+describe('labelVoucher', () => {
+  it('menyertakan nama tier untuk outlet bertipe harga (Travel)', () => {
+    expect(labelVoucher(SINGLE)).toBe('Voucher - Single');
+    expect(labelVoucher(DOUBLE)).toBe('Voucher - Double');
+  });
+
+  it('cukup "Voucher" untuk outlet tanpa nama tier', () => {
+    expect(labelVoucher(FLAT)).toBe('Voucher');
+  });
+
+  it('mengabaikan nama tier yang hanya spasi', () => {
+    expect(labelVoucher({ ...SINGLE, tier_name: '  ' })).toBe('Voucher');
   });
 });

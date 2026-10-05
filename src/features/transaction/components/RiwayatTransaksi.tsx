@@ -128,7 +128,7 @@ const RiwayatTransaksi = ({
         supabase
           .from('vouchers')
           // untung dibutuhkan untuk mengubah pcs (lihat hitungUlangVoucher).
-          .select('id, tanggal, jumlah, jumlah_voucher, untung')
+          .select('id, tanggal, jumlah, jumlah_voucher, untung, keterangan')
           .eq(
             'ladies_id',
             ladiesId

@@ -47,7 +47,8 @@ const VoucherListPage = () => {
     user?.ladies_id,
     selectedMonth,
     'voucher',
-    'id, tanggal, jumlah, jumlah_voucher'
+    // keterangan: tipe harga ("Voucher - Single") untuk transaksi baru.
+    'id, tanggal, jumlah, jumlah_voucher, keterangan'
   );
 
   const totalPcs = useMemo(
