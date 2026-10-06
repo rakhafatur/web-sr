@@ -1,21 +1,27 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FiUser, FiTag, FiKey, FiCreditCard, FiCalendar, FiMapPin, FiHome, FiBriefcase } from 'react-icons/fi';
+import { FiUser, FiTag, FiKey, FiCreditCard, FiCalendar, FiMapPin, FiHome, FiBriefcase, FiEdit2 } from 'react-icons/fi';
 import { useMediaQuery } from 'react-responsive';
 import MobileFormPage from '../../../components/mobile/MobileFormPage';
 import { MobileTextField, MobileSelectField, MobileChoiceField } from '../../../components/mobile/MobileFields';
 import { toast } from 'react-toastify';
 
-import FormField from '../../../components/FormField';
-import EntityPageHeader from '../../../components/EntityPageHeader';
-import EntityHeroCard from '../../../components/EntityHeroCard';
-import EntityFormCard from '../../../components/EntityFormCard';
-import EntityDetailActions from '../../../components/EntityDetailActions';
+import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
 import DetailFormSkeleton from '../../../components/DetailFormSkeleton';
 import { supabase } from '../../../lib/supabaseClient';
 import { validasiWajib } from '../../../utils/validasiForm';
 import { useAgentOptions } from '../hooks/useAgentOptions';
 import { useOutletOptions } from '../hooks/useOutletOptions';
+import LadiesFormDesktop from '../components/LadiesFormDesktop';
+import { STATUS_LADIES, TONE_STATUS } from '../utils/statusLadies';
+
+/** "2024-03-05" → "5 Maret 2024". Tanpa zona waktu supaya tidak bergeser hari. */
+const formatTanggal = (iso: string) =>
+  new Date(`${iso}T00:00:00`).toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
 
 type FormType = {
   nama_lengkap: string;
@@ -44,13 +50,6 @@ const emptyForm: FormType = {
 };
 
 
-/** Nilai status yang disimpan form admin; label untuk tampilan mobile. */
-const STATUS_LADIES = [
-  { value: 'active', label: 'Aktif' },
-  { value: 'not active', label: 'Nonaktif' },
-  { value: 'resign', label: 'Resign' },
-];
-
 const DetailLadies = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -62,7 +61,7 @@ const DetailLadies = () => {
   const [saving, setSaving] = useState(false);
   const [readonly, setReadonly] = useState(true);
   const [fieldSalah, setFieldSalah] = useState<string | null>(null);
-  // Mobile: MobileFormPage (Header app dicabut di MainLayout). Desktop: lama.
+  // Mobile: MobileFormPage (Header app dicabut di MainLayout). Desktop: dk-.
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const fetchLady = async () => {
@@ -71,7 +70,9 @@ const DetailLadies = () => {
 
       const { data, error } = await supabase
         .from('ladies')
-        .select('*')
+        .select(
+          'nama_lengkap, nama_ladies, nama_outlet, outlet_id, pin, nomor_ktp, tanggal_bergabung, alamat, status, agent_id'
+        )
         .eq('id', id)
         .single();
 
@@ -113,8 +114,8 @@ const DetailLadies = () => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  // outlet_id & nama_outlet selalu diubah bersama — dipakai desktop (select)
-  // dan mobile (pemilih bercari).
+  // outlet_id & nama_outlet selalu diubah bersama (pemilih bercari, mobile &
+  // desktop).
   const pilihOutlet = (outletId: string) => {
     const selected = outlets.find((o) => o.id === outletId);
     setForm((prev) => ({
@@ -123,8 +124,6 @@ const DetailLadies = () => {
       nama_outlet: selected?.nama_outlet ?? '',
     }));
   };
-
-  const handleOutletChange = (e: React.ChangeEvent<HTMLSelectElement>) => pilihOutlet(e.target.value);
 
   const handleSave = async () => {
     const error = validasiWajib([
@@ -291,156 +290,134 @@ const DetailLadies = () => {
     );
   }
 
+  // Desktop (gaya baru dk-, sama dengan Detail User): kartu identitas & kartu
+  // informasi. Mode lihat = daftar label–nilai; mode ubah = form grid.
+  const batalUbah = () => {
+    setReadonly(true);
+    setFieldSalah(null);
+    fetchLady();
+  };
+
+  const statusDipilih = STATUS_LADIES.find((s) => s.value === form.status);
+  const namaAgent = agents.find((a) => a.id === form.agent_id)?.nama_agent;
+  const kosong = <span className="dk-muted">-</span>;
+
   return (
-    <div className="page-shell py-4 px-md-4 px-3" style={{ maxWidth: 760 }}>
-      <EntityPageHeader
-        backTo="/ladies"
-        icon={<FiUser />}
-        title="Detail Ladies"
-        description="Kelola informasi ladies"
+    <div className="page-shell dk-page">
+      <DesktopPageHeader
+        back={{ to: '/ladies', label: 'Ladies' }}
+        title={readonly ? 'Detail ladies' : 'Ubah ladies'}
+        description="Informasi ladies SR Agency"
         actions={
-          <EntityDetailActions
-            readonly={readonly}
-            editLabel="Edit Ladies"
-            saving={saving}
-            onEdit={() => setReadonly(false)}
-            onCancel={() => {
-              setReadonly(true);
-              fetchLady();
-            }}
-            onSave={handleSave}
-          />
+          readonly ? (
+            <button type="button" className="dk-btn dk-btn--primary" onClick={() => setReadonly(false)}>
+              <FiEdit2 aria-hidden />
+              Ubah
+            </button>
+          ) : (
+            <>
+              <button type="button" className="dk-btn" onClick={batalUbah} disabled={saving}>
+                Batal
+              </button>
+              <button type="button" className="dk-btn dk-btn--primary" onClick={handleSave} disabled={saving}>
+                {saving ? 'Menyimpan...' : 'Simpan'}
+              </button>
+            </>
+          )
         }
       />
 
-      <EntityHeroCard
-        icon={<FiUser />}
-        title={form.nama_ladies || '-'}
-        subtitle={form.nama_lengkap || 'Data ladies'}
-      />
-
-      <EntityFormCard title="Informasi Ladies" description="Detail dan informasi ladies">
-        <FormField
-          label="Nama Lengkap"
-          name="nama_lengkap"
-          required
-          invalid={fieldSalah === 'nama_lengkap'}
-          value={form.nama_lengkap}
-          onChange={handleChange}
-          readOnly={readonly}
-        />
-        <FormField
-          label="Nama Ladies"
-          name="nama_ladies"
-          required
-          invalid={fieldSalah === 'nama_ladies'}
-          value={form.nama_ladies}
-          onChange={handleChange}
-          readOnly={readonly}
-        />
-        <FormField
-          label="PIN"
-          name="pin"
-          value={form.pin}
-          onChange={handleChange}
-          readOnly={readonly}
-        />
-        <FormField
-          label="Nomor KTP"
-          name="nomor_ktp"
-          value={form.nomor_ktp}
-          onChange={handleChange}
-          readOnly={readonly}
-        />
-        <FormField
-          label="Tanggal Bergabung"
-          name="tanggal_bergabung"
-          value={form.tanggal_bergabung}
-          onChange={handleChange}
-          readOnly={readonly}
-          type="date"
-        />
-        <FormField
-          label="Alamat"
-          name="alamat"
-          value={form.alamat}
-          onChange={handleChange}
-          readOnly={readonly}
-          type="textarea"
-        />
-
-        <div>
-          <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>
-            Nama Outlet
-          </label>
-          {readonly ? (
-            <input
-              className="form-control"
-              value={form.nama_outlet || '-'}
-              readOnly
-            />
-          ) : (
-            <select
-              className="form-select border"
-              name="outlet_id"
-              value={form.outlet_id || ''}
-              onChange={handleOutletChange}
-            >
-              <option value="">-- Pilih Outlet --</option>
-              {outlets.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.nama_outlet}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
-
-        <div>
-          <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>
-            Agent
-          </label>
-          {readonly ? (
-            <input
-              className="form-control"
-              value={agents.find((a) => a.id === form.agent_id)?.nama_agent || '-'}
-              readOnly
-            />
-          ) : (
-            <select
-              className="form-select border"
-              name="agent_id"
-              value={form.agent_id || ''}
-              onChange={handleChange}
-            >
-              <option value="">-- Pilih Agent --</option>
-              {agents.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.nama_agent}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
-
-        {!readonly && (
-          <div>
-            <label className="form-label fw-semibold" htmlFor="status">
-              Status
-            </label>
-            <select
-              className="form-select border"
-              name="status"
-              value={form.status}
-              onChange={handleChange}
-            >
-              <option value="active">Active</option>
-              <option value="resign">Resign</option>
-              <option value="not active">Not Active</option>
-            </select>
+      <div className="dk-detail-grid">
+        <aside className="dk-card">
+          <div className="dk-identity">
+            <span className="dk-avatar" aria-hidden>
+              {(form.nama_ladies || form.nama_lengkap || '?').charAt(0).toUpperCase()}
+            </span>
+            <h2 className="dk-identity-name">{form.nama_ladies || '-'}</h2>
+            {form.nama_lengkap && <div className="dk-identity-sub">{form.nama_lengkap}</div>}
+            <div className="dk-identity-meta">
+              {statusDipilih && (
+                <span className={`dk-status is-${TONE_STATUS[statusDipilih.value] ?? 'muted'}`}>
+                  {statusDipilih.label}
+                </span>
+              )}
+              {form.nama_outlet && <span className="dk-identity-sub">{form.nama_outlet}</span>}
+            </div>
           </div>
-        )}
-      </EntityFormCard>
+        </aside>
+
+        <section className="dk-card" aria-label="Informasi ladies">
+          <div className="dk-card-head">
+            <h2 className="dk-card-title">Informasi ladies</h2>
+            <div className="dk-card-sub">
+              {readonly ? 'Klik Ubah untuk mengganti data ladies.' : 'Kolom bertanda * wajib diisi.'}
+            </div>
+          </div>
+
+          <div className="dk-card-body">
+            {readonly ? (
+              <dl className="dk-info">
+                <div>
+                  <dt>Nama ladies</dt>
+                  <dd>{form.nama_ladies || kosong}</dd>
+                </div>
+                <div>
+                  <dt>Nama lengkap</dt>
+                  <dd>{form.nama_lengkap || kosong}</dd>
+                </div>
+                <div>
+                  <dt>PIN</dt>
+                  <dd className="dk-num">{form.pin || kosong}</dd>
+                </div>
+                <div>
+                  <dt>Nomor KTP</dt>
+                  <dd className="dk-num">{form.nomor_ktp || kosong}</dd>
+                </div>
+                <div>
+                  <dt>Outlet</dt>
+                  <dd>{form.nama_outlet || kosong}</dd>
+                </div>
+                <div>
+                  <dt>Agent</dt>
+                  <dd>{namaAgent || kosong}</dd>
+                </div>
+                <div>
+                  <dt>Tanggal bergabung</dt>
+                  <dd>{form.tanggal_bergabung ? formatTanggal(form.tanggal_bergabung) : kosong}</dd>
+                </div>
+                <div>
+                  <dt>Status</dt>
+                  <dd>
+                    {statusDipilih ? (
+                      <span className={`dk-status is-${TONE_STATUS[statusDipilih.value] ?? 'muted'}`}>
+                        {statusDipilih.label}
+                      </span>
+                    ) : (
+                      form.status || kosong
+                    )}
+                  </dd>
+                </div>
+                <div className="dk-field--full">
+                  <dt>Alamat</dt>
+                  <dd style={{ whiteSpace: 'pre-line' }}>{form.alamat || kosong}</dd>
+                </div>
+              </dl>
+            ) : (
+              <LadiesFormDesktop
+                form={form}
+                fieldSalah={fieldSalah}
+                onChange={handleChange}
+                outletOptions={outlets.map((o) => ({ value: o.id, label: o.nama_outlet }))}
+                agentOptions={agents.map((a) => ({ value: a.id, label: a.nama_agent }))}
+                statusOptions={STATUS_LADIES}
+                onOutletChange={pilihOutlet}
+                onAgentChange={(v) => setForm((prev) => ({ ...prev, agent_id: v || null }))}
+                onStatusChange={(v) => setForm((prev) => ({ ...prev, status: v }))}
+              />
+            )}
+          </div>
+        </section>
+      </div>
     </div>
   );
 };

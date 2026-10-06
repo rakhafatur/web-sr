@@ -281,6 +281,47 @@
   color: var(--color-gray-600);
 }
 
+/* Nilai kosong di tabel / info ("-"). */
+.dk-muted {
+  color: var(--color-gray-500);
+}
+
+/* Angka (PIN, nominal) sejajar lebar. */
+.dk-num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Badge status: Aktif / Nonaktif / Resign. Nada sama dengan mobile. */
+.dk-status {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.dk-status.is-on {
+  background: var(--color-income-soft);
+  color: var(--color-income);
+}
+
+.dk-status.is-warn {
+  background: var(--color-voucher-soft);
+  color: var(--color-voucher);
+}
+
+.dk-status.is-off {
+  background: var(--color-expense-soft);
+  color: var(--color-expense);
+}
+
+/* Netral (mis. outlet / tier nonaktif — bukan peringatan). */
+.dk-status.is-muted {
+  background: var(--color-gray-200);
+  color: var(--color-gray-700);
+}
+
 .dk-icon-btn {
   width: 34px;
   height: 34px;
@@ -547,6 +588,19 @@
   box-shadow: 0 0 0 3px rgba(var(--color-danger-solid-rgb), 0.28);
 }
 
+textarea.dk-input {
+  height: auto;
+  min-height: 96px;
+  padding: var(--space-3) var(--space-4);
+  line-height: 1.5;
+  resize: vertical;
+}
+
+/* Ikon kalender & teks tanggal mengikuti tema gelap. */
+.dk-input[type='date'] {
+  color-scheme: dark;
+}
+
 .dk-input--trailing {
   padding-right: 48px;
 }
@@ -610,6 +664,24 @@
 
 .dk-identity-name.is-placeholder {
   color: var(--color-gray-500);
+}
+
+/* Badge status + outlet di bawah nama (Ladies). */
+.dk-identity-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.dk-identity-meta:empty {
+  display: none;
+}
+
+.dk-identity-meta .dk-identity-sub {
+  margin-top: 0;
 }
 
 .dk-identity-note {

@@ -6,15 +6,13 @@ import MobileFormPage from '../../../components/mobile/MobileFormPage';
 import { MobileTextField, MobileSelectField, MobileChoiceField } from '../../../components/mobile/MobileFields';
 import { toast } from 'react-toastify';
 
-import FormField from '../../../components/FormField';
-import EntityPageHeader from '../../../components/EntityPageHeader';
-import EntityHeroCard from '../../../components/EntityHeroCard';
-import EntityFormCard from '../../../components/EntityFormCard';
-import EntitySubmitButton from '../../../components/EntitySubmitButton';
+import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
 import { supabase } from '../../../lib/supabaseClient';
 import { validasiWajib } from '../../../utils/validasiForm';
 import { useAgentOptions } from '../hooks/useAgentOptions';
 import { useOutletOptions } from '../hooks/useOutletOptions';
+import LadiesFormDesktop from '../components/LadiesFormDesktop';
+import { STATUS_LADIES, TONE_STATUS } from '../utils/statusLadies';
 
 type FormType = {
   nama_lengkap: string;
@@ -43,13 +41,6 @@ const emptyForm: FormType = {
 };
 
 
-/** Nilai status yang disimpan form admin; label untuk tampilan mobile. */
-const STATUS_LADIES = [
-  { value: 'active', label: 'Aktif' },
-  { value: 'not active', label: 'Nonaktif' },
-  { value: 'resign', label: 'Resign' },
-];
-
 const CreateLadies = () => {
   const navigate = useNavigate();
   const agents = useAgentOptions();
@@ -58,7 +49,7 @@ const CreateLadies = () => {
   const [form, setForm] = useState<FormType>(emptyForm);
   const [loading, setLoading] = useState(false);
   const [fieldSalah, setFieldSalah] = useState<string | null>(null);
-  // Mobile: MobileFormPage (Header app dicabut di MainLayout). Desktop: lama.
+  // Mobile: MobileFormPage (Header app dicabut di MainLayout). Desktop: dk-.
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const handleChange = (
@@ -72,8 +63,8 @@ const CreateLadies = () => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  // outlet_id & nama_outlet selalu diubah bersama — dipakai desktop (select)
-  // dan mobile (pemilih bercari).
+  // outlet_id & nama_outlet selalu diubah bersama (pemilih bercari, mobile &
+  // desktop).
   const pilihOutlet = (outletId: string) => {
     const selected = outlets.find((o) => o.id === outletId);
     setForm((prev) => ({
@@ -82,8 +73,6 @@ const CreateLadies = () => {
       nama_outlet: selected?.nama_outlet ?? '',
     }));
   };
-
-  const handleOutletChange = (e: React.ChangeEvent<HTMLSelectElement>) => pilihOutlet(e.target.value);
 
   const handleSubmit = async () => {
     const error = validasiWajib([
@@ -216,118 +205,70 @@ const CreateLadies = () => {
     );
   }
 
+  // Desktop (gaya baru dk-, sama dengan Tambah User): pratinjau identitas
+  // (terisi saat mengetik) & kartu form grid 2 kolom.
+  const statusDipilih = STATUS_LADIES.find((s) => s.value === form.status);
+
   return (
-    <div className="page-shell py-4 px-md-4 px-3" style={{ maxWidth: 760 }}>
-      <EntityPageHeader
-        backTo="/ladies"
-        icon={<FiUser />}
-        title="Tambah Ladies"
+    <div className="page-shell dk-page">
+      <DesktopPageHeader
+        back={{ to: '/ladies', label: 'Ladies' }}
+        title="Tambah ladies"
         description="Tambahkan ladies baru ke sistem SR Agency"
       />
 
-      <EntityHeroCard
-        icon={<FiUser />}
-        title="Ladies Management"
-        subtitle="Lengkapi informasi ladies dengan benar sebelum menyimpan data"
-      />
+      <div className="dk-detail-grid">
+        <aside className="dk-card" aria-label="Pratinjau ladies">
+          <div className="dk-identity">
+            <span className={`dk-avatar ${form.nama_ladies ? '' : 'is-empty'}`} aria-hidden>
+              {(form.nama_ladies || '?').charAt(0).toUpperCase()}
+            </span>
+            <h2 className={`dk-identity-name ${form.nama_ladies ? '' : 'is-placeholder'}`}>
+              {form.nama_ladies || 'Nama ladies'}
+            </h2>
+            <div className="dk-identity-sub">{form.nama_lengkap || 'Nama lengkap'}</div>
+            <div className="dk-identity-meta">
+              {statusDipilih && (
+                <span className={`dk-status is-${TONE_STATUS[statusDipilih.value] ?? 'muted'}`}>
+                  {statusDipilih.label}
+                </span>
+              )}
+              {form.nama_outlet && <span className="dk-identity-sub">{form.nama_outlet}</span>}
+            </div>
+            <div className="dk-identity-note">Pratinjau — terisi saat kamu mengetik</div>
+          </div>
+        </aside>
 
-      <EntityFormCard title="Informasi Ladies" description="Data ladies yang akan ditambahkan">
-        <FormField
-          label="Nama Lengkap"
-          name="nama_lengkap"
-          required
-          invalid={fieldSalah === 'nama_lengkap'}
-          value={form.nama_lengkap}
-          onChange={handleChange}
-        />
-        <FormField
-          label="Nama Ladies"
-          name="nama_ladies"
-          required
-          invalid={fieldSalah === 'nama_ladies'}
-          value={form.nama_ladies}
-          onChange={handleChange}
-        />
-        <FormField label="PIN" name="pin" value={form.pin} onChange={handleChange} />
-        <FormField
-          label="Nomor KTP"
-          name="nomor_ktp"
-          value={form.nomor_ktp}
-          onChange={handleChange}
-        />
-        <FormField
-          label="Tanggal Bergabung"
-          name="tanggal_bergabung"
-          value={form.tanggal_bergabung}
-          onChange={handleChange}
-          type="date"
-        />
-        <FormField
-          label="Alamat"
-          name="alamat"
-          value={form.alamat}
-          onChange={handleChange}
-          type="textarea"
-        />
+        <section className="dk-card" aria-label="Informasi ladies">
+          <div className="dk-card-head">
+            <h2 className="dk-card-title">Informasi ladies</h2>
+            <div className="dk-card-sub">Kolom bertanda * wajib diisi.</div>
+          </div>
 
-        <div>
-          <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>
-            Nama Outlet
-          </label>
-          <select
-            className="form-select border"
-            name="outlet_id"
-            value={form.outlet_id || ''}
-            onChange={handleOutletChange}
-          >
-            <option value="">-- Pilih Outlet --</option>
-            {outlets.map((o) => (
-              <option key={o.id} value={o.id}>
-                {o.nama_outlet}
-              </option>
-            ))}
-          </select>
-        </div>
+          <div className="dk-card-body">
+            <LadiesFormDesktop
+              form={form}
+              fieldSalah={fieldSalah}
+              onChange={handleChange}
+              outletOptions={outlets.map((o) => ({ value: o.id, label: o.nama_outlet }))}
+              agentOptions={agents.map((a) => ({ value: a.id, label: a.nama_agent }))}
+              statusOptions={STATUS_LADIES}
+              onOutletChange={pilihOutlet}
+              onAgentChange={(v) => setForm((prev) => ({ ...prev, agent_id: v || null }))}
+              onStatusChange={(v) => setForm((prev) => ({ ...prev, status: v }))}
+            />
+          </div>
 
-        <div>
-          <label className="form-label fw-semibold" style={{ color: 'var(--color-dark)' }}>
-            Agent
-          </label>
-          <select
-            className="form-select border"
-            name="agent_id"
-            value={form.agent_id || ''}
-            onChange={handleChange}
-          >
-            <option value="">-- Pilih Agent --</option>
-            {agents.map((a) => (
-              <option key={a.id} value={a.id}>
-                {a.nama_agent}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="form-label fw-semibold" htmlFor="status">
-            Status
-          </label>
-          <select
-            className="form-select border"
-            name="status"
-            value={form.status}
-            onChange={handleChange}
-          >
-            <option value="active">Active</option>
-            <option value="resign">Resign</option>
-            <option value="not active">Not Active</option>
-          </select>
-        </div>
-      </EntityFormCard>
-
-      <EntitySubmitButton onClick={handleSubmit} loading={loading}>
-        Simpan Ladies
-      </EntitySubmitButton>
+          <div className="dk-card-foot">
+            <button type="button" className="dk-btn" onClick={() => navigate('/ladies')} disabled={loading}>
+              Batal
+            </button>
+            <button type="button" className="dk-btn dk-btn--primary" onClick={handleSubmit} disabled={loading}>
+              {loading ? 'Menyimpan...' : 'Simpan ladies'}
+            </button>
+          </div>
+        </section>
+      </div>
     </div>
   );
 };

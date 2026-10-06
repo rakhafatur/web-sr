@@ -1,16 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
-import { FiPlus, FiEdit2, FiTrash2, FiUser } from 'react-icons/fi';
+import { FiPlus, FiTrash2, FiUser, FiChevronRight } from 'react-icons/fi';
 import { useEntityList } from '../../../hooks/useEntityList';
-import DataTable from '../../../components/DataTable';
-import ActionIconButton from '../../../components/ActionIconButton';
-import Pagination from '../../../components/Pagination';
-import ListPageHeader from '../../../components/ListPageHeader';
-import HeaderActionButton from '../../../components/HeaderActionButton';
-import ListPageToolbar from '../../../components/ListPageToolbar';
-import ListLoadingState from '../../../components/ListLoadingState';
-import PullToRefresh from '../../../components/PullToRefresh';
 import MobileListPage from '../../../components/mobile/MobileListPage';
+import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
+import DesktopListCard from '../../../components/desktop/DesktopListCard';
 
 export type Lady = {
   id: string;
@@ -34,6 +28,7 @@ const LadiesListPage = () => {
     list: ladiesList,
     page,
     setPage,
+    total,
     totalPages,
     keyword,
     setKeyword,
@@ -55,7 +50,7 @@ const LadiesListPage = () => {
     resign: { label: 'Resign', tone: 'off' },
   };
 
-  // Mobile: MobileListPage (Header app dicabut di MainLayout). Desktop: lama.
+  // Mobile: MobileListPage (Header app dicabut di MainLayout). Desktop: dk-.
   if (isMobile) {
     return (
       <MobileListPage
@@ -88,109 +83,114 @@ const LadiesListPage = () => {
     );
   }
 
+  // Desktop (gaya baru dk-, sama dengan Users): header polos, satu kartu
+  // dengan cari & tabel beravatar; seluruh baris membuka detail.
   return (
-    <PullToRefresh onRefresh={refetch}>
-    <div className="page-shell p-4" style={{ color: 'var(--color-dark)' }}>
-      <ListPageHeader
-        icon={<FiUser />}
-        title="Management Ladies"
+    <div className="page-shell dk-page">
+      <DesktopPageHeader
+        title="Ladies"
         description="Kelola data ladies SR Agency"
         actions={
-          <HeaderActionButton
-            icon={<FiPlus />}
-            onClick={() => navigate('/ladies-create')}
-          >
-            Tambah Ladies
-          </HeaderActionButton>
+          <button type="button" className="dk-btn dk-btn--primary" onClick={() => navigate('/ladies-create')}>
+            <FiPlus aria-hidden />
+            Tambah ladies
+          </button>
         }
       />
 
-      <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
-        <ListPageToolbar
-          title="List Ladies"
-          subtitle="Data ladies"
-          placeholder="Cari ladies..."
-          keyword={keyword}
-          onKeywordChange={(value) => {
-            setPage(1);
-            setKeyword(value);
-          }}
-        />
+      <DesktopListCard
+        label="Daftar ladies"
+        keyword={keyword}
+        onKeywordChange={(v) => {
+          setPage(1);
+          setKeyword(v);
+        }}
+        searchPlaceholder="Cari nama atau outlet..."
+        countText={`${total} ladies`}
+        loading={loading}
+        loadingLabel="Memuat data ladies"
+        isEmpty={ladiesList.length === 0}
+        empty={{
+          icon: <FiUser />,
+          title: keyword ? 'Ladies tidak ditemukan' : 'Belum ada ladies',
+          text: keyword ? 'Coba kata kunci lain.' : 'Klik "Tambah ladies" untuk menambah ladies pertama.',
+        }}
+        page={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      >
+        <table className="dk-table">
+          <thead>
+            <tr>
+              <th scope="col">Nama</th>
+              <th scope="col">Outlet</th>
+              <th scope="col">PIN</th>
+              <th scope="col">Status</th>
+              <th scope="col" className="dk-col-actions">
+                <span className="visually-hidden">Aksi</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {ladiesList.map((l) => {
+              const badge = BADGE_STATUS[l.status];
 
-        {/* BODY */}
-        <div className="p-2 p-md-3">
-          {loading ? (
-            <ListLoadingState label="Memuat data ladies" />
-          ) : (
-            <DataTable
-              columns={[
-                { key: 'nama_lengkap', label: 'Nama Lengkap' },
-                { key: 'nama_ladies', label: 'Nama Ladies' },
-                { key: 'nama_outlet', label: 'Nama Outlet' },
-                { key: 'pin', label: 'PIN' },
-                {
-                  key: 'status',
-                  label: 'Status',
-                  render: (lady: Lady) => {
-                    let borderColor = '';
-                    let bgColor = '';
-                    switch (lady.status) {
-                      case 'active':
-                        borderColor = 'border-success';
-                        bgColor = 'bg-success bg-opacity-10';
-                        break;
-                      case 'resign':
-                        borderColor = 'border-danger';
-                        bgColor = 'bg-danger bg-opacity-10';
-                        break;
-                      case 'not active':
-                        borderColor = 'border-warning';
-                        bgColor = 'bg-warning bg-opacity-10';
-                        break;
-                      default:
-                        borderColor = 'border-secondary';
-                        bgColor = 'bg-light';
-                    }
-
-                    return (
-                      <span className={`badge ${bgColor} ${borderColor} text-dark border px-2 py-1`}>
-                        {lady.status}
+              return (
+                <tr key={l.id} className="is-clickable" onClick={() => navigate(`/ladies-detail/${l.id}`)}>
+                  <td>
+                    <div className="dk-person">
+                      <span className="dk-avatar" aria-hidden>
+                        {(l.nama_ladies || l.nama_lengkap || '?').charAt(0).toUpperCase()}
                       </span>
-                    );
-                  },
-                },
-                {
-                  key: 'id',
-                  label: 'Aksi',
-                  render: (lady: Lady) => (
-                    <div className="d-flex gap-2">
-                      <ActionIconButton
-                        icon={<FiEdit2 size={16} />}
-                        variant="warning"
-                        title="Edit"
-                        onClick={() => navigate(`/ladies-detail/${lady.id}`)}
-                      />
-                      <ActionIconButton
-                        icon={<FiTrash2 size={16} />}
-                        variant="danger"
-                        title="Hapus"
-                        onClick={() => handleDelete(lady.id)}
-                      />
+                      <div>
+                        {/* Tombol supaya baris juga bisa dibuka lewat keyboard. */}
+                        <button
+                          type="button"
+                          className="dk-person-name"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/ladies-detail/${l.id}`);
+                          }}
+                        >
+                          {l.nama_ladies || l.nama_lengkap}
+                        </button>
+                        {l.nama_lengkap && l.nama_lengkap !== l.nama_ladies && (
+                          <div className="dk-person-sub">{l.nama_lengkap}</div>
+                        )}
+                      </div>
                     </div>
-                  ),
-                },
-              ]}
-              data={ladiesList}
-            />
-          )}
-
-          {totalPages > 1 && (
-            <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
-          )}
-        </div>
-      </div>
+                  </td>
+                  <td>{l.nama_outlet || <span className="dk-muted">-</span>}</td>
+                  <td className="dk-num">{l.pin || <span className="dk-muted">-</span>}</td>
+                  <td>
+                    {badge ? (
+                      <span className={`dk-status is-${badge.tone}`}>{badge.label}</span>
+                    ) : (
+                      <span className="dk-muted">{l.status || '-'}</span>
+                    )}
+                  </td>
+                  <td className="dk-col-actions">
+                    <button
+                      type="button"
+                      className="dk-icon-btn dk-icon-btn--danger"
+                      title="Hapus"
+                      aria-label={`Hapus ${l.nama_ladies || l.nama_lengkap}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(l.id);
+                      }}
+                    >
+                      <FiTrash2 />
+                    </button>
+                    <FiChevronRight className="dk-row-chevron" aria-hidden />
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </DesktopListCard>
     </div>
-    </PullToRefresh>
   );
 };
 
