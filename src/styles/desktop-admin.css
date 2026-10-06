@@ -1481,3 +1481,46 @@ textarea.dk-input {
 .dk-table tfoot td.dk-col-num {
   text-align: right;
 }
+
+/* =========================
+   TRANSAKSI (form + riwayat)
+========================= */
+
+/* Form (kiri, sempit) + riwayat (kanan, lebar). */
+.dk-split-grid {
+  display: grid;
+  grid-template-columns: 380px minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+@media (max-width: 1200px) {
+  .dk-split-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Toolbar berisi banyak kontrol (bulan · filter · cari) — boleh turun baris. */
+.dk-toolbar--wrap {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: var(--space-3) var(--space-4);
+}
+
+.dk-search--grow {
+  flex: 1 1 220px;
+  width: auto;
+}
+
+/* Jumlah uang: lebih besar dari input biasa — isian terpenting di form. */
+.dk-input--amount {
+  height: 52px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.dk-btn--block {
+  width: 100%;
+  justify-content: center;
+}

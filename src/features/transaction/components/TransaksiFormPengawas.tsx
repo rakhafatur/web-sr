@@ -3,8 +3,8 @@ import { useMediaQuery } from 'react-responsive';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
-import FormField from '../../../components/FormField';
 import Button from '../../../components/Button';
+import DesktopField from '../../../components/desktop/DesktopField';
 import { validasiWajib } from '../../../utils/validasiForm';
 
 import {
@@ -16,6 +16,7 @@ import {
   FiEdit3,
 } from 'react-icons/fi';
 import '../../../styles/mobile-admin.css';
+import '../../../styles/desktop-admin.css';
 
 /** Tombol simpan versi mobile: pil solid tanpa gradien (selaras layar lain). */
 const TOMBOL_PIL: React.CSSProperties = {
@@ -228,7 +229,7 @@ const TransaksiFormPengawas = ({
   );
 
   // Mobile: tampilan baru (jumlah besar ala aplikasi bank). State, validasi,
-  // dan penyimpanan sama persis dengan desktop di bawah.
+  // dan penyimpanan sama persis dengan desktop (dk-) di bawah.
   if (isMobile) {
     const wajib = (
       <>
@@ -326,107 +327,88 @@ const TransaksiFormPengawas = ({
     );
   }
 
+  // Desktop (gaya dk-): chip tipe berwarna, jumlah ber-awalan Rp, tanggal,
+  // keterangan. State, validasi, dan penyimpanan sama persis dengan mobile.
   return (
-    <div>
-      {/* TYPE SELECT (CARD STYLE LIKE LADIES) */}
-      <div className={`row ${isMobile ? 'g-2' : 'g-3'} mb-3`}>
-        {transactionTypes.map((item) => {
-          const active = form.tipe === item.value;
-
-          return (
-            <div key={item.value} className="col-4">
+    <div className="dk-stack">
+      <DesktopField label="Tipe" labelId="dk-trxp-tipe-label">
+        <div
+          className="dk-chips dk-chips--status"
+          role="radiogroup"
+          aria-labelledby="dk-trxp-tipe-label"
+          style={{ gridTemplateColumns: `repeat(${transactionTypes.length}, minmax(0, 1fr))` }}
+        >
+          {transactionTypes.map((item) => {
+            const active = form.tipe === item.value;
+            return (
               <button
+                key={item.value}
                 type="button"
-                onClick={() =>
-                  setForm((prev) => ({
-                    ...prev,
-                    tipe: item.value,
-                  }))
-                }
-                className="w-100 border-0"
-                style={{
-                  borderRadius: isMobile ? 12 : 20,
-                  padding: isMobile ? '10px 8px' : '16px 14px',
-                  background: active ? item.bg : 'var(--color-surface)',
-                  border: active
-                    ? `1.5px solid ${item.color}`
-                    : '1px solid var(--color-gray-200)',
-                  minHeight: isMobile ? 70 : 90,
-                  boxShadow: active
-                    ? `0 4px 12px ${item.bg}`
-                    : '0 1px 4px rgba(0,0,0,0.04)',
-                }}
+                role="radio"
+                aria-checked={active}
+                className={`dk-chip ${active ? 'is-active' : ''}`}
+                style={active ? { background: item.bg, borderColor: item.color, color: item.color } : undefined}
+                onClick={() => setForm((prev) => ({ ...prev, tipe: item.value }))}
               >
-                <div
-                  className="d-flex flex-column align-items-center"
-                  style={{ color: item.color }}
-                >
-                  <div
-                    style={{
-                      fontSize: isMobile ? 16 : 22,
-                      marginBottom: isMobile ? 4 : 8,
-                    }}
-                  >
-                    {item.icon}
-                  </div>
-
-                  <div
-                    style={{
-                      fontWeight: 700,
-                      fontSize: isMobile ? '0.75rem' : '0.9rem',
-                    }}
-                  >
-                    {item.label}
-                  </div>
-                </div>
+                {item.icon}
+                {item.label}
               </button>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* FORM */}
-      <div className={`row ${isMobile ? 'g-2' : 'g-3'}`}>
-        {/* TANGGAL */}
-        <div className="col-12">
-          <FormField
-            label="Tanggal"
-            name="tanggal"
-            required
-            invalid={fieldSalah === 'tanggal'}
-            value={form.tanggal}
-            onChange={handleChange}
-            type="date"
-          />
+            );
+          })}
         </div>
+      </DesktopField>
 
-        {/* KETERANGAN */}
-        <div className="col-12">
-          <FormField
-            label="Keterangan"
-            name="keterangan"
-            value={form.keterangan}
-            onChange={handleChange}
-            type="text"
-          />
-        </div>
-
-        {/* JUMLAH */}
-        <div className="col-12">
-          <FormField
-            label="Jumlah"
+      <DesktopField label="Jumlah" htmlFor="dk-trxp-jumlah" required>
+        <div className="dk-input-wrap">
+          <span className="dk-prefix" aria-hidden>Rp</span>
+          <input
+            id="dk-trxp-jumlah"
             name="jumlah"
-            required
-            invalid={fieldSalah === 'jumlah'}
+            type="text"
+            inputMode="numeric"
+            autoComplete="off"
+            placeholder="0"
             value={form.jumlah}
             onChange={handleChange}
-            type="text"
+            className={`dk-input dk-input--prefix dk-input--amount ${fieldSalah === 'jumlah' ? 'is-invalid' : ''}`}
+            aria-invalid={fieldSalah === 'jumlah' || undefined}
           />
         </div>
-      </div>
+      </DesktopField>
 
-      {/* BUTTON */}
-      <div className="mt-4">{tombolSimpan()}</div>
+      <DesktopField label="Tanggal" htmlFor="dk-trxp-tanggal" required>
+        <input
+          id="dk-trxp-tanggal"
+          name="tanggal"
+          type="date"
+          value={form.tanggal}
+          onChange={handleChange}
+          className={`dk-input ${fieldSalah === 'tanggal' ? 'is-invalid' : ''}`}
+          aria-invalid={fieldSalah === 'tanggal' || undefined}
+        />
+      </DesktopField>
+
+      <DesktopField label="Keterangan (opsional)" htmlFor="dk-trxp-keterangan">
+        <input
+          id="dk-trxp-keterangan"
+          name="keterangan"
+          type="text"
+          placeholder="Catatan singkat"
+          value={form.keterangan}
+          onChange={handleChange}
+          className="dk-input"
+        />
+      </DesktopField>
+
+      <button
+        type="button"
+        className="dk-btn dk-btn--primary dk-btn--block"
+        onClick={handleSubmit}
+        disabled={mutation.isPending}
+      >
+        <FiPlus aria-hidden />
+        {mutation.isPending ? 'Menyimpan...' : 'Tambah transaksi'}
+      </button>
     </div>
   );
 };

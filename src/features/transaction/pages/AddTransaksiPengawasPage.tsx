@@ -5,13 +5,14 @@ import { supabase } from '../../../lib/supabaseClient';
 
 import TransaksiFormPengawas from '../components/TransaksiFormPengawas';
 import RiwayatTransaksiPengawas from '../components/RiwayatTransaksiPengawas';
-import FeaturePageHeader from '../../../components/FeaturePageHeader';
 import SearchableSelect from '../../../components/SearchableSelect';
 import MobilePageBar from '../../../components/MobilePageBar';
+import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
 import { usePilihanTerakhir } from '../../../hooks/usePilihanTerakhir';
 import '../../../styles/mobile-admin.css';
+import '../../../styles/desktop-admin.css';
 
-import { FiUsers, FiCreditCard, FiClock, FiAlertCircle } from 'react-icons/fi';
+import { FiUsers } from 'react-icons/fi';
 
 type Pengawas = {
   id: string;
@@ -69,7 +70,7 @@ const AddTransaksiPagePengawas = () => {
   }));
 
   // Mobile: tampilan baru selaras layar ladies (Header app dicabut di
-  // MainLayout). Desktop: tampilan lama di bawah. Form & riwayat tetap
+  // MainLayout). Desktop: gaya dk- di bawah. Form & riwayat tetap
   // komponen yang sama.
   if (isMobile) {
     return (
@@ -157,171 +158,86 @@ const AddTransaksiPagePengawas = () => {
     );
   }
 
+  // Desktop (gaya baru dk-): pemilih pengawas di atas, lalu dua kolom —
+  // form tambah (kiri) & riwayat bulanan (kanan). Form & riwayat tetap
+  // komponen yang sama dengan mobile (masing-masing punya cabang desktop).
   return (
-    <div className="page-shell py-4 px-md-4 px-3">
-      <FeaturePageHeader
-        icon={<FiCreditCard />}
-        title="Transaksi Pengawas"
-        description="Kelola transaksi pengawas harian"
+    <div className="page-shell dk-page">
+      <DesktopPageHeader
+        title="Transaksi pengawas"
+        description="Catat gaji & kasbon pengawas, dan lihat riwayatnya per bulan"
       />
 
-      {/* SELECT PENGAWAS */}
-      <div
-        className="card border-0 shadow-sm rounded-4 mb-4"
-        style={{
-          overflow: 'hidden',
-        }}
-      >
-        <div
-          className="px-4 py-3 border-bottom"
-          style={{ background: 'var(--color-surface-2)' }}
-        >
-          <div className="d-flex align-items-center gap-2">
-            <FiUsers size={18} style={{ color: 'var(--color-green)' }} />
-            <span
-              className="fw-semibold"
-              style={{ color: 'var(--color-dark)' }}
-            >
-              Pilih Pengawas
-            </span>
-          </div>
-        </div>
-
-        <div className="p-4">
+      <section className="dk-card dk-pickbar" aria-label="Pilih pengawas">
+        <div className="dk-pickbar-field">
+          <span className="dk-label">Pengawas</span>
           <SearchableSelect
             value={selectedPengawasId}
-            onChange={(v) => {
-              setSelectedPengawasId(v);
-              setActiveTab('tambah');
-            }}
+            onChange={setSelectedPengawasId}
             options={opsiPengawas}
-            placeholder="-- Pilih Pengawas --"
+            placeholder="Pilih pengawas"
             searchPlaceholder="Cari nama pengawas..."
-            height={isMobile ? 50 : 58}
-            borderRadius={isMobile ? 14 : 18}
-            fontSize={isMobile ? '0.82rem' : '0.97rem'}
+            height={44}
+            borderRadius={999}
+            fontSize="15px"
           />
-
-          {/* EMPTY STATE */}
-          {!selectedPengawasId && !loading && (
-            <div
-              className="mt-4 p-4 rounded-4"
-              style={{
-                background: 'var(--color-warning)',
-                border: '1px solid var(--color-warning-hover)',
-              }}
-            >
-              <div className="d-flex align-items-start gap-3">
-                <FiAlertCircle
-                  aria-hidden
-                  style={{ fontSize: 22, flexShrink: 0, color: 'var(--color-voucher)', marginTop: 2 }}
-                />
-
-                <div>
-                  <div className="fw-bold mb-1">
-                    Pengawas belum dipilih
-                  </div>
-                  <div style={{ fontSize: '0.9rem', color: 'var(--color-gray-500)' }}>
-                    Pilih pengawas untuk menampilkan form transaksi dan riwayat.
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* LOADING */}
-          {/* Pengecualian yang disengaja dari aturan "skeleton untuk daftar":
-              ini status pilihan yang sedang dimuat untuk sebuah dropdown, bukan
-              daftar isi halaman — skeleton baris justru menggambarkan tata letak
-              yang tidak akan pernah muncul. Dibuat sama dengan versi ladies. */}
-          {loading && (
-            <div
-              className="d-flex align-items-center gap-3 mt-3"
-              style={{ color: 'var(--color-gray-500)' }}
-              role="status"
-              aria-label="Mengambil data pengawas"
-            >
-              <div className="spinner-border spinner-border-sm" />
-
-              <span>Mengambil data pengawas...</span>
-            </div>
-          )}
         </div>
-      </div>
 
-      {/* CONTENT */}
-      {selectedPengawas && (() => {
-        const formCard = (
-          <div className="card border-0 shadow-sm rounded-4 h-100">
-            <div
-              className="px-4 py-3 border-bottom"
-              style={{
-                background:
-                  'linear-gradient(to right, var(--color-green-lighter), var(--color-surface))',
-              }}
-            >
+        {/* Pengecualian yang disengaja dari aturan "skeleton untuk daftar":
+            ini status pilihan dropdown yang sedang dimuat, bukan isi halaman. */}
+        {loading ? (
+          <div className="dk-pickbar-meta dk-muted" role="status" aria-label="Mengambil data pengawas">
+            <div className="spinner-border spinner-border-sm" />
+            <span>Mengambil data pengawas...</span>
+          </div>
+        ) : (
+          selectedPengawas && (
+            <div className="dk-pickbar-meta">
+              <span className="dk-avatar" aria-hidden>
+                {(selectedPengawas.nama_lengkap || '?').charAt(0).toUpperCase()}
+              </span>
               <div>
-                <div
-                  className="fw-bold"
-                  style={{ color: 'var(--color-dark)' }}
-                >
-                  Tambah Transaksi
-                </div>
-
-                <div style={{ fontSize: '0.85rem', color: 'var(--color-gray-500)' }}>
-                  {selectedPengawas.nama_lengkap}
-                </div>
+                <div className="dk-pickbar-name">{selectedPengawas.nama_lengkap}</div>
+                {selectedPengawas.nama_panggilan && (
+                  <div className="dk-person-sub">Panggilan: {selectedPengawas.nama_panggilan}</div>
+                )}
               </div>
             </div>
+          )
+        )}
+      </section>
 
-            <div className="p-3 p-md-4">
-              <TransaksiFormPengawas
-                pengawasId={selectedPengawasId}
-              />
-            </div>
+      {!selectedPengawasId && !loading && (
+        <section className="dk-card">
+          <div className="dk-empty">
+            <span className="dk-empty-icon" aria-hidden><FiUsers /></span>
+            <div className="dk-empty-title">Pilih pengawas dulu</div>
+            <div className="dk-empty-text">Form transaksi dan riwayat akan muncul setelah pengawas dipilih.</div>
           </div>
-        );
+        </section>
+      )}
 
-        const riwayatCard = (
-          <div className="card border-0 shadow-sm rounded-4">
-            <div
-              className="px-4 py-3 border-bottom"
-              style={{
-                background:
-                  'linear-gradient(to right, var(--color-surface), var(--color-green-lighter))',
-              }}
-            >
-              <div className="d-flex align-items-center gap-2">
-                <FiClock />
-                <div>
-                  <div
-                    className="fw-bold"
-                    style={{ color: 'var(--color-dark)' }}
-                  >
-                    Riwayat Transaksi
-                  </div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--color-gray-500)' }}>
-                    Histori transaksi {selectedPengawas.nama_lengkap}
-                  </div>
-                </div>
-              </div>
+      {selectedPengawas && (
+        <div className="dk-split-grid">
+          <section className="dk-card" aria-label="Tambah transaksi">
+            <div className="dk-card-head">
+              <h2 className="dk-card-title">Tambah transaksi</h2>
+              <div className="dk-card-sub">{selectedPengawas.nama_lengkap}</div>
             </div>
-
-            <div className={isMobile ? 'p-2' : 'p-3'}>
-              <RiwayatTransaksiPengawas
-                pengawasId={selectedPengawasId}
-              />
+            <div className="dk-card-body">
+              <TransaksiFormPengawas pengawasId={selectedPengawasId} />
             </div>
-          </div>
-        );
+          </section>
 
-        return (
-          <div className="row g-4">
-            <div className="col-12 col-xl-4">{formCard}</div>
-            <div className="col-12 col-xl-8">{riwayatCard}</div>
-          </div>
-        );
-      })()}
+          <section className="dk-card" aria-label="Riwayat transaksi">
+            <div className="dk-card-head">
+              <h2 className="dk-card-title">Riwayat transaksi</h2>
+              <div className="dk-card-sub">Klik baris untuk mengubah · gaji & kasbon per bulan</div>
+            </div>
+            <RiwayatTransaksiPengawas pengawasId={selectedPengawasId} />
+          </section>
+        </div>
+      )}
     </div>
   );
 };
