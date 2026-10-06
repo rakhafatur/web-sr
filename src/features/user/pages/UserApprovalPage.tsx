@@ -4,17 +4,15 @@ import { supabase } from '../../../lib/supabaseClient';
 import { sanitizeSearchKeyword } from '../../../utils/sanitizeSearch';
 import { useMediaQuery } from 'react-responsive';
 import { toast } from 'react-toastify';
-import DataTable from '../../../components/DataTable';
 import Pagination from '../../../components/Pagination';
-import Button from '../../../components/Button';
-import ListPageHeader from '../../../components/ListPageHeader';
-import ListPageToolbar from '../../../components/ListPageToolbar';
 import { FiCheck, FiUserCheck, FiSearch } from 'react-icons/fi';
 import MobilePageBar from '../../../components/MobilePageBar';
+import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
 import ModalWrapper from '../../../components/ModalWrapper';
 import SearchableSelect from '../../../components/SearchableSelect';
 import ListLoadingState from '../../../components/ListLoadingState';
 import '../../../styles/mobile-admin.css';
+import '../../../styles/desktop-admin.css';
 
 type User = {
   id: string;
@@ -144,18 +142,19 @@ const UserApprovalPage = () => {
 
   const tutupAssign = () => setAssignModal({ id: '', show: false });
 
+  const userDipilih = userList.find((u) => u.id === assignModal.id);
+  const PERAN: { value: AssignType; label: string }[] = [
+    { value: 'ladies', label: 'Ladies' },
+    { value: 'pengawas', label: 'Pengawas' },
+    { value: 'agent', label: 'Agent' },
+  ];
+  const labelPeran = PERAN.find((r) => r.value === assignType)?.label ?? '';
+
   // Mobile: tampilan baru (Header app dicabut di MainLayout) — daftar dengan
   // tombol Setujui, dan penugasan lewat bottom sheet (chip peran + pemilih
-  // bercari) menggantikan modal Bootstrap berisi dua <select>. Desktop: lama.
+  // bercari) menggantikan modal Bootstrap berisi dua <select>. Desktop: gaya
+  // dk- yang sama dengan halaman Users, di bawah.
   if (isMobile) {
-    const userDipilih = userList.find((u) => u.id === assignModal.id);
-    const PERAN: { value: AssignType; label: string }[] = [
-      { value: 'ladies', label: 'Ladies' },
-      { value: 'pengawas', label: 'Pengawas' },
-      { value: 'agent', label: 'Agent' },
-    ];
-    const labelPeran = PERAN.find((r) => r.value === assignType)?.label ?? '';
-
     return (
       <div className="tm-page">
         <MobilePageBar title="Persetujuan User" backTo="/users" />
@@ -282,120 +281,167 @@ const UserApprovalPage = () => {
     );
   }
 
+  // Desktop: header polos dengan tautan kembali ke Users, satu kartu berisi
+  // cari & tabel beravatar; tiap baris punya tombol Setujui yang membuka
+  // dialog penugasan (chip peran + pemilih bercari, sama seperti mobile).
   return (
-    <div
-      className="page-shell p-4"
-      style={{
-        color: 'var(--color-dark)',
-      }}
-    >
-      <ListPageHeader
-        icon={<FiUserCheck />}
+    <div className="page-shell dk-page">
+      <DesktopPageHeader
         title="Persetujuan User"
-        description="Aktifkan & assign user baru sebelum bisa login"
+        description="Aktifkan & tugaskan user baru sebelum bisa login"
+        back={{ to: '/users', label: 'Users' }}
       />
 
-      <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
-        <ListPageToolbar
-          title="Menunggu Persetujuan"
-          subtitle="Data user belum aktif"
-          placeholder="Cari user..."
-          keyword={keyword}
-          onKeywordChange={(value) => {
-            setPage(1);
-            setKeyword(value);
-          }}
-        />
+      <section className="dk-card" aria-label="Daftar user menunggu persetujuan">
+        <div className="dk-toolbar">
+          <div className="dk-search">
+            <FiSearch aria-hidden />
+            <input
+              type="search"
+              placeholder="Cari username atau nama..."
+              aria-label="Cari user"
+              value={keyword}
+              onChange={(e) => {
+                setPage(1);
+                setKeyword(e.target.value);
+              }}
+            />
+          </div>
+          {!loading && <span className="dk-count">{total} menunggu persetujuan</span>}
+        </div>
 
-        {/* BODY */}
-        <div className="p-2 p-md-3">
-            <DataTable
-              columns={[
-                { key: 'username', label: 'Username' },
-                { key: 'nama', label: 'Nama Lengkap' },
-                {
-                  key: 'id',
-                  label: 'Aksi',
-                  render: (u: User) => (
+        {loading ? (
+          <div style={{ padding: 'var(--space-4) var(--space-5)' }}>
+            <ListLoadingState label="Memuat user menunggu persetujuan" />
+          </div>
+        ) : userList.length === 0 ? (
+          <div className="dk-empty">
+            <span className="dk-empty-icon" aria-hidden><FiUserCheck /></span>
+            <div className="dk-empty-title">
+              {keyword ? 'User tidak ditemukan' : 'Tidak ada yang menunggu'}
+            </div>
+            <div className="dk-empty-text">
+              {keyword
+                ? 'Coba kata kunci lain.'
+                : 'Semua pendaftar sudah disetujui. User baru akan muncul di sini setelah mendaftar.'}
+            </div>
+          </div>
+        ) : (
+          <table className="dk-table">
+            <thead>
+              <tr>
+                <th scope="col">Nama</th>
+                <th scope="col">Username</th>
+                <th scope="col" className="dk-col-actions">
+                  <span className="visually-hidden">Aksi</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {userList.map((u) => (
+                <tr key={u.id}>
+                  <td>
+                    <div className="dk-person">
+                      <span className="dk-avatar" aria-hidden>
+                        {(u.nama || u.username || '?').charAt(0).toUpperCase()}
+                      </span>
+                      <span className="dk-person-label">{u.nama || u.username}</span>
+                    </div>
+                  </td>
+                  <td className="dk-person-sub">@{u.username}</td>
+                  <td className="dk-col-actions">
                     <button
-                      className="btn btn-sm btn-outline-success d-flex align-items-center gap-1"
+                      type="button"
+                      className="dk-btn dk-btn--sm dk-btn--soft"
+                      aria-label={`Setujui ${u.nama || u.username}`}
                       onClick={() => handleApproveClick(u.id)}
                     >
-                      <FiCheck /> Approve
+                      <FiCheck aria-hidden />
+                      Setujui
                     </button>
-                  ),
-                },
-              ]}
-              data={userList}
-            />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
 
+        <div className="dk-footer">
           {totalPages > 1 && (
             <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
           )}
         </div>
-      </div>
+      </section>
 
-      {assignModal.show && (
-        <div className="modal d-block" style={{ background: 'rgba(0,0,0,0.5)' }}>
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Assign User</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setAssignModal({ id: '', show: false })}
-                />
-              </div>
-              <div className="modal-body">
-                <div className="mb-3">
-                  <label className="form-label">Tipe</label>
-                  <select
-                    className="form-select"
-                    value={assignType || ''}
-                    onChange={(e) => {
-                      const tipe = e.target.value as AssignType;
-                      setAssignType(tipe);
-                      setSelectedAssignId('');
-                    }}
-                  >
-                    <option value="">-- Pilih Tipe --</option>
-                    <option value="ladies">Ladies</option>
-                    <option value="pengawas">Pengawas</option>
-                    <option value="agent">Agent</option>
-                  </select>
-                </div>
-
-                {assignType && (
-                  <div className="mb-3">
-                    <label className="form-label">Pilih {assignType}</label>
-                    <select
-                      className="form-select"
-                      value={selectedAssignId}
-                      onChange={(e) => setSelectedAssignId(e.target.value)}
-                    >
-                      <option value="">-- Pilih {assignType} --</option>
-                      {assignList.map((item) => (
-                        <option key={item.id} value={item.id}>
-                          {labelAssign(item)}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-              </div>
-              <div className="modal-footer">
-                <Button variant="secondary" onClick={() => setAssignModal({ id: '', show: false })}>
-                  Batal
-                </Button>
-                <Button variant="primary" disabled={!selectedAssignId} onClick={handleAssign}>
-                  Aktifkan
-                </Button>
-              </div>
+      <ModalWrapper
+        show={assignModal.show}
+        title={
+          <div className="dk-person">
+            <span className="dk-avatar" aria-hidden>
+              {(userDipilih?.nama || userDipilih?.username || '?').charAt(0).toUpperCase()}
+            </span>
+            <div>
+              <div className="dk-card-title">Setujui {userDipilih?.nama || userDipilih?.username || 'user'}</div>
+              {userDipilih && <div className="dk-card-sub">@{userDipilih.username}</div>}
             </div>
           </div>
+        }
+        onClose={tutupAssign}
+        footer={
+          <div className="dk-modal-foot">
+            <button type="button" className="dk-btn" onClick={tutupAssign}>Batal</button>
+            <button
+              type="button"
+              className="dk-btn dk-btn--primary"
+              onClick={handleAssign}
+              disabled={!selectedAssignId}
+            >
+              <FiCheck aria-hidden />
+              Aktifkan
+            </button>
+          </div>
+        }
+      >
+        <div>
+          <span className="dk-label" id="dk-assign-peran-label">Jadikan sebagai</span>
+          <div className="dk-chips" role="radiogroup" aria-labelledby="dk-assign-peran-label">
+            {PERAN.map((r) => (
+              <button
+                key={r.value}
+                type="button"
+                role="radio"
+                aria-checked={assignType === r.value}
+                className={`dk-chip ${assignType === r.value ? 'is-active' : ''}`}
+                onClick={() => {
+                  setAssignType(r.value);
+                  setSelectedAssignId('');
+                }}
+              >
+                {r.label}
+              </button>
+            ))}
+          </div>
         </div>
-      )}
+
+        {assignType && (
+          <div style={{ marginTop: 'var(--space-5)' }}>
+            <span className="dk-label">Pilih {labelPeran.toLowerCase()}</span>
+            <SearchableSelect
+              value={selectedAssignId}
+              onChange={setSelectedAssignId}
+              options={assignList.map((item) => ({ value: item.id, label: labelAssign(item) }))}
+              placeholder={`Pilih ${labelPeran.toLowerCase()}`}
+              searchPlaceholder={`Cari ${labelPeran.toLowerCase()}...`}
+              height={44}
+              borderRadius={12}
+              fontSize="15px"
+            />
+            <div className="dk-help">
+              Setelah diaktifkan, user bisa login sebagai {labelPeran.toLowerCase()} ini.
+            </div>
+          </div>
+        )}
+      </ModalWrapper>
     </div>
   );
 };

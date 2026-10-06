@@ -1,6 +1,7 @@
 /* Tampilan admin DESKTOP gaya baru — kelas dk-. Bahasa visual sama dengan
    mobile (kartu radius-xl, pil, avatar inisial) tapi memanfaatkan layar
-   lebar. Uji coba di halaman Users; halaman lain belum memakai ini. */
+   lebar. Dipakai di Users (daftar, detail, tambah) & Persetujuan User;
+   halaman lain belum memakai ini. */
 
 /* MainLayout sudah memberi padding 2rem di desktop — jangan digandakan. */
 .dk-page {
@@ -93,6 +94,32 @@
 
 .dk-btn--warn:hover {
   background: var(--color-warning-hover);
+}
+
+.dk-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Tombol di dalam baris tabel (mis. Setujui). */
+.dk-btn--sm {
+  height: 34px;
+  padding: 0 var(--space-4);
+  font-size: 13px;
+}
+
+/* Aksi utama yang tenang: biru muda, padat saat disorot. */
+.dk-btn--soft {
+  background: var(--color-green-lighter);
+  border-color: var(--color-green-light);
+  color: var(--color-green);
+}
+
+.dk-btn--soft:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-white);
 }
 
 /* =========================
@@ -241,6 +268,12 @@
   outline: 2px solid var(--color-green);
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+/* Nama tanpa tautan (baris yang tidak membuka detail). */
+.dk-person-label {
+  font-weight: 500;
+  color: var(--color-dark);
 }
 
 .dk-person-sub {
@@ -577,4 +610,51 @@
   margin-top: var(--space-4);
   font-size: 12px;
   color: var(--color-gray-600);
+}
+
+/* =========================
+   DIALOG (isi ModalWrapper)
+========================= */
+
+/* Pilihan peran berbentuk pil (radiogroup). */
+.dk-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.dk-chip {
+  height: 40px;
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface-2);
+  color: var(--color-gray-700);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.dk-chip:hover {
+  border-color: var(--color-green);
+}
+
+.dk-chip.is-active {
+  background: var(--color-green-lighter);
+  border-color: var(--color-green);
+  color: var(--color-green);
+  font-weight: 600;
+}
+
+.dk-chip:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: 2px;
+}
+
+.dk-modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
 }
