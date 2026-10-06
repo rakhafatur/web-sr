@@ -1,20 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-  FiUsers,
-  FiCreditCard,
-  FiClock,
-  FiAlertCircle,
-} from 'react-icons/fi';
+import { FiUsers } from 'react-icons/fi';
 import { supabase } from '../../../lib/supabaseClient';
 import TransaksiForm from '../components/TransaksiForm';
 import RiwayatTransaksi from '../components/RiwayatTransaksi';
-import FeaturePageHeader from '../../../components/FeaturePageHeader';
 import SearchableSelect from '../../../components/SearchableSelect';
 import MobilePageBar from '../../../components/MobilePageBar';
+import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
 import { usePilihanTerakhir } from '../../../hooks/usePilihanTerakhir';
 import '../../../styles/mobile-admin.css';
+import '../../../styles/desktop-admin.css';
 
 type Lady = {
   id: string;
@@ -74,7 +70,7 @@ const AddTransaksiPage = () => {
   }));
 
   // Mobile: tampilan baru selaras Transaksi Pengawas (Header app dicabut di
-  // MainLayout). Desktop: tampilan lama di bawah. Form & riwayat tetap
+  // MainLayout). Desktop: gaya dk- di bawah. Form & riwayat tetap
   // komponen yang sama.
   if (isMobile) {
     return (
@@ -168,231 +164,93 @@ const AddTransaksiPage = () => {
     );
   }
 
+  // Desktop (gaya baru dk-): pemilih ladies di atas, lalu dua kolom —
+  // form tambah (kiri) & riwayat bulanan (kanan). Form & riwayat tetap
+  // komponen yang sama dengan mobile (masing-masing punya cabang desktop).
   return (
-    <div className="page-shell py-4 px-md-4 px-3">
-      <FeaturePageHeader
-        icon={<FiCreditCard />}
-        title="Transaksi Ladies"
-        description="Kelola transaksi harian"
+    <div className="page-shell dk-page">
+      <DesktopPageHeader
+        title="Transaksi ladies"
+        description="Catat voucher, pemasukan lain, kasbon, dan dokter — lihat riwayatnya per bulan"
       />
 
-      {/* SELECT LADIES */}
-      <div
-        className="card border-0 shadow-sm rounded-4 mb-4"
-        style={{
-          overflow: 'hidden',
-        }}
-      >
-        <div
-          className="px-4 py-3 border-bottom"
-          style={{
-            background: 'var(--color-surface-2)',
-          }}
-        >
-          <div className="d-flex align-items-center gap-2">
-            <FiUsers
-              size={18}
-              style={{ color: 'var(--color-green)' }}
-            />
-
-            <span
-              className="fw-semibold"
-              style={{ color: 'var(--color-dark)' }}
-            >
-              Pilih Ladies
-            </span>
-          </div>
-        </div>
-
-        <div className="p-4">
+      <section className="dk-card dk-pickbar" aria-label="Pilih ladies">
+        <div className="dk-pickbar-field">
+          <span className="dk-label">Ladies</span>
           <SearchableSelect
             value={selectedLadyId}
-            onChange={(v) => {
-              setSelectedLadyId(v);
-              setActiveTab('tambah');
-            }}
+            onChange={setSelectedLadyId}
             options={opsiLadies}
-            placeholder="-- Pilih Ladies --"
+            placeholder="Pilih ladies"
             searchPlaceholder="Cari nama ladies..."
-            height={isMobile ? 50 : 58}
-            borderRadius={isMobile ? 14 : 18}
-            fontSize={isMobile ? '0.82rem' : '0.97rem'}
+            height={44}
+            borderRadius={999}
+            fontSize="15px"
           />
-
-          {/* EMPTY STATE */}
-          {!selectedLadyId && !loading && (
-            <div
-              className="mt-4 p-4 rounded-4"
-              style={{
-                background: 'var(--color-warning)',
-                border: '1px solid var(--color-warning-hover)',
-              }}
-            >
-              <div className="d-flex align-items-start gap-3">
-                <FiAlertCircle
-                  aria-hidden
-                  style={{ fontSize: 22, flexShrink: 0, color: 'var(--color-voucher)', marginTop: 2 }}
-                />
-
-                <div>
-                  <div className="fw-bold mb-1">
-                    Ladies belum dipilih
-                  </div>
-
-                  <div
-                    style={{
-                      fontSize: '0.92rem',
-                      color: 'var(--color-gray-500)',
-                    }}
-                  >
-                    Pilih salah satu ladies untuk
-                    menampilkan form transaksi dan
-                    riwayat data.
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Pengecualian yang disengaja dari aturan "skeleton untuk daftar":
-              ini status pilihan yang sedang dimuat untuk sebuah dropdown, bukan
-              daftar isi halaman — skeleton baris justru menggambarkan tata letak
-              yang tidak akan pernah muncul. */}
-          {loading && (
-            <div
-              className="d-flex align-items-center gap-3 mt-3"
-              style={{
-                color: 'var(--color-gray-500)',
-              }}
-              role="status"
-              aria-label="Mengambil data ladies"
-            >
-              <div className="spinner-border spinner-border-sm" />
-
-              <span>Mengambil data ladies...</span>
-            </div>
-          )}
         </div>
-      </div>
 
-      {/* CONTENT */}
-      {selectedLady && (() => {
-        const formCard = (
-          <div
-            className="card border-0 shadow-sm rounded-4 h-100"
-            style={{
-              overflow: 'hidden',
-            }}
-          >
-            <div
-              className="px-4 py-3 border-bottom"
-              style={{
-                background:
-                  'linear-gradient(to right, var(--color-green-lighter), var(--color-surface))',
-              }}
-            >
-              <div className="d-flex justify-content-between align-items-start">
-                <div>
-                  <div
-                    className="fw-bold"
-                    style={{
-                      color: 'var(--color-dark)',
-                      fontSize: '1rem',
-                    }}
-                  >
-                    Tambah Transaksi
-                  </div>
-
-                  <div
-                    style={{
-                      fontSize: '0.85rem',
-                      color: 'var(--color-gray-500)',
-                    }}
-                  >
-                    {selectedLady.nama_ladies}
-                  </div>
-                </div>
-
-                <div
-                  className="px-3 py-1 rounded-pill"
-                  style={{
-                    background: 'var(--color-income-soft)',
-                    color: 'var(--color-income)',
-                    fontSize: '0.78rem',
-                    fontWeight: 700,
-                  }}
-                >
-                  {selectedLady.nama_outlet}
+        {/* Pengecualian yang disengaja dari aturan "skeleton untuk daftar":
+            ini status pilihan dropdown yang sedang dimuat, bukan isi halaman. */}
+        {loading ? (
+          <div className="dk-pickbar-meta dk-muted" role="status" aria-label="Mengambil data ladies">
+            <div className="spinner-border spinner-border-sm" />
+            <span>Mengambil data ladies...</span>
+          </div>
+        ) : (
+          selectedLady && (
+            <div className="dk-pickbar-meta">
+              <span className="dk-avatar" aria-hidden>
+                {(selectedLady.nama_ladies || '?').charAt(0).toUpperCase()}
+              </span>
+              <div>
+                <div className="dk-pickbar-name">{selectedLady.nama_ladies}</div>
+                <div className="dk-person-sub">
+                  {[selectedLady.nama_outlet, selectedLady.pin && `PIN ${selectedLady.pin}`].filter(Boolean).join(' · ')}
                 </div>
               </div>
             </div>
+          )
+        )}
+      </section>
 
-            <div className="p-3 p-md-4">
-              <TransaksiForm
-                ladiesId={selectedLadyId}
-                outlet={selectedLady.nama_outlet}
-              />
-            </div>
+      {!selectedLadyId && !loading && (
+        <section className="dk-card">
+          <div className="dk-empty">
+            <span className="dk-empty-icon" aria-hidden><FiUsers /></span>
+            <div className="dk-empty-title">Pilih ladies dulu</div>
+            <div className="dk-empty-text">Form transaksi dan riwayat akan muncul setelah ladies dipilih.</div>
           </div>
-        );
+        </section>
+      )}
 
-        const riwayatCard = (
-          <div
-            className="card border-0 shadow-sm rounded-4"
-            style={{
-              overflow: 'hidden',
-            }}
-          >
-            <div
-              className="px-4 py-3 border-bottom"
-              style={{
-                background:
-                  'linear-gradient(to right, var(--color-surface), var(--color-green-lighter))',
-              }}
-            >
-              <div className="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                <div>
-                  <div
-                    className="fw-bold d-flex align-items-center gap-2"
-                    style={{
-                      color: 'var(--color-dark)',
-                    }}
-                  >
-                    <FiClock />
-                    Riwayat Transaksi
-                  </div>
-
-                  <div
-                    style={{
-                      fontSize: '0.85rem',
-                      color: 'var(--color-gray-500)',
-                    }}
-                  >
-                    Histori transaksi terbaru {selectedLady.nama_ladies}
-                  </div>
-                </div>
+      {selectedLady && (
+        <div className="dk-split-grid">
+          <section className="dk-card" aria-label="Tambah transaksi">
+            {/* Harga voucher mengikuti outlet — ditampilkan supaya admin tahu
+                tarif mana yang akan dipakai. */}
+            <div className="dk-card-head dk-card-head--row">
+              <div>
+                <h2 className="dk-card-title">Tambah transaksi</h2>
+                <div className="dk-card-sub">{selectedLady.nama_ladies}</div>
               </div>
+              <span className="dk-pill" title="Harga voucher mengikuti outlet ini">
+                {selectedLady.nama_outlet}
+              </span>
             </div>
-
-            <div
-              className={
-                isMobile ? 'p-2' : 'p-3'
-              }
-            >
-              <RiwayatTransaksi
-                ladiesId={selectedLadyId}
-              />
+            <div className="dk-card-body">
+              <TransaksiForm ladiesId={selectedLadyId} outlet={selectedLady.nama_outlet} />
             </div>
-          </div>
-        );
+          </section>
 
-        return (
-          <div className="row g-4">
-            <div className="col-12 col-xl-4">{formCard}</div>
-            <div className="col-12 col-xl-8">{riwayatCard}</div>
-          </div>
-        );
-      })()}
+          <section className="dk-card" aria-label="Riwayat transaksi">
+            <div className="dk-card-head">
+              <h2 className="dk-card-title">Riwayat transaksi</h2>
+              <div className="dk-card-sub">Klik baris untuk mengubah · semua transaksi per bulan</div>
+            </div>
+            <RiwayatTransaksi ladiesId={selectedLadyId} />
+          </section>
+        </div>
+      )}
     </div>
   );
 };

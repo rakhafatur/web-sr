@@ -3,8 +3,8 @@ import { useMediaQuery } from 'react-responsive';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
-import FormField from '../../../components/FormField';
 import Button from '../../../components/Button';
+import DesktopField from '../../../components/desktop/DesktopField';
 import { useOutletPricing } from '../hooks/useOutletPricing';
 import { validasiWajib } from '../../../utils/validasiForm';
 import {
@@ -24,6 +24,7 @@ import {
   FiEdit3,
 } from 'react-icons/fi';
 import '../../../styles/mobile-admin.css';
+import '../../../styles/desktop-admin.css';
 
 /** Tombol simpan versi mobile: pil solid tanpa gradien (selaras layar lain). */
 const TOMBOL_PIL: React.CSSProperties = {
@@ -293,12 +294,6 @@ const TransaksiForm = ({
   const hargaVoucher =
     activeTier?.harga_ladies ?? 0;
 
-  const totalJumlah = isNaN(
-    jumlahVoucherRaw
-  )
-    ? 0
-    : jumlahVoucherRaw * hargaVoucher;
-
   const transactionTypes = [
     {
       value: 'voucher',
@@ -347,7 +342,7 @@ const TransaksiForm = ({
   );
 
   // Mobile: tampilan baru, selaras Transaksi Pengawas. State, validasi,
-  // resolusi harga (pilihTier), dan penyimpanan sama persis dengan desktop.
+  // resolusi harga (pilihTier), dan penyimpanan sama persis dengan desktop (dk-).
   if (isMobile) {
     const wajib = (
       <>
@@ -513,351 +508,168 @@ const TransaksiForm = ({
     );
   }
 
+  // Desktop (gaya dk-): chip tipe, jumlah besar, pilihan tipe harga sebagai
+  // chip, kotak total. State, validasi, resolusi harga (pilihTier), dan
+  // penyimpanan sama persis dengan mobile.
+  const isVoucher = form.tipe === 'voucher';
+  // Pratinjau memakai fungsi yang sama dengan saat menyimpan, jadi angka yang
+  // tampil = angka yang tersimpan (dulu desktop memakai pcs × harga sendiri).
+  const pratinjauTotal =
+    activeTier && !isNaN(jumlahVoucherRaw) ? hitungJumlahVoucher(jumlahVoucherRaw, activeTier) : 0;
+  // Penyimpanan tetap diblokir di handleSubmit; ini hanya memperingatkan lebih awal.
+  const hargaBelumAda = !pricingLoading && !activeTier;
+
   return (
-    <div>
-      {/* MOBILE TYPE SELECT */}
-      <div
-        className={`row ${isMobile ? 'g-2' : 'g-3'
-          } mb-3`}
-      >
-        {transactionTypes.map(
-          (item) => {
-            const active =
-              form.tipe ===
-              item.value;
-
+    <div className="dk-stack">
+      <DesktopField label="Tipe" labelId="dk-trx-tipe-label">
+        <div
+          className="dk-chips dk-chips--status"
+          role="radiogroup"
+          aria-labelledby="dk-trx-tipe-label"
+          style={{ gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}
+        >
+          {transactionTypes.map((item) => {
+            const active = form.tipe === item.value;
             return (
-              <div
+              <button
                 key={item.value}
-                className="col-6"
+                type="button"
+                role="radio"
+                aria-checked={active}
+                className={`dk-chip ${active ? 'is-active' : ''}`}
+                style={active ? { background: item.bg, borderColor: item.color, color: item.color } : undefined}
+                onClick={() => setForm({ ...form, tipe: item.value })}
               >
-                <button
-                  type="button"
-                  onClick={() =>
-                    setForm({
-                      ...form,
-                      tipe:
-                        item.value,
-                    })
-                  }
-                  className="w-100 border-0"
-                  style={{
-                    borderRadius:
-                      isMobile
-                        ? 12
-                        : 20,
-
-                    padding:
-                      isMobile
-                        ? '10px 8px'
-                        : '16px 14px',
-
-                    background:
-                      active
-                        ? item.bg
-                        : 'var(--color-surface)',
-
-                    border: active
-                      ? `1.5px solid ${item.color}`
-                      : '1px solid var(--color-gray-200)',
-
-                    transition:
-                      'all 0.2s ease',
-
-                    minHeight:
-                      isMobile
-                        ? 70
-                        : 100,
-
-                    boxShadow:
-                      active
-                        ? `0 4px 12px ${item.bg}`
-                        : '0 1px 4px rgba(0,0,0,0.04)',
-                  }}
-                >
-                  <div
-                    className="d-flex flex-column align-items-center justify-content-center"
-                    style={{
-                      color:
-                        item.color,
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontSize:
-                          isMobile
-                            ? 16
-                            : 24,
-
-                        marginBottom:
-                          isMobile
-                            ? 4
-                            : 8,
-                      }}
-                    >
-                      {item.icon}
-                    </div>
-
-                    <div
-                      style={{
-                        fontWeight: 700,
-
-                        fontSize:
-                          isMobile
-                            ? '0.75rem'
-                            : '0.9rem',
-
-                        lineHeight: 1.2,
-                      }}
-                    >
-                      {item.label}
-                    </div>
-                  </div>
-                </button>
-              </div>
+                {item.icon}
+                {item.label}
+              </button>
             );
-          }
-        )}
-      </div>
+          })}
+        </div>
+      </DesktopField>
 
-      {/* FORM */}
-      <div
-        className={`row ${isMobile ? 'g-2' : 'g-3'
-          }`}
-      >
-        {/* DATE */}
-        <div className="col-12">
-          <div
-            className={
-              isMobile
-                ? ''
-                : 'p-3 rounded-4'
-            }
-            style={{
-              background:
-                isMobile
-                  ? 'transparent'
-                  : 'var(--color-surface-2)',
+      {isVoucher ? (
+        <>
+          <DesktopField label="Jumlah voucher" htmlFor="dk-trx-jumlah-voucher" required>
+            <div className="dk-input-wrap">
+              <input
+                id="dk-trx-jumlah-voucher"
+                name="jumlah_voucher"
+                type="text"
+                inputMode="numeric"
+                autoComplete="off"
+                placeholder="0"
+                value={form.jumlah_voucher}
+                onChange={handleChange}
+                className={`dk-input dk-input--amount dk-input--suffix ${fieldSalah === 'jumlah_voucher' ? 'is-invalid' : ''}`}
+                aria-invalid={fieldSalah === 'jumlah_voucher' || undefined}
+              />
+              <span className="dk-suffix" aria-hidden>pcs</span>
+            </div>
+          </DesktopField>
 
-              border: isMobile
-                ? 'none'
-                : '1px solid var(--color-gray-200)',
-            }}
-          >
-            <FormField
-              label="Tanggal"
-              name="tanggal"
-              required
-              invalid={fieldSalah === 'tanggal'}
-              value={form.tanggal}
-              onChange={
-                handleChange
-              }
-              type="date"
+          {perluPilihTier(tiers) && (
+            <DesktopField label="Tipe harga" labelId="dk-trx-tier-label">
+              <div className="dk-chips" role="radiogroup" aria-labelledby="dk-trx-tier-label">
+                {tiers.map((t) => {
+                  const active = activeTier?.tier_name === t.tier_name;
+                  return (
+                    <button
+                      key={t.tier_name}
+                      type="button"
+                      role="radio"
+                      aria-checked={active}
+                      className={`dk-chip ${active ? 'is-active' : ''}`}
+                      onClick={() => setSelectedTierName(t.tier_name)}
+                    >
+                      {t.tier_name}
+                    </button>
+                  );
+                })}
+              </div>
+            </DesktopField>
+          )}
+
+          <div className={`dk-total ${hargaBelumAda ? 'is-warn' : ''}`} aria-live="polite">
+            {pricingLoading ? (
+              // Pengecualian yang disengaja: status pilihan harga yang sedang
+              // diambil di halaman Add Transaksi (lihat CLAUDE.md).
+              <span className="dk-total-detail">Memuat harga outlet {outlet}...</span>
+            ) : hargaBelumAda ? (
+              <span className="dk-total-detail">
+                Harga voucher untuk outlet {outlet || 'ini'} belum dikonfigurasi, jadi voucher belum bisa
+                disimpan. Atur tier harganya di menu Outlet.
+              </span>
+            ) : (
+              <>
+                <div>
+                  <div className="dk-total-label">Total untuk ladies</div>
+                  <div className="dk-total-detail">
+                    {jumlahVoucherRaw || 0} × Rp{formatNumber(hargaVoucher.toString())}
+                    {activeTier?.tier_name ? ` · ${activeTier.tier_name}` : ''}
+                  </div>
+                </div>
+                <div className="dk-total-value">Rp{formatNumber(pratinjauTotal.toString())}</div>
+              </>
+            )}
+          </div>
+        </>
+      ) : (
+        <DesktopField label="Jumlah" htmlFor="dk-trx-jumlah" required>
+          <div className="dk-input-wrap">
+            <span className="dk-prefix" aria-hidden>Rp</span>
+            <input
+              id="dk-trx-jumlah"
+              name="jumlah"
+              type="text"
+              inputMode="numeric"
+              autoComplete="off"
+              placeholder="0"
+              value={form.jumlah}
+              onChange={handleChange}
+              className={`dk-input dk-input--prefix dk-input--amount ${fieldSalah === 'jumlah' ? 'is-invalid' : ''}`}
+              aria-invalid={fieldSalah === 'jumlah' || undefined}
             />
           </div>
-        </div>
+        </DesktopField>
+      )}
 
-        {/* VOUCHER */}
-        {form.tipe ===
-          'voucher' ? (
-          <>
-            <div className="col-12">
-              <div
-                className={
-                  isMobile
-                    ? ''
-                    : 'p-3 rounded-4'
-                }
-                style={{
-                  background:
-                    isMobile
-                      ? 'transparent'
-                      : 'var(--color-surface-2)',
+      <DesktopField label="Tanggal" htmlFor="dk-trx-tanggal" required>
+        <input
+          id="dk-trx-tanggal"
+          name="tanggal"
+          type="date"
+          value={form.tanggal}
+          onChange={handleChange}
+          className={`dk-input ${fieldSalah === 'tanggal' ? 'is-invalid' : ''}`}
+          aria-invalid={fieldSalah === 'tanggal' || undefined}
+        />
+      </DesktopField>
 
-                  border:
-                    isMobile
-                      ? 'none'
-                      : '1px solid var(--color-gray-200)',
-                }}
-              >
-                <FormField
-                  label="Jumlah Voucher"
-                  name="jumlah_voucher"
-                  required
-                  invalid={fieldSalah === 'jumlah_voucher'}
-                  value={
-                    form.jumlah_voucher
-                  }
-                  onChange={
-                    handleChange
-                  }
-                  type="text"
-                />
-              </div>
-            </div>
+      {/* Keterangan voucher diisi otomatis dari tipe harga (labelVoucher). */}
+      {!isVoucher && (
+        <DesktopField label="Keterangan (opsional)" htmlFor="dk-trx-keterangan">
+          <input
+            id="dk-trx-keterangan"
+            name="keterangan"
+            type="text"
+            placeholder="Catatan singkat"
+            value={form.keterangan}
+            onChange={handleChange}
+            className="dk-input"
+          />
+        </DesktopField>
+      )}
 
-            {perluPilihTier(tiers) && (
-              <div className="col-12">
-                <div
-                  className={
-                    isMobile
-                      ? ''
-                      : 'p-3 rounded-4'
-                  }
-                  style={{
-                    background: isMobile
-                      ? 'transparent'
-                      : 'var(--color-surface-2)',
-                    border: isMobile
-                      ? 'none'
-                      : '1px solid var(--color-gray-200)',
-                  }}
-                >
-                  <label
-                    className="form-label"
-                    style={{
-                      fontWeight: 600,
-                      marginBottom: 8,
-                    }}
-                  >
-                    Tipe
-                  </label>
-
-                  <select
-                    className="form-select shadow-none"
-                    value={activeTier?.tier_name ?? ''}
-                    onChange={(e) =>
-                      setSelectedTierName(
-                        e.target.value
-                      )
-                    }
-                    style={{
-                      height: isMobile ? 46 : 52,
-                      borderRadius: isMobile ? 12 : 16,
-                      border: '1px solid var(--color-green-light)',
-                    }}
-                  >
-                    {tiers.map((t) => (
-                      <option
-                        key={t.tier_name}
-                        value={t.tier_name ?? ''}
-                      >
-                        {t.tier_name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            )}
-
-            {/* TOTAL */}
-            <div className="col-12">
-              <div
-                style={{
-                  borderRadius:
-                    isMobile
-                      ? 14
-                      : 20,
-
-                  padding:
-                    isMobile
-                      ? '12px 14px'
-                      : '20px',
-
-                  background:
-                    'linear-gradient(135deg, var(--color-income-soft), var(--color-surface-2))',
-
-                  border:
-                    '1px solid rgba(var(--color-success-rgb), 0.35)',
-                }}
-              >
-                <div
-                  style={{
-                    fontSize:
-                      isMobile
-                        ? '0.72rem'
-                        : '0.85rem',
-
-                    color: 'var(--color-income)',
-
-                    marginBottom: 4,
-                  }}
-                >
-                  Total Voucher
-                </div>
-
-                <div
-                  className="fw-bold"
-                  style={{
-                    fontSize:
-                      isMobile
-                        ? '1.15rem'
-                        : '1.8rem',
-
-                    color: 'var(--color-income)',
-
-                    lineHeight: 1.2,
-                  }}
-                >
-                  Rp
-                  {formatNumber(
-                    totalJumlah.toString()
-                  )}
-                </div>
-
-                <div
-                  style={{
-                    fontSize:
-                      isMobile
-                        ? '0.7rem'
-                        : '0.82rem',
-
-                    color: 'var(--color-income)',
-
-                    marginTop: 4,
-                  }}
-                >
-                  {jumlahVoucherRaw || 0} × {formatNumber(hargaVoucher.toString())}
-                </div>
-              </div>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="col-12">
-              <FormField
-                label="Keterangan"
-                name="keterangan"
-                value={
-                  form.keterangan
-                }
-                onChange={
-                  handleChange
-                }
-                type="text"
-              />
-            </div>
-
-            <div className="col-12">
-              <FormField
-                label="Jumlah"
-                name="jumlah"
-                required
-                invalid={fieldSalah === 'jumlah'}
-                value={form.jumlah}
-                onChange={
-                  handleChange
-                }
-                type="text"
-              />
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* BUTTON */}
-      <div className="mt-4">{tombolSimpan()}</div>
+      <button
+        type="button"
+        className="dk-btn dk-btn--primary dk-btn--block"
+        onClick={handleSubmit}
+        disabled={mutation.isPending}
+      >
+        <FiPlus aria-hidden />
+        {mutation.isPending ? 'Menyimpan...' : 'Tambah transaksi'}
+      </button>
     </div>
   );
 };

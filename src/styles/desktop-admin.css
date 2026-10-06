@@ -1540,3 +1540,64 @@ textarea.dk-input {
   width: 100%;
   justify-content: center;
 }
+
+/* Badge tipe Dokter (riwayat transaksi ladies). */
+.dk-status.is-medical {
+  background: var(--color-medical-soft);
+  color: var(--color-medical);
+}
+
+/* Input dengan akhiran (mis. pcs). */
+.dk-suffix {
+  position: absolute;
+  right: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-gray-600);
+  pointer-events: none;
+}
+
+.dk-input--suffix {
+  padding-right: 52px;
+}
+
+/* Pratinjau total voucher — angka yang tampil = angka yang tersimpan. */
+.dk-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--color-income-soft);
+  border: 1px solid rgba(var(--color-success-rgb), 0.3);
+}
+
+.dk-total.is-warn {
+  background: var(--color-voucher-soft);
+  border-color: var(--color-voucher-soft);
+}
+
+.dk-total-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-gray-600);
+}
+
+.dk-total-detail {
+  font-size: 13px;
+  color: var(--color-gray-700);
+}
+
+.dk-total.is-warn .dk-total-detail {
+  color: var(--color-voucher);
+}
+
+.dk-total-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-dark);
+  white-space: nowrap;
+}

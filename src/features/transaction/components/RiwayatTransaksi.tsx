@@ -3,23 +3,45 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
 import { confirmDialog } from '../../../components/ConfirmDialog';
-import DataTable from '../../../components/DataTable';
-import ActionIconButton from '../../../components/ActionIconButton';
 import Pagination from '../../../components/Pagination';
-import EmptyState from '../../../components/EmptyState';
 import ListLoadingState from '../../../components/ListLoadingState';
 import { useMediaQuery } from 'react-responsive';
 import CardTableRiwayatTransaksi from './CardTableRiwayatTransaksi';
 import EditTransaksiSheet, { type BarisEdit, type PerubahanTransaksi } from './EditTransaksiSheet';
 import TransaksiFilterBar from './TransaksiFilterBar';
-import MonthNavigator from '../../ladies/components/MonthNavigator';
 import MonthPill from '../../ladies/components/MonthPill';
 import { useMonthNavigation } from '../../ladies/hooks/useMonthNavigation';
 import dayjs from 'dayjs';
+import '../../../styles/desktop-admin.css';
 
 import {
   FiTrash2,
+  FiSearch,
+  FiInbox,
+  FiChevronLeft,
+  FiChevronRight,
+  FiArrowUp,
+  FiArrowDown,
 } from 'react-icons/fi';
+
+/** Pilihan filter tipe — dipakai bersama mobile & desktop. */
+const FILTER_TIPE = [
+  { value: '', label: 'Semua' },
+  { value: 'voucher', label: 'Voucher' },
+  { value: 'pemasukan_lain', label: 'Pemasukan Lain' },
+  { value: 'kasbon', label: 'Kasbon' },
+  { value: 'dokter', label: 'Dokter' },
+];
+
+/** Tampilan tipe di tabel desktop: badge + tanda arah uang bagi ladies
+    (sama dengan Buku Kuning: voucher & pemasukan menambah, kasbon & dokter
+    mengurangi). Teks nominal tetap netral. */
+const GAYA_TIPE: Record<string, { label: string; tanda: string; className: string }> = {
+  voucher: { label: 'Voucher', tanda: '+', className: 'is-on' },
+  pemasukan_lain: { label: 'Pemasukan lain', tanda: '+', className: 'is-warn' },
+  kasbon: { label: 'Kasbon', tanda: '−', className: 'is-off' },
+  dokter: { label: 'Dokter', tanda: '−', className: 'is-medical' },
+};
 
 type Props = {
   ladiesId: string;
@@ -316,7 +338,7 @@ const RiwayatTransaksi = ({
     }
   };
 
-  // Sheet ubah transaksi (mobile).
+  // Sheet ubah transaksi (mobile; di desktop tampil sebagai dialog).
   const [barisEdit, setBarisEdit] = useState<BarisEdit | null>(null);
 
   const simpanEdit = async (perubahan: PerubahanTransaksi) => {
@@ -395,106 +417,207 @@ const RiwayatTransaksi = ({
     data.length / limit
   );
 
-  const renderBadge = (
-    tipe: string
-  ) => {
-    const styles: Record<string, { bg: string; color: string; label: string }> = {
-      voucher: {
-        bg: 'var(--color-income-soft)',
-        color: 'var(--color-income)',
-        label: 'Voucher',
-      },
+  const sheetEdit = barisEdit && (
+    <EditTransaksiSheet
+      key={barisEdit.id}
+      row={barisEdit}
+      onClose={() => setBarisEdit(null)}
+      onSimpan={simpanEdit}
+    />
+  );
 
-      pemasukan_lain: {
-        bg: 'var(--color-voucher-soft)',
-        color: 'var(--color-voucher)',
-        label:
-          'Pemasukan Lain',
-      },
+  // Desktop (gaya dk-): toolbar (bulan · filter tipe · cari) lalu tabel yang
+  // bisa diurutkan. Klik baris = ubah lewat sheet yang sama dengan mobile
+  // (ModalWrapper tampil sebagai dialog di desktop).
+  if (!isMobile) {
+    const labelBulan = selectedMonth.toDate().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+    const tanggalPendek = (t: string) =>
+      new Date(`${t}T00:00:00`).toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' });
 
-      kasbon: {
-        bg: 'var(--color-expense-soft)',
-        color: 'var(--color-expense)',
-        label: 'Kasbon',
-      },
-
-      dokter: {
-        bg: 'var(--color-medical-soft)',
-        color: 'var(--color-medical)',
-        label:
-          'Dokter',
-      },
+    const kepalaUrut = (key: keyof Transaksi, label: string, angka = false) => {
+      const aktif = sortKey === key;
+      return (
+        <th
+          scope="col"
+          className={angka ? 'dk-col-num' : undefined}
+          aria-sort={aktif ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
+        >
+          <button type="button" className={`dk-th-sort ${aktif ? 'is-active' : ''}`} onClick={() => handleSort(key)}>
+            {label}
+            {aktif ? sortOrder === 'asc' ? <FiArrowUp aria-hidden /> : <FiArrowDown aria-hidden /> : null}
+          </button>
+        </th>
+      );
     };
 
-    const style =
-      styles[tipe];
-
     return (
-      <span
-        style={{
-          background:
-            style.bg,
+      <>
+        {sheetEdit}
 
-          color:
-            style.color,
+        <div className="dk-toolbar dk-toolbar--wrap">
+          <div className="dk-month-nav dk-month-nav--pill">
+            <button type="button" className="dk-icon-btn" aria-label="Bulan sebelumnya" onClick={handlePrevMonth}>
+              <FiChevronLeft />
+            </button>
+            <span className="dk-month-label" aria-live="polite">{labelBulan}</span>
+            <button
+              type="button"
+              className="dk-icon-btn"
+              aria-label="Bulan berikutnya"
+              onClick={handleNextMonth}
+              disabled={isNextDisabled}
+            >
+              <FiChevronRight />
+            </button>
+          </div>
 
-          padding:
-            '6px 12px',
+          <div className="dk-chips" role="radiogroup" aria-label="Filter tipe">
+            {FILTER_TIPE.map((o) => (
+              <button
+                key={o.value || 'semua'}
+                type="button"
+                role="radio"
+                aria-checked={filterTipe === o.value}
+                className={`dk-chip ${filterTipe === o.value ? 'is-active' : ''}`}
+                onClick={() => {
+                  setPage(1);
+                  setFilterTipe(o.value);
+                }}
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
 
-          borderRadius: 999,
+          <div className="dk-search dk-search--grow">
+            <FiSearch aria-hidden />
+            <input
+              type="search"
+              placeholder="Cari tanggal atau keterangan..."
+              aria-label="Cari transaksi"
+              value={searchText}
+              onChange={(e) => {
+                setPage(1);
+                setSearchText(e.target.value);
+              }}
+            />
+          </div>
+        </div>
 
-          fontSize:
-            '0.78rem',
+        {loading ? (
+          <div style={{ padding: 'var(--space-4) var(--space-5)' }}>
+            <ListLoadingState label="Memuat riwayat transaksi" />
+          </div>
+        ) : data.length === 0 ? (
+          <div className="dk-empty">
+            <span className="dk-empty-icon" aria-hidden><FiInbox /></span>
+            <div className="dk-empty-title">
+              {searchText || filterTipe ? 'Transaksi tidak ditemukan' : 'Belum ada transaksi'}
+            </div>
+            <div className="dk-empty-text">
+              {searchText || filterTipe
+                ? 'Coba ubah filter atau kata kunci.'
+                : `Tidak ada transaksi di ${labelBulan}.`}
+            </div>
+          </div>
+        ) : (
+          <table className="dk-table">
+            <thead>
+              <tr>
+                {kepalaUrut('tanggal', 'Tanggal')}
+                <th scope="col">Tipe</th>
+                <th scope="col">Keterangan</th>
+                {kepalaUrut('jumlah', 'Jumlah', true)}
+                <th scope="col" className="dk-col-actions">
+                  <span className="visually-hidden">Aksi</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedData.map((row) => {
+                const gaya = GAYA_TIPE[row.tipe] ?? { label: row.tipeLabel, tanda: '', className: 'is-muted' };
+                const buka = () => setBarisEdit(row);
 
-          fontWeight: 700,
-        }}
-      >
-        {style.label}
-      </span>
+                return (
+                  <tr key={row.id} className="is-clickable" onClick={buka}>
+                    <td className="dk-nowrap">
+                      {/* Tombol supaya baris juga bisa dibuka lewat keyboard. */}
+                      <button
+                        type="button"
+                        className="dk-person-name"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          buka();
+                        }}
+                      >
+                        {tanggalPendek(row.tanggal)}
+                      </button>
+                    </td>
+                    <td>
+                      <span className={`dk-status ${gaya.className}`}>{gaya.label}</span>
+                    </td>
+                    <td>
+                      {row.tipe === 'voucher' ? (
+                        <>
+                          {row.keterangan || 'Voucher'}
+                          <span className="dk-muted"> · {row.jumlah_voucher ?? 0} pcs</span>
+                        </>
+                      ) : (
+                        row.keterangan || <span className="dk-muted">-</span>
+                      )}
+                    </td>
+                    <td className="dk-col-num dk-num dk-strong">
+                      {gaya.tanda}Rp{Number(row.jumlah).toLocaleString('id-ID')}
+                    </td>
+                    <td className="dk-col-actions">
+                      <button
+                        type="button"
+                        className="dk-icon-btn dk-icon-btn--danger"
+                        title="Hapus"
+                        aria-label={`Hapus ${gaya.label.toLowerCase()} ${tanggalPendek(row.tanggal)}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(row);
+                        }}
+                      >
+                        <FiTrash2 />
+                      </button>
+                      <FiChevronRight className="dk-row-chevron" aria-hidden />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
+
+        <div className="dk-footer">
+          {totalPages > 1 && (
+            <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
+          )}
+        </div>
+      </>
     );
-  };
+  }
 
   return (
     <div className="mt-3">
-      {barisEdit && (
-        <EditTransaksiSheet
-          key={barisEdit.id}
-          row={barisEdit}
-          onClose={() => setBarisEdit(null)}
-          onSimpan={simpanEdit}
-        />
-      )}
+      {sheetEdit}
 
-      <div className="mb-3" style={{ maxWidth: isMobile ? undefined : 320 }}>
-        {isMobile ? (
-          <MonthPill
-            label={selectedMonth.toDate().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
-            value={selectedMonth.format('YYYY-MM')}
-            max={dayjs().format('YYYY-MM')}
-            onChange={handleMonthChangeAndResetPage}
-            onPrev={handlePrevMonth}
-            onNext={handleNextMonth}
-            nextDisabled={isNextDisabled}
-          />
-        ) : (
-          <MonthNavigator
-            selectedMonth={selectedMonth}
-            onChange={handleMonthChangeAndResetPage}
-            onPrev={handlePrevMonth}
-            onNext={handleNextMonth}
-            nextDisabled={isNextDisabled}
-          />
-        )}
+      <div className="mb-3">
+        <MonthPill
+          label={selectedMonth.toDate().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
+          value={selectedMonth.format('YYYY-MM')}
+          max={dayjs().format('YYYY-MM')}
+          onChange={handleMonthChangeAndResetPage}
+          onPrev={handlePrevMonth}
+          onNext={handleNextMonth}
+          nextDisabled={isNextDisabled}
+        />
       </div>
 
       <TransaksiFilterBar
-        options={[
-          { value: '', label: 'Semua' },
-          { value: 'voucher', label: 'Voucher' },
-          { value: 'pemasukan_lain', label: 'Pemasukan Lain' },
-          { value: 'kasbon', label: 'Kasbon' },
-          { value: 'dokter', label: 'Dokter' },
-        ]}
+        options={FILTER_TIPE}
         value={filterTipe}
         onChange={(v) => {
           setPage(1);
@@ -509,7 +632,7 @@ const RiwayatTransaksi = ({
 
       {loading ? (
         <ListLoadingState label="Memuat riwayat transaksi" />
-      ) : isMobile ? (
+      ) : (
         <CardTableRiwayatTransaksi
           data={data}
           page={page - 1}
@@ -520,140 +643,6 @@ const RiwayatTransaksi = ({
           onDelete={handleDelete}
           onEdit={(row) => setBarisEdit(row)}
         />
-      ) : (
-        <>
-          <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
-            <DataTable
-              columns={[
-                {
-                  key: 'tanggal',
-                  label:
-                    'Tanggal',
-                  sortable: true,
-                },
-
-                {
-                  key:
-                    'tipeLabel',
-
-                  label: 'Tipe',
-
-                  render: (
-                    row
-                  ) =>
-                    renderBadge(
-                      row.tipe
-                    ),
-                },
-
-                {
-                  key: 'jumlah',
-
-                  label:
-                    'Jumlah',
-
-                  render: (
-                    row
-                  ) => (
-                    <span
-                      style={{
-                        fontWeight: 700,
-
-                        color:
-                          row.tipe ===
-                          'kasbon'
-                            ? 'var(--color-expense)'
-                            : row.tipe ===
-                              'dokter'
-                            ? 'var(--color-medical)'
-                            : 'var(--color-income)',
-                      }}
-                    >
-                      {row.tipe ===
-                        'kasbon' ||
-                      row.tipe ===
-                        'dokter'
-                        ? '- '
-                        : '+ '}
-                      Rp
-                      {Number(
-                        row.jumlah
-                      ).toLocaleString()}
-                    </span>
-                  ),
-                },
-
-                {
-                  key:
-                    'keterangan',
-
-                  label:
-                    'Keterangan',
-
-                  render: (
-                    row
-                  ) =>
-                    row.tipe ===
-                    'voucher' ? (
-                      <span
-                        style={{
-                          color:
-                            'var(--color-gray-500)',
-                        }}
-                      >
-                        Voucher{' '}
-                        {row.jumlah_voucher}{' '}
-                        pcs
-                      </span>
-                    ) : (
-                      row.keterangan ||
-                      '-'
-                    ),
-                },
-
-                {
-                  key: 'id',
-
-                  label: 'Aksi',
-
-                  render: (
-                    row
-                  ) => (
-                    <ActionIconButton
-                      icon={<FiTrash2 />}
-                      variant="danger"
-                      title="Hapus"
-                      onClick={() => handleDelete(row)}
-                    />
-                  ),
-                },
-              ]}
-              data={
-                paginatedData
-              }
-              sortKey={sortKey}
-              sortOrder={
-                sortOrder
-              }
-              onSort={
-                handleSort
-              }
-            />
-          </div>
-
-          {!loading &&
-            data.length ===
-              0 && (
-              <EmptyState
-                title="Belum ada transaksi"
-                description="Tambahkan transaksi pertama untuk ladies ini"
-              />
-            )}
-
-          {data.length > 0 && (
-            <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
-          )}
-        </>
       )}
     </div>
   );
