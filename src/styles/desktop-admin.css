@@ -1486,12 +1486,28 @@ textarea.dk-input {
    TRANSAKSI (form + riwayat)
 ========================= */
 
-/* Form (kiri, sempit) + riwayat (kanan, lebar). */
+/* Form (kiri, sempit) + riwayat (kanan, lebar). stretch: kedua kartu selalu
+   sama tinggi — riwayat yang isinya sedikit tidak lagi lebih pendek dari form. */
 .dk-split-grid {
   display: grid;
   grid-template-columns: 380px minmax(0, 1fr);
   gap: var(--space-6);
-  align-items: start;
+  align-items: stretch;
+}
+
+.dk-split-grid > .dk-card {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ruang sisa diisi: pesan kosong di tengah, paginasi menempel di bawah. */
+.dk-split-grid > .dk-card > .dk-empty {
+  flex: 1;
+  justify-content: center;
+}
+
+.dk-split-grid > .dk-card > .dk-footer {
+  margin-top: auto;
 }
 
 @media (max-width: 1200px) {
