@@ -5,7 +5,9 @@ import { sanitizeSearchKeyword } from '../../../utils/sanitizeSearch';
 import { useMediaQuery } from 'react-responsive';
 import { toast } from 'react-toastify';
 import Pagination from '../../../components/Pagination';
-import { FiCheck, FiUserCheck, FiSearch } from 'react-icons/fi';
+import { FiCheck, FiUserCheck, FiSearch, FiTrash2 } from 'react-icons/fi';
+import { confirmDialog } from '../../../components/ConfirmDialog';
+import SwipeToDelete from '../../../components/SwipeToDelete';
 import MobilePageBar from '../../../components/MobilePageBar';
 import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
 import ModalWrapper from '../../../components/ModalWrapper';
@@ -50,9 +52,10 @@ const UserApprovalPage = () => {
   const [selectedAssignId, setSelectedAssignId] = useState<string>('');
 
   const limit = isMobile ? 5 : 10;
+  const queryKey = ['user-approval', page, limit, keyword];
 
   const { data: userData, isLoading: loading } = useQuery({
-    queryKey: ['user-approval', page, limit, keyword],
+    queryKey,
     queryFn: async () => {
       const from = (page - 1) * limit;
       const to = from + limit - 1;
@@ -131,6 +134,42 @@ const UserApprovalPage = () => {
     setSelectedAssignId('');
   };
 
+  /** Tolak = hapus pendaftar. Optimistic seperti hapus di Users — baris
+      langsung hilang, dikembalikan kalau gagal di server. Filter is_active
+      false supaya tombol ini tidak mungkin menghapus user yang sudah aktif. */
+  const handleReject = async (u: User) => {
+    const ok = await confirmDialog(
+      `Tolak pendaftaran ${u.nama || u.username}? Data pendaftar akan dihapus.`
+    );
+    if (!ok) return;
+
+    await queryClient.cancelQueries({ queryKey });
+
+    const previous = queryClient.getQueryData<{ list: User[]; total: number }>(queryKey);
+
+    queryClient.setQueryData<{ list: User[]; total: number }>(queryKey, (old) =>
+      old
+        ? { list: old.list.filter((x) => x.id !== u.id), total: Math.max(0, old.total - 1) }
+        : old
+    );
+
+    const { error } = await supabase
+      .from('users')
+      .delete()
+      .eq('id', u.id)
+      .eq('is_active', false);
+
+    if (error) {
+      queryClient.setQueryData(queryKey, previous);
+      toast.error('Gagal menolak user. Coba lagi.');
+      return;
+    }
+
+    toast.success('Pendaftaran ditolak.');
+    // Termasuk ['user-approval', 'jumlah'] — pengingat di halaman Users.
+    queryClient.invalidateQueries({ queryKey: ['user-approval'] });
+  };
+
   const totalPages = Math.ceil(total / limit);
 
   const labelAssign = (item: AssignItem) =>
@@ -191,24 +230,27 @@ const UserApprovalPage = () => {
               </div>
             </div>
           ) : (
-            <div className="tm-group tm-list">
-              {userList.map((u) => (
-                <div key={u.id}>
-                  <div className="tm-row">
-                    <span className="tm-avatar" aria-hidden>
-                      {(u.nama || u.username || '?').charAt(0).toUpperCase()}
-                    </span>
-                    <div className="tm-row-main">
-                      <div className="tm-row-title">{u.nama || u.username}</div>
-                      <div className="tm-row-sub">@{u.username}</div>
+            <div>
+              <div className="tm-group tm-list">
+                {userList.map((u) => (
+                  <SwipeToDelete key={u.id} onDelete={() => handleReject(u)} borderRadius={0}>
+                    <div className="tm-row">
+                      <span className="tm-avatar" aria-hidden>
+                        {(u.nama || u.username || '?').charAt(0).toUpperCase()}
+                      </span>
+                      <div className="tm-row-main">
+                        <div className="tm-row-title">{u.nama || u.username}</div>
+                        <div className="tm-row-sub">@{u.username}</div>
+                      </div>
+                      <button type="button" className="tm-btn-sm" onClick={() => handleApproveClick(u.id)}>
+                        <FiCheck aria-hidden />
+                        Setujui
+                      </button>
                     </div>
-                    <button type="button" className="tm-btn-sm" onClick={() => handleApproveClick(u.id)}>
-                      <FiCheck aria-hidden />
-                      Setujui
-                    </button>
-                  </div>
-                </div>
-              ))}
+                  </SwipeToDelete>
+                ))}
+              </div>
+              <div className="tm-hint">Geser ke kiri untuk menolak pendaftaran</div>
             </div>
           )}
 
@@ -358,6 +400,15 @@ const UserApprovalPage = () => {
                     >
                       <FiCheck aria-hidden />
                       Setujui
+                    </button>
+                    <button
+                      type="button"
+                      className="dk-icon-btn dk-icon-btn--danger dk-icon-btn--after-btn"
+                      title="Tolak"
+                      aria-label={`Tolak ${u.nama || u.username}`}
+                      onClick={() => handleReject(u)}
+                    >
+                      <FiTrash2 />
                     </button>
                   </td>
                 </tr>

@@ -305,6 +305,12 @@
   color: var(--color-dark);
 }
 
+/* Ikon setelah tombol pil di kolom aksi (mis. Setujui · Tolak). */
+.dk-icon-btn--after-btn {
+  margin-left: var(--space-2);
+  vertical-align: middle;
+}
+
 .dk-icon-btn--danger:hover {
   background: var(--color-expense-soft);
   color: var(--color-expense);
