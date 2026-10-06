@@ -1,31 +1,26 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { Fragment, useState } from 'react';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { supabase } from '../../../lib/supabaseClient';
 import dayjs from 'dayjs';
 import { useMediaQuery } from 'react-responsive';
-import DataTable from '../../../components/DataTable';
-import FeaturePageHeader from '../../../components/FeaturePageHeader';
-import EmptyState from '../../../components/EmptyState';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-} from 'recharts';
-import {
-  FiBarChart2,
-  FiCalendar,
   FiActivity,
   FiDollarSign,
   FiUsers,
   FiSearch,
+  FiChevronLeft,
+  FiChevronRight,
+  FiArrowUp,
+  FiArrowDown,
 } from 'react-icons/fi';
 import ListLoadingState from '../../../components/ListLoadingState';
+import Skeleton from '../../../components/Skeleton';
 import MobilePageBar from '../../../components/MobilePageBar';
+import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
 import MonthPill from '../../ladies/components/MonthPill';
+import { ringkasPerforma, posisiBatang } from '../utils/ringkasPerforma';
 import '../../../styles/mobile-admin.css';
-
-const monthNames = [
-  'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
-];
+import '../../../styles/desktop-admin.css';
 
 const formatRupiah = (n: number) => `Rp${n.toLocaleString('id-ID')}`;
 
@@ -48,6 +43,31 @@ type PerformaSummary = {
   total: number;
 };
 
+type KunciAngka = 'voucherTotal' | 'masuk' | 'voucherAvg' | 'total' | 'pendapatanVoucher' | 'pemasukan' | 'kasbon';
+type KunciUrut = KunciAngka | 'nama_ladies';
+
+/** Kolom tabel desktop per mode. Kolom pertama = ukuran utama (diberi batang). */
+const KOLOM_PERFORMA: Record<
+  'aktivitas' | 'pendapatan',
+  { key: KunciAngka; label: string; format: (n: number) => string }[]
+> = {
+  aktivitas: [
+    { key: 'voucherTotal', label: 'Voucher', format: (n) => `${n.toLocaleString('id-ID')} pcs` },
+    { key: 'masuk', label: 'Hari masuk', format: (n) => n.toLocaleString('id-ID') },
+    {
+      key: 'voucherAvg',
+      label: 'Voucher / hari',
+      format: (n) => n.toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 1 }),
+    },
+  ],
+  pendapatan: [
+    { key: 'total', label: 'Total bersih', format: formatRupiah },
+    { key: 'pendapatanVoucher', label: 'Dari voucher', format: formatRupiah },
+    { key: 'pemasukan', label: 'Pemasukan lain', format: formatRupiah },
+    { key: 'kasbon', label: 'Kasbon', format: formatRupiah },
+  ],
+};
+
 const PerformaLadiesPage = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
@@ -55,6 +75,8 @@ const PerformaLadiesPage = () => {
   const [tahun, setTahun] = useState(dayjs().year());
   const [mode, setMode] = useState<'aktivitas' | 'pendapatan'>('aktivitas');
   const [cari, setCari] = useState('');
+  // Khusus desktop: kolom pengurut tabel (null = ukuran utama mode, menurun).
+  const [urut, setUrut] = useState<{ key: KunciUrut; arah: 'asc' | 'desc' } | null>(null);
 
   const { data: ladiesList = [] } = useQuery({
     queryKey: ['performa-ladies-aktif'],
@@ -70,7 +92,7 @@ const PerformaLadiesPage = () => {
     meta: { errorLabel: 'data ladies' },
   });
 
-  const { data = [], isLoading: loading } = useQuery({
+  const { data = [], isLoading: loading, isPlaceholderData } = useQuery({
     queryKey: ['performa-summary', bulan, tahun, ladiesList.length],
     queryFn: async () => {
       const monthStr = String(bulan).padStart(2, '0');
@@ -130,8 +152,13 @@ const PerformaLadiesPage = () => {
       }));
     },
     enabled: ladiesList.length > 0,
+    // Desktop: saat pindah bulan, tahan data bulan sebelumnya (diredupkan)
+    // alih-alih kembali ke skeleton. Mobile tetap seperti sebelumnya.
+    placeholderData: isMobile ? undefined : keepPreviousData,
     meta: { errorLabel: 'performa ladies' },
   });
+
+  const memuatUlang = !isMobile && isPlaceholderData;
 
   const modeOptions = [
     { value: 'aktivitas' as const, label: 'Aktivitas', icon: <FiActivity size={14} /> },
@@ -140,7 +167,7 @@ const PerformaLadiesPage = () => {
 
   // Mobile: tampilan baru selaras halaman admin lain (Header app dicabut di
   // MainLayout) — daftar peringkat per mode. Angka dari perhitungan di atas,
-  // hanya diurutkan untuk tampilan. Desktop (grafik + tabel): lama.
+  // hanya diurutkan untuk tampilan. Desktop: gaya dk- di bawah.
   if (isMobile) {
     const labelBulan = new Date(tahun, bulan - 1, 1).toLocaleDateString('id-ID', {
       month: 'long',
@@ -276,215 +303,258 @@ const PerformaLadiesPage = () => {
     );
   }
 
+  // Desktop (gaya baru dk-): filter (mode & bulan) satu baris di header,
+  // kartu angka ringkasan, lalu tabel peringkat dengan batang di dalam baris —
+  // pengganti grafik batang lama yang menumpuk voucher (pcs) & hari masuk di
+  // satu sumbu dan nama ladies yang bertabrakan di sumbu X.
+  const labelBulan = new Date(tahun, bulan - 1, 1).toLocaleDateString('id-ID', {
+    month: 'long',
+    year: 'numeric',
+  });
+  const sekarang = dayjs();
+  const diBulanIni = tahun === sekarang.year() && bulan === sekarang.month() + 1;
+  const geserBulan = (arah: -1 | 1) => {
+    const d = new Date(tahun, bulan - 1 + arah, 1);
+    setBulan(d.getMonth() + 1);
+    setTahun(d.getFullYear());
+  };
+
+  const ringkas = ringkasPerforma(data);
+
+  // Peringkat selalu menurut ukuran utama mode (sama seperti mobile), apa pun
+  // kolom yang sedang dipakai mengurutkan tabel.
+  const peringkatId = new Map(
+    [...data]
+      .sort((a, b) =>
+        mode === 'aktivitas' ? b.voucherTotal - a.voucherTotal || b.masuk - a.masuk : b.total - a.total
+      )
+      .map((row, i) => [row.id, i + 1])
+  );
+
+  const kolom = KOLOM_PERFORMA[mode];
+  const kolomBatang = kolom[0];
+  const nilaiBatang = data.map((row) => row[kolomBatang.key]);
+  const adaMinus = nilaiBatang.some((v) => v < 0);
+  const urutAktif = urut ?? { key: kolomBatang.key, arah: 'desc' as const };
+
+  const kataKunci = cari.trim().toLowerCase();
+  const baris = data
+    .filter(
+      (row) =>
+        !kataKunci ||
+        row.nama_ladies.toLowerCase().includes(kataKunci) ||
+        row.nama_outlet.toLowerCase().includes(kataKunci)
+    )
+    .sort((a, b) => {
+      const k = urutAktif.key;
+      const hasil =
+        k === 'nama_ladies'
+          ? a.nama_ladies.localeCompare(b.nama_ladies, 'id')
+          : a[k] - b[k] || (peringkatId.get(b.id) ?? 0) - (peringkatId.get(a.id) ?? 0);
+      return urutAktif.arah === 'asc' ? hasil : -hasil;
+    });
+
+  const klikUrut = (key: KunciUrut) =>
+    setUrut((prev) => {
+      const sekarangAktif = prev ?? { key: kolomBatang.key, arah: 'desc' as const };
+      if (sekarangAktif.key === key) return { key, arah: sekarangAktif.arah === 'desc' ? 'asc' : 'desc' };
+      return { key, arah: key === 'nama_ladies' ? 'asc' : 'desc' };
+    });
+
+  const kepalaUrut = (key: KunciUrut, label: string, angka = false) => {
+    const aktif = urutAktif.key === key;
+    return (
+      <th
+        scope="col"
+        className={angka ? 'dk-col-num' : undefined}
+        aria-sort={aktif ? (urutAktif.arah === 'asc' ? 'ascending' : 'descending') : 'none'}
+      >
+        <button type="button" className={`dk-th-sort ${aktif ? 'is-active' : ''}`} onClick={() => klikUrut(key)}>
+          {label}
+          {aktif ? urutAktif.arah === 'asc' ? <FiArrowUp aria-hidden /> : <FiArrowDown aria-hidden /> : null}
+        </button>
+      </th>
+    );
+  };
+
+  const kartuAngka =
+    mode === 'aktivitas'
+      ? [
+          { label: 'Total voucher', nilai: `${ringkas.voucherTotal.toLocaleString('id-ID')} pcs` },
+          { label: 'Hari masuk', nilai: `${ringkas.masuk.toLocaleString('id-ID')} hari` },
+          {
+            label: 'Voucher per hari masuk',
+            nilai: ringkas.voucherPerHari.toLocaleString('id-ID', { maximumFractionDigits: 1 }),
+          },
+          { label: 'Ladies menjual voucher', nilai: `${ringkas.ladiesBervoucher} dari ${data.length}` },
+        ]
+      : [
+          { label: 'Dari voucher', nilai: formatRupiah(ringkas.pendapatanVoucher) },
+          { label: 'Pemasukan lain', nilai: formatRupiah(ringkas.pemasukan) },
+          { label: 'Kasbon', nilai: formatRupiah(ringkas.kasbon) },
+          { label: 'Total bersih', nilai: formatRupiah(ringkas.total), utama: true },
+        ];
+
   return (
-    <div className="page-shell py-4 px-md-4 px-3">
-      <FeaturePageHeader
-        icon={<FiBarChart2 />}
-        title="Performa Ladies"
-        description="Analisis aktivitas & pendapatan ladies per bulan"
+    <div className="page-shell dk-page">
+      <DesktopPageHeader
+        title="Performa ladies"
+        description="Aktivitas & pendapatan ladies per bulan"
+        actions={
+          <>
+            <div className="dk-segmented" role="tablist" aria-label="Mode tampilan">
+              {modeOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  role="tab"
+                  aria-selected={mode === opt.value}
+                  className={`dk-segment ${mode === opt.value ? 'is-active' : ''}`}
+                  onClick={() => {
+                    setMode(opt.value);
+                    setUrut(null);
+                  }}
+                >
+                  {opt.icon}
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="dk-month-nav dk-month-nav--pill">
+              <button type="button" className="dk-icon-btn" aria-label="Bulan sebelumnya" onClick={() => geserBulan(-1)}>
+                <FiChevronLeft />
+              </button>
+              <span className="dk-month-label" aria-live="polite">{labelBulan}</span>
+              <button
+                type="button"
+                className="dk-icon-btn"
+                aria-label="Bulan berikutnya"
+                onClick={() => geserBulan(1)}
+                disabled={diBulanIni}
+              >
+                <FiChevronRight />
+              </button>
+            </div>
+          </>
+        }
       />
 
-      {/* FILTER */}
-      <div className="card border-0 shadow-sm rounded-4 mb-4" style={{ overflow: 'hidden' }}>
-        <div
-          className="px-4 py-3 border-bottom"
-          style={{
-            background: 'linear-gradient(to right, var(--color-green-lighter), var(--color-surface))',
-          }}
-        >
-          <div className="d-flex align-items-center gap-2">
-            <FiCalendar style={{ color: 'var(--color-green)' }} />
-
-            <div>
-              <div className="fw-bold" style={{ color: 'var(--color-dark)' }}>
-                Filter Periode
-              </div>
-
-              <div style={{ fontSize: '0.82rem', color: 'var(--color-gray-500)' }}>
-                Pilih bulan & tahun performa
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="p-4">
-          <div className="row g-3 mb-3">
-            <div className="col-6 col-md-4">
-              <label className="fw-semibold mb-2" style={{ color: 'var(--color-dark)', fontSize: '0.9rem' }}>
-                Bulan
-              </label>
-
-              <select
-                className="form-select shadow-none"
-                value={bulan}
-                onChange={(e) => setBulan(parseInt(e.target.value))}
-                style={{
-                  height: isMobile ? 50 : 56,
-                  borderRadius: 16,
-                  border: '2px solid var(--color-green-light)',
-                  paddingInline: 16,
-                  fontSize: isMobile ? '0.84rem' : '0.92rem',
-                  backgroundColor: 'var(--color-surface)',
-                  color: 'var(--color-dark)',
-                }}
-              >
-                {monthNames.map((m, i) => <option key={i + 1} value={i + 1}>{m}</option>)}
-              </select>
-            </div>
-
-            <div className="col-6 col-md-4">
-              <label className="fw-semibold mb-2" style={{ color: 'var(--color-dark)', fontSize: '0.9rem' }}>
-                Tahun
-              </label>
-
-              <input
-                type="number"
-                className="form-control shadow-none"
-                value={tahun}
-                onChange={(e) => setTahun(parseInt(e.target.value))}
-                style={{
-                  height: isMobile ? 50 : 56,
-                  borderRadius: 16,
-                  border: '2px solid var(--color-green-light)',
-                  paddingInline: 16,
-                  // 16px di mobile — di bawah itu iOS otomatis nge-zoom saat difokus.
-                  fontSize: isMobile ? 16 : '0.92rem',
-                  backgroundColor: 'var(--color-surface)',
-                  color: 'var(--color-dark)',
-                }}
-              />
-            </div>
-          </div>
-
-          <label className="fw-semibold mb-2 d-block" style={{ color: 'var(--color-dark)', fontSize: '0.9rem' }}>
-            Mode Tampilan
-          </label>
-
-          <div
-            className={isMobile ? 'd-flex gap-2' : 'd-flex gap-2 flex-wrap'}
-          >
-            {modeOptions.map((opt) => (
-              <button
-                key={opt.value}
-                className={
-                  isMobile
-                    ? 'btn d-flex align-items-center justify-content-center gap-2 flex-fill'
-                    : 'btn d-flex align-items-center gap-2'
-                }
-                onClick={() => setMode(opt.value)}
-                style={{
-                  borderRadius: 999,
-                  padding: '10px 18px',
-                  border: mode === opt.value ? 'none' : '1px solid var(--color-gray-200)',
-                  background: mode === opt.value ? 'var(--color-green)' : 'var(--color-surface)',
-                  color: mode === opt.value ? '#fff' : 'var(--color-gray-700)',
-                  fontWeight: 600,
-                  fontSize: '0.88rem',
-                }}
-              >
-                {opt.icon}
-                {opt.label}
-              </button>
+      {loading ? (
+        <div role="status" aria-label="Memuat performa ladies">
+          <div className="dk-kpis">
+            {[0, 1, 2, 3].map((i) => (
+              <Skeleton key={i} height={92} borderRadius="var(--radius-xl)" />
             ))}
           </div>
+          <Skeleton height={420} borderRadius="var(--radius-xl)" />
         </div>
-      </div>
-
-      {/* LOADING */}
-      {loading && <ListLoadingState label="Memuat performa ladies" />}
-
-      {/* EMPTY STATE */}
-      {!loading && data.length === 0 && (
-        <EmptyState
-          icon={<FiUsers />}
-          title="Belum ada data ladies aktif"
-          description="Tambahkan data ladies untuk melihat performa di halaman ini"
-        />
-      )}
-
-      {data.length > 0 && (
-        <>
-          {/* CHART — desktop only, biar tidak melebar/gepeng di layar sempit */}
-          {!isMobile && (
-            <div className="card border-0 shadow-sm rounded-4 mb-4" style={{ overflow: 'hidden' }}>
-              <div
-                className="px-4 py-3 border-bottom"
-                style={{
-                  background: 'linear-gradient(to right, var(--color-surface), var(--color-green-lighter))',
-                }}
-              >
-                <div className="d-flex align-items-center gap-2">
-                  <FiBarChart2 style={{ color: 'var(--color-green)' }} />
-
-                  <div>
-                    <div className="fw-bold" style={{ color: 'var(--color-dark)' }}>
-                      Grafik {mode === 'aktivitas' ? 'Aktivitas' : 'Pendapatan'}
-                    </div>
-
-                    <div style={{ fontSize: '0.82rem', color: 'var(--color-gray-500)' }}>
-                      {monthNames[bulan - 1]} {tahun}
-                    </div>
-                  </div>
-                </div>
+      ) : data.length === 0 ? (
+        <section className="dk-card">
+          <div className="dk-empty">
+            <span className="dk-empty-icon" aria-hidden><FiUsers /></span>
+            <div className="dk-empty-title">Belum ada ladies aktif</div>
+            <div className="dk-empty-text">Tambahkan data ladies untuk melihat performanya di sini.</div>
+          </div>
+        </section>
+      ) : (
+        // Saat pindah bulan, data bulan sebelumnya tetap tampil redup sampai
+        // data baru datang — tidak ada lompatan tata letak.
+        <div className={memuatUlang ? 'dk-refetching' : undefined} aria-busy={memuatUlang || undefined}>
+          <section className="dk-kpis" aria-label={`Ringkasan ${labelBulan}`}>
+            {kartuAngka.map((k) => (
+              <div key={k.label} className={`dk-kpi ${'utama' in k && k.utama ? 'is-main' : ''}`}>
+                <span className="dk-kpi-label">{k.label}</span>
+                <span className="dk-kpi-value">{k.nilai}</span>
               </div>
+            ))}
+          </section>
 
-              <div className="p-4" style={{ width: '100%', height: 360 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--color-gray-200)" />
-                    <XAxis dataKey="nama_ladies" tick={{ fill: 'var(--color-gray-500)', fontSize: 12 }} />
-                    <YAxis tick={{ fill: 'var(--color-gray-500)', fontSize: 12 }} />
-                    <Tooltip contentStyle={{ background: 'var(--color-surface)', border: '1px solid var(--color-gray-200)', color: 'var(--color-dark)', borderRadius: 10 }} />
-                    <Legend wrapperStyle={{ color: 'var(--color-dark)', fontSize: '0.85rem' }} />
-                    <Bar
-                      dataKey={mode === 'aktivitas' ? 'voucherTotal' : 'pendapatanVoucher'}
-                      fill="var(--color-voucher)"
-                      radius={[6, 6, 0, 0]}
-                      name={mode === 'aktivitas' ? 'Voucher (pcs)' : 'Pendapatan Voucher'}
-                    />
-                    {mode === 'aktivitas' && <Bar dataKey="masuk" fill="var(--color-income)" radius={[6, 6, 0, 0]} name="Hari Masuk" />}
-                    {mode === 'pendapatan' && <Bar dataKey="pemasukan" fill="var(--color-medical)" radius={[6, 6, 0, 0]} name="Pemasukan Lain" />}
-                    {mode === 'pendapatan' && <Bar dataKey="kasbon" fill="var(--color-expense)" radius={[6, 6, 0, 0]} name="Kasbon (Pengeluaran)" />}
-                  </BarChart>
-                </ResponsiveContainer>
+          <section className="dk-card" aria-label={`Peringkat ladies ${labelBulan}`}>
+            <div className="dk-toolbar">
+              <div className="dk-search">
+                <FiSearch aria-hidden />
+                <input
+                  type="search"
+                  placeholder="Cari nama atau outlet..."
+                  aria-label="Cari ladies"
+                  value={cari}
+                  onChange={(e) => setCari(e.target.value)}
+                />
               </div>
+              <span className="dk-count">
+                {kataKunci ? `${baris.length} dari ${data.length} ladies` : `${data.length} ladies aktif`}
+              </span>
             </div>
-          )}
 
-          {/* TABEL */}
-          {(
-            <div className="card border-0 shadow-sm rounded-4" style={{ overflow: 'hidden' }}>
-              <div
-                className="px-4 py-3 border-bottom d-flex align-items-center gap-2"
-                style={{
-                  background: 'linear-gradient(to right, var(--color-surface), var(--color-green-lighter))',
-                }}
-              >
-                <FiUsers style={{ color: 'var(--color-green)' }} />
-
-                <div className="fw-bold" style={{ color: 'var(--color-dark)' }}>
-                  Detail Performa Ladies
-                </div>
+            {baris.length === 0 ? (
+              <div className="dk-empty">
+                <span className="dk-empty-icon" aria-hidden><FiSearch /></span>
+                <div className="dk-empty-title">Ladies tidak ditemukan</div>
+                <div className="dk-empty-text">Coba kata kunci lain.</div>
               </div>
+            ) : (
+              <table className="dk-table dk-table--rank">
+                <thead>
+                  <tr>
+                    <th scope="col" className="dk-col-rank">#</th>
+                    {kepalaUrut('nama_ladies', 'Ladies')}
+                    {kepalaUrut(kolomBatang.key, kolomBatang.label)}
+                    {kolom.slice(1).map((c) => (
+                      <Fragment key={c.key}>{kepalaUrut(c.key, c.label, true)}</Fragment>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {baris.map((row) => {
+                    const rank = peringkatId.get(row.id) ?? 0;
+                    const nilai = row[kolomBatang.key];
+                    const pos = posisiBatang(nilai, nilaiBatang);
+                    const warna =
+                      mode === 'aktivitas'
+                        ? 'var(--color-voucher)'
+                        : nilai < 0
+                          ? 'var(--color-expense)'
+                          : 'var(--color-income)';
 
-              <DataTable
-                columns={mode === 'aktivitas' ? [
-                  { key: 'nama_ladies', label: 'Nama Ladies' },
-                  { key: 'masuk', label: 'Hari Masuk' },
-                  { key: 'voucherTotal', label: 'Total Voucher (pcs)', render: (row) => row.voucherTotal.toFixed(0) },
-                  { key: 'voucherAvg', label: 'Voucher / Hari Masuk', render: (row) => row.voucherAvg.toFixed(2) },
-                ] : [
-                  { key: 'nama_ladies', label: 'Nama Ladies' },
-                  { key: 'pemasukan', label: 'Pemasukan Lain', render: (row) => formatRupiah(row.pemasukan) },
-                  { key: 'pendapatanVoucher', label: 'Dari Voucher', render: (row) => formatRupiah(row.pendapatanVoucher) },
-                  { key: 'kasbon', label: 'Kasbon', render: (row) => formatRupiah(row.kasbon) },
-                  { key: 'total', label: 'Total Pendapatan', render: (row) => formatRupiah(row.total) },
-                ]}
-                data={data}
-              />
-            </div>
-          )}
-        </>
+                    return (
+                      <tr key={row.id}>
+                        <td className="dk-col-rank">
+                          <span className={`dk-rank ${rank <= 3 ? 'is-top' : ''}`} aria-label={`Peringkat ${rank}`}>
+                            {rank}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="dk-person-label">{row.nama_ladies}</div>
+                          <div className="dk-person-sub">{row.nama_outlet}</div>
+                        </td>
+                        <td className="dk-col-bar">
+                          <div className="dk-bar">
+                            <div className="dk-bar-track" aria-hidden>
+                              {adaMinus && <span className="dk-bar-zero" style={{ left: `${pos.nol}%` }} />}
+                              {pos.lebar > 0 && (
+                                <span
+                                  className={`dk-bar-fill ${nilai < 0 ? 'is-neg' : ''}`}
+                                  style={{ left: `${pos.kiri}%`, width: `${pos.lebar}%`, background: warna }}
+                                />
+                              )}
+                            </div>
+                            <span className="dk-bar-value dk-num">{kolomBatang.format(nilai)}</span>
+                          </div>
+                        </td>
+                        {kolom.slice(1).map((c) => (
+                          <td key={c.key} className="dk-col-num dk-num">
+                            {c.format(row[c.key])}
+                          </td>
+                        ))}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </section>
+        </div>
       )}
     </div>
   );

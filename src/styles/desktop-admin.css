@@ -1162,3 +1162,200 @@ textarea.dk-input {
 .dk-btn--danger-ghost:hover {
   background: var(--color-expense-soft);
 }
+
+/* =========================
+   PERFORMA LADIES
+========================= */
+
+/* Kontrol segmen (mis. Aktivitas / Pendapatan). */
+.dk-segmented {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface);
+}
+
+.dk-segment {
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 var(--space-4);
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-gray-600);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.dk-segment:hover {
+  color: var(--color-dark);
+}
+
+.dk-segment.is-active {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.dk-segment:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: 2px;
+}
+
+/* Navigasi bulan berbingkai pil (di header). */
+.dk-month-nav--pill {
+  padding: 2px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface);
+}
+
+/* Kartu angka ringkasan. Nilai memakai angka proporsional (bukan tabular). */
+.dk-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.dk-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface);
+  min-width: 0;
+}
+
+.dk-kpi.is-main {
+  border-color: var(--color-green-light);
+  background: var(--color-green-lighter);
+}
+
+.dk-kpi-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-gray-600);
+}
+
+.dk-kpi-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-dark);
+  overflow-wrap: anywhere;
+}
+
+/* Data bulan sebelumnya ditahan redup selama data baru dimuat. */
+.dk-refetching {
+  opacity: 0.55;
+  transition: opacity 0.15s ease;
+}
+
+/* Tabel peringkat. */
+.dk-table th.dk-col-num,
+.dk-table td.dk-col-num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.dk-col-rank {
+  width: 1%;
+  padding-right: 0 !important;
+}
+
+.dk-rank {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-2);
+  color: var(--color-gray-600);
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.dk-rank.is-top {
+  background: var(--color-green-lighter);
+  color: var(--color-green);
+}
+
+/* Kepala kolom yang bisa diklik untuk mengurutkan. */
+.dk-th-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.dk-th-sort:hover,
+.dk-th-sort.is-active {
+  color: var(--color-dark);
+}
+
+.dk-th-sort:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Batang di dalam baris: trek + nilai di kanan. */
+.dk-col-bar {
+  width: 38%;
+}
+
+.dk-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.dk-bar-track {
+  position: relative;
+  flex: 1;
+  height: 8px;
+}
+
+/* Garis nol — hanya saat ada nilai minus. */
+.dk-bar-zero {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 1px;
+  background: var(--color-gray-300);
+}
+
+/* Ujung data membulat 4px, sisi garis nol tetap siku. */
+.dk-bar-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  min-width: 2px;
+  border-radius: 0 4px 4px 0;
+}
+
+.dk-bar-fill.is-neg {
+  border-radius: 4px 0 0 4px;
+}
+
+.dk-bar-value {
+  min-width: 112px;
+  text-align: right;
+  white-space: nowrap;
+  color: var(--color-dark);
+}
