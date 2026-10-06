@@ -3,13 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
 import { confirmDialog } from '../../../components/ConfirmDialog';
-import DataTable from '../../../components/DataTable';
 import logo from '../../../assets/logosr-black.png';
 import { useMediaQuery } from 'react-responsive';
-import { FiBook, FiPrinter } from 'react-icons/fi';
-import ListPageHeader from '../../../components/ListPageHeader';
-import EmptyState from '../../../components/EmptyState';
-import ListLoadingState from '../../../components/ListLoadingState';
 import {
   PDF_COLORS,
   drawBackground,
@@ -21,6 +16,7 @@ import {
 } from '../utils/pdfReport';
 import { hitungSaldoBerjalan, ringkasanBukuKuning, type SaldoRow } from '../utils/saldoBerjalan';
 import BukuKuningMobile from '../components/BukuKuningMobile';
+import BukuKuningDesktop from '../components/BukuKuningDesktop';
 import { usePilihanTerakhir } from '../../../hooks/usePilihanTerakhir';
 
 const monthNames = [
@@ -413,7 +409,7 @@ const BukuKuningPengawasPage = () => {
 
   // Mobile: BukuKuningMobile (dipakai bersama Buku Kuning Ladies) — ringkasan
   // saldo + Tutup Buku/Cetak; riwayat transaksi ada di halaman Transaksi.
-  // Desktop: tabel lama.
+  // Desktop: BukuKuningDesktop (juga dipakai bersama).
   if (isMobile) {
     return (
       <BukuKuningMobile
@@ -439,125 +435,26 @@ const BukuKuningPengawasPage = () => {
   }
 
   return (
-    <div className="page-shell py-4">
-      <ListPageHeader
-        icon={<FiBook />}
-        title="Buku Kuning Pengawas"
-        description="Kelola transaksi bulanan pengawas"
-      />
-
-      <div className="row mb-3">
-        <div className="col-12 col-md-4 mb-2">
-          <label className="form-label text-dark">Pilih Pengawas</label>
-          <select className="form-select" value={selectedId} onChange={(e) => setSelectedId(e.target.value)}>
-            <option value="">-- Pilih --</option>
-            {pengawasList.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.nama_panggilan}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="col-6 col-md-4 mb-2">
-          <label className="form-label text-dark">Bulan</label>
-          <select className="form-select" value={bulan} onChange={(e) => setBulan(Number(e.target.value))}>
-            {monthNames.map((name, index) => (
-              <option key={index + 1} value={index + 1}>{name}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="col-6 col-md-4 mb-2">
-          <label className="form-label text-dark">Tahun</label>
-          <input type="number" className="form-control" min={2020} max={2030} value={tahun} onChange={(e) => setTahun(Number(e.target.value))} />
-        </div>
-      </div>
-
-      {selectedId && rows.length > 0 && (
-        <div
-          className={
-            isMobile
-              ? 'd-flex gap-3 mb-4'
-              : 'd-flex gap-2 mb-3 justify-content-start flex-wrap'
-          }
-          style={isMobile ? undefined : { alignItems: 'center' }}
-        >
-          <button
-            className={
-              isMobile
-                ? 'btn btn-primary fw-semibold d-flex align-items-center justify-content-center gap-2 flex-fill'
-                : 'btn btn-sm btn-primary fw-semibold d-flex align-items-center justify-content-center gap-2'
-            }
-            onClick={handleTutupBuku}
-            style={
-              isMobile
-                ? { height: 52, borderRadius: 14, fontSize: '0.95rem' }
-                : { height: 36, padding: '0.4rem 0.75rem' }
-            }
-          >
-            <FiBook size={isMobile ? 18 : 16} />
-            Tutup Buku
-          </button>
-          <button
-            className={
-              isMobile
-                ? 'btn btn-outline-primary fw-semibold d-flex align-items-center justify-content-center gap-2 flex-fill'
-                : 'btn btn-sm btn-outline-primary fw-semibold d-flex align-items-center justify-content-center gap-2'
-            }
-            onClick={handleExportPDF}
-            style={
-              isMobile
-                ? { height: 52, borderRadius: 14, fontSize: '0.95rem' }
-                : { height: 36, padding: '0.4rem 0.75rem' }
-            }
-          >
-            <FiPrinter size={isMobile ? 18 : 16} />
-            Cetak
-          </button>
-        </div>
-      )}
-
-      {!selectedId && <div className="alert alert-warning text-dark bg-warning-subtle border-warning">Silakan pilih pengawas terlebih dahulu.</div>}
-
-      {selectedId && (
-        <>
-          {loadingBuku ? (
-            <ListLoadingState label="Memuat buku kuning" rows={5} />
-          ) : rows.length > 0 ? (
-            !isMobile && (
-              <DataTable
-                columns={[
-                  { key: 'tanggal', label: 'Tanggal' },
-                  { key: 'keterangan', label: 'Keterangan' },
-                  { key: 'voucher', label: 'Voucher' },
-                  {
-                    key: 'pemasukan',
-                    label: 'Pemasukan',
-                    render: (row) => formatRupiah(row.pemasukan),
-                  },
-                  {
-                    key: 'pengeluaran',
-                    label: 'Pengeluaran',
-                    render: (row) => formatRupiah(row.pengeluaran),
-                  },
-                  {
-                    key: 'saldo',
-                    label: 'Saldo',
-                    render: (row) => formatRupiah(row.saldo),
-                  },
-                ]}
-                data={rows.map((row, i) => ({ id: `${i}`, ...row }))}
-              />
-            )
-          ) : (
-            <EmptyState
-              title="Tidak ada transaksi di bulan ini"
-            />
-          )}
-        </>
-      )}
-    </div>
+    <BukuKuningDesktop
+      title="Buku kuning pengawas"
+      description="Gaji dan kasbon pengawas per bulan — dengan saldo berjalan"
+      entitas="Pengawas"
+      options={pengawasList.map((p) => ({ value: p.id, label: p.nama_panggilan ?? '-' }))}
+      selectedId={selectedId}
+      onSelect={setSelectedId}
+      bulan={bulan}
+      tahun={tahun}
+      onPeriodeChange={(b, t) => {
+        setBulan(b);
+        setTahun(t);
+      }}
+      loading={loadingBuku}
+      rows={rows}
+      labelPemasukan="Gaji"
+      labelPengeluaran="Kasbon"
+      onTutupBuku={handleTutupBuku}
+      onCetak={handleExportPDF}
+    />
   );
 };
 

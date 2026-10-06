@@ -3,18 +3,14 @@ import { useQuery } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { supabase } from '../../../lib/supabaseClient';
 import { confirmDialog } from '../../../components/ConfirmDialog';
-import DataTable from '../../../components/DataTable';
 import { useMediaQuery } from 'react-responsive';
-import { FiBook, FiPrinter, FiRepeat } from 'react-icons/fi';
-import ListPageHeader from '../../../components/ListPageHeader';
-import HeaderActionButton from '../../../components/HeaderActionButton';
-import EmptyState from '../../../components/EmptyState';
-import ListLoadingState from '../../../components/ListLoadingState';
+import { FiRepeat } from 'react-icons/fi';
 import GenerateBiayaBulananModal from '../components/GenerateBiayaBulananModal';
-import { monthNames, formatRupiah, pad, getLastDay } from '../utils/biayaBulanan';
+import { monthNames, pad, getLastDay } from '../utils/biayaBulanan';
 import { hitungSaldoBerjalan, type SaldoRow } from '../utils/saldoBerjalan';
 import { cetakBukuKuningPdf } from '../utils/bukuKuningPdf';
 import BukuKuningMobile from '../components/BukuKuningMobile';
+import BukuKuningDesktop from '../components/BukuKuningDesktop';
 import { usePilihanTerakhir } from '../../../hooks/usePilihanTerakhir';
 
 type Lady = {
@@ -236,7 +232,7 @@ const BukuKuningPage = () => {
 
   // Mobile: BukuKuningMobile (dipakai bersama Buku Kuning Pengawas) —
   // ringkasan saldo + Tutup Buku/Cetak; riwayat transaksi ada di halaman
-  // Transaksi. Desktop: tabel lama.
+  // Transaksi. Desktop: BukuKuningDesktop (juga dipakai bersama).
   if (isMobile) {
     return (
       <>
@@ -279,255 +275,44 @@ const BukuKuningPage = () => {
   }
 
   return (
-    <div className="page-shell py-4">
-      <ListPageHeader
-        icon={<FiBook />}
-        title="Buku Kuning Ladies"
-        description="Kelola transaksi bulanan ladies (voucher, kasbon, dokter, pemasukan lain)"
-        actions={
-          <HeaderActionButton
-            icon={<FiRepeat />}
-            onClick={() => setShowGenerateModal(true)}
-            fullWidth={isMobile}
-          >
-            Generate Biaya Bulanan
-          </HeaderActionButton>
+    <>
+      <BukuKuningDesktop
+        title="Buku kuning ladies"
+        description="Voucher, pemasukan lain, kasbon, dan dokter per bulan — dengan saldo berjalan"
+        entitas="Ladies"
+        options={ladiesList.map((lady) => ({
+          value: lady.id,
+          label: `${lady.nama_ladies} • ${lady.nama_outlet} (${lady.pin})`,
+        }))}
+        selectedId={selectedLadyId}
+        onSelect={setSelectedLadyId}
+        bulan={bulan}
+        tahun={tahun}
+        onPeriodeChange={(b, t) => {
+          setBulan(b);
+          setTahun(t);
+        }}
+        loading={loadingBuku}
+        rows={rows}
+        labelPemasukan="Pemasukan"
+        labelPengeluaran="Pengeluaran"
+        tampilkanVoucher
+        onTutupBuku={handleTutupBuku}
+        onCetak={handleExportPDF}
+        aksiHeader={
+          <button type="button" className="dk-btn" onClick={() => setShowGenerateModal(true)}>
+            <FiRepeat aria-hidden />
+            Generate biaya bulanan
+          </button>
         }
       />
-
-      <div className="row mb-3">
-        <div className="col-12 col-md-4 mb-2">
-          <label className="form-label text-dark">
-            Pilih Ladies
-          </label>
-
-          <select
-            className="form-select"
-            value={selectedLadyId}
-            onChange={(e) =>
-              setSelectedLadyId(
-                e.target.value
-              )
-            }
-          >
-            <option value="">
-              -- Pilih --
-            </option>
-
-            {ladiesList.map((lady) => (
-              <option
-                key={lady.id}
-                value={lady.id}
-              >
-                {lady.nama_ladies} -{' '}
-                {lady.nama_outlet} (
-                {lady.pin})
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="col-6 col-md-4 mb-2">
-          <label className="form-label text-dark">
-            Bulan
-          </label>
-
-          <select
-            className="form-select"
-            value={bulan}
-            onChange={(e) =>
-              setBulan(
-                Number(
-                  e.target.value
-                )
-              )
-            }
-          >
-            {monthNames.map(
-              (name, index) => (
-                <option
-                  key={index + 1}
-                  value={index + 1}
-                >
-                  {name}
-                </option>
-              )
-            )}
-          </select>
-        </div>
-
-        <div className="col-6 col-md-4 mb-2">
-          <label className="form-label text-dark">
-            Tahun
-          </label>
-
-          <input
-            type="number"
-            className="form-control"
-            min={2020}
-            max={2030}
-            value={tahun}
-            onChange={(e) =>
-              setTahun(
-                Number(
-                  e.target.value
-                )
-              )
-            }
-          />
-        </div>
-      </div>
-
-      {selectedLadyId &&
-        rows.length > 0 && (
-          <div
-            className={
-              isMobile
-                ? 'd-flex gap-3 mb-4'
-                : 'd-flex gap-2 mb-3 justify-content-start flex-wrap'
-            }
-            style={
-              isMobile
-                ? undefined
-                : { alignItems: 'center' }
-            }
-          >
-            <button
-              className={
-                isMobile
-                  ? 'btn btn-primary fw-semibold d-flex align-items-center justify-content-center gap-2 flex-fill'
-                  : 'btn btn-sm btn-primary fw-semibold d-flex align-items-center justify-content-center gap-2'
-              }
-              onClick={handleTutupBuku}
-              style={
-                isMobile
-                  ? {
-                      height: 52,
-                      borderRadius: 14,
-                      fontSize: '0.95rem',
-                    }
-                  : {
-                      height: 36,
-                      padding: '0.4rem 0.75rem',
-                    }
-              }
-            >
-              <FiBook size={isMobile ? 18 : 16} />
-              Tutup Buku
-            </button>
-
-            <button
-              className={
-                isMobile
-                  ? 'btn btn-outline-primary fw-semibold d-flex align-items-center justify-content-center gap-2 flex-fill'
-                  : 'btn btn-sm btn-outline-primary fw-semibold d-flex align-items-center justify-content-center gap-2'
-              }
-              onClick={handleExportPDF}
-              style={
-                isMobile
-                  ? {
-                      height: 52,
-                      borderRadius: 14,
-                      fontSize: '0.95rem',
-                    }
-                  : {
-                      height: 36,
-                      padding: '0.4rem 0.75rem',
-                    }
-              }
-            >
-              <FiPrinter size={isMobile ? 18 : 16} />
-              Cetak
-            </button>
-          </div>
-        )}
-
-      {!selectedLadyId && (
-        <div className="alert alert-warning text-dark bg-warning-subtle border-warning">
-          Silakan pilih ladies
-          terlebih dahulu.
-        </div>
-      )}
-
-      {selectedLadyId && (
-        <>
-          {loadingBuku ? (
-            <ListLoadingState label="Memuat buku kuning" rows={5} />
-          ) : rows.length > 0 ? (
-            !isMobile && (
-              <DataTable
-                columns={[
-                  {
-                    key: 'tanggal',
-                    label:
-                      'Tanggal',
-                  },
-                  {
-                    key: 'keterangan',
-                    label:
-                      'Keterangan',
-                  },
-                  {
-                    key: 'voucher',
-                    label:
-                      'Voucher',
-                  },
-                  {
-                    key: 'pemasukan',
-                    label:
-                      'Pemasukan',
-                    render: (
-                      row
-                    ) =>
-                      formatRupiah(
-                        row.pemasukan
-                      ),
-                  },
-                  {
-                    key: 'pengeluaran',
-                    label:
-                      'Pengeluaran',
-                    render: (
-                      row
-                    ) =>
-                      formatRupiah(
-                        row.pengeluaran
-                      ),
-                  },
-                  {
-                    key: 'saldo',
-                    label:
-                      'Saldo',
-                    render: (
-                      row
-                    ) =>
-                      formatRupiah(
-                        row.saldo
-                      ),
-                  },
-                ]}
-                data={rows.map(
-                  (row, i) => ({
-                    id: `${i}`,
-                    ...row,
-                  })
-                )}
-              />
-            )
-          ) : (
-            <EmptyState
-              title="Tidak ada transaksi di bulan ini"
-            />
-          )}
-        </>
-      )}
 
       <GenerateBiayaBulananModal
         show={showGenerateModal}
         onClose={() => setShowGenerateModal(false)}
         onGenerated={() => setRefreshKey((k) => k + 1)}
       />
-    </div>
+    </>
   );
 };
 

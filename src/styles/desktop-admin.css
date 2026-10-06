@@ -1364,3 +1364,31 @@ textarea.dk-input {
   white-space: nowrap;
   color: var(--color-dark);
 }
+
+/* =========================
+   BUKU KUNING
+========================= */
+
+.dk-nowrap {
+  white-space: nowrap;
+}
+
+/* Baris pembuka (sisa kasbon / saldo awal) dibedakan dari transaksi. */
+.dk-table tbody tr.dk-row-opening td {
+  background: var(--color-surface-2);
+  font-weight: 600;
+}
+
+/* Kolom saldo berjalan: angka paling penting di tiap baris. */
+.dk-table td.dk-saldo {
+  font-weight: 600;
+}
+
+.dk-table td.dk-saldo.is-minus {
+  color: var(--color-expense);
+}
+
+/* State kosong di dalam tabel (di bawah baris pembuka). */
+.dk-empty--inline {
+  padding: var(--space-8) var(--space-5);
+}
