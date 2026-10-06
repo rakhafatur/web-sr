@@ -1392,3 +1392,92 @@ textarea.dk-input {
 .dk-empty--inline {
   padding: var(--space-8) var(--space-5);
 }
+
+/* =========================
+   REKAP VOUCHER
+========================= */
+
+/* Baris filter: rentang tanggal + tombol, lalu periode cepat. */
+.dk-filterbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-6);
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-6);
+}
+
+.dk-filterbar-dates {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-3);
+}
+
+.dk-filterbar-dates .dk-input {
+  width: 180px;
+}
+
+.dk-filterbar-sep {
+  padding-bottom: 12px;
+  color: var(--color-gray-500);
+}
+
+.dk-filterbar-go {
+  height: 44px;
+}
+
+/* Chip yang sedang memuat tidak bisa diklik ganda. */
+.dk-chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Pilihan outlet + label periode di atas ringkasan. */
+.dk-rekap-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.dk-outlet-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.dk-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-green-lighter);
+  border: 1px solid var(--color-green-light);
+  color: var(--color-green);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.dk-table td.dk-strong {
+  font-weight: 600;
+}
+
+/* Baris total per tabel. */
+.dk-table tfoot th,
+.dk-table tfoot td {
+  padding: 12px var(--space-5);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-dark);
+  text-align: left;
+  background: var(--color-surface-2);
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.dk-table tfoot td.dk-col-num {
+  text-align: right;
+}

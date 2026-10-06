@@ -4,11 +4,9 @@ import { useMediaQuery } from 'react-responsive';
 import { toast } from 'react-toastify';
 
 import { supabase } from '../../../lib/supabaseClient';
-import DataTable from '../../../components/DataTable';
-import Button from '../../../components/Button';
-import FeaturePageHeader from '../../../components/FeaturePageHeader';
-import EmptyState from '../../../components/EmptyState';
 import ListLoadingState from '../../../components/ListLoadingState';
+import Skeleton from '../../../components/Skeleton';
+import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
 
 import {
   agregasiRekapVoucher,
@@ -20,59 +18,74 @@ import {
 import { cetakRekapVoucherPdf } from '../utils/rekapVoucherPdf';
 import MobilePageBar from '../../../components/MobilePageBar';
 import '../../../styles/mobile-admin.css';
+import '../../../styles/desktop-admin.css';
 
 import {
   FiCalendar,
   FiDownload,
   FiRefreshCw,
-  FiGift,
-  FiTrendingUp,
-  FiDollarSign,
-  FiUsers,
   FiInbox,
 } from 'react-icons/fi';
 
 const formatRupiah = (n: number) =>
   `Rp${n.toLocaleString('id-ID')}`;
 
+const ISO = 'YYYY-MM-DD';
+
+/** Senin minggu ini. dayjs memulai minggu hari Minggu, jadi startOf('week')
+    + 1 hari keliru di hari Minggu (jatuh ke Senin besok / minggu depan). */
+const seninIni = () => dayjs().subtract((dayjs().day() + 6) % 7, 'day').startOf('day');
+
+/** Pilihan periode cepat (desktop). */
+const PRESET_PERIODE: { key: string; label: string; rentang: () => [string, string] }[] = [
+  {
+    key: 'minggu-ini',
+    label: 'Minggu ini',
+    rentang: () => [seninIni().format(ISO), seninIni().add(6, 'day').format(ISO)],
+  },
+  {
+    key: 'minggu-lalu',
+    label: 'Minggu lalu',
+    rentang: () => [seninIni().subtract(7, 'day').format(ISO), seninIni().subtract(1, 'day').format(ISO)],
+  },
+  {
+    key: 'bulan-ini',
+    label: 'Bulan ini',
+    rentang: () => [dayjs().startOf('month').format(ISO), dayjs().endOf('month').format(ISO)],
+  },
+  {
+    key: 'bulan-lalu',
+    label: 'Bulan lalu',
+    rentang: () => {
+      const b = dayjs().subtract(1, 'month');
+      return [b.startOf('month').format(ISO), b.endOf('month').format(ISO)];
+    },
+  },
+];
+
 const RekapVoucherPage = () => {
   const isMobile = useMediaQuery({
     maxWidth: 768,
   });
 
-  // Desktop: bawaan minggu ini. Mobile: kosong — admin mengisi sendiri.
+  // Desktop: bawaan minggu ini (Senin–Minggu). Mobile: kosong — admin mengisi sendiri.
   const [start, setStart] = useState(() =>
-    isMobile
-      ? ''
-      : dayjs()
-          .startOf('week')
-          .add(1, 'day')
-          .format('YYYY-MM-DD')
+    isMobile ? '' : PRESET_PERIODE[0].rentang()[0]
   );
 
   const [end, setEnd] = useState(() =>
-    isMobile
-      ? ''
-      : dayjs()
-          .endOf('week')
-          .add(1, 'day')
-          .format('YYYY-MM-DD')
+    isMobile ? '' : PRESET_PERIODE[0].rentang()[1]
   );
+
+  // Rentang data yang sedang tampil — label & PDF desktop memakai ini, bukan
+  // isian tanggal yang bisa saja sudah diubah setelah Tampilkan ditekan.
+  const [periodeTampil, setPeriodeTampil] = useState<{ start: string; end: string } | null>(null);
 
   // Pilihan outlet di mobile ('' = semua) — muncul setelah data ditampilkan.
   const [outletDipilih, setOutletDipilih] = useState('');
 
   const [dataPerOutlet, setDataPerOutlet] =
     useState<OutletGroup[]>([]);
-
-  const [totalVoucherAll, setTotalVoucherAll] =
-    useState(0);
-
-  const [totalNominalAll, setTotalNominalAll] =
-    useState(0);
-
-  const [totalUntungAll, setTotalUntungAll] =
-    useState(0);
 
   // Halaman ini tidak memuat data sendiri — user harus menekan "Tampilkan".
   // Kedua penanda di bawah dipakai untuk membedakan tiga keadaan yang tampak
@@ -81,7 +94,10 @@ const RekapVoucherPage = () => {
   const [sudahCari, setSudahCari] = useState(false);
   const [memuat, setMemuat] = useState(false);
 
-  const fetchData = async () => {
+  /** Tanpa argumen: memakai isian tanggal (mobile & tombol Tampilkan).
+      Dengan argumen: pilihan periode cepat desktop, yang mengisi tanggal
+      sekaligus memuat sebelum state tanggal sempat diperbarui. */
+  const fetchData = async (dari: string = start, sampai: string = end) => {
     setMemuat(true);
 
     const { data, error } = await supabase
@@ -98,8 +114,8 @@ const RekapVoucherPage = () => {
           nama_outlet
         )
       `)
-      .gte('tanggal', start)
-      .lte('tanggal', end)
+      .gte('tanggal', dari)
+      .lte('tanggal', sampai)
       .not('ladies_id', 'is', null);
 
     if (error || !data || !Array.isArray(data)) {
@@ -113,20 +129,15 @@ const RekapVoucherPage = () => {
     const hasil = agregasiRekapVoucher(data as unknown as VoucherRow[]);
 
     setDataPerOutlet(hasil.perOutlet);
-    setTotalVoucherAll(hasil.totalVoucher);
-    setTotalNominalAll(hasil.totalNominal);
-    setTotalUntungAll(hasil.totalUntung);
 
     setOutletDipilih('');
+    setPeriodeTampil({ start: dari, end: sampai });
     setSudahCari(true);
     setMemuat(false);
   };
 
-  const handleExportPDF = () =>
-    cetakRekapVoucherPdf({ dataPerOutlet, start, end });
-
   // Mobile: tampilan baru selaras halaman admin lain (Header app dicabut di
-  // MainLayout). Angka tetap dari agregasiRekapVoucher. Desktop: lama.
+  // MainLayout). Angka tetap dari agregasiRekapVoucher. Desktop: gaya dk- di bawah.
   if (isMobile) {
     const fmt = (d: string) =>
       new Date(`${d}T00:00:00`).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
@@ -319,624 +330,247 @@ const RekapVoucherPage = () => {
     );
   }
 
+  // Desktop (gaya baru dk-): satu baris filter (tanggal + periode cepat),
+  // pilihan outlet, kartu angka, lalu satu kartu tabel per outlet dengan
+  // baris total. Angka tetap dari agregasiRekapVoucher / totalPerOutlet.
+  const tanggalLengkap = !!start && !!end;
+  const tanggalTerbalik = tanggalLengkap && start > end;
+
+  const tampilkanDesktop = () => {
+    if (!tanggalLengkap) {
+      toast.error('Isi tanggal Dari dan Sampai dulu.');
+      return;
+    }
+    if (tanggalTerbalik) {
+      toast.error('Tanggal "Dari" tidak boleh setelah "Sampai".');
+      return;
+    }
+    fetchData();
+  };
+
+  const pilihPreset = (rentang: [string, string]) => {
+    setStart(rentang[0]);
+    setEnd(rentang[1]);
+    fetchData(rentang[0], rentang[1]);
+  };
+
+  const presetAktif = PRESET_PERIODE.find((p) => {
+    const [s, e] = p.rentang();
+    return s === start && e === end;
+  })?.key;
+
+  const tglPanjang = (d: string) =>
+    new Date(`${d}T00:00:00`).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+  const labelPeriode = periodeTampil ? `${tglPanjang(periodeTampil.start)} – ${tglPanjang(periodeTampil.end)}` : '';
+
+  // Data yang ditampilkan & dicetak mengikuti pilihan outlet (sama seperti mobile).
+  const outletTampil = outletDipilih ? dataPerOutlet.filter((o) => o.outlet === outletDipilih) : dataPerOutlet;
+  const ringkas = totalBeberapaOutlet(outletTampil);
+
+  const kartuAngka: { label: string; nilai: string; sub?: string; utama?: boolean }[] = [
+    { label: 'Total voucher', nilai: `${ringkas.totalVoucher.toLocaleString('id-ID')} pcs` },
+    { label: 'Bagian ladies', nilai: formatRupiah(ringkas.totalNominal) },
+    { label: 'Hasil (untung agency)', nilai: formatRupiah(ringkas.totalUntung) },
+    {
+      label: 'Total didapat',
+      nilai: formatRupiah(ringkas.totalNominal + ringkas.totalUntung),
+      sub: 'Bagian ladies + hasil',
+      utama: true,
+    },
+  ];
+
   return (
-    <div className="page-shell py-4 px-md-4 px-3">
-      <FeaturePageHeader
-        icon={<FiGift />}
-        title="Rekap Voucher"
-        description="Monitoring voucher per outlet & ladies"
+    <div className="page-shell dk-page">
+      <DesktopPageHeader
+        title="Rekap voucher"
+        description="Voucher per outlet & ladies — bagian ladies, hasil agency, dan total didapat"
+        actions={
+          dataPerOutlet.length > 0 && periodeTampil ? (
+            <button
+              type="button"
+              className="dk-btn"
+              onClick={() =>
+                cetakRekapVoucherPdf({ dataPerOutlet: outletTampil, start: periodeTampil.start, end: periodeTampil.end })
+              }
+            >
+              <FiDownload aria-hidden />
+              Unduh PDF{outletDipilih ? ` · ${outletDipilih}` : ''}
+            </button>
+          ) : undefined
+        }
       />
 
-      {/* FILTER */}
-      <div
-        className="card border-0 shadow-sm rounded-4 mb-4"
-        style={{
-          overflow: 'hidden',
-        }}
-      >
-        <div
-          className="px-4 py-3 border-bottom"
-          style={{
-            background:
-              'linear-gradient(to right, var(--color-green-lighter), var(--color-surface))',
-          }}
-        >
-          <div className="d-flex align-items-center gap-2">
-            <FiCalendar
-              style={{
-                color:
-                  'var(--color-green)',
-              }}
+      <section className="dk-card dk-filterbar" aria-label="Periode rekap">
+        <div className="dk-filterbar-dates">
+          <div>
+            <label htmlFor="dk-rekap-dari" className="dk-label">Dari</label>
+            <input
+              id="dk-rekap-dari"
+              type="date"
+              className="dk-input"
+              value={start}
+              onChange={(e) => setStart(e.target.value)}
             />
-
-            <div>
-              <div className="fw-bold">
-                Filter Periode
-              </div>
-
-              <div
-                style={{
-                  fontSize:
-                    '0.82rem',
-                  color: 'var(--color-gray-500)',
-                }}
-              >
-                Pilih periode
-                voucher
-              </div>
-            </div>
           </div>
+          <span className="dk-filterbar-sep" aria-hidden>–</span>
+          <div>
+            <label htmlFor="dk-rekap-sampai" className="dk-label">Sampai</label>
+            <input
+              id="dk-rekap-sampai"
+              type="date"
+              min={start || undefined}
+              className={`dk-input ${tanggalTerbalik ? 'is-invalid' : ''}`}
+              aria-invalid={tanggalTerbalik || undefined}
+              value={end}
+              onChange={(e) => setEnd(e.target.value)}
+            />
+          </div>
+          <button
+            type="button"
+            className="dk-btn dk-btn--primary dk-filterbar-go"
+            onClick={tampilkanDesktop}
+            disabled={memuat || !tanggalLengkap}
+          >
+            <FiRefreshCw aria-hidden />
+            {memuat ? 'Memuat...' : 'Tampilkan'}
+          </button>
         </div>
 
-        <div className="p-4">
-          <div className="row g-3">
-            <div className="col-12 col-md-4">
-              <label className="fw-semibold mb-2">
-                Dari Tanggal
-              </label>
-
-              <input
-                type="date"
-                className="form-control shadow-none"
-                value={start}
-                onChange={(e) =>
-                  setStart(
-                    e.target.value
-                  )
-                }
-                style={{
-                  height: isMobile
-                    ? 50
-                    : 56,
-
-                  borderRadius: 16,
-
-                  border:
-                    '2px solid var(--color-green-light)',
-
-                  paddingInline: 16,
-
-                  fontSize: isMobile
-                    ? '0.84rem'
-                    : '0.92rem',
-                }}
-              />
-            </div>
-
-            <div className="col-12 col-md-4">
-              <label className="fw-semibold mb-2">
-                Sampai Tanggal
-              </label>
-
-              <input
-                type="date"
-                className="form-control shadow-none"
-                value={end}
-                onChange={(e) =>
-                  setEnd(
-                    e.target.value
-                  )
-                }
-                style={{
-                  height: isMobile
-                    ? 50
-                    : 56,
-
-                  borderRadius: 16,
-
-                  border:
-                    '2px solid var(--color-green-light)',
-
-                  paddingInline: 16,
-
-                  fontSize: isMobile
-                    ? '0.84rem'
-                    : '0.92rem',
-                }}
-              />
-            </div>
-
-            <div className="col-12 col-md-2">
-              <label className="fw-semibold mb-2 d-none d-md-block" style={{ visibility: 'hidden' }}>
-                Aksi
-              </label>
-              <Button
-                variant="primary"
-                fullWidth
-                onClick={fetchData}
+        <div className="dk-filterbar-presets">
+          <span className="dk-label" id="dk-rekap-preset-label">Periode cepat</span>
+          <div className="dk-chips" role="group" aria-labelledby="dk-rekap-preset-label">
+            {PRESET_PERIODE.map((p) => (
+              <button
+                key={p.key}
+                type="button"
+                className={`dk-chip ${presetAktif === p.key ? 'is-active' : ''}`}
+                aria-pressed={presetAktif === p.key}
                 disabled={memuat}
-                icon={
-                  memuat ? (
-                    <div className="spinner-border spinner-border-sm" role="status" />
-                  ) : (
-                    <FiRefreshCw />
-                  )
-                }
-                style={{ height: isMobile ? 50 : 56 }}
+                onClick={() => pilihPreset(p.rentang())}
               >
-                {memuat ? 'Memuat...' : 'Tampilkan'}
-              </Button>
-            </div>
-
-            {dataPerOutlet.length > 0 && (
-              <div className="col-12 col-md-2">
-                <label className="fw-semibold mb-2 d-none d-md-block" style={{ visibility: 'hidden' }}>
-                  Aksi
-                </label>
-                <Button
-                  variant="secondary"
-                  fullWidth
-                  onClick={handleExportPDF}
-                  icon={<FiDownload />}
-                  style={{ height: isMobile ? 50 : 56 }}
-                >
-                  PDF
-                </Button>
-              </div>
-            )}
+                {p.label}
+              </button>
+            ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Tiga keadaan yang sama-sama tampak kosong dibedakan di sini, supaya
-          layar kosong tidak lagi terbaca sebagai "datanya tidak ada". */}
-      {memuat && <ListLoadingState label="Memuat rekap voucher" />}
-
-      {!memuat && !sudahCari && (
-        <EmptyState
-          icon={<FiCalendar />}
-          title="Pilih periode dulu"
-          description="Tentukan rentang tanggal di atas, lalu tekan Tampilkan untuk melihat rekapnya."
-        />
-      )}
-
-      {!memuat && sudahCari && dataPerOutlet.length === 0 && (
-        <EmptyState
-          title="Tidak ada voucher di periode ini"
-          description="Coba ubah rentang tanggalnya."
-        />
-      )}
-
-      {/* SUMMARY */}
-      {dataPerOutlet.length >
-        0 && (
-          <>
-            <div className="row g-3 mb-4">
-              {[
-                {
-                  title:
-                    'Total Voucher',
-                  value: `${totalVoucherAll.toFixed(
-                    0
-                  )} pcs`,
-                  icon: <FiGift />,
-                  bg: 'var(--color-income-soft)',
-                  color: 'var(--color-income)',
-                },
-
-                {
-                  title:
-                    'Total Ladies',
-                  value:
-                    formatRupiah(
-                      totalNominalAll
-                    ),
-                  icon: (
-                    <FiDollarSign />
-                  ),
-                  bg: 'var(--color-medical-soft)',
-                  color: 'var(--color-medical)',
-                },
-
-                {
-                  title:
-                    'Total Hasil',
-                  value:
-                    formatRupiah(
-                      totalUntungAll
-                    ),
-                  icon: (
-                    <FiTrendingUp />
-                  ),
-                  bg: 'var(--color-voucher-soft)',
-                  color: 'var(--color-voucher)',
-                },
-
-                {
-                  title:
-                    'Total Didapat',
-                  value:
-                    formatRupiah(
-                      totalNominalAll +
-                      totalUntungAll
-                    ),
-                  icon: <FiUsers />,
-                  bg: 'var(--color-purple-soft)',
-                  color: 'var(--color-purple)',
-                },
-              ].map((item) => (
-                <div
-                  className="col-6 col-lg-3"
-                  key={item.title}
-                >
-                  <div
-                    className="h-100"
-                    style={{
-                      background:
-                        item.bg,
-
-                      borderRadius:
-                        isMobile
-                          ? 16
-                          : 22,
-
-                      padding:
-                        isMobile
-                          ? '14px'
-                          : '20px',
-
-                      boxShadow:
-                        '0 2px 10px rgba(0,0,0,0.04)',
-                    }}
+      {memuat && !sudahCari ? (
+        <div role="status" aria-label="Memuat rekap voucher">
+          <div className="dk-kpis">
+            {[0, 1, 2, 3].map((i) => (
+              <Skeleton key={i} height={104} borderRadius="var(--radius-xl)" />
+            ))}
+          </div>
+          <Skeleton height={320} borderRadius="var(--radius-xl)" />
+        </div>
+      ) : !sudahCari ? (
+        <section className="dk-card">
+          <div className="dk-empty">
+            <span className="dk-empty-icon" aria-hidden><FiCalendar /></span>
+            <div className="dk-empty-title">Pilih periode dulu</div>
+            <div className="dk-empty-text">Pilih periode cepat, atau isi tanggal lalu tekan Tampilkan.</div>
+          </div>
+        </section>
+      ) : dataPerOutlet.length === 0 ? (
+        <section className={`dk-card ${memuat ? 'dk-refetching' : ''}`}>
+          <div className="dk-empty">
+            <span className="dk-empty-icon" aria-hidden><FiInbox /></span>
+            <div className="dk-empty-title">Tidak ada voucher</div>
+            <div className="dk-empty-text">Tidak ada voucher di {labelPeriode}. Coba ubah rentang tanggalnya.</div>
+          </div>
+        </section>
+      ) : (
+        // Memuat ulang (ganti periode): hasil sebelumnya ditahan redup.
+        <div className={memuat ? 'dk-refetching' : undefined} aria-busy={memuat || undefined}>
+          <div className="dk-rekap-bar">
+            <div className="dk-chips" role="radiogroup" aria-label="Pilih outlet">
+              {[{ value: '', label: 'Semua outlet' }, ...dataPerOutlet.map((o) => ({ value: o.outlet, label: o.outlet }))].map(
+                (o) => (
+                  <button
+                    key={o.value || 'semua'}
+                    type="button"
+                    role="radio"
+                    aria-checked={outletDipilih === o.value}
+                    className={`dk-chip ${outletDipilih === o.value ? 'is-active' : ''}`}
+                    onClick={() => setOutletDipilih(o.value)}
                   >
-                    <div
-                      className="d-flex justify-content-between align-items-start"
-                    >
-                      <div
-                        style={{
-                          minWidth: 0,
-                        }}
-                      >
-                        <div
-                          style={{
-                            fontSize:
-                              isMobile
-                                ? '0.68rem'
-                                : '0.82rem',
-
-                            color:
-                              item.color,
-
-                            fontWeight: 700,
-
-                            opacity: 0.8,
-                          }}
-                        >
-                          {item.title}
-                        </div>
-
-                        <div
-                          style={{
-                            fontSize:
-                              isMobile
-                                ? '0.95rem'
-                                : '1.5rem',
-
-                            fontWeight: 700,
-
-                            lineHeight: 1.2,
-
-                            color:
-                              item.color,
-
-                            marginTop: 4,
-
-                            wordBreak:
-                              'break-word',
-                          }}
-                        >
-                          {item.value}
-                        </div>
-                      </div>
-
-                      <div
-                        style={{
-                          fontSize:
-                            isMobile
-                              ? 18
-                              : 24,
-
-                          color:
-                            item.color,
-
-                          opacity: 0.7,
-                        }}
-                      >
-                        {item.icon}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                    {o.label}
+                  </button>
+                )
+              )}
             </div>
+            <span className="dk-count">{labelPeriode}</span>
+          </div>
 
-            {/* OUTLET */}
-            {dataPerOutlet.map(
-              (outletGroup, idx) => {
-                const { totalVoucher, totalNominal, totalUntung } =
-                  totalPerOutlet(outletGroup);
+          <section className="dk-kpis" aria-label="Ringkasan rekap">
+            {kartuAngka.map((k) => (
+              <div key={k.label} className={`dk-kpi ${k.utama ? 'is-main' : ''}`}>
+                <span className="dk-kpi-label">{k.label}</span>
+                <span className="dk-kpi-value">{k.nilai}</span>
+                {k.sub && <span className="dk-kpi-sub">{k.sub}</span>}
+              </div>
+            ))}
+          </section>
 
-                const totalHasil = totalUntung;
+          <div className="dk-outlet-list">
+            {outletTampil.map((outletGroup) => {
+              const { totalVoucher, totalNominal, totalUntung } = totalPerOutlet(outletGroup);
 
-                const totalDidapat = totalNominal + totalUntung;
-
-                return (
-                  <div
-                    key={idx}
-                    className="card border-0 shadow-sm rounded-4 mb-4"
-                    style={{
-                      overflow:
-                        'hidden',
-                    }}
-                  >
-                    {/* HEADER */}
-                    <div
-                      className="px-4 py-3 border-bottom"
-                      style={{
-                        background:
-                          'linear-gradient(to right, var(--color-surface), var(--color-green-lighter))',
-                      }}
-                    >
-                      <div className="d-flex justify-content-between align-items-center">
-                        <div>
-                          <div
-                            className="fw-bold"
-                            style={{
-                              fontSize:
-                                isMobile
-                                  ? '0.95rem'
-                                  : '1.05rem',
-
-                              color:
-                                'var(--color-dark)',
-                            }}
-                          >
-                            {
-                              outletGroup.outlet
-                            }
-                          </div>
-
-                          <div
-                            style={{
-                              fontSize:
-                                '0.78rem',
-
-                              color:
-                                'var(--color-gray-500)',
-                            }}
-                          >
-                            {
-                              outletGroup
-                                .data
-                                .length
-                            }{' '}
-                            ladies
-                          </div>
-                        </div>
-
-                        <div
-                          className="badge"
-                          style={{
-                            background:
-                              'var(--color-income-soft)',
-
-                            color:
-                              'var(--color-income)',
-
-                            fontSize:
-                              '0.72rem',
-
-                            padding:
-                              '8px 12px',
-
-                            borderRadius: 999,
-                          }}
-                        >
-                          {totalVoucher.toFixed(
-                            0
-                          )}{' '}
-                          pcs
-                        </div>
-                      </div>
+              return (
+                <section key={outletGroup.outlet} className="dk-card" aria-label={`Outlet ${outletGroup.outlet}`}>
+                  <div className="dk-card-head dk-card-head--row">
+                    <div>
+                      <h2 className="dk-card-title">{outletGroup.outlet}</h2>
+                      <div className="dk-card-sub">{outletGroup.data.length} ladies</div>
                     </div>
-
-                    {/* TABEL LADIES */}
-                    {(
-                      <div className="p-3">
-                        <DataTable
-                          columns={[
-                            {
-                              key:
-                                'nama_ladies',
-                              label:
-                                'Nama Ladies',
-                            },
-
-                            {
-                              key:
-                                'totalVoucher',
-
-                              label:
-                                'Voucher',
-
-                              render: (row) =>
-                                `${row.totalVoucher.toFixed(
-                                  0
-                                )} pcs`,
-                            },
-
-                            {
-                              key:
-                                'totalNominal',
-
-                              label:
-                                'Total Ladies',
-
-                              render: (row) =>
-                                formatRupiah(
-                                  row.totalNominal
-                                ),
-                            },
-
-                            {
-                              key:
-                                'totalHasil',
-
-                              label:
-                                'Total Hasil',
-
-                              render: (row) =>
-                                formatRupiah(
-                                  row.totalUntung
-                                ),
-                            },
-
-                            {
-                              key:
-                                'totalDidapat',
-
-                              label:
-                                'Total Didapat',
-
-                              render: (row) =>
-                                formatRupiah(
-                                  row.totalNominal +
-                                  row.totalUntung
-                                ),
-                            },
-                          ]}
-                          data={outletGroup.data.map(
-                            (
-                              row,
-                              i
-                            ) => ({
-                              id: `${outletGroup.outlet}-${i}`,
-
-                              ...row,
-
-                              totalHasil:
-                                row.totalUntung,
-
-                              totalDidapat:
-                                row.totalNominal + row.totalUntung,
-                            })
-                          )}
-                        />
-                      </div>
-                    )}
-
-                    {/* FOOTER */}
-                    <div
-                      className="px-4 py-3 border-top"
-                      style={{
-                        background:
-                          'var(--color-surface-2)',
-                      }}
-                    >
-                      <div className="row g-2">
-                        {[
-                          {
-                            label:
-                              'Voucher',
-                            value: `${totalVoucher.toFixed(
-                              0
-                            )} pcs`,
-                          },
-
-                          {
-                            label:
-                              'Total Ladies',
-                            value:
-                              formatRupiah(
-                                totalNominal
-                              ),
-                          },
-
-                          {
-                            label:
-                              'Total Hasil',
-                            value:
-                              formatRupiah(
-                                totalHasil
-                              ),
-                          },
-
-                          {
-                            label:
-                              'Total Didapat',
-                            value:
-                              formatRupiah(
-                                totalDidapat
-                              ),
-                          },
-                        ].map((item) => (
-                          <div
-                            className="col-6 col-lg-3"
-                            key={
-                              item.label
-                            }
-                          >
-                            <div
-                              style={{
-                                background:
-                                  'var(--color-surface)',
-
-                                border:
-                                  '1px solid var(--color-gray-200)',
-
-                                borderRadius: 14,
-
-                                padding:
-                                  isMobile
-                                    ? '10px'
-                                    : '14px',
-                              }}
-                            >
-                              <div
-                                style={{
-                                  fontSize:
-                                    isMobile
-                                      ? '0.65rem'
-                                      : '0.75rem',
-
-                                  color:
-                                    'var(--color-gray-500)',
-                                }}
-                              >
-                                {
-                                  item.label
-                                }
-                              </div>
-
-                              <div
-                                className="fw-bold"
-                                style={{
-                                  fontSize:
-                                    isMobile
-                                      ? '0.78rem'
-                                      : '0.92rem',
-
-                                  marginTop: 2,
-
-                                  color:
-                                    'var(--color-dark)',
-                                }}
-                              >
-                                {
-                                  item.value
-                                }
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                    <span className="dk-pill">{totalVoucher.toLocaleString('id-ID')} pcs</span>
                   </div>
-                );
-              }
-            )}
-          </>
-        )}
+
+                  <table className="dk-table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Ladies</th>
+                        <th scope="col" className="dk-col-num">Voucher</th>
+                        <th scope="col" className="dk-col-num">Bagian ladies</th>
+                        <th scope="col" className="dk-col-num">Hasil</th>
+                        <th scope="col" className="dk-col-num">Didapat</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {outletGroup.data.map((row, i) => (
+                        <tr key={`${row.nama_ladies}-${i}`}>
+                          <td>
+                            <div className="dk-person">
+                              <span className="dk-avatar" aria-hidden>
+                                {(row.nama_ladies || '?').charAt(0).toUpperCase()}
+                              </span>
+                              <span className="dk-person-label">{row.nama_ladies}</span>
+                            </div>
+                          </td>
+                          <td className="dk-col-num dk-num">{row.totalVoucher.toLocaleString('id-ID')} pcs</td>
+                          <td className="dk-col-num dk-num">{formatRupiah(row.totalNominal)}</td>
+                          <td className="dk-col-num dk-num">{formatRupiah(row.totalUntung)}</td>
+                          <td className="dk-col-num dk-num dk-strong">{formatRupiah(row.totalNominal + row.totalUntung)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <th scope="row">Total {outletGroup.outlet}</th>
+                        <td className="dk-col-num dk-num">{totalVoucher.toLocaleString('id-ID')} pcs</td>
+                        <td className="dk-col-num dk-num">{formatRupiah(totalNominal)}</td>
+                        <td className="dk-col-num dk-num">{formatRupiah(totalUntung)}</td>
+                        <td className="dk-col-num dk-num">{formatRupiah(totalNominal + totalUntung)}</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </section>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
