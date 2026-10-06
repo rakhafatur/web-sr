@@ -1,29 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FiUser, FiTag, FiCreditCard, FiCalendar, FiMapPin } from 'react-icons/fi';
+import { FiUser, FiTag, FiCreditCard, FiCalendar, FiMapPin, FiEdit2 } from 'react-icons/fi';
 import { useMediaQuery } from 'react-responsive';
 import MobileFormPage from '../../../components/mobile/MobileFormPage';
 import { MobileTextField } from '../../../components/mobile/MobileFields';
 import { toast } from 'react-toastify';
-import dayjs from 'dayjs';
 
-import FormField from '../../../components/FormField';
-import EntityPageHeader from '../../../components/EntityPageHeader';
-import EntityHeroCard from '../../../components/EntityHeroCard';
-import EntityFormCard from '../../../components/EntityFormCard';
-import EntityDetailActions from '../../../components/EntityDetailActions';
+import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
 import DetailFormSkeleton from '../../../components/DetailFormSkeleton';
 import { supabase } from '../../../lib/supabaseClient';
 import { validasiWajib } from '../../../utils/validasiForm';
-
-type FormType = {
-  nama_lengkap: string;
-  nama_panggilan: string;
-  nomor_ktp: string;
-  tanggal_lahir: string;
-  alamat: string;
-  tanggal_bergabung: string;
-};
+import { formatTanggal } from '../../../utils/formatTanggal';
+import PengawasFormDesktop, { PengawasFormValues as FormType } from '../components/PengawasFormDesktop';
 
 const emptyForm: FormType = {
   nama_lengkap: '',
@@ -43,7 +31,7 @@ const DetailPengawas = () => {
   const [saving, setSaving] = useState(false);
   const [readonly, setReadonly] = useState(true);
   const [fieldSalah, setFieldSalah] = useState<string | null>(null);
-  // Mobile: MobileFormPage (Header app dicabut di MainLayout). Desktop: lama.
+  // Mobile: MobileFormPage (Header app dicabut di MainLayout). Desktop: dk-.
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const fetchPengawas = async () => {
@@ -52,7 +40,7 @@ const DetailPengawas = () => {
 
       const { data, error } = await supabase
         .from('pengawas')
-        .select('*')
+        .select('nama_lengkap, nama_panggilan, nomor_ktp, tanggal_lahir, alamat, tanggal_bergabung')
         .eq('id', id)
         .single();
 
@@ -220,95 +208,96 @@ const DetailPengawas = () => {
     );
   }
 
+  // Desktop (gaya baru dk-, sama dengan Detail User): kartu identitas & kartu
+  // informasi. Mode lihat = daftar label–nilai; mode ubah = form grid.
+  const batalUbah = () => {
+    setReadonly(true);
+    setFieldSalah(null);
+    fetchPengawas();
+  };
+
+  const kosong = <span className="dk-muted">-</span>;
+
   return (
-    <div className="page-shell py-4 px-md-4 px-3" style={{ maxWidth: 760 }}>
-      <EntityPageHeader
-        backTo="/pengawas"
-        icon={<FiUser />}
-        title="Detail Pengawas"
-        description="Kelola informasi pengawas"
+    <div className="page-shell dk-page">
+      <DesktopPageHeader
+        back={{ to: '/pengawas', label: 'Pengawas' }}
+        title={readonly ? 'Detail pengawas' : 'Ubah pengawas'}
+        description="Informasi pengawas SR Agency"
         actions={
-          <EntityDetailActions
-            readonly={readonly}
-            editLabel="Edit Pengawas"
-            saving={saving}
-            onEdit={() => setReadonly(false)}
-            onCancel={() => {
-              setReadonly(true);
-              fetchPengawas();
-            }}
-            onSave={handleSave}
-          />
+          readonly ? (
+            <button type="button" className="dk-btn dk-btn--primary" onClick={() => setReadonly(false)}>
+              <FiEdit2 aria-hidden />
+              Ubah
+            </button>
+          ) : (
+            <>
+              <button type="button" className="dk-btn" onClick={batalUbah} disabled={saving}>
+                Batal
+              </button>
+              <button type="button" className="dk-btn dk-btn--primary" onClick={handleSave} disabled={saving}>
+                {saving ? 'Menyimpan...' : 'Simpan'}
+              </button>
+            </>
+          )
         }
       />
 
-      <EntityHeroCard
-        icon={<FiUser />}
-        title={form.nama_lengkap || '-'}
-        subtitle={form.nama_panggilan || 'Data pengawas'}
-      />
+      <div className="dk-detail-grid">
+        <aside className="dk-card">
+          <div className="dk-identity">
+            <span className="dk-avatar" aria-hidden>
+              {(form.nama_lengkap || form.nama_panggilan || '?').charAt(0).toUpperCase()}
+            </span>
+            <h2 className="dk-identity-name">{form.nama_lengkap || '-'}</h2>
+            <div className="dk-identity-sub">
+              {form.nama_panggilan ? `Panggilan: ${form.nama_panggilan}` : 'Pengawas'}
+            </div>
+          </div>
+        </aside>
 
-      <EntityFormCard title="Informasi Pengawas" description="Detail dan informasi pengawas">
-        <FormField
-          label="Nama Lengkap"
-          name="nama_lengkap"
-          required
-          invalid={fieldSalah === 'nama_lengkap'}
-          value={form.nama_lengkap}
-          onChange={handleChange}
-          readOnly={readonly}
-        />
-        <FormField
-          label="Nama Panggilan"
-          name="nama_panggilan"
-          value={form.nama_panggilan}
-          onChange={handleChange}
-          readOnly={readonly}
-        />
-        <FormField
-          label="Nomor KTP"
-          name="nomor_ktp"
-          value={form.nomor_ktp}
-          onChange={handleChange}
-          readOnly={readonly}
-        />
-        <FormField
-          label="Tanggal Lahir"
-          name="tanggal_lahir"
-          value={
-            readonly
-              ? form.tanggal_lahir
-                ? dayjs(form.tanggal_lahir).format('DD/MM/YYYY')
-                : ''
-              : form.tanggal_lahir
-          }
-          onChange={handleChange}
-          readOnly={readonly}
-          type={readonly ? 'text' : 'date'}
-        />
-        <FormField
-          label="Alamat"
-          name="alamat"
-          value={form.alamat}
-          onChange={handleChange}
-          readOnly={readonly}
-          type="textarea"
-        />
-        <FormField
-          label="Tanggal Bergabung"
-          name="tanggal_bergabung"
-          value={
-            readonly
-              ? form.tanggal_bergabung
-                ? dayjs(form.tanggal_bergabung).format('DD/MM/YYYY')
-                : ''
-              : form.tanggal_bergabung
-          }
-          onChange={handleChange}
-          readOnly={readonly}
-          type={readonly ? 'text' : 'date'}
-        />
-      </EntityFormCard>
+        <section className="dk-card" aria-label="Informasi pengawas">
+          <div className="dk-card-head">
+            <h2 className="dk-card-title">Informasi pengawas</h2>
+            <div className="dk-card-sub">
+              {readonly ? 'Klik Ubah untuk mengganti data pengawas.' : 'Kolom bertanda * wajib diisi.'}
+            </div>
+          </div>
+
+          <div className="dk-card-body">
+            {readonly ? (
+              <dl className="dk-info">
+                <div>
+                  <dt>Nama lengkap</dt>
+                  <dd>{form.nama_lengkap || kosong}</dd>
+                </div>
+                <div>
+                  <dt>Nama panggilan</dt>
+                  <dd>{form.nama_panggilan || kosong}</dd>
+                </div>
+                <div>
+                  <dt>Nomor KTP</dt>
+                  <dd className="dk-num">{form.nomor_ktp || kosong}</dd>
+                </div>
+                <div>
+                  <dt>Tanggal lahir</dt>
+                  <dd>{form.tanggal_lahir ? formatTanggal(form.tanggal_lahir) : kosong}</dd>
+                </div>
+                <div>
+                  <dt>Tanggal bergabung</dt>
+                  <dd>{form.tanggal_bergabung ? formatTanggal(form.tanggal_bergabung) : kosong}</dd>
+                </div>
+                <div className="dk-field--full">
+                  <dt>Alamat</dt>
+                  <dd style={{ whiteSpace: 'pre-line' }}>{form.alamat || kosong}</dd>
+                </div>
+              </dl>
+            ) : (
+              <PengawasFormDesktop form={form} fieldSalah={fieldSalah} onChange={handleChange} />
+            )}
+          </div>
+        </section>
+      </div>
     </div>
   );
 };

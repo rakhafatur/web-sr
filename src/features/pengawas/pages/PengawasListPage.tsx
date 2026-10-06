@@ -1,16 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import { useEntityList } from '../../../hooks/useEntityList';
-import DataTable from '../../../components/DataTable';
-import ActionIconButton from '../../../components/ActionIconButton';
-import Pagination from '../../../components/Pagination';
 import MobileListPage from '../../../components/mobile/MobileListPage';
+import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
+import DesktopListCard from '../../../components/desktop/DesktopListCard';
 import { useMediaQuery } from 'react-responsive';
-import { FiPlus, FiEdit2, FiTrash2, FiUser } from 'react-icons/fi';
-import ListPageHeader from '../../../components/ListPageHeader';
-import HeaderActionButton from '../../../components/HeaderActionButton';
-import ListPageToolbar from '../../../components/ListPageToolbar';
-import ListLoadingState from '../../../components/ListLoadingState';
-import PullToRefresh from '../../../components/PullToRefresh';
+import { FiPlus, FiTrash2, FiUser, FiChevronRight } from 'react-icons/fi';
 
 type Pengawas = {
   id: string;
@@ -31,6 +25,7 @@ const PengawasListPage = () => {
     list: pengawasList,
     page,
     setPage,
+    total,
     totalPages,
     keyword,
     setKeyword,
@@ -46,7 +41,7 @@ const PengawasListPage = () => {
 
   const handleDelete = (id: string) => remove(id, 'Yakin ingin hapus pengawas ini?');
 
-  // Mobile: MobileListPage (Header app dicabut di MainLayout). Desktop: lama.
+  // Mobile: MobileListPage (Header app dicabut di MainLayout). Desktop: dk-.
   if (isMobile) {
     return (
       <MobileListPage
@@ -78,81 +73,95 @@ const PengawasListPage = () => {
     );
   }
 
+  // Desktop (gaya baru dk-, sama dengan Users): header polos, satu kartu
+  // dengan cari & tabel beravatar; seluruh baris membuka detail.
   return (
-    <PullToRefresh onRefresh={refetch}>
-    <div
-      className="page-shell p-4"
-      style={{
-        color: 'var(--color-dark)',
-      }}
-    >
-      <ListPageHeader
-        icon={<FiUser />}
-        title="Management Pengawas"
+    <div className="page-shell dk-page">
+      <DesktopPageHeader
+        title="Pengawas"
         description="Kelola data pengawas SR Agency"
         actions={
-          <HeaderActionButton
-            icon={<FiPlus />}
-            onClick={() => navigate('/pengawas-create')}
-          >
-            Tambah Pengawas
-          </HeaderActionButton>
+          <button type="button" className="dk-btn dk-btn--primary" onClick={() => navigate('/pengawas-create')}>
+            <FiPlus aria-hidden />
+            Tambah pengawas
+          </button>
         }
       />
 
-      <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
-        <ListPageToolbar
-          title="List Pengawas"
-          subtitle="Data pengawas"
-          placeholder="Cari pengawas..."
-          keyword={keyword}
-          onKeywordChange={(value) => {
-            setPage(1);
-            setKeyword(value);
-          }}
-        />
-
-        {/* BODY */}
-        <div className="p-2 p-md-3">
-          {loading ? (
-            <ListLoadingState label="Memuat data pengawas" />
-          ) : (
-            <DataTable
-              columns={[
-                { key: 'nama_lengkap', label: 'Nama Lengkap' },
-                { key: 'nama_panggilan', label: 'Panggilan' },
-                {
-                  key: 'id',
-                  label: 'Aksi',
-                  render: (p: Pengawas) => (
-                    <div className="d-flex gap-2">
-                      <ActionIconButton
-                        icon={<FiEdit2 size={16} />}
-                        variant="warning"
-                        title="Edit"
-                        onClick={() => navigate(`/pengawas-detail/${p.id}`)}
-                      />
-                      <ActionIconButton
-                        icon={<FiTrash2 size={16} />}
-                        variant="danger"
-                        title="Hapus"
-                        onClick={() => handleDelete(p.id)}
-                      />
-                    </div>
-                  ),
-                },
-              ]}
-              data={pengawasList}
-            />
-          )}
-
-          {totalPages > 1 && (
-            <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
-          )}
-        </div>
-      </div>
+      <DesktopListCard
+        label="Daftar pengawas"
+        keyword={keyword}
+        onKeywordChange={(v) => {
+          setPage(1);
+          setKeyword(v);
+        }}
+        searchPlaceholder="Cari nama atau panggilan..."
+        countText={`${total} pengawas`}
+        loading={loading}
+        loadingLabel="Memuat data pengawas"
+        isEmpty={pengawasList.length === 0}
+        empty={{
+          icon: <FiUser />,
+          title: keyword ? 'Pengawas tidak ditemukan' : 'Belum ada pengawas',
+          text: keyword ? 'Coba kata kunci lain.' : 'Klik "Tambah pengawas" untuk menambah pengawas pertama.',
+        }}
+        page={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      >
+        <table className="dk-table">
+          <thead>
+            <tr>
+              <th scope="col">Nama lengkap</th>
+              <th scope="col">Nama panggilan</th>
+              <th scope="col" className="dk-col-actions">
+                <span className="visually-hidden">Aksi</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {pengawasList.map((p) => (
+              <tr key={p.id} className="is-clickable" onClick={() => navigate(`/pengawas-detail/${p.id}`)}>
+                <td>
+                  <div className="dk-person">
+                    <span className="dk-avatar" aria-hidden>
+                      {(p.nama_lengkap || p.nama_panggilan || '?').charAt(0).toUpperCase()}
+                    </span>
+                    {/* Tombol supaya baris juga bisa dibuka lewat keyboard. */}
+                    <button
+                      type="button"
+                      className="dk-person-name"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/pengawas-detail/${p.id}`);
+                      }}
+                    >
+                      {p.nama_lengkap}
+                    </button>
+                  </div>
+                </td>
+                <td>{p.nama_panggilan || <span className="dk-muted">-</span>}</td>
+                <td className="dk-col-actions">
+                  <button
+                    type="button"
+                    className="dk-icon-btn dk-icon-btn--danger"
+                    title="Hapus"
+                    aria-label={`Hapus ${p.nama_lengkap}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(p.id);
+                    }}
+                  >
+                    <FiTrash2 />
+                  </button>
+                  <FiChevronRight className="dk-row-chevron" aria-hidden />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </DesktopListCard>
     </div>
-    </PullToRefresh>
   );
 };
 

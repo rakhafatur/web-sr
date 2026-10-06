@@ -14,14 +14,7 @@ import { useAgentOptions } from '../hooks/useAgentOptions';
 import { useOutletOptions } from '../hooks/useOutletOptions';
 import LadiesFormDesktop from '../components/LadiesFormDesktop';
 import { STATUS_LADIES, TONE_STATUS } from '../utils/statusLadies';
-
-/** "2024-03-05" → "5 Maret 2024". Tanpa zona waktu supaya tidak bergeser hari. */
-const formatTanggal = (iso: string) =>
-  new Date(`${iso}T00:00:00`).toLocaleDateString('id-ID', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
+import { formatTanggal } from '../../../utils/formatTanggal';
 
 type FormType = {
   nama_lengkap: string;

@@ -6,22 +6,10 @@ import MobileFormPage from '../../../components/mobile/MobileFormPage';
 import { MobileTextField } from '../../../components/mobile/MobileFields';
 import { toast } from 'react-toastify';
 
-import FormField from '../../../components/FormField';
-import EntityPageHeader from '../../../components/EntityPageHeader';
-import EntityHeroCard from '../../../components/EntityHeroCard';
-import EntityFormCard from '../../../components/EntityFormCard';
-import EntitySubmitButton from '../../../components/EntitySubmitButton';
+import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
 import { supabase } from '../../../lib/supabaseClient';
 import { validasiWajib } from '../../../utils/validasiForm';
-
-type FormType = {
-  nama_lengkap: string;
-  nama_panggilan: string;
-  nomor_ktp: string;
-  tanggal_lahir: string;
-  alamat: string;
-  tanggal_bergabung: string;
-};
+import PengawasFormDesktop, { PengawasFormValues as FormType } from '../components/PengawasFormDesktop';
 
 const CreatePengawas = () => {
   const navigate = useNavigate();
@@ -37,7 +25,7 @@ const CreatePengawas = () => {
 
   const [loading, setLoading] = useState(false);
   const [fieldSalah, setFieldSalah] = useState<string | null>(null);
-  // Mobile: MobileFormPage (Header app dicabut di MainLayout). Desktop: lama.
+  // Mobile: MobileFormPage (Header app dicabut di MainLayout). Desktop: dk-.
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -153,68 +141,52 @@ const CreatePengawas = () => {
     );
   }
 
+  // Desktop (gaya baru dk-, sama dengan Tambah User): pratinjau identitas
+  // (terisi saat mengetik) & kartu form grid 2 kolom.
   return (
-    <div className="page-shell py-4 px-md-4 px-3" style={{ maxWidth: 760 }}>
-      <EntityPageHeader
-        backTo="/pengawas"
-        icon={<FiUser />}
-        title="Tambah Pengawas"
+    <div className="page-shell dk-page">
+      <DesktopPageHeader
+        back={{ to: '/pengawas', label: 'Pengawas' }}
+        title="Tambah pengawas"
         description="Tambahkan pengawas baru ke sistem SR Agency"
       />
 
-      <EntityHeroCard
-        icon={<FiUser />}
-        title="Pengawas Management"
-        subtitle="Lengkapi informasi pengawas dengan benar sebelum menyimpan data"
-      />
+      <div className="dk-detail-grid">
+        <aside className="dk-card" aria-label="Pratinjau pengawas">
+          <div className="dk-identity">
+            <span className={`dk-avatar ${form.nama_lengkap ? '' : 'is-empty'}`} aria-hidden>
+              {(form.nama_lengkap || '?').charAt(0).toUpperCase()}
+            </span>
+            <h2 className={`dk-identity-name ${form.nama_lengkap ? '' : 'is-placeholder'}`}>
+              {form.nama_lengkap || 'Nama lengkap'}
+            </h2>
+            <div className="dk-identity-sub">
+              {form.nama_panggilan ? `Panggilan: ${form.nama_panggilan}` : 'Pengawas'}
+            </div>
+            <div className="dk-identity-note">Pratinjau — terisi saat kamu mengetik</div>
+          </div>
+        </aside>
 
-      <EntityFormCard title="Informasi Pengawas" description="Data pengawas yang akan ditambahkan">
-        <FormField
-          label="Nama Lengkap"
-          name="nama_lengkap"
-          required
-          invalid={fieldSalah === 'nama_lengkap'}
-          value={form.nama_lengkap}
-          onChange={handleChange}
-        />
-        <FormField
-          label="Nama Panggilan"
-          name="nama_panggilan"
-          value={form.nama_panggilan}
-          onChange={handleChange}
-        />
-        <FormField
-          label="Nomor KTP"
-          name="nomor_ktp"
-          value={form.nomor_ktp}
-          onChange={handleChange}
-        />
-        <FormField
-          label="Tanggal Lahir"
-          name="tanggal_lahir"
-          value={form.tanggal_lahir}
-          onChange={handleChange}
-          type="date"
-        />
-        <FormField
-          label="Alamat"
-          name="alamat"
-          value={form.alamat}
-          onChange={handleChange}
-          type="textarea"
-        />
-        <FormField
-          label="Tanggal Bergabung"
-          name="tanggal_bergabung"
-          value={form.tanggal_bergabung}
-          onChange={handleChange}
-          type="date"
-        />
-      </EntityFormCard>
+        <section className="dk-card" aria-label="Informasi pengawas">
+          <div className="dk-card-head">
+            <h2 className="dk-card-title">Informasi pengawas</h2>
+            <div className="dk-card-sub">Kolom bertanda * wajib diisi.</div>
+          </div>
 
-      <EntitySubmitButton onClick={handleSubmit} loading={loading}>
-        Simpan Pengawas
-      </EntitySubmitButton>
+          <div className="dk-card-body">
+            <PengawasFormDesktop form={form} fieldSalah={fieldSalah} onChange={handleChange} />
+          </div>
+
+          <div className="dk-card-foot">
+            <button type="button" className="dk-btn" onClick={() => navigate('/pengawas')} disabled={loading}>
+              Batal
+            </button>
+            <button type="button" className="dk-btn dk-btn--primary" onClick={handleSubmit} disabled={loading}>
+              {loading ? 'Menyimpan...' : 'Simpan pengawas'}
+            </button>
+          </div>
+        </section>
+      </div>
     </div>
   );
 };
