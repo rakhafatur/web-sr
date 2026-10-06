@@ -1,16 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiUser, FiBriefcase } from 'react-icons/fi';
+import { FiBriefcase } from 'react-icons/fi';
 import { useMediaQuery } from 'react-responsive';
 import MobileFormPage from '../../../components/mobile/MobileFormPage';
 import { MobileTextField } from '../../../components/mobile/MobileFields';
 import { toast } from 'react-toastify';
 
-import FormField from '../../../components/FormField';
-import EntityPageHeader from '../../../components/EntityPageHeader';
-import EntityHeroCard from '../../../components/EntityHeroCard';
-import EntityFormCard from '../../../components/EntityFormCard';
-import EntitySubmitButton from '../../../components/EntitySubmitButton';
+import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
+import DesktopField from '../../../components/desktop/DesktopField';
 import { supabase } from '../../../lib/supabaseClient';
 import { validasiWajib } from '../../../utils/validasiForm';
 
@@ -20,7 +17,7 @@ const CreateAgent = () => {
   const [form, setForm] = useState({ nama_agent: '' });
   const [loading, setLoading] = useState(false);
   const [fieldSalah, setFieldSalah] = useState<string | null>(null);
-  // Mobile: MobileFormPage (Header app dicabut di MainLayout). Desktop: lama.
+  // Mobile: MobileFormPage (Header app dicabut di MainLayout). Desktop: dk-.
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -86,35 +83,63 @@ const CreateAgent = () => {
     );
   }
 
+  // Desktop (gaya baru dk-, sama dengan Tambah User): pratinjau identitas
+  // (terisi saat mengetik) & kartu form.
   return (
-    <div className="page-shell py-4 px-md-4 px-3" style={{ maxWidth: 760 }}>
-      <EntityPageHeader
-        backTo="/agent"
-        icon={<FiUser />}
-        title="Tambah Agent"
+    <div className="page-shell dk-page">
+      <DesktopPageHeader
+        back={{ to: '/agent', label: 'Agent' }}
+        title="Tambah agent"
         description="Tambahkan agent baru ke sistem SR Agency"
       />
 
-      <EntityHeroCard
-        icon={<FiUser />}
-        title="Agent Management"
-        subtitle="Lengkapi informasi agent dengan benar sebelum menyimpan data"
-      />
+      <div className="dk-detail-grid">
+        <aside className="dk-card" aria-label="Pratinjau agent">
+          <div className="dk-identity">
+            <span className={`dk-avatar ${form.nama_agent ? '' : 'is-empty'}`} aria-hidden>
+              {(form.nama_agent || '?').charAt(0).toUpperCase()}
+            </span>
+            <h2 className={`dk-identity-name ${form.nama_agent ? '' : 'is-placeholder'}`}>
+              {form.nama_agent || 'Nama agent'}
+            </h2>
+            <div className="dk-identity-sub">Agent</div>
+            <div className="dk-identity-note">Pratinjau — terisi saat kamu mengetik</div>
+          </div>
+        </aside>
 
-      <EntityFormCard title="Informasi Agent" description="Data agent yang akan ditambahkan">
-        <FormField
-          label="Nama Agent"
-          name="nama_agent"
-          required
-          invalid={fieldSalah === 'nama_agent'}
-          value={form.nama_agent}
-          onChange={handleChange}
-        />
-      </EntityFormCard>
+        <section className="dk-card" aria-label="Informasi agent">
+          <div className="dk-card-head">
+            <h2 className="dk-card-title">Informasi agent</h2>
+            <div className="dk-card-sub">Kolom bertanda * wajib diisi.</div>
+          </div>
 
-      <EntitySubmitButton onClick={handleSubmit} loading={loading}>
-        Simpan Agent
-      </EntitySubmitButton>
+          <div className="dk-card-body">
+            <div className="dk-form-grid">
+              <DesktopField label="Nama agent" htmlFor="dk-nama-agent" required>
+                <input
+                  id="dk-nama-agent"
+                  name="nama_agent"
+                  type="text"
+                  autoComplete="off"
+                  className={`dk-input ${fieldSalah === 'nama_agent' ? 'is-invalid' : ''}`}
+                  aria-invalid={fieldSalah === 'nama_agent' || undefined}
+                  value={form.nama_agent}
+                  onChange={handleChange}
+                />
+              </DesktopField>
+            </div>
+          </div>
+
+          <div className="dk-card-foot">
+            <button type="button" className="dk-btn" onClick={() => navigate('/agent')} disabled={loading}>
+              Batal
+            </button>
+            <button type="button" className="dk-btn dk-btn--primary" onClick={handleSubmit} disabled={loading}>
+              {loading ? 'Menyimpan...' : 'Simpan agent'}
+            </button>
+          </div>
+        </section>
+      </div>
     </div>
   );
 };

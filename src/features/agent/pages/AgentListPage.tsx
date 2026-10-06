@@ -1,16 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import { useEntityList } from '../../../hooks/useEntityList';
-import DataTable from '../../../components/DataTable';
-import ActionIconButton from '../../../components/ActionIconButton';
-import Pagination from '../../../components/Pagination';
 import MobileListPage from '../../../components/mobile/MobileListPage';
+import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
+import DesktopListCard from '../../../components/desktop/DesktopListCard';
 import { useMediaQuery } from 'react-responsive';
-import { FiPlus, FiEdit2, FiTrash2, FiUser } from 'react-icons/fi';
-import ListPageHeader from '../../../components/ListPageHeader';
-import HeaderActionButton from '../../../components/HeaderActionButton';
-import ListPageToolbar from '../../../components/ListPageToolbar';
-import ListLoadingState from '../../../components/ListLoadingState';
-import PullToRefresh from '../../../components/PullToRefresh';
+import { FiPlus, FiTrash2, FiUser, FiBriefcase, FiChevronRight } from 'react-icons/fi';
 
 export type Agent = {
   id: string;
@@ -26,6 +20,7 @@ const AgentListPage = () => {
     list: agentList,
     page,
     setPage,
+    total,
     totalPages,
     keyword,
     setKeyword,
@@ -36,7 +31,7 @@ const AgentListPage = () => {
 
   const handleDelete = (id: string) => remove(id, 'Yakin ingin hapus agent ini?');
 
-  // Mobile: MobileListPage (Header app dicabut di MainLayout). Desktop: lama.
+  // Mobile: MobileListPage (Header app dicabut di MainLayout). Desktop: dk-.
   if (isMobile) {
     return (
       <MobileListPage
@@ -64,80 +59,93 @@ const AgentListPage = () => {
     );
   }
 
+  // Desktop (gaya baru dk-, sama dengan Users): header polos, satu kartu
+  // dengan cari & tabel beravatar; seluruh baris membuka detail.
   return (
-    <PullToRefresh onRefresh={refetch}>
-    <div
-      className="page-shell p-4"
-      style={{
-        color: 'var(--color-dark)',
-      }}
-    >
-      <ListPageHeader
-        icon={<FiUser />}
-        title="Management Agent"
+    <div className="page-shell dk-page">
+      <DesktopPageHeader
+        title="Agent"
         description="Kelola data agent SR Agency"
         actions={
-          <HeaderActionButton
-            icon={<FiPlus />}
-            onClick={() => navigate('/agent-create')}
-          >
-            Tambah Agent
-          </HeaderActionButton>
+          <button type="button" className="dk-btn dk-btn--primary" onClick={() => navigate('/agent-create')}>
+            <FiPlus aria-hidden />
+            Tambah agent
+          </button>
         }
       />
 
-      <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
-        <ListPageToolbar
-          title="List Agent"
-          subtitle="Data agent"
-          placeholder="Cari agent..."
-          keyword={keyword}
-          onKeywordChange={(value) => {
-            setPage(1);
-            setKeyword(value);
-          }}
-        />
-
-        {/* BODY */}
-        <div className="p-2 p-md-3">
-          {loading ? (
-            <ListLoadingState label="Memuat data agent" />
-          ) : (
-            <DataTable
-              columns={[
-                { key: 'nama_agent', label: 'Nama Agent' },
-                {
-                  key: 'id',
-                  label: 'Aksi',
-                  render: (a: Agent) => (
-                    <div className="d-flex gap-2">
-                      <ActionIconButton
-                        icon={<FiEdit2 size={16} />}
-                        variant="warning"
-                        title="Edit"
-                        onClick={() => navigate(`/agent-detail/${a.id}`)}
-                      />
-                      <ActionIconButton
-                        icon={<FiTrash2 size={16} />}
-                        variant="danger"
-                        title="Hapus"
-                        onClick={() => handleDelete(a.id)}
-                      />
-                    </div>
-                  ),
-                },
-              ]}
-              data={agentList}
-            />
-          )}
-
-          {totalPages > 1 && (
-            <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
-          )}
-        </div>
-      </div>
+      <DesktopListCard
+        label="Daftar agent"
+        keyword={keyword}
+        onKeywordChange={(v) => {
+          setPage(1);
+          setKeyword(v);
+        }}
+        searchPlaceholder="Cari agent..."
+        countText={`${total} agent`}
+        loading={loading}
+        loadingLabel="Memuat data agent"
+        isEmpty={agentList.length === 0}
+        empty={{
+          icon: <FiBriefcase />,
+          title: keyword ? 'Agent tidak ditemukan' : 'Belum ada agent',
+          text: keyword ? 'Coba kata kunci lain.' : 'Klik "Tambah agent" untuk menambah agent pertama.',
+        }}
+        page={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      >
+        <table className="dk-table">
+          <thead>
+            <tr>
+              <th scope="col">Nama agent</th>
+              <th scope="col" className="dk-col-actions">
+                <span className="visually-hidden">Aksi</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {agentList.map((a) => (
+              <tr key={a.id} className="is-clickable" onClick={() => navigate(`/agent-detail/${a.id}`)}>
+                <td>
+                  <div className="dk-person">
+                    <span className="dk-avatar" aria-hidden>
+                      {(a.nama_agent || '?').charAt(0).toUpperCase()}
+                    </span>
+                    {/* Tombol supaya baris juga bisa dibuka lewat keyboard. */}
+                    <button
+                      type="button"
+                      className="dk-person-name"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/agent-detail/${a.id}`);
+                      }}
+                    >
+                      {a.nama_agent}
+                    </button>
+                  </div>
+                </td>
+                <td className="dk-col-actions">
+                  <button
+                    type="button"
+                    className="dk-icon-btn dk-icon-btn--danger"
+                    title="Hapus"
+                    aria-label={`Hapus ${a.nama_agent}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(a.id);
+                    }}
+                  >
+                    <FiTrash2 />
+                  </button>
+                  <FiChevronRight className="dk-row-chevron" aria-hidden />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </DesktopListCard>
     </div>
-    </PullToRefresh>
   );
 };
 
