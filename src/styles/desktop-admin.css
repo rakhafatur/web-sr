@@ -1253,6 +1253,11 @@ textarea.dk-input {
   overflow-wrap: anywhere;
 }
 
+.dk-kpi-sub {
+  font-size: 12px;
+  color: var(--color-gray-600);
+}
+
 /* Data bulan sebelumnya ditahan redup selama data baru dimuat. */
 .dk-refetching {
   opacity: 0.55;

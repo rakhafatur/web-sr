@@ -6,6 +6,21 @@
  * menghitung posisi batang, tanpa membaca harga/konstanta apa pun.
  */
 
+/**
+ * Bersih ladies sebulan, dari sudut pandang ladies — sama dengan arah
+ * Buku Kuning: voucher (bagian ladies) & pemasukan lain menambah, kasbon &
+ * dokter mengurangi. Minus = pengeluaran ladies bulan itu lebih besar dari
+ * yang didapat. (Untung agency ada di Rekap Voucher, bukan di sini.)
+ */
+export function hitungBersihLadies(row: {
+  pendapatanVoucher: number;
+  pemasukan: number;
+  kasbon: number;
+  dokter: number;
+}): number {
+  return row.pendapatanVoucher + row.pemasukan - row.kasbon - row.dokter;
+}
+
 /** Bentuk minimal satu baris performa yang dipakai ringkasan. */
 export type BarisPerforma = {
   voucherTotal: number;
@@ -13,6 +28,7 @@ export type BarisPerforma = {
   pendapatanVoucher: number;
   pemasukan: number;
   kasbon: number;
+  dokter: number;
   total: number;
 };
 
@@ -25,27 +41,48 @@ export type RingkasanPerforma = {
   ladiesBervoucher: number;
   pendapatanVoucher: number;
   pemasukan: number;
+  /** Yang didapat ladies: bagian voucher + pemasukan lain. */
+  didapat: number;
   kasbon: number;
-  /** Pendapatan voucher + pemasukan lain − kasbon. */
+  dokter: number;
+  /** Jumlah kolom `total` (bersih) tiap ladies. */
   total: number;
+  /** Jumlah ladies yang bersihnya minus bulan itu. */
+  ladiesMinus: number;
 };
 
 export function ringkasPerforma(rows: BarisPerforma[]): RingkasanPerforma {
-  const r = rows.reduce<Omit<RingkasanPerforma, 'voucherPerHari'>>(
+  const r = rows.reduce<Omit<RingkasanPerforma, 'voucherPerHari' | 'didapat'>>(
     (acc, row) => {
       acc.voucherTotal += row.voucherTotal;
       acc.masuk += row.masuk;
       acc.pendapatanVoucher += row.pendapatanVoucher;
       acc.pemasukan += row.pemasukan;
       acc.kasbon += row.kasbon;
+      acc.dokter += row.dokter;
       acc.total += row.total;
       if (row.voucherTotal > 0) acc.ladiesBervoucher += 1;
+      if (row.total < 0) acc.ladiesMinus += 1;
       return acc;
     },
-    { voucherTotal: 0, masuk: 0, pendapatanVoucher: 0, pemasukan: 0, kasbon: 0, total: 0, ladiesBervoucher: 0 }
+    {
+      voucherTotal: 0,
+      masuk: 0,
+      pendapatanVoucher: 0,
+      pemasukan: 0,
+      kasbon: 0,
+      dokter: 0,
+      total: 0,
+      ladiesBervoucher: 0,
+      ladiesMinus: 0,
+    }
   );
 
-  return { ...r, voucherPerHari: r.masuk > 0 ? r.voucherTotal / r.masuk : 0 };
+  return {
+    ...r,
+    voucherPerHari: r.masuk > 0 ? r.voucherTotal / r.masuk : 0,
+    didapat: r.pendapatanVoucher + r.pemasukan,
+  };
 }
 
 /**

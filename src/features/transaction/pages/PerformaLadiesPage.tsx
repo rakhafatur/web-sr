@@ -18,11 +18,15 @@ import Skeleton from '../../../components/Skeleton';
 import MobilePageBar from '../../../components/MobilePageBar';
 import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
 import MonthPill from '../../ladies/components/MonthPill';
-import { ringkasPerforma, posisiBatang } from '../utils/ringkasPerforma';
+import { ringkasPerforma, posisiBatang, hitungBersihLadies } from '../utils/ringkasPerforma';
 import '../../../styles/mobile-admin.css';
 import '../../../styles/desktop-admin.css';
 
 const formatRupiah = (n: number) => `Rp${n.toLocaleString('id-ID')}`;
+
+/** Bersih bertanda: "+Rp1.300.000" / "−Rp650.000" / "Rp0" — plus/minus terbaca tanpa warna. */
+const formatBersih = (n: number) =>
+  n === 0 ? 'Rp0' : `${n > 0 ? '+' : '−'}Rp${Math.abs(n).toLocaleString('id-ID')}`;
 
 type Lady = {
   id: string;
@@ -37,13 +41,23 @@ type PerformaSummary = {
   voucherTotal: number;
   voucherAvg: number;
   kasbon: number;
+  dokter: number;
   pemasukan: number;
   masuk: number;
   pendapatanVoucher: number;
+  /** Bersih ladies bulan itu — lihat hitungBersihLadies. */
   total: number;
 };
 
-type KunciAngka = 'voucherTotal' | 'masuk' | 'voucherAvg' | 'total' | 'pendapatanVoucher' | 'pemasukan' | 'kasbon';
+type KunciAngka =
+  | 'voucherTotal'
+  | 'masuk'
+  | 'voucherAvg'
+  | 'total'
+  | 'pendapatanVoucher'
+  | 'pemasukan'
+  | 'kasbon'
+  | 'dokter';
 type KunciUrut = KunciAngka | 'nama_ladies';
 
 /** Kolom tabel desktop per mode. Kolom pertama = ukuran utama (diberi batang). */
@@ -60,11 +74,13 @@ const KOLOM_PERFORMA: Record<
       format: (n) => n.toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 1 }),
     },
   ],
+  // Sudut pandang ladies (bukan untung agency — itu di Rekap Voucher).
   pendapatan: [
-    { key: 'total', label: 'Total bersih', format: formatRupiah },
+    { key: 'total', label: 'Bersih bulan ini', format: formatBersih },
     { key: 'pendapatanVoucher', label: 'Dari voucher', format: formatRupiah },
     { key: 'pemasukan', label: 'Pemasukan lain', format: formatRupiah },
     { key: 'kasbon', label: 'Kasbon', format: formatRupiah },
+    { key: 'dokter', label: 'Dokter', format: formatRupiah },
   ],
 };
 
@@ -99,12 +115,21 @@ const PerformaLadiesPage = () => {
       const startDate = dayjs(`${tahun}-${monthStr}-01`).startOf('month');
       const endDate = dayjs(`${tahun}-${monthStr}-01`).endOf('month');
 
-      const [vouchers, kasbon, pemasukan, absensi] = await Promise.all([
+      const [vouchers, kasbon, pemasukan, dokter, absensi] = await Promise.all([
         supabase.from('vouchers').select('jumlah, jumlah_voucher, tanggal, ladies_id').gte('tanggal', startDate.format('YYYY-MM-DD')).lte('tanggal', endDate.format('YYYY-MM-DD')),
         supabase.from('kasbon').select('jumlah, tanggal, ladies_id').gte('tanggal', startDate.format('YYYY-MM-DD')).lte('tanggal', endDate.format('YYYY-MM-DD')),
         supabase.from('pemasukan_lain').select('jumlah, tanggal, ladies_id').gte('tanggal', startDate.format('YYYY-MM-DD')).lte('tanggal', endDate.format('YYYY-MM-DD')),
+        supabase.from('dokter').select('jumlah, tanggal, ladies_id').gte('tanggal', startDate.format('YYYY-MM-DD')).lte('tanggal', endDate.format('YYYY-MM-DD')),
         supabase.from('absensi').select('status, tanggal, ladies_id').gte('tanggal', startDate.format('YYYY-MM-DD')).lte('tanggal', endDate.format('YYYY-MM-DD')),
       ]);
+
+      // Dokter ikut dibaca: tanpa ini "bersih" tidak mengurangi biaya dokter
+      // dan tidak sama dengan Buku Kuning. Satu sumber gagal = tampilkan
+      // error, jangan angka bersih yang diam-diam salah (sebelumnya tabel
+      // yang gagal dianggap kosong/0).
+      for (const hasil of [vouchers, kasbon, pemasukan, dokter, absensi]) {
+        if (hasil.error) throw hasil.error;
+      }
 
       const summaryMap: Record<string, PerformaSummary> = {};
 
@@ -116,6 +141,7 @@ const PerformaLadiesPage = () => {
           voucherTotal: 0,
           voucherAvg: 0,
           kasbon: 0,
+          dokter: 0,
           pemasukan: 0,
           masuk: 0,
           pendapatanVoucher: 0,
@@ -138,6 +164,10 @@ const PerformaLadiesPage = () => {
         if (p.ladies_id && summaryMap[p.ladies_id]) summaryMap[p.ladies_id].pemasukan += Number(p.jumlah || 0);
       });
 
+      (dokter.data || []).forEach((d) => {
+        if (d.ladies_id && summaryMap[d.ladies_id]) summaryMap[d.ladies_id].dokter += Number(d.jumlah || 0);
+      });
+
       (absensi.data || []).forEach((a) => {
         const id = a.ladies_id;
         const status = (a.status || '').toLowerCase();
@@ -148,7 +178,7 @@ const PerformaLadiesPage = () => {
       return Object.values(summaryMap).map((row) => ({
         ...row,
         voucherAvg: row.masuk > 0 ? row.voucherTotal / row.masuk : 0,
-        total: row.pemasukan + row.pendapatanVoucher - row.kasbon,
+        total: hitungBersihLadies(row),
       }));
     },
     enabled: ladiesList.length > 0,
@@ -277,7 +307,7 @@ const PerformaLadiesPage = () => {
                         <div className="tm-row-sub" style={{ whiteSpace: 'normal' }}>
                           {mode === 'aktivitas'
                             ? `${row.nama_outlet} · ${row.masuk} hari masuk · ${row.voucherAvg.toFixed(1)}/hari`
-                            : `Voucher ${formatRupiah(row.pendapatanVoucher)} · Lain ${formatRupiah(row.pemasukan)} · Kasbon ${formatRupiah(row.kasbon)}`}
+                            : `Voucher ${formatRupiah(row.pendapatanVoucher)} · Lain ${formatRupiah(row.pemasukan)} · Kasbon ${formatRupiah(row.kasbon)} · Dokter ${formatRupiah(row.dokter)}`}
                         </div>
                       </div>
                       <span
@@ -377,7 +407,7 @@ const PerformaLadiesPage = () => {
     );
   };
 
-  const kartuAngka =
+  const kartuAngka: { label: string; nilai: string; sub?: string; utama?: boolean }[] =
     mode === 'aktivitas'
       ? [
           { label: 'Total voucher', nilai: `${ringkas.voucherTotal.toLocaleString('id-ID')} pcs` },
@@ -389,21 +419,40 @@ const PerformaLadiesPage = () => {
           { label: 'Ladies menjual voucher', nilai: `${ringkas.ladiesBervoucher} dari ${data.length}` },
         ]
       : [
-          { label: 'Dari voucher', nilai: formatRupiah(ringkas.pendapatanVoucher) },
-          { label: 'Pemasukan lain', nilai: formatRupiah(ringkas.pemasukan) },
+          {
+            label: 'Didapat ladies',
+            nilai: formatRupiah(ringkas.didapat),
+            sub: `Voucher ${formatRupiah(ringkas.pendapatanVoucher)} · Lain ${formatRupiah(ringkas.pemasukan)}`,
+          },
           { label: 'Kasbon', nilai: formatRupiah(ringkas.kasbon) },
-          { label: 'Total bersih', nilai: formatRupiah(ringkas.total), utama: true },
+          { label: 'Dokter', nilai: formatRupiah(ringkas.dokter) },
+          {
+            label: 'Bersih bulan ini',
+            nilai: formatBersih(ringkas.total),
+            sub: ringkas.ladiesMinus > 0 ? `${ringkas.ladiesMinus} ladies minus` : 'Tidak ada ladies minus',
+            utama: true,
+          },
         ];
+
+  // Label mode di web lebih spesifik daripada mobile: angkanya milik ladies,
+  // bukan untung agency (untung ada di Rekap Voucher).
+  const modeOptionsDesktop = modeOptions.map((opt) =>
+    opt.value === 'pendapatan' ? { ...opt, label: 'Keuangan ladies' } : opt
+  );
 
   return (
     <div className="page-shell dk-page">
       <DesktopPageHeader
         title="Performa ladies"
-        description="Aktivitas & pendapatan ladies per bulan"
+        description={
+          mode === 'aktivitas'
+            ? 'Voucher & kehadiran ladies per bulan'
+            : 'Yang didapat, kasbon, dokter, dan bersih tiap ladies — plus atau minus bulan ini'
+        }
         actions={
           <>
             <div className="dk-segmented" role="tablist" aria-label="Mode tampilan">
-              {modeOptions.map((opt) => (
+              {modeOptionsDesktop.map((opt) => (
                 <button
                   key={opt.value}
                   type="button"
@@ -463,9 +512,10 @@ const PerformaLadiesPage = () => {
         <div className={memuatUlang ? 'dk-refetching' : undefined} aria-busy={memuatUlang || undefined}>
           <section className="dk-kpis" aria-label={`Ringkasan ${labelBulan}`}>
             {kartuAngka.map((k) => (
-              <div key={k.label} className={`dk-kpi ${'utama' in k && k.utama ? 'is-main' : ''}`}>
+              <div key={k.label} className={`dk-kpi ${k.utama ? 'is-main' : ''}`}>
                 <span className="dk-kpi-label">{k.label}</span>
                 <span className="dk-kpi-value">{k.nilai}</span>
+                {k.sub && <span className="dk-kpi-sub">{k.sub}</span>}
               </div>
             ))}
           </section>
