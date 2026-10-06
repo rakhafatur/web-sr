@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMediaQuery } from 'react-responsive';
 import { toast } from 'react-toastify';
@@ -8,7 +8,6 @@ import {
   FiEdit2,
   FiTrash2,
   FiChevronDown,
-  FiChevronUp,
   FiSearch,
 } from 'react-icons/fi';
 
@@ -16,19 +15,16 @@ import { supabase } from '../../../lib/supabaseClient';
 import { validasiWajib, validasiAngka } from '../../../utils/validasiForm';
 import { useEntityList } from '../../../hooks/useEntityList';
 import { confirmDialog } from '../../../components/ConfirmDialog';
-import ListPageHeader from '../../../components/ListPageHeader';
-import HeaderActionButton from '../../../components/HeaderActionButton';
-import ListPageToolbar from '../../../components/ListPageToolbar';
 import ListLoadingState from '../../../components/ListLoadingState';
 import PullToRefresh from '../../../components/PullToRefresh';
-import ActionIconButton from '../../../components/ActionIconButton';
 import ModalWrapper from '../../../components/ModalWrapper';
-import FormField from '../../../components/FormField';
-import Button from '../../../components/Button';
 import Pagination from '../../../components/Pagination';
-import EmptyState from '../../../components/EmptyState';
 import MobilePageBar from '../../../components/MobilePageBar';
+import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
+import DesktopListCard from '../../../components/desktop/DesktopListCard';
+import DesktopField from '../../../components/desktop/DesktopField';
 import '../../../styles/mobile-admin.css';
+import '../../../styles/desktop-admin.css';
 
 type Outlet = {
   id: string;
@@ -55,6 +51,7 @@ const OutletListPage = () => {
     list: outlets,
     page,
     setPage,
+    total,
     totalPages,
     keyword,
     setKeyword,
@@ -259,26 +256,48 @@ const OutletListPage = () => {
     </div>
   );
 
+  /** Saklar Aktif untuk form desktop — baris berlabel + teks bantuan opsional. */
+  const saklarAktifDesktop = (id: string, checked: boolean, onToggle: () => void, help?: string) => (
+    <div className="dk-field--full">
+      <div className="dk-switch-row">
+        <div>
+          <span id={id} className="dk-switch-label">Aktif</span>
+          {help && <div className="dk-help" style={{ marginTop: 2 }}>{help}</div>}
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={checked}
+          aria-labelledby={id}
+          className="dk-switch"
+          onClick={onToggle}
+        />
+      </div>
+    </div>
+  );
+
+  /** Footer dialog versi desktop: Batal / Simpan rata kanan. */
+  const footerDesktop = (onBatal: () => void, onSimpan: () => void) => (
+    <div className="dk-modal-foot">
+      <button type="button" className="dk-btn" onClick={onBatal}>Batal</button>
+      <button type="button" className="dk-btn dk-btn--primary" onClick={onSimpan}>Simpan</button>
+    </div>
+  );
+
+  const judulModal = (teks: string) =>
+    isMobile ? <div className="fw-bold">{teks}</div> : <div className="dk-card-title">{teks}</div>;
+
   const modals = (
     <>
       {/* OUTLET MODAL */}
       <ModalWrapper
         show={outletModal.show}
-        title={<div className="fw-bold">{outletModal.editId ? 'Edit Outlet' : 'Tambah Outlet'}</div>}
+        title={judulModal(outletModal.editId ? 'Ubah outlet' : 'Tambah outlet')}
         onClose={tutupOutletModal}
         footer={
-          isMobile ? (
-            footerMobile(tutupOutletModal, handleSaveOutlet)
-          ) : (
-            <div className="d-flex gap-2 justify-content-end">
-              <Button variant="secondary" onClick={tutupOutletModal}>
-                Batal
-              </Button>
-              <Button variant="primary" onClick={handleSaveOutlet}>
-                Simpan
-              </Button>
-            </div>
-          )
+          isMobile
+            ? footerMobile(tutupOutletModal, handleSaveOutlet)
+            : footerDesktop(tutupOutletModal, handleSaveOutlet)
         }
       >
         {isMobile ? (
@@ -305,55 +324,40 @@ const OutletListPage = () => {
             )}
           </div>
         ) : (
-          <>
-            <FormField
-              label="Nama Outlet"
-              name="nama_outlet"
-              required
-              invalid={fieldSalah === 'nama_outlet'}
-              value={outletForm.nama_outlet}
-              onChange={(e) => {
-                setFieldSalah(null);
-                setOutletForm((p) => ({ ...p, nama_outlet: e.target.value }));
-              }}
-            />
-
-            <FormField label="Status">
-              <div className="form-check">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="outlet-active"
-                  checked={outletForm.is_active}
-                  onChange={(e) => setOutletForm((p) => ({ ...p, is_active: e.target.checked }))}
-                />
-                <label className="form-check-label" htmlFor="outlet-active">
-                  Aktif
-                </label>
-              </div>
-            </FormField>
-          </>
+          <div className="dk-form-grid dk-form-grid--single">
+            <DesktopField label="Nama outlet" htmlFor="dk-outlet-nama" required>
+              <input
+                id="dk-outlet-nama"
+                type="text"
+                autoComplete="off"
+                className={`dk-input ${fieldSalah === 'nama_outlet' ? 'is-invalid' : ''}`}
+                aria-invalid={fieldSalah === 'nama_outlet' || undefined}
+                value={outletForm.nama_outlet}
+                onChange={(e) => {
+                  setFieldSalah(null);
+                  setOutletForm((p) => ({ ...p, nama_outlet: e.target.value }));
+                }}
+              />
+            </DesktopField>
+            {saklarAktifDesktop(
+              'dk-outlet-aktif',
+              outletForm.is_active,
+              () => setOutletForm((p) => ({ ...p, is_active: !p.is_active })),
+              'Outlet nonaktif tidak muncul di pilihan outlet pada form Ladies.'
+            )}
+          </div>
         )}
       </ModalWrapper>
 
       {/* TIER MODAL */}
       <ModalWrapper
         show={tierModal.show}
-        title={<div className="fw-bold">{tierModal.editId ? 'Edit Tier' : 'Tambah Tier'}</div>}
+        title={judulModal(tierModal.editId ? 'Ubah tier harga' : 'Tambah tier harga')}
         onClose={closeTierModal}
         footer={
-          isMobile ? (
-            footerMobile(closeTierModal, handleSaveTier)
-          ) : (
-            <div className="d-flex gap-2 justify-content-end">
-              <Button variant="secondary" onClick={closeTierModal}>
-                Batal
-              </Button>
-              <Button variant="primary" onClick={handleSaveTier}>
-                Simpan
-              </Button>
-            </div>
-          )
+          isMobile
+            ? footerMobile(closeTierModal, handleSaveTier)
+            : footerDesktop(closeTierModal, handleSaveTier)
         }
       >
         {isMobile ? (
@@ -415,62 +419,71 @@ const OutletListPage = () => {
             )}
           </div>
         ) : (
-          <>
-            <FormField
-              label="Nama Tier (kosongkan kalau outlet ini tidak punya tier)"
-              name="tier_name"
-              value={tierForm.tier_name}
-              onChange={(e) => setTierForm((p) => ({ ...p, tier_name: e.target.value }))}
-            />
+          <div className="dk-form-grid">
+            <DesktopField
+              label="Nama tier (opsional)"
+              htmlFor="dk-tier-nama"
+              full
+              help="Kosongkan kalau outlet ini hanya punya satu harga."
+            >
+              <input
+                id="dk-tier-nama"
+                type="text"
+                autoComplete="off"
+                className="dk-input"
+                placeholder="Mis. Reguler, VIP"
+                value={tierForm.tier_name}
+                onChange={(e) => setTierForm((p) => ({ ...p, tier_name: e.target.value }))}
+              />
+            </DesktopField>
 
-            <FormField
-              label="Harga Ladies (Rp)"
-              name="harga_ladies"
-              required
-              invalid={fieldSalah === 'harga_ladies'}
-              type="number"
-              value={tierForm.harga_ladies}
-              onChange={(e) => {
-                setFieldSalah((prev) => (prev === 'harga_ladies' ? null : prev));
-                setTierForm((p) => ({ ...p, harga_ladies: e.target.value }));
-              }}
-            />
-
-            <FormField
-              label="Untung (Rp)"
-              name="untung"
-              required
-              invalid={fieldSalah === 'untung'}
-              type="number"
-              value={tierForm.untung}
-              onChange={(e) => {
-                setFieldSalah((prev) => (prev === 'untung' ? null : prev));
-                setTierForm((p) => ({ ...p, untung: e.target.value }));
-              }}
-            />
-
-            <FormField label="Status">
-              <div className="form-check">
+            <DesktopField label="Harga ladies" htmlFor="dk-tier-harga" required>
+              <div className="dk-input-wrap">
+                <span className="dk-prefix" aria-hidden>Rp</span>
                 <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="tier-active"
-                  checked={tierForm.is_active}
-                  onChange={(e) => setTierForm((p) => ({ ...p, is_active: e.target.checked }))}
+                  id="dk-tier-harga"
+                  type="number"
+                  inputMode="numeric"
+                  className={`dk-input dk-input--prefix ${fieldSalah === 'harga_ladies' ? 'is-invalid' : ''}`}
+                  aria-invalid={fieldSalah === 'harga_ladies' || undefined}
+                  value={tierForm.harga_ladies}
+                  onChange={(e) => {
+                    setFieldSalah((prev) => (prev === 'harga_ladies' ? null : prev));
+                    setTierForm((p) => ({ ...p, harga_ladies: e.target.value }));
+                  }}
                 />
-                <label className="form-check-label" htmlFor="tier-active">
-                  Aktif
-                </label>
               </div>
-            </FormField>
-          </>
+            </DesktopField>
+
+            <DesktopField label="Untung" htmlFor="dk-tier-untung" required>
+              <div className="dk-input-wrap">
+                <span className="dk-prefix" aria-hidden>Rp</span>
+                <input
+                  id="dk-tier-untung"
+                  type="number"
+                  inputMode="numeric"
+                  className={`dk-input dk-input--prefix ${fieldSalah === 'untung' ? 'is-invalid' : ''}`}
+                  aria-invalid={fieldSalah === 'untung' || undefined}
+                  value={tierForm.untung}
+                  onChange={(e) => {
+                    setFieldSalah((prev) => (prev === 'untung' ? null : prev));
+                    setTierForm((p) => ({ ...p, untung: e.target.value }));
+                  }}
+                />
+              </div>
+            </DesktopField>
+
+            {saklarAktifDesktop('dk-tier-aktif', tierForm.is_active, () =>
+              setTierForm((p) => ({ ...p, is_active: !p.is_active }))
+            )}
+          </div>
         )}
       </ModalWrapper>
     </>
   );
 
   // Mobile: tampilan baru selaras halaman admin lain (Header app dicabut di
-  // MainLayout). Desktop: tampilan lama di bawah. CRUD-nya sama.
+  // MainLayout). Desktop: gaya dk- di bawah. CRUD-nya sama.
   if (isMobile) {
     const tiers = tiersQuery.data ?? [];
 
@@ -619,175 +632,205 @@ const OutletListPage = () => {
     );
   }
 
+  // Desktop (gaya baru dk-, sama dengan Users): satu kartu dengan cari &
+  // tabel outlet. Klik baris membuka tier harganya di bawah baris itu; ubah
+  // & hapus outlet lewat ikon (outlet tidak punya halaman detail).
+  const tiers = tiersQuery.data ?? [];
+
   return (
-    <PullToRefresh onRefresh={refetch}>
-    <div className="page-shell py-4 px-md-4 px-3">
-      <ListPageHeader
-        icon={<FiMapPin />}
-        title="Management Outlet"
+    <div className="page-shell dk-page">
+      <DesktopPageHeader
+        title="Outlet"
         description="Kelola outlet & harga voucher per tier"
         actions={
-          <HeaderActionButton icon={<FiPlus />} onClick={openAddOutlet} fullWidth={isMobile}>
-            Tambah Outlet
-          </HeaderActionButton>
+          <button type="button" className="dk-btn dk-btn--primary" onClick={openAddOutlet}>
+            <FiPlus aria-hidden />
+            Tambah outlet
+          </button>
         }
       />
 
-      <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
-        <ListPageToolbar
-          title="List Outlet"
-          subtitle="Data outlet"
-          placeholder="Cari outlet..."
-          keyword={keyword}
-          onKeywordChange={(value) => {
-            setPage(1);
-            setKeyword(value);
-          }}
-        />
+      <DesktopListCard
+        label="Daftar outlet"
+        keyword={keyword}
+        onKeywordChange={(v) => {
+          setPage(1);
+          setKeyword(v);
+        }}
+        searchPlaceholder="Cari outlet..."
+        countText={`${total} outlet`}
+        loading={loading}
+        loadingLabel="Memuat data outlet"
+        isEmpty={outlets.length === 0}
+        empty={{
+          icon: <FiMapPin />,
+          title: keyword ? 'Outlet tidak ditemukan' : 'Belum ada outlet',
+          text: keyword ? 'Coba kata kunci lain.' : 'Klik "Tambah outlet" untuk menambah outlet pertama.',
+        }}
+        page={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      >
+        <table className="dk-table">
+          <thead>
+            <tr>
+              <th scope="col">Outlet</th>
+              <th scope="col">Status</th>
+              <th scope="col" className="dk-col-actions">
+                <span className="visually-hidden">Aksi</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {outlets.map((o) => {
+              const isExpanded = expandedId === o.id;
+              const toggle = () => setExpandedId(isExpanded ? null : o.id);
 
-        <div className="p-2 p-md-3">
-          {loading ? (
-            <ListLoadingState label="Memuat data outlet" />
-          ) : outlets.length === 0 ? (
-            <EmptyState title="Belum ada outlet" />
-          ) : (
-            <div className="d-flex flex-column gap-2">
-              {outlets.map((o) => {
-                const isExpanded = expandedId === o.id;
-
-                return (
-                  <div
-                    key={o.id}
-                    className="rounded-4"
-                    style={{
-                      border: '1px solid var(--color-gray-200)',
-                      overflow: 'hidden',
-                    }}
-                  >
-                    <div
-                      className="d-flex align-items-center justify-content-between p-3"
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setExpandedId(isExpanded ? null : o.id)}
-                    >
-                      <div className="d-flex align-items-center gap-2">
-                        {isExpanded ? <FiChevronUp /> : <FiChevronDown />}
-                        <span className="fw-bold">{o.nama_outlet}</span>
-                        <span
-                          className="badge"
-                          style={{
-                            background: o.is_active
-                              ? 'var(--color-income-soft)'
-                              : 'var(--color-gray-200)',
-                            color: o.is_active
-                              ? 'var(--color-income)'
-                              : 'var(--color-gray-700)',
+              return (
+                <Fragment key={o.id}>
+                  <tr className={`is-clickable ${isExpanded ? 'is-expanded' : ''}`} onClick={toggle}>
+                    <td>
+                      <div className="dk-person">
+                        <span className="dk-avatar" aria-hidden><FiMapPin /></span>
+                        {/* Tombol supaya tier juga bisa dibuka lewat keyboard. */}
+                        <button
+                          type="button"
+                          className="dk-person-name"
+                          aria-expanded={isExpanded}
+                          aria-controls={`dk-tier-${o.id}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggle();
                           }}
                         >
-                          {o.is_active ? 'Aktif' : 'Nonaktif'}
-                        </span>
+                          {o.nama_outlet}
+                        </button>
                       </div>
-
-                      <div className="d-flex gap-2" onClick={(e) => e.stopPropagation()}>
-                        <ActionIconButton
-                          icon={<FiEdit2 size={16} />}
-                          variant="warning"
-                          title="Edit"
-                          onClick={() => openEditOutlet(o)}
-                        />
-                        <ActionIconButton
-                          icon={<FiTrash2 size={16} />}
-                          variant="danger"
-                          title="Hapus"
-                          onClick={() => handleDeleteOutlet(o)}
-                        />
-                      </div>
-                    </div>
-
-                    {isExpanded && (
-                      <div
-                        className="p-3 border-top"
-                        style={{
-                          background: 'var(--color-surface-2)',
-                          borderColor: 'var(--color-gray-200)',
+                    </td>
+                    <td>
+                      <span className={`dk-status ${o.is_active ? 'is-on' : 'is-muted'}`}>
+                        {o.is_active ? 'Aktif' : 'Nonaktif'}
+                      </span>
+                    </td>
+                    <td className="dk-col-actions">
+                      <button
+                        type="button"
+                        className="dk-icon-btn"
+                        title="Ubah outlet"
+                        aria-label={`Ubah ${o.nama_outlet}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openEditOutlet(o);
                         }}
                       >
-                        {tiersQuery.isLoading ? (
-                          <ListLoadingState label="Memuat tier harga" rows={2} />
-                        ) : (tiersQuery.data ?? []).length === 0 ? (
-                          <div
-                            className="mb-2"
-                            style={{ fontSize: '0.85rem', color: 'var(--color-gray-500)' }}
-                          >
-                            Belum ada tier harga untuk outlet ini.
-                          </div>
-                        ) : (
-                          <div className="d-flex flex-column gap-2 mb-3">
-                            {(tiersQuery.data ?? []).map((t) => (
-                              <div
-                                key={t.id}
-                                className="d-flex align-items-center justify-content-between p-2 rounded-3"
-                                style={{ background: 'var(--color-surface)' }}
-                              >
-                                <div>
-                                  <div className="fw-semibold">
-                                    {t.tier_name || 'Flat (tanpa tier)'}
-                                  </div>
-                                  <div
-                                    style={{
-                                      fontSize: '0.78rem',
-                                      color: 'var(--color-gray-500)',
-                                    }}
-                                  >
-                                    Ladies Rp{t.harga_ladies.toLocaleString('id-ID')} · Untung Rp
-                                    {t.untung.toLocaleString('id-ID')}
-                                    {!t.is_active && ' · Nonaktif'}
-                                  </div>
-                                </div>
+                        <FiEdit2 />
+                      </button>
+                      <button
+                        type="button"
+                        className="dk-icon-btn dk-icon-btn--danger"
+                        title="Hapus outlet"
+                        aria-label={`Hapus ${o.nama_outlet}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteOutlet(o);
+                        }}
+                      >
+                        <FiTrash2 />
+                      </button>
+                      <FiChevronDown
+                        className={`dk-row-chevron dk-row-chevron--down ${isExpanded ? 'is-open' : ''}`}
+                        aria-hidden
+                      />
+                    </td>
+                  </tr>
 
-                                <div className="d-flex gap-2">
-                                  <ActionIconButton
-                                    icon={<FiEdit2 size={14} />}
-                                    variant="warning"
-                                    title="Edit tier"
-                                    onClick={() => openEditTier(t)}
-                                  />
-                                  <ActionIconButton
-                                    icon={<FiTrash2 size={14} />}
-                                    variant="danger"
-                                    title="Hapus tier"
-                                    onClick={() => handleDeleteTier(t)}
-                                  />
-                                </div>
+                  {isExpanded && (
+                    <tr className="dk-subrow" id={`dk-tier-${o.id}`}>
+                      <td colSpan={3}>
+                        <div className="dk-subpanel">
+                          <div className="dk-subpanel-head">
+                            <div>
+                              <div className="dk-subpanel-title">Tier harga</div>
+                              <div className="dk-help" style={{ marginTop: 2 }}>
+                                Harga dibaca sekali saat transaksi voucher dibuat — mengubahnya tidak
+                                mengubah transaksi lama.
                               </div>
-                            ))}
+                            </div>
+                            <button type="button" className="dk-btn dk-btn--sm" onClick={() => openAddTier(o.id)}>
+                              <FiPlus aria-hidden />
+                              Tambah tier
+                            </button>
                           </div>
-                        )}
 
-                        <Button
-                          variant="secondary"
-                          size="md"
-                          icon={<FiPlus />}
-                          onClick={() => openAddTier(o.id)}
-                        >
-                          Tambah Tier
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {totalPages > 1 && (
-            <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
-          )}
-        </div>
-      </div>
+                          {tiersQuery.isLoading ? (
+                            <ListLoadingState label="Memuat tier harga" rows={2} />
+                          ) : tiers.length === 0 ? (
+                            <div className="dk-subpanel-empty">
+                              Belum ada tier harga — transaksi voucher untuk outlet ini akan diblokir
+                              sampai tier ditambahkan.
+                            </div>
+                          ) : (
+                            <table className="dk-subtable">
+                              <thead>
+                                <tr>
+                                  <th scope="col">Tier</th>
+                                  <th scope="col" className="dk-col-num">Harga ladies</th>
+                                  <th scope="col" className="dk-col-num">Untung</th>
+                                  <th scope="col">Status</th>
+                                  <th scope="col" className="dk-col-actions">
+                                    <span className="visually-hidden">Aksi</span>
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {tiers.map((t) => (
+                                  <tr key={t.id}>
+                                    <td>{t.tier_name || <span className="dk-muted">Flat (tanpa tier)</span>}</td>
+                                    <td className="dk-col-num dk-num">Rp{t.harga_ladies.toLocaleString('id-ID')}</td>
+                                    <td className="dk-col-num dk-num">Rp{t.untung.toLocaleString('id-ID')}</td>
+                                    <td>
+                                      <span className={`dk-status ${t.is_active ? 'is-on' : 'is-muted'}`}>
+                                        {t.is_active ? 'Aktif' : 'Nonaktif'}
+                                      </span>
+                                    </td>
+                                    <td className="dk-col-actions">
+                                      <button
+                                        type="button"
+                                        className="dk-icon-btn"
+                                        title="Ubah tier"
+                                        aria-label={`Ubah tier ${t.tier_name || 'Flat'}`}
+                                        onClick={() => openEditTier(t)}
+                                      >
+                                        <FiEdit2 />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        className="dk-icon-btn dk-icon-btn--danger"
+                                        title="Hapus tier"
+                                        aria-label={`Hapus tier ${t.tier_name || 'Flat'}`}
+                                        onClick={() => handleDeleteTier(t)}
+                                      >
+                                        <FiTrash2 />
+                                      </button>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+      </DesktopListCard>
 
       {modals}
     </div>
-    </PullToRefresh>
   );
 };
 

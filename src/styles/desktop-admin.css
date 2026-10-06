@@ -1,7 +1,7 @@
 /* Tampilan admin DESKTOP gaya baru — kelas dk-. Bahasa visual sama dengan
    mobile (kartu radius-xl, pil, avatar inisial) tapi memanfaatkan layar
-   lebar. Dipakai di Users (daftar, detail, tambah) & Persetujuan User;
-   halaman lain belum memakai ini. */
+   lebar. Dipakai di menu master: Users (+ Persetujuan), Ladies, Agent,
+   Outlet. Halaman desktop lain belum memakai ini. */
 
 /* MainLayout sudah memberi padding 2rem di desktop — jangan digandakan. */
 .dk-page {
@@ -423,6 +423,98 @@
   transform: translateX(2px);
 }
 
+/* Varian buka-tutup (Outlet): panah ke bawah, berputar saat terbuka. */
+.dk-table tbody tr.is-clickable:hover .dk-row-chevron--down {
+  transform: none;
+}
+
+.dk-row-chevron--down.is-open,
+.dk-table tbody tr.is-clickable:hover .dk-row-chevron--down.is-open {
+  color: var(--color-green);
+  transform: rotate(180deg);
+}
+
+/* Baris yang sedang terbuka menyatu dengan panel di bawahnya. */
+.dk-table tbody tr.is-expanded td {
+  background: var(--color-surface-2);
+  border-bottom-color: transparent;
+}
+
+/* =========================
+   PANEL DI BAWAH BARIS (tier harga outlet)
+========================= */
+
+.dk-table tbody tr.dk-subrow > td {
+  padding: 0 var(--space-5) var(--space-5);
+  background: var(--color-surface-2);
+}
+
+.dk-subpanel {
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  padding: var(--space-4);
+}
+
+.dk-subpanel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-3);
+}
+
+.dk-subpanel-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-dark);
+}
+
+.dk-subpanel-empty {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-voucher-soft);
+  color: var(--color-voucher);
+  font-size: 13px;
+}
+
+.dk-subtable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Ada di dalam .dk-table — timpa gaya kepala/sel tabel luar. */
+.dk-subtable th {
+  background: transparent;
+  padding: 8px var(--space-3);
+  text-align: left;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-gray-600);
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.dk-subtable td {
+  padding: 8px var(--space-3);
+  font-size: 14px;
+  color: var(--color-dark);
+  border-bottom: 1px solid var(--color-gray-200);
+  vertical-align: middle;
+}
+
+.dk-subtable tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.dk-col-num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.dk-subtable th.dk-col-num {
+  text-align: right;
+}
+
 /* =========================
    HALAMAN TAMBAH / DETAIL
 ========================= */
@@ -727,6 +819,82 @@ textarea.dk-input {
 }
 
 .dk-chip:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: 2px;
+}
+
+/* Form satu kolom (dialog sempit). */
+.dk-form-grid--single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Input dengan awalan (mis. Rp). */
+.dk-prefix {
+  position: absolute;
+  left: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-gray-600);
+  pointer-events: none;
+}
+
+.dk-input--prefix {
+  padding-left: 44px;
+}
+
+/* Saklar Aktif: baris berlabel dengan tombol geser di kanan. */
+.dk-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface-2);
+}
+
+.dk-switch-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-dark);
+}
+
+.dk-switch {
+  position: relative;
+  flex-shrink: 0;
+  width: 44px;
+  height: 26px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--color-gray-300);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.dk-switch::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  background: var(--color-white);
+  transition: transform 0.2s ease;
+}
+
+.dk-switch[aria-checked='true'] {
+  background: var(--color-income);
+}
+
+.dk-switch[aria-checked='true']::after {
+  transform: translateX(18px);
+}
+
+.dk-switch:focus-visible {
   outline: 2px solid var(--color-green);
   outline-offset: 2px;
 }
