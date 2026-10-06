@@ -904,3 +904,273 @@ textarea.dk-input {
   justify-content: flex-end;
   gap: var(--space-2);
 }
+
+/* =========================
+   ABSENSI
+========================= */
+
+/* Pemilih ladies di atas halaman + identitas ladies terpilih. */
+.dk-pickbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-6);
+  overflow: visible;
+}
+
+.dk-pickbar-field {
+  flex: 0 1 460px;
+  min-width: 0;
+}
+
+.dk-pickbar-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.dk-pickbar-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-dark);
+}
+
+/* Form (kiri, sempit) + kalender (kanan). */
+.dk-absen-grid {
+  display: grid;
+  grid-template-columns: 360px minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .dk-absen-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Kartu kolom: kaki tetap di bawah walau isi lebih pendek. */
+.dk-card--col {
+  display: flex;
+  flex-direction: column;
+}
+
+.dk-card--col > .dk-card-body {
+  flex: 1;
+}
+
+/* Tumpukan field berjarak (form satu kolom). */
+.dk-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.dk-help-warn {
+  color: var(--color-voucher);
+}
+
+/* Kepala kartu dengan aksi di kanan (navigasi bulan). */
+.dk-card-head--row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.dk-month-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+.dk-month-label {
+  min-width: 140px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-dark);
+}
+
+.dk-icon-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  background: transparent;
+}
+
+/* Status sebagai grid chip berikon (Kerja/Mens/Off/Sakit). */
+.dk-chips--status {
+  display: grid;
+}
+
+.dk-chips--status .dk-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 var(--space-3);
+}
+
+/* Ringkasan per status. */
+.dk-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.dk-stat {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface-2);
+}
+
+.dk-stat-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-gray-600);
+}
+
+.dk-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.dk-stat-value {
+  display: block;
+  margin-top: 4px;
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.dk-stat-unit {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-gray-600);
+}
+
+/* Kalender bulanan — minggu mulai Senin. */
+.dk-cal-weekdays,
+.dk-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.dk-cal-weekdays {
+  margin-bottom: 6px;
+}
+
+.dk-cal-weekdays span {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-gray-600);
+}
+
+.dk-cal-day {
+  position: relative;
+  min-height: 60px;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface);
+  color: var(--color-dark);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.12s ease, transform 0.1s ease;
+}
+
+.dk-cal-day:hover:not(:disabled) {
+  border-color: var(--color-green);
+}
+
+.dk-cal-day:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.dk-cal-day:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: 2px;
+}
+
+.dk-cal-day.is-filled {
+  border-color: transparent;
+}
+
+.dk-cal-day:disabled {
+  cursor: default;
+  background: transparent;
+  color: var(--color-gray-500);
+  border-style: dashed;
+}
+
+.dk-cal-num {
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.dk-cal-status {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Hari ini: angka dilingkari. */
+.dk-cal-day.is-today .dk-cal-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  margin: -2px 0 0 -4px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+/* Tanggal yang sedang dipakai form. */
+.dk-cal-day.is-selected {
+  box-shadow: 0 0 0 2px var(--color-green);
+}
+
+/* Titik kecil: ada keterangan (lihat tooltip / tabel). */
+.dk-cal-note {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: currentColor;
+  opacity: 0.7;
+}
+
+/* Hapus di dialog: merah tenang, padat saat disorot. */
+.dk-btn--danger-ghost {
+  border-color: transparent;
+  background: transparent;
+  color: var(--color-expense);
+}
+
+.dk-btn--danger-ghost:hover {
+  background: var(--color-expense-soft);
+}
