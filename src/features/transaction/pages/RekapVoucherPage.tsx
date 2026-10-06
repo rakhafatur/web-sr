@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import dayjs from 'dayjs';
 import { useMediaQuery } from 'react-responsive';
 import { toast } from 'react-toastify';
 
@@ -30,52 +29,15 @@ import {
 const formatRupiah = (n: number) =>
   `Rp${n.toLocaleString('id-ID')}`;
 
-const ISO = 'YYYY-MM-DD';
-
-/** Senin minggu ini. dayjs memulai minggu hari Minggu, jadi startOf('week')
-    + 1 hari keliru di hari Minggu (jatuh ke Senin besok / minggu depan). */
-const seninIni = () => dayjs().subtract((dayjs().day() + 6) % 7, 'day').startOf('day');
-
-/** Pilihan periode cepat (desktop). */
-const PRESET_PERIODE: { key: string; label: string; rentang: () => [string, string] }[] = [
-  {
-    key: 'minggu-ini',
-    label: 'Minggu ini',
-    rentang: () => [seninIni().format(ISO), seninIni().add(6, 'day').format(ISO)],
-  },
-  {
-    key: 'minggu-lalu',
-    label: 'Minggu lalu',
-    rentang: () => [seninIni().subtract(7, 'day').format(ISO), seninIni().subtract(1, 'day').format(ISO)],
-  },
-  {
-    key: 'bulan-ini',
-    label: 'Bulan ini',
-    rentang: () => [dayjs().startOf('month').format(ISO), dayjs().endOf('month').format(ISO)],
-  },
-  {
-    key: 'bulan-lalu',
-    label: 'Bulan lalu',
-    rentang: () => {
-      const b = dayjs().subtract(1, 'month');
-      return [b.startOf('month').format(ISO), b.endOf('month').format(ISO)];
-    },
-  },
-];
 
 const RekapVoucherPage = () => {
   const isMobile = useMediaQuery({
     maxWidth: 768,
   });
 
-  // Desktop: bawaan minggu ini (Senin–Minggu). Mobile: kosong — admin mengisi sendiri.
-  const [start, setStart] = useState(() =>
-    isMobile ? '' : PRESET_PERIODE[0].rentang()[0]
-  );
-
-  const [end, setEnd] = useState(() =>
-    isMobile ? '' : PRESET_PERIODE[0].rentang()[1]
-  );
+  // Mobile & desktop: kosong — admin mengisi sendiri.
+  const [start, setStart] = useState('');
+  const [end, setEnd] = useState('');
 
   // Rentang data yang sedang tampil — label & PDF desktop memakai ini, bukan
   // isian tanggal yang bisa saja sudah diubah setelah Tampilkan ditekan.
@@ -94,10 +56,9 @@ const RekapVoucherPage = () => {
   const [sudahCari, setSudahCari] = useState(false);
   const [memuat, setMemuat] = useState(false);
 
-  /** Tanpa argumen: memakai isian tanggal (mobile & tombol Tampilkan).
-      Dengan argumen: pilihan periode cepat desktop, yang mengisi tanggal
-      sekaligus memuat sebelum state tanggal sempat diperbarui. */
-  const fetchData = async (dari: string = start, sampai: string = end) => {
+  const fetchData = async () => {
+    const dari = start;
+    const sampai = end;
     setMemuat(true);
 
     const { data, error } = await supabase
@@ -330,8 +291,8 @@ const RekapVoucherPage = () => {
     );
   }
 
-  // Desktop (gaya baru dk-): satu baris filter (tanggal + periode cepat),
-  // pilihan outlet, kartu angka, lalu satu kartu tabel per outlet dengan
+  // Desktop (gaya baru dk-): baris filter tanggal (kosong dulu, sama seperti
+  // mobile), pilihan outlet, kartu angka, lalu satu kartu tabel per outlet dengan
   // baris total. Angka tetap dari agregasiRekapVoucher / totalPerOutlet.
   const tanggalLengkap = !!start && !!end;
   const tanggalTerbalik = tanggalLengkap && start > end;
@@ -347,17 +308,6 @@ const RekapVoucherPage = () => {
     }
     fetchData();
   };
-
-  const pilihPreset = (rentang: [string, string]) => {
-    setStart(rentang[0]);
-    setEnd(rentang[1]);
-    fetchData(rentang[0], rentang[1]);
-  };
-
-  const presetAktif = PRESET_PERIODE.find((p) => {
-    const [s, e] = p.rentang();
-    return s === start && e === end;
-  })?.key;
 
   const tglPanjang = (d: string) =>
     new Date(`${d}T00:00:00`).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -435,24 +385,6 @@ const RekapVoucherPage = () => {
             {memuat ? 'Memuat...' : 'Tampilkan'}
           </button>
         </div>
-
-        <div className="dk-filterbar-presets">
-          <span className="dk-label" id="dk-rekap-preset-label">Periode cepat</span>
-          <div className="dk-chips" role="group" aria-labelledby="dk-rekap-preset-label">
-            {PRESET_PERIODE.map((p) => (
-              <button
-                key={p.key}
-                type="button"
-                className={`dk-chip ${presetAktif === p.key ? 'is-active' : ''}`}
-                aria-pressed={presetAktif === p.key}
-                disabled={memuat}
-                onClick={() => pilihPreset(p.rentang())}
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
-        </div>
       </section>
 
       {memuat && !sudahCari ? (
@@ -469,7 +401,7 @@ const RekapVoucherPage = () => {
           <div className="dk-empty">
             <span className="dk-empty-icon" aria-hidden><FiCalendar /></span>
             <div className="dk-empty-title">Pilih periode dulu</div>
-            <div className="dk-empty-text">Pilih periode cepat, atau isi tanggal lalu tekan Tampilkan.</div>
+            <div className="dk-empty-text">Isi tanggal Dari dan Sampai, lalu tekan Tampilkan.</div>
           </div>
         </section>
       ) : dataPerOutlet.length === 0 ? (
