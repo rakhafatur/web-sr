@@ -9,7 +9,6 @@ import { toast } from 'react-toastify';
 
 import { hitungRekapAbsensi } from '../utils/rekapAbsensi';
 import { buatGridBulan } from '../utils/gridKalender';
-import Pagination from '../../../components/Pagination';
 import ListLoadingState from '../../../components/ListLoadingState';
 import Skeleton from '../../../components/Skeleton';
 import SearchableSelect from '../../../components/SearchableSelect';
@@ -103,23 +102,21 @@ const PilihStatusMobile = ({ value, onChange }: { value: string; onChange: (s: s
   </div>
 );
 
-/** Chip status (desktop) — 2 kolom di kartu form yang sempit, 4 kolom di dialog. */
+/** Chip status 4 sejajar (desktop) — di dialog catat/ubah. */
 const PilihStatusDesktop = ({
   value,
   onChange,
   labelledBy,
-  kolom = 2,
 }: {
   value: string;
   onChange: (s: string) => void;
   labelledBy: string;
-  kolom?: 2 | 4;
 }) => (
   <div
     className="dk-chips dk-chips--status"
     role="radiogroup"
     aria-labelledby={labelledBy}
-    style={{ gridTemplateColumns: `repeat(${kolom}, minmax(0, 1fr))` }}
+    style={{ gridTemplateColumns: `repeat(${STATUS_ABSENSI.length}, minmax(0, 1fr))` }}
   >
     {STATUS_ABSENSI.map((st) => {
       const g = gayaStatus(st);
@@ -168,10 +165,6 @@ const AbsensiPage = () => {
     dayjs().year()
   );
 
-  const [page, setPage] = useState(1);
-
-  const limit = isMobile ? 5 : 10;
-
   const [activeTab, setActiveTab] = useState<
     'input' | 'riwayat'
   >('input');
@@ -180,6 +173,10 @@ const AbsensiPage = () => {
   const [ubahAbsensi, setUbahAbsensi] = useState<Absensi | null>(null);
   const [ubahStatus, setUbahStatus] = useState('KERJA');
   const [ubahKeterangan, setUbahKeterangan] = useState('');
+  // Khusus desktop: dialog yang sama dipakai untuk mencatat tanggal kosong
+  // dari kalender (ubahBaru = true).
+  const [ubahBaru, setUbahBaru] = useState(false);
+  const [menyimpanUbah, setMenyimpanUbah] = useState(false);
 
   const queryClient = useQueryClient();
   const monthKey = `${tahun}-${String(bulan).padStart(2, '0')}`;
@@ -203,8 +200,7 @@ const AbsensiPage = () => {
   });
 
   // Sengaja satu query buat sebulan penuh (maksimal ~31 baris, ringan) —
-  // tabel desktop (dipaginasi), kalender, ringkasan, dan daftar mobile
-  // semuanya di-derive dari satu cache ini.
+  // kalender desktop, ringkasan, dan daftar mobile di-derive dari satu cache.
   const { data: rekapRiwayat = [], isLoading: loadingRiwayat } = useQuery({
     queryKey: rekapQueryKey,
     queryFn: async () => {
@@ -226,28 +222,24 @@ const AbsensiPage = () => {
     meta: { errorLabel: 'absensi' },
   });
 
-  const riwayat = rekapRiwayat.slice(
-    (page - 1) * limit,
-    (page - 1) * limit + limit
-  );
-
-  const totalPages = Math.max(
-    1,
-    Math.ceil(rekapRiwayat.length / limit)
-  );
-
   const selectedLady = ladies.find(
     (l) => l.id === selectedLadyId
   );
 
+  // Tanpa argumen: memakai state form (form mobile, seperti sebelumnya).
+  // Dengan argumen: isian dari dialog kalender desktop.
   const addMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (
+      isiDialog: { tanggal: string; status: string; keterangan: string | null } | void
+    ) => {
+      const isi = isiDialog || { tanggal, status, keterangan: keterangan || null };
+
       const { data: existing } =
         await supabase
           .from('absensi')
           .select('tanggal')
           .eq('ladies_id', selectedLadyId)
-          .eq('tanggal', tanggal);
+          .eq('tanggal', isi.tanggal);
 
       if (existing && existing.length > 0) {
         throw new Error('Absensi untuk tanggal ini sudah ada!');
@@ -258,9 +250,9 @@ const AbsensiPage = () => {
           .from('absensi')
           .upsert({
             ladies_id: selectedLadyId,
-            tanggal,
-            status,
-            keterangan: keterangan || null,
+            tanggal: isi.tanggal,
+            status: isi.status,
+            keterangan: isi.keterangan,
           });
 
       if (error) throw error;
@@ -310,8 +302,6 @@ const AbsensiPage = () => {
     } else {
       setBulan((prev) => prev - 1);
     }
-
-    setPage(1);
   };
 
   const handleNextMonth = () => {
@@ -321,8 +311,6 @@ const AbsensiPage = () => {
     } else {
       setBulan((prev) => prev + 1);
     }
-
-    setPage(1);
   };
 
   const handleDelete = async (
@@ -408,18 +396,44 @@ const AbsensiPage = () => {
 
   const bukaUbah = (a: Absensi) => {
     setUbahAbsensi(a);
+    setUbahBaru(false);
     setUbahStatus(a.status);
     setUbahKeterangan(a.keterangan ?? '');
   };
 
+  /** Tanggal kosong di kalender desktop → dialog catat, status awal Kerja
+      (kasus paling umum: klik tanggal → Simpan). */
+  const bukaTambah = (tgl: string) => {
+    setUbahAbsensi({ tanggal: tgl, status: 'KERJA', keterangan: null });
+    setUbahBaru(true);
+    setUbahStatus('KERJA');
+    setUbahKeterangan('');
+  };
+
   const simpanUbah = async () => {
     if (!ubahAbsensi) return;
-    await simpanPerubahan(ubahAbsensi.tanggal, {
-      status: ubahStatus,
-      keterangan: ubahKeterangan || null,
-    });
-    setUbahAbsensi(null);
+
+    if (ubahBaru) {
+      addMutation.mutate(
+        { tanggal: ubahAbsensi.tanggal, status: ubahStatus, keterangan: ubahKeterangan || null },
+        { onSuccess: () => setUbahAbsensi(null) }
+      );
+      return;
+    }
+
+    setMenyimpanUbah(true);
+    try {
+      await simpanPerubahan(ubahAbsensi.tanggal, {
+        status: ubahStatus,
+        keterangan: ubahKeterangan || null,
+      });
+      setUbahAbsensi(null);
+    } finally {
+      setMenyimpanUbah(false);
+    }
   };
+
+  const sedangMenyimpan = ubahBaru ? addMutation.isPending : menyimpanUbah;
 
   // Mobile: tampilan baru selaras Transaksi (Header app dicabut di MainLayout).
   // Desktop: gaya dk- di bawah.
@@ -434,7 +448,6 @@ const AbsensiPage = () => {
             value={selectedLadyId}
             onChange={(v) => {
               setSelectedLadyId(v);
-              setPage(1);
               setActiveTab('input');
             }}
             options={opsiLadies}
@@ -550,7 +563,6 @@ const AbsensiPage = () => {
                           const [y, m] = e.target.value.split('-').map(Number);
                           setTahun(y);
                           setBulan(m);
-                          setPage(1);
                         }}
                         onPrev={handlePrevMonth}
                         onNext={handleNextMonth}
@@ -658,15 +670,13 @@ const AbsensiPage = () => {
     );
   }
 
-  // Desktop (gaya baru dk-): pemilih ladies di atas; kiri form catat
-  // absensi, kanan kalender bulanan (klik hari tercatat = ubah, klik hari
-  // kosong = isi tanggal di form); di bawah tabel catatan bulan itu.
+  // Desktop (gaya baru dk-): pemilih ladies di atas, lalu satu kalender
+  // bulanan sebagai satu-satunya tempat kerja — klik tanggal kosong = catat,
+  // klik tanggal tercatat = ubah/hapus, lewat dialog yang sama.
   const hariIni = sekarang.format('YYYY-MM-DD');
   const grid = buatGridBulan(tahun, bulan - 1);
   const perTanggal = new Map(rekapRiwayat.map((a) => [a.tanggal, a]));
-  // Hanya terdeteksi kalau tanggal form ada di bulan yang sedang dilihat —
-  // di luar itu, penolakan tetap ditangani addMutation.
-  const sudahTercatat = perTanggal.get(tanggal);
+  const jumlahTercatat = rekapRiwayat.length;
 
   return (
     <div className="page-shell dk-page">
@@ -677,10 +687,7 @@ const AbsensiPage = () => {
           <span className="dk-label" id="dk-absen-ladies-label">Ladies</span>
           <SearchableSelect
             value={selectedLadyId}
-            onChange={(v) => {
-              setSelectedLadyId(v);
-              setPage(1);
-            }}
+            onChange={setSelectedLadyId}
             options={opsiLadies}
             placeholder="Pilih ladies"
             searchPlaceholder="Cari nama ladies..."
@@ -712,289 +719,159 @@ const AbsensiPage = () => {
           <div className="dk-empty">
             <span className="dk-empty-icon" aria-hidden><FiUsers /></span>
             <div className="dk-empty-title">Pilih ladies dulu</div>
-            <div className="dk-empty-text">Form absensi, kalender, dan riwayat akan muncul setelah ladies dipilih.</div>
+            <div className="dk-empty-text">Kalender absensi akan muncul setelah ladies dipilih.</div>
           </div>
         </section>
       ) : (
-        <>
-          <div className="dk-absen-grid">
-            {/* FORM CATAT */}
-            <section className="dk-card dk-card--col" aria-label="Catat absensi">
-              <div className="dk-card-head">
-                <h2 className="dk-card-title">Catat absensi</h2>
-                <div className="dk-card-sub">Satu catatan per tanggal.</div>
+        <section className="dk-card" aria-label={`Kalender absensi ${labelBulan}`}>
+          <div className="dk-card-head dk-card-head--row">
+            <div>
+              <h2 className="dk-card-title">Kalender absensi</h2>
+              <div className="dk-card-sub">
+                Klik tanggal untuk mencatat atau mengubah absensi
+                {!loadingRiwayat && ` · ${jumlahTercatat} hari tercatat`}
               </div>
-
-              <div className="dk-card-body dk-stack">
-                <DesktopField
-                  label="Tanggal"
-                  htmlFor="dk-absen-tanggal"
-                  help={
-                    sudahTercatat ? (
-                      <span className="dk-help-warn">
-                        Sudah tercatat {gayaStatus(sudahTercatat.status).label.toLowerCase()} — klik tanggalnya di
-                        kalender untuk mengubah.
-                      </span>
-                    ) : undefined
-                  }
-                >
-                  <input
-                    id="dk-absen-tanggal"
-                    type="date"
-                    className="dk-input"
-                    value={tanggal}
-                    max={hariIni}
-                    onChange={(e) => setTanggal(e.target.value)}
-                  />
-                </DesktopField>
-
-                <DesktopField label="Status" labelId="dk-absen-status-label">
-                  <PilihStatusDesktop value={status} onChange={setStatus} labelledBy="dk-absen-status-label" />
-                </DesktopField>
-
-                <DesktopField label="Keterangan (opsional)" htmlFor="dk-absen-keterangan">
-                  <textarea
-                    id="dk-absen-keterangan"
-                    rows={3}
-                    className="dk-input"
-                    placeholder="Tambahkan catatan..."
-                    value={keterangan}
-                    onChange={(e) => setKeterangan(e.target.value)}
-                  />
-                </DesktopField>
-              </div>
-
-              <div className="dk-card-foot">
-                <button
-                  type="button"
-                  className="dk-btn dk-btn--primary"
-                  onClick={handleSubmit}
-                  disabled={addMutation.isPending || !!sudahTercatat}
-                >
-                  <FiPlus aria-hidden />
-                  {addMutation.isPending ? 'Menyimpan...' : 'Simpan absensi'}
-                </button>
-              </div>
-            </section>
-
-            {/* KALENDER */}
-            <section className="dk-card" aria-label={`Kalender ${labelBulan}`}>
-              <div className="dk-card-head dk-card-head--row">
-                <div>
-                  <h2 className="dk-card-title">Kalender</h2>
-                  <div className="dk-card-sub">
-                    Klik tanggal tercatat untuk mengubah, tanggal kosong untuk mengisi form.
-                  </div>
-                </div>
-                <div className="dk-month-nav">
-                  <button type="button" className="dk-icon-btn" aria-label="Bulan sebelumnya" onClick={handlePrevMonth}>
-                    <FiChevronLeft />
-                  </button>
-                  <span className="dk-month-label" aria-live="polite">{labelBulan}</span>
-                  <button
-                    type="button"
-                    className="dk-icon-btn"
-                    aria-label="Bulan berikutnya"
-                    onClick={handleNextMonth}
-                    disabled={diBulanIni}
-                  >
-                    <FiChevronRight />
-                  </button>
-                </div>
-              </div>
-
-              <div className="dk-card-body">
-                <div className="dk-stats" aria-label="Ringkasan absensi">
-                  {STATUS_ABSENSI.map((st) => {
-                    const g = gayaStatus(st);
-                    return (
-                      <div key={st} className="dk-stat">
-                        <span className="dk-stat-label">
-                          <span className="dk-dot" style={{ background: g.color }} />
-                          {g.label}
-                        </span>
-                        <span className="dk-stat-value">
-                          {rekap[st]} <span className="dk-stat-unit">hari</span>
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {loadingRiwayat ? (
-                  <div role="status" aria-label="Memuat kalender absensi">
-                    <Skeleton height={320} borderRadius="var(--radius-lg)" />
-                  </div>
-                ) : (
-                  <div className="dk-cal">
-                    <div className="dk-cal-weekdays" aria-hidden>
-                      {NAMA_HARI.map((h) => (
-                        <span key={h}>{h}</span>
-                      ))}
-                    </div>
-
-                    <div className="dk-cal-grid">
-                      {grid.map((tgl, i) => {
-                        if (!tgl) return <span key={`k${i}`} aria-hidden />;
-
-                        const catatan = perTanggal.get(tgl);
-                        const g = catatan ? gayaStatus(catatan.status) : null;
-                        const nanti = tgl > hariIni;
-
-                        return (
-                          <button
-                            key={tgl}
-                            type="button"
-                            className={`dk-cal-day ${tgl === hariIni ? 'is-today' : ''} ${
-                              tgl === tanggal ? 'is-selected' : ''
-                            } ${g ? 'is-filled' : ''}`}
-                            style={g ? { background: g.soft, color: g.color } : undefined}
-                            disabled={nanti}
-                            title={catatan?.keterangan || undefined}
-                            aria-label={`${tanggalPanjang(tgl)}: ${g ? g.label : 'belum tercatat'}${
-                              catatan?.keterangan ? ` — ${catatan.keterangan}` : ''
-                            }`}
-                            onClick={() => (catatan ? bukaUbah(catatan) : setTanggal(tgl))}
-                          >
-                            <span className="dk-cal-num">{Number(tgl.slice(8))}</span>
-                            {g && <span className="dk-cal-status">{g.label}</span>}
-                            {catatan?.keterangan && <span className="dk-cal-note" aria-hidden />}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </section>
+            </div>
+            <div className="dk-month-nav">
+              <button type="button" className="dk-icon-btn" aria-label="Bulan sebelumnya" onClick={handlePrevMonth}>
+                <FiChevronLeft />
+              </button>
+              <span className="dk-month-label" aria-live="polite">{labelBulan}</span>
+              <button
+                type="button"
+                className="dk-icon-btn"
+                aria-label="Bulan berikutnya"
+                onClick={handleNextMonth}
+                disabled={diBulanIni}
+              >
+                <FiChevronRight />
+              </button>
+            </div>
           </div>
 
-          {/* TABEL CATATAN */}
-          <section className="dk-card" aria-label={`Catatan absensi ${labelBulan}`} style={{ marginTop: 'var(--space-6)' }}>
-            <div className="dk-card-head">
-              <h2 className="dk-card-title">Catatan {labelBulan}</h2>
-              <div className="dk-card-sub">
-                {loadingRiwayat ? 'Memuat...' : `${rekapRiwayat.length} hari tercatat`}
-              </div>
+          <div className="dk-card-body">
+            <div className="dk-stats" aria-label="Ringkasan absensi">
+              {STATUS_ABSENSI.map((st) => {
+                const g = gayaStatus(st);
+                return (
+                  <div key={st} className="dk-stat">
+                    <span className="dk-stat-label">
+                      <span className="dk-dot" style={{ background: g.color }} />
+                      {g.label}
+                    </span>
+                    <span className="dk-stat-value">
+                      {rekap[st]} <span className="dk-stat-unit">hari</span>
+                    </span>
+                  </div>
+                );
+              })}
             </div>
 
             {loadingRiwayat ? (
-              <div style={{ padding: 'var(--space-4) var(--space-5)' }}>
-                <ListLoadingState label="Memuat histori absensi" rows={4} />
-              </div>
-            ) : rekapRiwayat.length === 0 ? (
-              <div className="dk-empty">
-                <span className="dk-empty-icon" aria-hidden><FiInbox /></span>
-                <div className="dk-empty-title">Belum ada absensi</div>
-                <div className="dk-empty-text">Tidak ada catatan absensi di {labelBulan}.</div>
+              <div role="status" aria-label="Memuat kalender absensi">
+                <Skeleton height={460} borderRadius="var(--radius-lg)" />
               </div>
             ) : (
-              <table className="dk-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Tanggal</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Keterangan</th>
-                    <th scope="col" className="dk-col-actions">
-                      <span className="visually-hidden">Aksi</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {riwayat.map((a) => {
-                    const g = gayaStatus(a.status);
+              <div className="dk-cal">
+                <div className="dk-cal-weekdays" aria-hidden>
+                  {NAMA_HARI.map((h) => (
+                    <span key={h}>{h}</span>
+                  ))}
+                </div>
+
+                <div className="dk-cal-grid">
+                  {grid.map((tgl, i) => {
+                    if (!tgl) return <span key={`k${i}`} aria-hidden />;
+
+                    const catatan = perTanggal.get(tgl);
+                    const g = catatan ? gayaStatus(catatan.status) : null;
+                    const nanti = tgl > hariIni;
+
                     return (
-                      <tr key={a.tanggal} className="is-clickable" onClick={() => bukaUbah(a)}>
-                        <td>
-                          {/* Tombol supaya baris juga bisa dibuka lewat keyboard. */}
-                          <button
-                            type="button"
-                            className="dk-person-name"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              bukaUbah(a);
-                            }}
-                          >
-                            {tanggalPanjang(a.tanggal)}
-                          </button>
-                        </td>
-                        <td>
-                          <span className="dk-status" style={{ background: g.soft, color: g.color }}>
-                            {g.label}
+                      <button
+                        key={tgl}
+                        type="button"
+                        className={`dk-cal-day ${tgl === hariIni ? 'is-today' : ''} ${g ? 'is-filled' : ''}`}
+                        style={g ? { background: g.soft, color: g.color } : undefined}
+                        disabled={nanti}
+                        aria-label={`${tanggalPanjang(tgl)}: ${g ? g.label : 'belum tercatat, klik untuk mencatat'}${
+                          catatan?.keterangan ? ` — ${catatan.keterangan}` : ''
+                        }`}
+                        title={catatan?.keterangan || undefined}
+                        onClick={() => (catatan ? bukaUbah(catatan) : bukaTambah(tgl))}
+                      >
+                        <span className="dk-cal-num">{Number(tgl.slice(8))}</span>
+                        {g ? (
+                          <span className="dk-cal-body">
+                            <span className="dk-cal-status">{g.label}</span>
+                            {catatan?.keterangan && <span className="dk-cal-ket">{catatan.keterangan}</span>}
                           </span>
-                        </td>
-                        <td>{a.keterangan || <span className="dk-muted">-</span>}</td>
-                        <td className="dk-col-actions">
-                          <button
-                            type="button"
-                            className="dk-icon-btn dk-icon-btn--danger"
-                            title="Hapus"
-                            aria-label={`Hapus absensi ${tanggalPanjang(a.tanggal)}`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDelete(a.tanggal);
-                            }}
-                          >
-                            <FiTrash2 />
-                          </button>
-                          <FiChevronRight className="dk-row-chevron" aria-hidden />
-                        </td>
-                      </tr>
+                        ) : (
+                          !nanti && <FiPlus className="dk-cal-add" aria-hidden />
+                        )}
+                      </button>
                     );
                   })}
-                </tbody>
-              </table>
+                </div>
+              </div>
             )}
-
-            <div className="dk-footer">
-              {totalPages > 1 && (
-                <Pagination page={page - 1} totalPages={totalPages} onPageChange={(p) => setPage(p + 1)} />
-              )}
-            </div>
-          </section>
-        </>
+          </div>
+        </section>
       )}
 
-      {/* DIALOG UBAH */}
+      {/* DIALOG CATAT / UBAH */}
       <ModalWrapper
         show={!!ubahAbsensi}
         title={
           <div>
-            <div className="dk-card-title">Ubah absensi</div>
-            {ubahAbsensi && <div className="dk-card-sub">{tanggalPanjang(ubahAbsensi.tanggal)}</div>}
+            <div className="dk-card-title">{ubahBaru ? 'Catat absensi' : 'Ubah absensi'}</div>
+            {ubahAbsensi && (
+              <div className="dk-card-sub">
+                {tanggalPanjang(ubahAbsensi.tanggal)}
+                {selectedLady ? ` · ${selectedLady.nama_ladies}` : ''}
+              </div>
+            )}
           </div>
         }
         onClose={() => setUbahAbsensi(null)}
         footer={
           <div className="dk-modal-foot">
-            <button
-              type="button"
-              className="dk-btn dk-btn--danger-ghost"
-              style={{ marginRight: 'auto' }}
-              onClick={() => {
-                if (!ubahAbsensi) return;
-                const t = ubahAbsensi.tanggal;
-                setUbahAbsensi(null);
-                handleDelete(t);
-              }}
-            >
-              <FiTrash2 aria-hidden />
-              Hapus
+            {!ubahBaru && (
+              <button
+                type="button"
+                className="dk-btn dk-btn--danger-ghost"
+                style={{ marginRight: 'auto' }}
+                disabled={sedangMenyimpan}
+                onClick={() => {
+                  if (!ubahAbsensi) return;
+                  const t = ubahAbsensi.tanggal;
+                  setUbahAbsensi(null);
+                  handleDelete(t);
+                }}
+              >
+                <FiTrash2 aria-hidden />
+                Hapus
+              </button>
+            )}
+            <button type="button" className="dk-btn" onClick={() => setUbahAbsensi(null)} disabled={sedangMenyimpan}>
+              Batal
             </button>
-            <button type="button" className="dk-btn" onClick={() => setUbahAbsensi(null)}>Batal</button>
-            <button type="button" className="dk-btn dk-btn--primary" onClick={simpanUbah}>Simpan</button>
+            <button type="button" className="dk-btn dk-btn--primary" onClick={simpanUbah} disabled={sedangMenyimpan}>
+              {sedangMenyimpan ? 'Menyimpan...' : 'Simpan'}
+            </button>
           </div>
         }
       >
         <div className="dk-stack">
           <DesktopField label="Status" labelId="dk-ubah-status-label">
-            <PilihStatusDesktop value={ubahStatus} onChange={setUbahStatus} labelledBy="dk-ubah-status-label" kolom={4} />
+            <PilihStatusDesktop value={ubahStatus} onChange={setUbahStatus} labelledBy="dk-ubah-status-label" />
           </DesktopField>
           <DesktopField label="Keterangan (opsional)" htmlFor="dk-ubah-keterangan">
             <textarea
               id="dk-ubah-keterangan"
               rows={3}
               className="dk-input"
+              placeholder="Tambahkan catatan..."
               value={ubahKeterangan}
               onChange={(e) => setUbahKeterangan(e.target.value)}
             />
