@@ -10,6 +10,7 @@ import {
   FiActivity,
   FiMessageCircle,
   FiGift,
+  FiSliders,
 } from 'react-icons/fi';
 
 import {
@@ -36,7 +37,7 @@ const RUTE_TAB: Record<Tab, string[]> = {
     '/ladies/kasbon',
     '/ladies/dokter',
   ],
-  menu: ['/ladies/profile', '/ladies/peraturan', '/smart-chat-ladies'],
+  menu: ['/ladies/profile', '/ladies/peraturan', '/smart-chat-ladies', '/pengaturan'],
 };
 
 const tabDariRute = (pathname: string): Tab | null => {
@@ -109,6 +110,7 @@ function BottomNavbarLadies() {
             { icon: <FiUser />, label: 'Profil', desc: 'Data diri & akun', path: '/ladies/profile' },
             { icon: <FiMessageCircle />, label: 'Smart Chat', desc: 'Tanya voucher & absen kamu', path: '/smart-chat-ladies' },
             { icon: <FiBookOpen />, label: 'Peraturan', desc: 'Aturan kerja SR', path: '/ladies/peraturan' },
+            { icon: <FiSliders />, label: 'Pengaturan', desc: 'Tema terang / gelap', path: '/pengaturan' },
           ],
         },
       ],

@@ -15,6 +15,7 @@ import {
   FiActivity,
   FiBriefcase,
   FiMapPin,
+  FiSliders,
 } from 'react-icons/fi';
 
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -61,6 +62,7 @@ const RUTE_TAB: Record<Tab, string[]> = {
     '/agent-detail',
     '/outlet',
     '/smart-chat',
+    '/pengaturan',
   ],
 };
 
@@ -172,6 +174,12 @@ function BottomNavbarAdmin() {
           judul: 'Asisten',
           items: [
             { icon: <FiMessageCircle />, label: 'Chat SR', desc: 'Tanya statistik & insight', path: '/smart-chat' },
+          ],
+        },
+        {
+          judul: 'Aplikasi',
+          items: [
+            { icon: <FiSliders />, label: 'Pengaturan', desc: 'Tema terang / gelap', path: '/pengaturan' },
           ],
         },
       ],

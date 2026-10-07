@@ -5,7 +5,7 @@ import {
   FiCalendar, FiBook, FiPlus, FiDollarSign, FiBarChart2,
   FiChevronLeft, FiChevronRight, FiChevronDown, FiChevronUp, FiFolder,
   FiCheckSquare,FiMessageSquare,
-  FiBriefcase, FiMapPin
+  FiBriefcase, FiMapPin, FiSliders
 } from 'react-icons/fi';
 
 import { SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from '../../constant';
@@ -205,6 +205,11 @@ function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps) {
         <li>
           <Link to="/smart-chat" className={`nav-link sidebar-link ${isActive('/smart-chat') ? 'active' : ''}`}>
             <FiMessageSquare className="sidebar-icon" /> {renderText('Smart Chat')}
+          </Link>
+        </li>
+        <li>
+          <Link to="/pengaturan" className={`nav-link sidebar-link ${isActive('/pengaturan') ? 'active' : ''}`}>
+            <FiSliders className="sidebar-icon" /> {renderText('Pengaturan')}
           </Link>
         </li>
       </ul>

@@ -48,7 +48,7 @@
   align-items: center;
   gap: var(--space-1);
 
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  box-shadow: var(--shadow-float);
 }
 
 /* =========================================================
@@ -182,7 +182,7 @@
   max-height: 80vh;
   overflow-y: auto;
 
-  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-float-up);
 
   -webkit-overflow-scrolling: touch;
 }
@@ -310,12 +310,12 @@
 }
 
 .bs-item:active {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--overlay-press);
 }
 
 @media (hover: hover) {
   .bs-item:hover {
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--overlay-hover);
   }
 }
 

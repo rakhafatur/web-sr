@@ -1,10 +1,13 @@
 :root {
-  /* ===== Tema aktif: Mono (Tahap 4) =====
-     Charcoal netral + satu aksen biru elektrik. Bukan tema opsional/toggle —
-     ini pengganti tema terang sebelumnya. Nama token dipertahankan (mis.
-     --color-green, --color-dark) supaya semua file yang sudah pakai token
-     ini otomatis ikut berubah tanpa perlu diganti satu-satu; isinya sekarang
-     tidak lagi harfiah "hijau" atau "gelap" secara warna. */
+  /* ===== Tema: GELAP (bawaan) & TERANG (blok [data-theme='light'] di bawah) =====
+     Charcoal netral + satu aksen biru. Tema dipilih di halaman Pengaturan
+     (Ikuti sistem / Terang / Gelap) — lihat src/lib/tema.ts; atribut
+     data-theme di <html> dipasang sebelum React jalan (index.html).
+     Nama token dipertahankan dari tema lama (mis. --color-green, --color-dark)
+     supaya semua file yang sudah pakai token ini otomatis ikut berubah; isinya
+     tidak harfiah "hijau" atau "gelap". Komponen TIDAK perlu tahu tema apa
+     yang aktif — cukup pakai token. */
+  color-scheme: dark;
 
   /* ===== Brand ===== */
   --color-green: #5b8def;
@@ -58,10 +61,51 @@
   --color-voucher-soft: #332711;
   --color-voucher-deep: #a16207;
 
+  /* Garis tepi lembut per kategori (badge/alert Bootstrap *-subtle). */
+  --color-income-border: #1f4a34;
+  --color-voucher-border: #4a3818;
+  --color-expense-border: #47232a;
+
   /* Aksen ke-4 untuk kartu statistik yang butuh lebih dari 3 warna kategori
      di atas (mis. "Total Didapat" di RekapVoucherPage). */
   --color-purple: #a78bfa;
   --color-purple-soft: #2a2340;
+
+  /* ===== Kartu hero (saldo besar, teks putih) =====
+     Selalu navy tua di kedua tema supaya teks putih di atasnya tetap
+     terbaca — jangan pakai --color-green-light di sini (di tema terang token
+     itu jadi biru pucat). */
+  --color-hero-from: var(--color-accent);
+  --color-hero-to: #1c2740;
+
+  /* ===== Lapisan interaksi & bayangan mengambang =====
+     Dulu rgba putih di-hardcode per file — tak terlihat di tema terang. */
+  --overlay-hover: rgba(255, 255, 255, 0.05);
+  --overlay-press: rgba(255, 255, 255, 0.08);
+  --border-translucent: rgba(255, 255, 255, 0.1);
+  --shadow-float: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --shadow-float-up: 0 -10px 30px rgba(0, 0, 0, 0.4);
+  --shadow-hero: 0 12px 32px rgba(0, 0, 0, 0.35);
+
+  /* Gambar mini tiap tema di halaman Pengaturan — SENGAJA tidak ditimpa di
+     blok tema terang: pratinjau "Gelap" harus tetap gelap walau tema aktif
+     terang, dan sebaliknya. */
+  --preview-gelap-bg: #0e0e10;
+  --preview-gelap-surface: #1e1f22;
+  --preview-gelap-text: #83868c;
+  --preview-gelap-accent: #5b8def;
+  --preview-terang-bg: #f4f5f7;
+  --preview-terang-surface: #ffffff;
+  --preview-terang-text: #d0d3d9;
+  --preview-terang-accent: #2c5cc5;
+
+  /* Varian rgb untuk jembatan Bootstrap di global.css. */
+  --color-dark-rgb: 237, 238, 240;
+  --color-surface-rgb: 23, 24, 26;
+  --color-surface-2-rgb: 30, 31, 34;
+  --color-gray-500-rgb: 111, 114, 120;
+  --color-gray-600-rgb: 131, 134, 140;
+  --color-primary-hover-rgb: 36, 64, 122;
 
   /* ===== Semantic UI state =====
      Satu-satunya sumber warna primary/success/warning/danger di seluruh app.
@@ -130,4 +174,93 @@
   /* Shadow "glow" bertema brand, pengganti rgba hijau yang di-hardcode ulang
      per halaman (mis. hero card). */
   --shadow-brand: 0 10px 30px rgba(var(--color-primary-rgb), 0.18);
+}
+
+/* =========================================================
+   TEMA TERANG — hanya warna yang ditimpa; spasi, radius, font tetap.
+   Kontras teks dihitung: warna teks kategori (income/expense/voucher/
+   medical/accent) ≥ 4,5:1 di atas putih DAN di atas latar *-soft-nya.
+   Warna kategori di sini lebih gelap dari versi gelap karena dipakai
+   sebagai teks di atas latar terang.
+========================================================= */
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  /* ===== Brand ===== */
+  --color-green: #2c5cc5;
+  --color-green-light: #cdd9f5;
+  --color-green-lighter: #eaf0fc;
+  --color-accent: #2f5bb7;
+
+  --color-bg: #f4f5f7;
+  --color-bg-rgb: 244, 245, 247;
+  --color-dark: #16181d;
+  --color-white: #ffffff;
+
+  --color-surface: #ffffff;
+  --color-surface-2: #f7f8fa;
+
+  /* ===== Neutral scale — 50-300 permukaan/garis, 400-900 teks ===== */
+  --color-gray-50: #fafbfc;
+  --color-gray-100: #f1f2f4;
+  --color-gray-200: #e3e5e9;
+  --color-gray-300: #d0d3d9;
+  --color-gray-400: #9ba0a8;
+  --color-gray-500: #6a6f78;
+  --color-gray-600: #5d626b;
+  --color-gray-700: #4a4f57;
+  --color-gray-800: #2f333a;
+  --color-gray-900: #16181d;
+
+  /* ===== Status (latar lembut) ===== */
+  --color-warning: #fdf3e1;
+  --color-warning-hover: #fae7c4;
+  --color-danger: #fdeced;
+  --color-danger-hover: #fadadc;
+
+  /* ===== Kategori transaksi ===== */
+  --color-income: #1a7a48;
+  --color-income-soft: #e6f5ec;
+  --color-expense: #c4323c;
+  --color-expense-soft: #fdecee;
+  --color-medical: #4c56cf;
+  --color-medical-soft: #eceefd;
+  --color-voucher: #9c5a08;
+  --color-voucher-soft: #fdf1e1;
+
+  --color-income-border: #b9e2c9;
+  --color-voucher-border: #f2d6a9;
+  --color-expense-border: #f3c3c7;
+
+  --color-purple: #6d48c9;
+  --color-purple-soft: #f0ebfd;
+
+  /* ===== Semantic UI state ===== */
+  --color-primary-rgb: 47, 91, 183;
+  --color-primary-hover: #244a96;
+  --color-success-rgb: 26, 122, 72;
+  /* Warning solid = isian terang dengan teks gelap (ink-on-warning), jadi
+     tetap amber terang — bukan --color-voucher yang di tema ini gelap. */
+  --color-warning-solid: #eea545;
+  --color-warning-solid-rgb: 238, 165, 69;
+  --color-danger-solid-rgb: 196, 50, 60;
+
+  /* ===== Hero: tetap navy tua (teks putih) ===== */
+  --color-hero-from: #2f5bb7;
+  --color-hero-to: #1d3a78;
+
+  /* ===== Lapisan interaksi & bayangan ===== */
+  --overlay-hover: rgba(15, 23, 42, 0.04);
+  --overlay-press: rgba(15, 23, 42, 0.07);
+  --border-translucent: rgba(15, 23, 42, 0.1);
+  --shadow-float: 0 10px 30px rgba(15, 23, 42, 0.12);
+  --shadow-float-up: 0 -10px 30px rgba(15, 23, 42, 0.1);
+  --shadow-hero: 0 12px 32px rgba(29, 58, 120, 0.22);
+
+  --color-dark-rgb: 22, 24, 29;
+  --color-surface-rgb: 255, 255, 255;
+  --color-surface-2-rgb: 247, 248, 250;
+  --color-gray-500-rgb: 106, 111, 120;
+  --color-gray-600-rgb: 93, 98, 107;
+  --color-primary-hover-rgb: 36, 74, 150;
 }

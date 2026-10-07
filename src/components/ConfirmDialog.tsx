@@ -59,7 +59,7 @@ const ConfirmDialogHost = () => {
     <ModalWrapper
       show={!!state}
       onClose={() => respond(false)}
-      headerGradient="linear-gradient(135deg,var(--color-expense),#b91c1c)"
+      headerGradient="linear-gradient(135deg,var(--color-expense),var(--color-expense-deep))"
       title={<ModalHeading icon={<FiAlertTriangle />} title="Konfirmasi" />}
       footer={footer}
     >

@@ -1,0 +1,133 @@
+/* Halaman Pengaturan (admin & ladies, mobile & desktop) — kelas pg-.
+   Semua warna dari token; pratinjau tema memakai --preview-* yang tidak
+   ikut berganti tema (lihat variable.css). */
+
+/* Pilihan tema: tiga kartu sejajar. */
+.pg-tema {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.pg-opsi {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-2) var(--space-3);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface);
+  color: var(--color-dark);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pg-opsi:hover {
+  border-color: var(--color-green-light);
+}
+
+.pg-opsi.is-active {
+  border-color: var(--color-green);
+  box-shadow: 0 0 0 1px var(--color-green);
+}
+
+.pg-opsi:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: 2px;
+}
+
+.pg-opsi-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 var(--space-1);
+  min-width: 0;
+}
+
+.pg-opsi-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.pg-opsi-sub {
+  font-size: 12px;
+  color: var(--color-gray-600);
+}
+
+.pg-check {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 22px;
+  height: 22px;
+  padding: 4px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+/* ===== Pratinjau mini ===== */
+.pg-preview {
+  position: relative;
+  display: flex;
+  height: 76px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--color-gray-200);
+}
+
+.pg-pv {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  padding: 10px;
+}
+
+.pg-pv--gelap {
+  background: var(--preview-gelap-bg);
+  --pv-surface: var(--preview-gelap-surface);
+  --pv-text: var(--preview-gelap-text);
+  --pv-accent: var(--preview-gelap-accent);
+}
+
+.pg-pv--terang {
+  background: var(--preview-terang-bg);
+  --pv-surface: var(--preview-terang-surface);
+  --pv-text: var(--preview-terang-text);
+  --pv-accent: var(--preview-terang-accent);
+}
+
+.pg-pv-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 8px;
+  border-radius: 8px;
+  background: var(--pv-surface);
+}
+
+.pg-pv-line {
+  height: 5px;
+  border-radius: var(--radius-full);
+  background: var(--pv-text);
+}
+
+.pg-pv-line.is-short {
+  width: 55%;
+}
+
+.pg-pv-line.is-accent {
+  width: 35%;
+  background: var(--pv-accent);
+}
+
+/* Layar sangat sempit: kartu menumpuk. */
+@media (max-width: 360px) {
+  .pg-tema {
+    grid-template-columns: 1fr;
+  }
+}

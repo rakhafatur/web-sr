@@ -688,11 +688,6 @@ textarea.dk-input {
   resize: vertical;
 }
 
-/* Ikon kalender & teks tanggal mengikuti tema gelap. */
-.dk-input[type='date'] {
-  color-scheme: dark;
-}
-
 .dk-input--trailing {
   padding-right: 48px;
 }

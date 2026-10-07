@@ -29,7 +29,7 @@
 }
 
 button.mpb-btn:active {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-press);
 }
 
 button.mpb-btn:focus-visible {

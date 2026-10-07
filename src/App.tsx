@@ -40,6 +40,7 @@ const DokterListPage = lazy(() => import('./features/ladies/pages/DokterListPage
 const PemasukanLainListPage = lazy(() => import('./features/ladies/pages/PemasukanLainListPage'));
 const PeraturanPage = lazy(() => import('./features/ladies/pages/PeraturanPage'));
 const ProfilePage = lazy(() => import('./features/ladies/pages/ProfilePage'));
+const PengaturanPage = lazy(() => import('./features/pengaturan/pages/PengaturanPage'));
 
 import ProtectedRoute from './components/ProtectedRoute';
 import RootRoute from './components/RootRoute';
@@ -112,6 +113,9 @@ function App() {
               <Route path="/agent-create" element={<CreateAgentPage />} />
               <Route path="/agent-detail/:id" element={<DetailAgentPage />} />
               <Route path="/outlet" element={<OutletListPage />} />
+
+              {/* Admin & ladies */}
+              <Route path="/pengaturan" element={<PengaturanPage />} />
 
               {/* Ladies-specific */}
               <Route path="/ladies/home" element={<HomeLadiesPage />} />

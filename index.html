@@ -17,7 +17,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SR Agency</title>
 
-    <!-- ✅ Tambahan anti blink putih -->
+    <!-- Tema dipasang SEBELUM CSS & React supaya tidak berkedip warna tema
+         yang salah. Logika harus sama dengan tentukanTema/normalkanPilihan di
+         src/lib/tema.ts (kunci localStorage 'sr-tema'; bawaan ikuti sistem). -->
+    <script>
+      (function () {
+        var p = 'sistem';
+        try { p = localStorage.getItem('sr-tema') || 'sistem'; } catch (e) {}
+        if (p !== 'terang' && p !== 'gelap') p = 'sistem';
+        var gelap = p === 'gelap' || (p === 'sistem' &&
+          !(window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches));
+        if (!gelap) document.documentElement.setAttribute('data-theme', 'light');
+        window.__srTemaAwal = gelap ? '#0e0e10' : '#f4f5f7';
+      })();
+    </script>
+
+    <!-- Anti kedip: latar sesuai tema sebelum stylesheet utama termuat. -->
     <style>
       html, body {
         margin: 0;
@@ -26,10 +41,17 @@
         color: white;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       }
+      html[data-theme='light'], html[data-theme='light'] body {
+        background-color: #f4f5f7;
+        color: #16181d;
+      }
     </style>
 
-    <!-- ✅ Fix neon Safari + iOS bar -->
+    <!-- Warna status bar HP — diperbarui ke tema aktif oleh terapkanTema(). -->
     <meta name="theme-color" content="#0e0e10" />
+    <script>
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', window.__srTemaAwal);
+    </script>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="SR Agency" />

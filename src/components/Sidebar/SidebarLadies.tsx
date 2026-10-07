@@ -11,6 +11,7 @@ import {
   FiBookOpen,
   FiChevronLeft,
   FiChevronRight,
+  FiSliders,
 } from 'react-icons/fi';
 
 import { SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from '../../constant';
@@ -43,6 +44,7 @@ const BAGIAN: Bagian[] = [
       { to: '/ladies/profile', label: 'Profil', icon: <FiUser /> },
       { to: '/smart-chat-ladies', label: 'Smart Chat', icon: <FiMessageCircle /> },
       { to: '/ladies/peraturan', label: 'Peraturan', icon: <FiBookOpen /> },
+      { to: '/pengaturan', label: 'Pengaturan', icon: <FiSliders /> },
     ],
   },
 ];

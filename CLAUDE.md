@@ -74,6 +74,15 @@ Kalau menambah perhitungan uang baru, ikuti pola yang sama: fungsi murni di
   `src/styles/variable.css`. Jangan menulis hex literal di komponen.
   Nama token dipertahankan dari tema lama (`--color-green` sebenarnya biru),
   jadi ikuti nilainya, bukan namanya.
+- **Ada dua tema: gelap (bawaan `:root`) dan terang (`:root[data-theme='light']`).**
+  User memilih di halaman Pengaturan (bawaan: ikuti sistem); mekanismenya di
+  `src/lib/tema.ts` + skrip awal di `index.html`. Setiap warna baru harus
+  diberi nilai di kedua blok. Jangan menulis `rgba(255,255,255,…)` untuk
+  hover/garis/bayangan — tidak terlihat di tema terang; pakai
+  `--overlay-hover`, `--overlay-press`, `--border-translucent`,
+  `--shadow-float`. Kartu hero bertulisan putih pakai
+  `--color-hero-from`/`--color-hero-to` (selalu navy), bukan
+  `--color-green-light` (di tema terang jadi biru pucat).
 - Komponen bersama yang sudah ada: `DataTable`, `CardTable`, `ModalWrapper`,
   `FormField`, `Button`, `ActionIconButton`, `ListPageToolbar`,
   `TransaksiFilterBar`, `SearchableSelect`, `EmptyState`, `Pagination`.

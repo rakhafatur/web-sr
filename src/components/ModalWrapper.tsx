@@ -115,8 +115,8 @@ const ModalWrapper = ({
 
             color: headerGradient ? 'white' : undefined,
 
-            borderColor:
-              'rgba(255,255,255,0.08)',
+            // Token (bukan rgba putih) supaya garisnya terlihat di kedua tema.
+            borderColor: 'var(--color-gray-200)',
 
             flexShrink: 0,
           }}
@@ -177,8 +177,7 @@ const ModalWrapper = ({
               background:
                 'linear-gradient(to right, var(--color-surface-2), var(--color-surface))',
 
-              borderColor:
-                'rgba(0,0,0,0.05)',
+              borderColor: 'var(--color-gray-200)',
 
               flexShrink: 0,
             }}
