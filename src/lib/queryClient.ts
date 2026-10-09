@@ -12,6 +12,10 @@ import { reportError } from './reportError';
  * `queryCache.onError` global — satu tempat untuk toast error di semua query,
  * dipicu otomatis kapan pun sebuah query gagal. Pesannya bisa dikustom lewat
  * `meta: { errorLabel: '...' }` di masing-masing useQuery.
+ *
+ * `meta: { senyap: true }` untuk query latar yang bukan isi halaman (mis.
+ * badge jumlah di sidebar): toast-nya ditahan supaya satu kegagalan tidak
+ * muncul di setiap halaman, tapi tetap dilaporkan lewat reportError.
  */
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,8 +27,10 @@ export const queryClient = new QueryClient({
   },
   queryCache: new QueryCache({
     onError: (error, query) => {
-      const label = (query.meta?.errorLabel as string | undefined) || 'data';
-      toast.error(`Gagal memuat ${label}. Coba lagi.`);
+      if (!query.meta?.senyap) {
+        const label = (query.meta?.errorLabel as string | undefined) || 'data';
+        toast.error(`Gagal memuat ${label}. Coba lagi.`);
+      }
 
       // Toast memberi tahu user, laporan memberi tahu kita. Query yang gagal
       // sering jadi petunjuk pertama saat ada masalah RLS atau kolom berubah.

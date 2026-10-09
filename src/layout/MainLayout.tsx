@@ -14,6 +14,7 @@ import {
   SIDEBAR_WIDTH,
   SIDEBAR_COLLAPSED_WIDTH,
 } from '../constant';
+import { cocokRute } from '../utils/cocokRute';
 
 const RUTE_LADIES_TANPA_HEADER = [
   '/ladies/home',
@@ -56,8 +57,25 @@ const RUTE_ADMIN_TANPA_HEADER = [
   '/pengaturan',
 ];
 
-const cocokRute = (daftar: string[], pathname: string) =>
-  daftar.some((r) => (r.endsWith('/') && r !== '/' ? pathname.startsWith(r) : pathname === r));
+// Status ciut sidebar desktop diingat per perangkat. localStorage bisa
+// melempar (mode privat, data situs diblokir) — kegagalan cukup diabaikan.
+const KUNCI_SIDEBAR_CIUT = 'sr-sidebar-ciut';
+
+const bacaSidebarCiut = () => {
+  try {
+    return window.localStorage.getItem(KUNCI_SIDEBAR_CIUT) === '1';
+  } catch {
+    return false;
+  }
+};
+
+const tulisSidebarCiut = (ciut: boolean) => {
+  try {
+    window.localStorage.setItem(KUNCI_SIDEBAR_CIUT, ciut ? '1' : '0');
+  } catch {
+    /* abaikan — lihat bacaSidebarCiut */
+  }
+};
 
 function MainLayout({ children }: { children: React.ReactNode }) {
   const user = useSelector((state: RootState) => state.user.currentUser);
@@ -65,15 +83,20 @@ function MainLayout({ children }: { children: React.ReactNode }) {
 
   const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 768);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(bacaSidebarCiut);
   const location = useLocation();
+
+  const toggleSidebar = () => setIsCollapsed((ciut) => !ciut);
+
+  useEffect(() => {
+    tulisSidebarCiut(isCollapsed);
+  }, [isCollapsed]);
 
   useEffect(() => {
     const handleResize = () => {
       const nowMobile = window.innerWidth < 768;
       setIsMobile(nowMobile);
       setSidebarOpen(!nowMobile);
-      setIsCollapsed(false);
     };
 
     handleResize();
@@ -113,15 +136,9 @@ function MainLayout({ children }: { children: React.ReactNode }) {
       <div className="d-flex" style={{ width: '100%' }}>
         {!isMobile && (
           isLadies ? (
-            <SidebarLadies
-              isCollapsed={isCollapsed}
-              onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
-            />
+            <SidebarLadies isCollapsed={isCollapsed} onToggleCollapse={toggleSidebar} />
           ) : (
-            <Sidebar
-              isCollapsed={isCollapsed}
-              onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
-            />
+            <Sidebar isCollapsed={isCollapsed} onToggleCollapse={toggleSidebar} />
           )
         )}
 

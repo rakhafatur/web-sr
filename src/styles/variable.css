@@ -14,6 +14,10 @@
   --color-green-light: #1c2740;
   --color-green-lighter: #141b2c;
   --color-accent: #2f4f8f;
+  /* Latar menu aktif di sidebar. Di tema gelap --color-green-lighter hampir
+     sama dengan --color-surface (tak terlihat), jadi pakai satu tingkat lebih
+     terang; di tema terang cukup yang paling pucat. */
+  --color-nav-active: var(--color-green-light);
 
   --color-bg: #0e0e10;
   --color-bg-rgb: 14, 14, 16;
@@ -191,6 +195,7 @@
   --color-green-light: #cdd9f5;
   --color-green-lighter: #eaf0fc;
   --color-accent: #2f5bb7;
+  --color-nav-active: var(--color-green-lighter);
 
   --color-bg: #f4f5f7;
   --color-bg-rgb: 244, 245, 247;
