@@ -108,7 +108,10 @@ function MainLayout({ children }: { children: React.ReactNode }) {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  const isHomePage = location.pathname === '/' || location.pathname === '/ladies/home';
+  // Home mengatur jaraknya sendiri (padding main 0). Home ladies di desktop
+  // memakai gaya dk- seperti halaman lain, jadi tetap dapat padding 2rem.
+  const isHomePage =
+    location.pathname === '/' || (isMobile && location.pathname === '/ladies/home');
   // Smart Chat (ladies & admin) mengisi penuh area konten, jadi padding dan
   // min-height main dicabut di semua ukuran. Di mobile tampil layar penuh:
   // header & navbar bawah ikut dicabut (bar atas & dok milik halaman itu).
