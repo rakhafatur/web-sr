@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { useMediaQuery } from 'react-responsive';
 import { RootState } from '../../../app/store';
 import { supabase } from '../../../lib/supabaseClient';
 import dayjs from 'dayjs';
@@ -23,6 +24,7 @@ import { motion } from 'framer-motion';
 
 import type { UserWithLadies } from '../../../types/user';
 import HomeLadiesSkeleton from '../components/HomeLadiesSkeleton';
+import HomeLadiesDesktop from '../components/HomeLadiesDesktop';
 import PullToRefresh from '../../../components/PullToRefresh';
 import NotificationBell from '../../../components/Header/NotificationBell';
 import { TARGET_HARI_KERJA } from '../../absensi/utils/targetAbsensi';
@@ -40,6 +42,8 @@ const HomeLadiesPage = () => {
   ) as UserWithLadies;
 
   const navigate = useNavigate();
+  // Mobile: tampilan di bawah. Desktop: HomeLadiesDesktop (gaya dk-).
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const [hideAmount, setHideAmount] = useState(false);
 
@@ -166,6 +170,24 @@ const HomeLadiesPage = () => {
     animate: { opacity: 1, y: 0 },
     transition: { delay },
   });
+
+  if (!isMobile) {
+    return (
+      <HomeLadiesDesktop
+        sapaan={sapaanWaktu(new Date().getHours())}
+        nama={nama}
+        bulanIni={bulanIni}
+        loading={loading}
+        hariMasuk={hariMasuk}
+        voucherPcs={voucherPcs}
+        voucherNominal={voucherNominal}
+        kasbon={pengeluaran}
+        rataVoucherPerHari={rataVoucherPerHari}
+        hideAmount={hideAmount}
+        onToggleHide={() => setHideAmount((v) => !v)}
+      />
+    );
+  }
 
   if (loading) {
     return <HomeLadiesSkeleton />;
