@@ -45,7 +45,11 @@ const BukuKuningPengawasPage = () => {
   const { data: pengawasList = [] } = useQuery({
     queryKey: ['bukukuning-pengawas-list'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('pengawas').select('id, nama_panggilan');
+      // Hanya pengawas aktif, sama dengan Buku Kuning ladies.
+      const { data, error } = await supabase
+        .from('pengawas')
+        .select('id, nama_panggilan')
+        .eq('status', 'active');
       if (error) throw error;
       return data ?? [];
     },

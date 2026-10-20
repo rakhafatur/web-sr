@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { FiUser, FiTag, FiCreditCard, FiCalendar, FiMapPin } from 'react-icons/fi';
 import { useMediaQuery } from 'react-responsive';
 import MobileFormPage from '../../../components/mobile/MobileFormPage';
-import { MobileTextField } from '../../../components/mobile/MobileFields';
+import { MobileTextField, MobileChoiceField } from '../../../components/mobile/MobileFields';
 import { toast } from 'react-toastify';
 
 import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
 import { supabase } from '../../../lib/supabaseClient';
 import { validasiWajib } from '../../../utils/validasiForm';
 import PengawasFormDesktop, { PengawasFormValues as FormType } from '../components/PengawasFormDesktop';
+import { STATUS_PENGAWAS, badgeStatusPengawas } from '../utils/statusPengawas';
 
 const CreatePengawas = () => {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ const CreatePengawas = () => {
     tanggal_lahir: '',
     alamat: '',
     tanggal_bergabung: '',
+    status: 'active',
   });
 
   const [loading, setLoading] = useState(false);
@@ -137,12 +139,21 @@ const CreatePengawas = () => {
           value={form.tanggal_bergabung}
           onChange={handleChange}
         />
+        <MobileChoiceField
+          id="pengawas-status"
+          label="Status"
+          value={form.status}
+          options={STATUS_PENGAWAS}
+          onChange={(v) => setForm((prev) => ({ ...prev, status: v }))}
+        />
       </MobileFormPage>
     );
   }
 
   // Desktop (gaya baru dk-, sama dengan Tambah User): pratinjau identitas
   // (terisi saat mengetik) & kartu form grid 2 kolom.
+  const badge = badgeStatusPengawas(form.status);
+
   return (
     <div className="page-shell dk-page">
       <DesktopPageHeader
@@ -163,6 +174,11 @@ const CreatePengawas = () => {
             <div className="dk-identity-sub">
               {form.nama_panggilan ? `Panggilan: ${form.nama_panggilan}` : 'Pengawas'}
             </div>
+            {badge && (
+              <div className="dk-identity-meta">
+                <span className={`dk-status is-${badge.tone}`}>{badge.label}</span>
+              </div>
+            )}
             <div className="dk-identity-note">Pratinjau — terisi saat kamu mengetik</div>
           </div>
         </aside>
@@ -174,7 +190,12 @@ const CreatePengawas = () => {
           </div>
 
           <div className="dk-card-body">
-            <PengawasFormDesktop form={form} fieldSalah={fieldSalah} onChange={handleChange} />
+            <PengawasFormDesktop
+              form={form}
+              fieldSalah={fieldSalah}
+              onChange={handleChange}
+              onStatusChange={(v) => setForm((prev) => ({ ...prev, status: v }))}
+            />
           </div>
 
           <div className="dk-card-foot">

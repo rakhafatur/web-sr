@@ -1,4 +1,5 @@
 import DesktopField from '../../../components/desktop/DesktopField';
+import { STATUS_PENGAWAS } from '../utils/statusPengawas';
 
 export type PengawasFormValues = {
   nama_lengkap: string;
@@ -7,16 +8,21 @@ export type PengawasFormValues = {
   tanggal_lahir: string;
   alamat: string;
   tanggal_bergabung: string;
+  status: string;
 };
 
 type Props = {
   form: PengawasFormValues;
   fieldSalah: string | null;
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  onStatusChange: (status: string) => void;
 };
 
-/** Field form pengawas untuk desktop (grid 2 kolom) — dipakai Tambah & Detail (mode ubah). */
-const PengawasFormDesktop = ({ form, fieldSalah, onChange }: Props) => {
+/**
+ * Field form pengawas untuk desktop (grid 2 kolom) — dipakai Tambah & Detail
+ * (mode ubah). Status lewat chip, sama dengan form ladies.
+ */
+const PengawasFormDesktop = ({ form, fieldSalah, onChange, onStatusChange }: Props) => {
   const input = (name: keyof PengawasFormValues, extra?: React.InputHTMLAttributes<HTMLInputElement>) => (
     <input
       id={`dk-pengawas-${name}`}
@@ -51,6 +57,23 @@ const PengawasFormDesktop = ({ form, fieldSalah, onChange }: Props) => {
 
       <DesktopField label="Tanggal bergabung" htmlFor="dk-pengawas-tanggal_bergabung">
         {input('tanggal_bergabung', { type: 'date' })}
+      </DesktopField>
+
+      <DesktopField label="Status" labelId="dk-pengawas-status-label">
+        <div className="dk-chips" role="radiogroup" aria-labelledby="dk-pengawas-status-label">
+          {STATUS_PENGAWAS.map((s) => (
+            <button
+              key={s.value}
+              type="button"
+              role="radio"
+              aria-checked={form.status === s.value}
+              className={`dk-chip ${form.status === s.value ? 'is-active' : ''}`}
+              onClick={() => onStatusChange(s.value)}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
       </DesktopField>
 
       <DesktopField label="Alamat" htmlFor="dk-pengawas-alamat" full>

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { FiUser, FiTag, FiCreditCard, FiCalendar, FiMapPin, FiEdit2 } from 'react-icons/fi';
 import { useMediaQuery } from 'react-responsive';
 import MobileFormPage from '../../../components/mobile/MobileFormPage';
-import { MobileTextField } from '../../../components/mobile/MobileFields';
+import { MobileTextField, MobileChoiceField } from '../../../components/mobile/MobileFields';
 import { toast } from 'react-toastify';
 
 import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
@@ -12,6 +12,7 @@ import { supabase } from '../../../lib/supabaseClient';
 import { validasiWajib } from '../../../utils/validasiForm';
 import { formatTanggal } from '../../../utils/formatTanggal';
 import PengawasFormDesktop, { PengawasFormValues as FormType } from '../components/PengawasFormDesktop';
+import { STATUS_PENGAWAS, badgeStatusPengawas } from '../utils/statusPengawas';
 
 const emptyForm: FormType = {
   nama_lengkap: '',
@@ -20,6 +21,7 @@ const emptyForm: FormType = {
   tanggal_lahir: '',
   alamat: '',
   tanggal_bergabung: '',
+  status: 'active',
 };
 
 const DetailPengawas = () => {
@@ -40,7 +42,7 @@ const DetailPengawas = () => {
 
       const { data, error } = await supabase
         .from('pengawas')
-        .select('nama_lengkap, nama_panggilan, nomor_ktp, tanggal_lahir, alamat, tanggal_bergabung')
+        .select('nama_lengkap, nama_panggilan, nomor_ktp, tanggal_lahir, alamat, tanggal_bergabung, status')
         .eq('id', id)
         .single();
 
@@ -53,6 +55,7 @@ const DetailPengawas = () => {
         tanggal_lahir: data.tanggal_lahir || '',
         alamat: data.alamat || '',
         tanggal_bergabung: data.tanggal_bergabung || '',
+        status: data.status || 'active',
       });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Gagal mengambil data pengawas');
@@ -204,6 +207,14 @@ const DetailPengawas = () => {
           onChange={handleChange}
             readOnly={readonly}
         />
+        <MobileChoiceField
+          id="pengawas-status"
+          label="Status"
+          value={form.status}
+          options={STATUS_PENGAWAS}
+          onChange={(v) => setForm((prev) => ({ ...prev, status: v }))}
+          readOnly={readonly}
+        />
       </MobileFormPage>
     );
   }
@@ -217,6 +228,8 @@ const DetailPengawas = () => {
   };
 
   const kosong = <span className="dk-muted">-</span>;
+  const badge = badgeStatusPengawas(form.status);
+  const badgeEl = badge && <span className={`dk-status is-${badge.tone}`}>{badge.label}</span>;
 
   return (
     <div className="page-shell dk-page">
@@ -253,6 +266,7 @@ const DetailPengawas = () => {
             <div className="dk-identity-sub">
               {form.nama_panggilan ? `Panggilan: ${form.nama_panggilan}` : 'Pengawas'}
             </div>
+            {badgeEl && <div className="dk-identity-meta">{badgeEl}</div>}
           </div>
         </aside>
 
@@ -287,13 +301,22 @@ const DetailPengawas = () => {
                   <dt>Tanggal bergabung</dt>
                   <dd>{form.tanggal_bergabung ? formatTanggal(form.tanggal_bergabung) : kosong}</dd>
                 </div>
+                <div>
+                  <dt>Status</dt>
+                  <dd>{badgeEl || form.status || kosong}</dd>
+                </div>
                 <div className="dk-field--full">
                   <dt>Alamat</dt>
                   <dd style={{ whiteSpace: 'pre-line' }}>{form.alamat || kosong}</dd>
                 </div>
               </dl>
             ) : (
-              <PengawasFormDesktop form={form} fieldSalah={fieldSalah} onChange={handleChange} />
+              <PengawasFormDesktop
+                form={form}
+                fieldSalah={fieldSalah}
+                onChange={handleChange}
+                onStatusChange={(v) => setForm((prev) => ({ ...prev, status: v }))}
+              />
             )}
           </div>
         </section>
