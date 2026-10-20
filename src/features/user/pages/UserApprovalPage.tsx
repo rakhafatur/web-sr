@@ -33,10 +33,14 @@ type AssignItem = {
 
 type AssignType = 'ladies' | 'pengawas' | 'agent';
 
-/** Sumber daftar yang bisa di-assign, per tipe. */
-const ASSIGN_SOURCE: Record<AssignType, { table: string; columns: string; orderBy: string }> = {
-  ladies: { table: 'ladies', columns: 'id, nama_ladies, nama_outlet, pin', orderBy: 'nama_ladies' },
-  pengawas: { table: 'pengawas', columns: 'id, nama_panggilan', orderBy: 'nama_panggilan' },
+/**
+ * Sumber daftar yang bisa di-assign, per tipe. `hanyaAktif`: user hanya boleh
+ * ditugaskan ke ladies/pengawas berstatus 'active'. Tabel agent tidak punya
+ * kolom status.
+ */
+const ASSIGN_SOURCE: Record<AssignType, { table: string; columns: string; orderBy: string; hanyaAktif?: boolean }> = {
+  ladies: { table: 'ladies', columns: 'id, nama_ladies, nama_outlet, pin', orderBy: 'nama_ladies', hanyaAktif: true },
+  pengawas: { table: 'pengawas', columns: 'id, nama_panggilan', orderBy: 'nama_panggilan', hanyaAktif: true },
   agent: { table: 'agent', columns: 'id, nama_agent', orderBy: 'nama_agent' },
 };
 
@@ -88,10 +92,10 @@ const UserApprovalPage = () => {
     queryFn: async () => {
       const source = ASSIGN_SOURCE[assignType as AssignType];
 
-      const { data, error } = await supabase
-        .from(source.table)
-        .select(source.columns)
-        .order(source.orderBy, { ascending: true });
+      let query = supabase.from(source.table).select(source.columns);
+      if (source.hanyaAktif) query = query.eq('status', 'active');
+
+      const { data, error } = await query.order(source.orderBy, { ascending: true });
 
       if (error) throw error;
       return (data ?? []) as unknown as AssignItem[];
