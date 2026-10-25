@@ -15,48 +15,9 @@ import {
   SIDEBAR_COLLAPSED_WIDTH,
 } from '../constant';
 import { cocokRute } from '../utils/cocokRute';
-
-const RUTE_LADIES_TANPA_HEADER = [
-  '/ladies/home',
-  '/ladies/voucher',
-  '/ladies/kasbon',
-  '/ladies/dokter',
-  '/ladies/pemasukan_lain',
-  '/ladies/absensi',
-  '/ladies/profile',
-  '/ladies/peraturan',
-  '/pengaturan',
-];
-
-/** Halaman admin yang di mobile punya bar atas sendiri (MobilePageBar).
-    Entri yang diakhiri '/' dicocokkan sebagai awalan (rute ber-parameter,
-    mis. '/user-detail/' untuk '/user-detail/:id'). */
-const RUTE_ADMIN_TANPA_HEADER = [
-  '/',
-  '/add-transaksi',
-  '/add-transaksi-pengawas',
-  '/buku-kuning',
-  '/buku-kuning-pengawas',
-  '/outlet',
-  '/users',
-  '/user-create',
-  '/user-approval',
-  '/user-detail/',
-  '/pengawas',
-  '/pengawas-create',
-  '/pengawas-detail/',
-  '/agent',
-  '/agent-create',
-  '/agent-detail/',
-  '/ladies',
-  '/ladies-create',
-  '/ladies-detail/',
-  '/absensi',
-  '/absensi-harian',
-  '/rekap-voucher',
-  '/performa-ladies',
-  '/pengaturan',
-];
+// Halaman yang di mobile punya bar atas sendiri (MobilePageBar) — diturunkan
+// dari `barSendiri` di daftar menu, bukan ditulis ulang di sini.
+import { RUTE_ADMIN_TANPA_HEADER, RUTE_LADIES_TANPA_HEADER } from './menu';
 
 // Status ciut sidebar desktop diingat per perangkat. localStorage bisa
 // melempar (mode privat, data situs diblokir) — kegagalan cukup diabaikan.

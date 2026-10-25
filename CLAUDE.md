@@ -88,6 +88,11 @@ Kalau menambah perhitungan uang baru, ikuti pola yang sama: fungsi murni di
   `TransaksiFilterBar`, `SearchableSelect`, `EmptyState`, `Pagination`.
 - Gunakan `confirmDialog()` dari `components/ConfirmDialog`, bukan
   `window.confirm`.
+- **Menu hanya ditambah di `src/layout/menu.tsx`**: satu entri di
+  `HALAMAN_*` + id-nya di tata letak sidebar dan navbar mobile. Sidebar,
+  navbar bawah, penanda tab aktif, dan daftar rute tanpa Header di
+  `MainLayout` semuanya diturunkan dari sana; `menu.test.ts` gagal kalau
+  halaman lupa dicantumkan di salah satu tata letak.
 - **Status memuat: skeleton untuk daftar & kartu, ikon berputar hanya di dalam
   tombol aksi.** Pakai `ListLoadingState` (daftar/tabel), `DetailFormSkeleton`
   (halaman Detail entitas), atau susun sendiri dari `Skeleton` kalau tata
