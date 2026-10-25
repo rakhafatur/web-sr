@@ -52,6 +52,7 @@ const RUTE_ADMIN_TANPA_HEADER = [
   '/ladies-create',
   '/ladies-detail/',
   '/absensi',
+  '/absensi-harian',
   '/rekap-voucher',
   '/performa-ladies',
   '/pengaturan',

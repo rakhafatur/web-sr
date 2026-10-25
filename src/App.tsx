@@ -17,6 +17,7 @@ const NotFoundPage = lazy(() => import('./features/core/pages/NotFoundPage'));
 const AddTransaksiPage = lazy(() => import('./features/transaction/pages/AddTransaksiPage'));
 const BukuKuningPage = lazy(() => import('./features/transaction/pages/BukuKuningPage'));
 const AbsensiPage = lazy(() => import('./features/absensi/pages/AbsensiPage'));
+const AbsenHarianPage = lazy(() => import('./features/absensi/pages/AbsenHarianPage'));
 const RekapVoucherPage = lazy(() => import('./features/transaction/pages/RekapVoucherPage'));
 const PerformaLadiesPage = lazy(() => import('./features/transaction/pages/PerformaLadiesPage'));
 const AddTransaksiPengawasPage = lazy(() => import('./features/transaction/pages/AddTransaksiPengawasPage'));
@@ -103,6 +104,7 @@ function App() {
               <Route path="/buku-kuning" element={<BukuKuningPage />} />
               <Route path="/add-transaksi" element={<AddTransaksiPage />} />
               <Route path="/absensi" element={<AbsensiPage />} />
+              <Route path="/absensi-harian" element={<AbsenHarianPage />} />
               <Route path="/rekap-voucher" element={<RekapVoucherPage />} />
               <Route path="/performa-ladies" element={<PerformaLadiesPage />} />
               <Route path="/add-transaksi-pengawas" element={<AddTransaksiPengawasPage />} />

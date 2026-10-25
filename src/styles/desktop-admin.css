@@ -1792,3 +1792,275 @@ textarea.dk-input {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* =========================
+   ABSEN HARIAN (dk-ah-)
+   Ringkasan (progres + 4 status), lalu tabel semua ladies dengan chip
+   status yang langsung tersimpan saat diklik.
+========================= */
+
+.dk-ah-datenav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Label tanggal = pemicu input date transparan di atasnya. */
+.dk-ah-date {
+  position: relative;
+  min-width: 230px;
+  height: 34px;
+  margin: 0;
+  padding: 0 var(--space-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-dark);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.dk-ah-date:hover {
+  background: var(--overlay-hover);
+}
+
+.dk-ah-date:focus-within {
+  outline: 2px solid var(--color-green);
+  outline-offset: 2px;
+}
+
+.dk-ah-date svg {
+  color: var(--color-gray-600);
+}
+
+.dk-ah-date input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  border: none;
+  cursor: pointer;
+}
+
+.dk-ah-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.dk-ah-summary .dk-stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.dk-ah-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--space-4) var(--space-5);
+}
+
+.dk-ah-count {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.dk-ah-count-value {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--color-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.dk-ah-count-total {
+  font-size: 14px;
+  color: var(--color-gray-600);
+}
+
+.dk-ah-percent {
+  margin-left: auto;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-green);
+  font-variant-numeric: tabular-nums;
+}
+
+.dk-ah-percent.is-done {
+  color: var(--color-income);
+}
+
+/* Bar progres: isi di-skala (transform), bukan diubah lebarnya. */
+.dk-ah-bar {
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-gray-200);
+  overflow: hidden;
+}
+
+.dk-ah-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--color-green);
+  transform-origin: left center;
+  transition: transform 0.4s ease;
+}
+
+.dk-ah-bar-fill.is-done {
+  background: var(--color-income);
+}
+
+.dk-ah-tools {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.dk-ah-segment-count {
+  min-width: 22px;
+  padding: 0 6px;
+  border-radius: var(--radius-full);
+  background: var(--overlay-press);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.dk-ah-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 13px;
+}
+
+/* Tabel bisa digeser kalau layar desktop sempit (sidebar terbuka). */
+.dk-ah-scroll {
+  overflow-x: auto;
+}
+
+.dk-ah-table td {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.dk-ah-table tbody tr {
+  transition: background-color 0.12s ease;
+}
+
+.dk-ah-table tbody tr:hover {
+  background: var(--overlay-hover);
+}
+
+.dk-ah-col-status {
+  width: 1%;
+}
+
+.dk-ah-chips {
+  display: grid;
+  grid-template-columns: repeat(4, 92px);
+  gap: 6px;
+}
+
+.dk-ah-chip {
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 10px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface);
+  color: var(--color-gray-700);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.dk-ah-chip-icon {
+  display: inline-flex;
+  font-size: 14px;
+}
+
+.dk-ah-chip:hover:not(:disabled):not(.is-active) {
+  border-color: var(--color-green);
+  color: var(--color-dark);
+}
+
+.dk-ah-chip:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.dk-ah-chip.is-active {
+  font-weight: 600;
+}
+
+.dk-ah-chip:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: 2px;
+}
+
+.dk-ah-chip:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Belum diabsen: avatar bergaris putus-putus + label kuning. */
+.dk-avatar.dk-ah-avatar {
+  border-color: transparent;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dk-avatar.dk-ah-avatar.is-belum {
+  background: transparent;
+  border: 1.5px dashed var(--color-gray-500);
+  color: var(--color-gray-600);
+}
+
+.dk-ah-belum {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-voucher);
+}
+
+.dk-ah-ket {
+  display: block;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--color-gray-700);
+}
+
+@media (max-width: 1100px) {
+  .dk-ah-summary {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .dk-ah-progress {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dk-ah-bar-fill,
+  .dk-ah-chip {
+    transition: none;
+  }
+}

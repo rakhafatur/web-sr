@@ -1128,3 +1128,241 @@
   color: var(--color-voucher);
 }
 
+/* =========================
+   ABSEN HARIAN — semua ladies untuk satu tanggal (tm-ah-)
+========================= */
+
+.tm-ah-progress-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.tm-ah-count {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.tm-ah-count strong {
+  font-size: var(--font-size-3xl);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--color-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.tm-ah-count span {
+  font-size: 14px;
+  color: var(--color-gray-600);
+}
+
+.tm-ah-percent {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-green);
+  font-variant-numeric: tabular-nums;
+}
+
+.tm-ah-percent.is-done {
+  color: var(--color-income);
+}
+
+/* Bar progres: isi di-skala (transform), bukan diubah lebarnya. */
+.tm-ah-bar {
+  height: 8px;
+  margin-top: var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-gray-200);
+  overflow: hidden;
+}
+
+.tm-ah-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--color-green);
+  transform-origin: left center;
+  transition: transform 0.4s ease;
+}
+
+.tm-ah-bar-fill.is-done {
+  background: var(--color-income);
+}
+
+.tm-ah-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin-top: var(--space-3);
+  font-size: 13px;
+  color: var(--color-gray-600);
+}
+
+.tm-ah-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tm-ah-legend strong {
+  font-weight: 600;
+  color: var(--color-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.tm-ah-dot-belum {
+  background: transparent;
+  border: 1.5px dashed var(--color-gray-500);
+}
+
+.tm-ah-done {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--color-income-soft);
+  color: var(--color-income);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.tm-ah-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tm-ah-row {
+  padding: 10px var(--space-4) var(--space-3);
+}
+
+.tm-ah-row + .tm-ah-row {
+  border-top: 1px solid var(--color-gray-200);
+}
+
+/* Nama ladies = tombol buka keterangan / hapus. */
+.tm-ah-who {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
+}
+
+.tm-ah-who:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: 2px;
+}
+
+.tm-ah-who .tm-row-title,
+.tm-ah-who .tm-row-sub {
+  display: block;
+}
+
+.tm-ah-who .tm-row-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tm-ah-belum {
+  color: var(--color-voucher);
+  font-weight: 600;
+}
+
+.tm-ah-avatar {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  border: 1px solid transparent;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Belum diabsen: garis putus-putus (bukan hanya beda warna). */
+.tm-ah-avatar.is-belum {
+  background: transparent;
+  border: 1.5px dashed var(--color-gray-500);
+  color: var(--color-gray-600);
+}
+
+.tm-ah-chips {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.tm-ah-chip {
+  min-width: 0;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 4px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface-2);
+  color: var(--color-gray-700);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.tm-ah-chip-icon {
+  display: inline-flex;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.tm-ah-chip.is-active {
+  font-weight: 600;
+}
+
+.tm-ah-chip:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.tm-ah-chip:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: 2px;
+}
+
+/* Sedang menyimpan (baris) atau menandai massal. */
+.tm-ah-chip:disabled {
+  opacity: 0.6;
+}
+
+/* HP sempit: label saja supaya 4 chip tetap muat sebaris. */
+@media (max-width: 360px) {
+  .tm-ah-chip-icon {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tm-ah-bar-fill,
+  .tm-ah-chip {
+    transition: none;
+  }
+}
+

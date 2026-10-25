@@ -10,6 +10,7 @@ import {
   FiPlusCircle,
   FiBookOpen,
   FiClipboard,
+  FiCheckSquare,
   FiTrendingUp,
   FiActivity,
   FiMessageCircle,
@@ -75,6 +76,7 @@ export const MENU_ADMIN: MenuSidebar = {
     {
       judul: 'Laporan',
       items: [
+        { to: '/absensi-harian', label: 'Absen Harian', ikon: <FiCheckSquare /> },
         { to: '/absensi', label: 'Absensi', ikon: <FiClipboard /> },
         { to: '/rekap-voucher', label: 'Rekap Voucher', ikon: <FiTrendingUp /> },
         { to: '/performa-ladies', label: 'Performa Ladies', ikon: <FiActivity /> },

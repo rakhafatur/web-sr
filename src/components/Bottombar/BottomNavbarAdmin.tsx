@@ -8,6 +8,7 @@ import {
   FiUser,
   FiUserCheck,
   FiClipboard,
+  FiCheckSquare,
   FiTrendingUp,
   FiMessageCircle,
   FiBookOpen,
@@ -45,7 +46,7 @@ const RUTE_TAB: Record<Tab, string[]> = {
     '/buku-kuning',
     '/buku-kuning-pengawas',
   ],
-  report: ['/absensi', '/rekap-voucher', '/performa-ladies'],
+  report: ['/absensi-harian', '/absensi', '/rekap-voucher', '/performa-ladies'],
   menu: [
     '/users',
     '/user-create',
@@ -149,7 +150,8 @@ function BottomNavbarAdmin() {
       sections: [
         {
           items: [
-            { icon: <FiClipboard />, label: 'Absensi', desc: 'Kehadiran ladies', path: '/absensi' },
+            { icon: <FiCheckSquare />, label: 'Absen Harian', desc: 'Semua ladies dalam satu tanggal', path: '/absensi-harian' },
+            { icon: <FiClipboard />, label: 'Absensi', desc: 'Kehadiran per ladies, sebulan', path: '/absensi' },
             { icon: <FiTrendingUp />, label: 'Rekap Voucher', desc: 'Rekap voucher per periode', path: '/rekap-voucher' },
             { icon: <FiActivity />, label: 'Performa Ladies', desc: 'Perbandingan performa ladies', path: '/performa-ladies' },
           ],
