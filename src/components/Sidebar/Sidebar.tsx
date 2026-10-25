@@ -1,8 +1,12 @@
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { supabase } from '../../lib/supabaseClient';
+import { useMenuNonaktif } from '../../hooks/useMenu';
+import { HALAMAN_ADMIN, SIDEBAR_ADMIN } from '../../layout/menu';
+import { saringSidebar } from '../../layout/saringMenu';
 import SidebarNav from './SidebarNav';
-import { MENU_ADMIN } from './menuSidebar';
+import { keMenuSidebar } from './menuSidebar';
 
 type SidebarProps = {
   isCollapsed: boolean;
@@ -31,9 +35,15 @@ function Sidebar({ isCollapsed, onToggleCollapse }: SidebarProps) {
     meta: { errorLabel: 'jumlah pendaftar', senyap: true },
   });
 
+  const nonaktif = useMenuNonaktif();
+  const menu = useMemo(
+    () => keMenuSidebar(HALAMAN_ADMIN, saringSidebar(HALAMAN_ADMIN, SIDEBAR_ADMIN, 'admin', nonaktif)),
+    [nonaktif]
+  );
+
   return (
     <SidebarNav
-      menu={MENU_ADMIN}
+      menu={menu}
       label="Menu admin"
       isCollapsed={isCollapsed}
       onToggleCollapse={onToggleCollapse}

@@ -17,7 +17,10 @@ import {
 import { cocokRute } from '../utils/cocokRute';
 // Halaman yang di mobile punya bar atas sendiri (MobilePageBar) — diturunkan
 // dari `barSendiri` di daftar menu, bukan ditulis ulang di sini.
-import { RUTE_ADMIN_TANPA_HEADER, RUTE_LADIES_TANPA_HEADER } from './menu';
+import { HALAMAN_ADMIN, HALAMAN_LADIES, RUTE_ADMIN_TANPA_HEADER, RUTE_LADIES_TANPA_HEADER } from './menu';
+import { halamanNonaktifDi } from './saringMenu';
+import { useMenuNonaktif } from '../hooks/useMenu';
+import MenuNonaktif from '../components/MenuNonaktif';
 
 // Status ciut sidebar desktop diingat per perangkat. localStorage bisa
 // melempar (mode privat, data situs diblokir) — kegagalan cukup diabaikan.
@@ -89,6 +92,13 @@ function MainLayout({ children }: { children: React.ReactNode }) {
   );
   const sidebarWidth = isCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH;
 
+  // Menu yang dinonaktifkan di Pengaturan juga ditolak saat dibuka lewat URL
+  // langsung — bukan hanya disembunyikan dari sidebar/navbar.
+  const nonaktif = useMenuNonaktif();
+  const halamanTertutup = isLadies
+    ? halamanNonaktifDi(HALAMAN_LADIES, 'ladies', nonaktif, location.pathname)
+    : halamanNonaktifDi(HALAMAN_ADMIN, 'admin', nonaktif, location.pathname);
+
   return (
     <div
       className="layout-container"
@@ -136,7 +146,15 @@ function MainLayout({ children }: { children: React.ReactNode }) {
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.18, ease: 'easeOut' }}
               >
-                {children}
+                {halamanTertutup ? (
+                  <MenuNonaktif
+                    halaman={halamanTertutup}
+                    beranda={isLadies ? '/ladies/home' : '/'}
+                    untukLadies={isLadies}
+                  />
+                ) : (
+                  children
+                )}
               </motion.div>
             </AnimatePresence>
           </main>

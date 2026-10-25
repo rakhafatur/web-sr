@@ -92,7 +92,10 @@ Kalau menambah perhitungan uang baru, ikuti pola yang sama: fungsi murni di
   `HALAMAN_*` + id-nya di tata letak sidebar dan navbar mobile. Sidebar,
   navbar bawah, penanda tab aktif, dan daftar rute tanpa Header di
   `MainLayout` semuanya diturunkan dari sana; `menu.test.ts` gagal kalau
-  halaman lupa dicantumkan di salah satu tata letak.
+  halaman lupa dicantumkan di salah satu tata letak. Admin bisa mematikan
+  menu di Pengaturan (tabel `pengaturan_menu`, `layout/saringMenu.ts`) —
+  itu hanya tampilan, bukan otorisasi. Kalau tabel gagal dimuat, semua menu
+  tampil.
 - **Status memuat: skeleton untuk daftar & kartu, ikon berputar hanya di dalam
   tombol aksi.** Pakai `ListLoadingState` (daftar/tabel), `DetailFormSkeleton`
   (halaman Detail entitas), atau susun sendiri dari `Skeleton` kalau tata

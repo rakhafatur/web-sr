@@ -57,6 +57,9 @@ export type Halaman = {
   /** Di mobile punya bar atas sendiri (MobilePageBar), jadi Header app
       dicabut di MainLayout. Berlaku juga untuk halaman turunannya. */
   barSendiri: boolean;
+  /** Tidak bisa dinonaktifkan dari Pengaturan (Home, dan Pengaturan sendiri
+      — kalau ikut mati, admin tidak bisa menyalakannya lagi). */
+  selaluAktif?: boolean;
 };
 
 export type BagianMenu<Id extends string> = { judul?: string; items: Id[] };
@@ -92,6 +95,7 @@ const PENGATURAN: Halaman = {
   ikon: <FiSliders />,
   desc: 'Tema terang / gelap',
   barSendiri: true,
+  selaluAktif: true,
 };
 
 // =========================================================
@@ -99,7 +103,7 @@ const PENGATURAN: Halaman = {
 // =========================================================
 
 export const HALAMAN_ADMIN = {
-  home: { rute: '/', label: 'Home', ikon: <FiHome />, barSendiri: true },
+  home: { rute: '/', label: 'Home', ikon: <FiHome />, barSendiri: true, selaluAktif: true },
 
   users: {
     rute: '/users',
@@ -273,7 +277,7 @@ export const NAVBAR_ADMIN: TabNavbar<IdAdmin>[] = [
 // =========================================================
 
 export const HALAMAN_LADIES = {
-  home: { rute: '/ladies/home', label: 'Home', ikon: <FiHome />, barSendiri: true },
+  home: { rute: '/ladies/home', label: 'Home', ikon: <FiHome />, barSendiri: true, selaluAktif: true },
 
   voucher: {
     rute: '/ladies/voucher',

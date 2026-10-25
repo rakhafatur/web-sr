@@ -131,3 +131,174 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================
+   MENU APLIKASI (khusus admin) — saklar per menu
+========================= */
+
+.pg-menu-card {
+  margin-top: var(--space-5);
+}
+
+.pg-menu-loading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.pg-menu-warn {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-voucher-soft);
+  background: var(--color-warning);
+  color: var(--color-dark);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.pg-menu-warn svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: var(--color-voucher);
+}
+
+.pg-menu-warn code {
+  font-size: 13px;
+  color: inherit;
+  overflow-wrap: anywhere;
+}
+
+.pg-menu-ringkas {
+  margin-bottom: var(--space-3);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-gray-600);
+}
+
+.pg-menu-ringkas.is-ada {
+  color: var(--color-voucher);
+  font-weight: 600;
+}
+
+/* Mobile: satu kolom (admin lalu ladies). Desktop: dua kolom sejajar. */
+.pg-menu-grid {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.pg-menu-grid--dk {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-6);
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .pg-menu-grid--dk {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.pg-menu-judul {
+  margin: 0 0 var(--space-2);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-dark);
+}
+
+.pg-menu-bagian + .pg-menu-bagian {
+  margin-top: var(--space-3);
+}
+
+.pg-menu-subjudul {
+  margin: 0 4px 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-gray-600);
+}
+
+.pg-menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.pg-menu-row {
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 8px var(--space-4);
+}
+
+.pg-menu-row + .pg-menu-row {
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.pg-menu-icon {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-full);
+  background: var(--color-green-lighter);
+  color: var(--color-green);
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.pg-menu-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.pg-menu-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-dark);
+}
+
+.pg-menu-sub {
+  font-size: 12px;
+  color: var(--color-gray-600);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Menu dimatikan: ikon abu-abu + keterangan kuning (bukan hanya warna saklar). */
+.pg-menu-row.is-off .pg-menu-icon {
+  background: var(--color-gray-200);
+  color: var(--color-gray-600);
+}
+
+.pg-menu-row.is-off .pg-menu-label {
+  color: var(--color-gray-700);
+}
+
+.pg-menu-row.is-off .pg-menu-sub {
+  color: var(--color-voucher);
+  font-weight: 500;
+}
+
+.pg-menu-row .tm-switch:disabled,
+.pg-menu-row .dk-switch:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pg-menu-icon {
+    transition: none;
+  }
+}

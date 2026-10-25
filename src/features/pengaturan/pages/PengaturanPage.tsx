@@ -6,6 +6,7 @@ import MobilePageBar from '../../../components/MobilePageBar';
 import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
 import { useTema } from '../../../hooks/useTema';
 import type { PilihanTema, TemaAktif } from '../../../lib/tema';
+import MenuAplikasi from '../components/MenuAplikasi';
 import '../../../styles/mobile-admin.css';
 import '../../../styles/desktop-admin.css';
 import './Pengaturan.css';
@@ -47,9 +48,10 @@ const Pratinjau = ({ pilihan }: { pilihan: PilihanTema }) => {
 };
 
 /**
- * Pengaturan — dipakai admin & ladies. Saat ini berisi pilihan tema
- * (bawaan: ikuti sistem). Pilihan tersimpan di perangkat ini, berlaku
- * langsung tanpa memuat ulang. Lihat src/lib/tema.ts.
+ * Pengaturan — dipakai admin & ladies.
+ * - Tampilan: pilihan tema (bawaan: ikuti sistem), tersimpan di perangkat
+ *   ini, berlaku langsung tanpa memuat ulang. Lihat src/lib/tema.ts.
+ * - Menu aplikasi (khusus admin): saklar menu, berlaku untuk semua pengguna.
  */
 const PengaturanPage = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -94,6 +96,17 @@ const PengaturanPage = () => {
             Pilihan ini tersimpan di HP ini saja. "Ikuti sistem" otomatis berganti saat mode gelap HP dinyalakan
             atau dimatikan.
           </div>
+
+          {!isLadies && (
+            <>
+              <h2 className="tm-section-title">Menu aplikasi</h2>
+              <div className="tm-help" style={{ marginTop: 0 }}>
+                Berlaku untuk <strong>semua pengguna</strong>, bukan hanya HP ini. Menu yang dimatikan hilang dari
+                navigasi dan tidak bisa dibuka lewat tautan.
+              </div>
+              <MenuAplikasi varian="tm" />
+            </>
+          )}
         </div>
       </div>
     );
@@ -101,7 +114,10 @@ const PengaturanPage = () => {
 
   return (
     <div className="page-shell dk-page">
-      <DesktopPageHeader title="Pengaturan" description="Atur tampilan aplikasi di perangkat ini" />
+      <DesktopPageHeader
+        title="Pengaturan"
+        description={isLadies ? 'Atur tampilan aplikasi di perangkat ini' : 'Atur tampilan perangkat ini dan menu aplikasi'}
+      />
 
       <section className="dk-card" aria-label="Tampilan">
         <div className="dk-card-head">
@@ -112,6 +128,21 @@ const PengaturanPage = () => {
         </div>
         <div className="dk-card-body">{pilihanTema}</div>
       </section>
+
+      {!isLadies && (
+        <section className="dk-card pg-menu-card" aria-label="Menu aplikasi">
+          <div className="dk-card-head">
+            <h2 className="dk-card-title">Menu aplikasi</h2>
+            <div className="dk-card-sub">
+              Berlaku untuk <strong>semua pengguna</strong>, bukan hanya perangkat ini. Menu yang dimatikan hilang
+              dari sidebar & navbar dan tidak bisa dibuka lewat tautan.
+            </div>
+          </div>
+          <div className="dk-card-body">
+            <MenuAplikasi varian="dk" />
+          </div>
+        </section>
+      )}
     </div>
   );
 };

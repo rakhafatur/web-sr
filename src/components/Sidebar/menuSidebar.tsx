@@ -1,12 +1,5 @@
 import type { ReactNode } from 'react';
-import {
-  HALAMAN_ADMIN,
-  HALAMAN_LADIES,
-  SIDEBAR_ADMIN,
-  SIDEBAR_LADIES,
-  type Halaman,
-  type TataSidebar,
-} from '../../layout/menu';
+import type { Halaman, TataSidebar } from '../../layout/menu';
 
 export type ItemMenu = {
   to: string;
@@ -29,8 +22,8 @@ export type MenuSidebar = {
 };
 
 /** Isi sidebar dibentuk dari daftar menu bersama (layout/menu.tsx) — jangan
-    menulis rute di sini. */
-const keMenuSidebar = <Id extends string>(halaman: Record<Id, Halaman>, tata: TataSidebar<Id>): MenuSidebar => {
+    menulis rute di sini. `tata` sudah disaring saklar menu (saringSidebar). */
+export const keMenuSidebar = <Id extends string>(halaman: Record<Id, Halaman>, tata: TataSidebar<Id>): MenuSidebar => {
   const keItem = (id: Id): ItemMenu => {
     const h = halaman[id];
     return { to: h.rute, label: h.label, ikon: h.ikon, cocok: h.turunan, namaLengkap: h.namaLengkap };
@@ -41,6 +34,3 @@ const keMenuSidebar = <Id extends string>(halaman: Record<Id, Halaman>, tata: Ta
     bawah: tata.bawah.map(keItem),
   };
 };
-
-export const MENU_ADMIN = keMenuSidebar(HALAMAN_ADMIN, SIDEBAR_ADMIN);
-export const MENU_LADIES = keMenuSidebar(HALAMAN_LADIES, SIDEBAR_LADIES);
