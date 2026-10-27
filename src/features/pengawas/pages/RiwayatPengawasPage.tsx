@@ -3,14 +3,8 @@ import { useSelector } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import { FiCreditCard, FiDollarSign, FiTrendingUp } from 'react-icons/fi';
 import { RootState } from '../../../app/store';
-import CardTable from '../../../components/CardTable';
-import PullToRefresh from '../../../components/PullToRefresh';
-import MonthNavigator from '../../ladies/components/MonthNavigator';
-import LedgerSummaryCard from '../../ladies/components/LedgerSummaryCard';
-import LedgerEmptyState from '../../ladies/components/LedgerEmptyState';
-import LedgerLoadingState from '../../ladies/components/LedgerLoadingState';
-import LedgerCardRowV2 from '../../ladies/components/LedgerCardRowV2';
 import LedgerPageMobile from '../../ladies/components/LedgerPageMobile';
+import LedgerPageDesktop from '../../ladies/components/LedgerPageDesktop';
 import { useMonthNavigation } from '../../ladies/hooks/useMonthNavigation';
 import { useLedgerData } from '../../ladies/hooks/useLedgerData';
 import { BERANDA } from '../../../layout/peran';
@@ -32,9 +26,7 @@ const KONFIG: Record<
     ikon: ReactNode;
     tanda: '+' | '-';
     warna: string;
-    warnaSoft: string;
-    gradient: string;
-    bayangan: string;
+    deskripsi: string;
     subjudul: string;
     kosong: string;
   }
@@ -45,10 +37,8 @@ const KONFIG: Record<
     ikon: <FiTrendingUp />,
     tanda: '+',
     warna: 'var(--color-income)',
-    warnaSoft: 'var(--color-income-soft)',
-    gradient: 'linear-gradient(135deg, var(--color-income), var(--color-income-deep))',
-    bayangan: 'rgba(var(--color-success-rgb),0.3)',
-    subjudul: 'Total gaji bulan ini',
+    deskripsi: 'Riwayat gaji kamu per bulan',
+    subjudul: 'Gaji bulan ini',
     kosong: 'Belum ada gaji di bulan ini',
   },
   pemasukanLain: {
@@ -57,9 +47,7 @@ const KONFIG: Record<
     ikon: <FiDollarSign />,
     tanda: '+',
     warna: 'var(--color-voucher)',
-    warnaSoft: 'var(--color-voucher-soft)',
-    gradient: 'linear-gradient(135deg, var(--color-voucher), var(--color-voucher-deep))',
-    bayangan: 'rgba(var(--color-warning-solid-rgb),0.3)',
+    deskripsi: 'Riwayat bonus & pemasukan tambahan kamu per bulan',
     subjudul: 'Bonus & pemasukan tambahan bulan ini',
     kosong: 'Belum ada pemasukan lain di bulan ini',
   },
@@ -69,27 +57,22 @@ const KONFIG: Record<
     ikon: <FiCreditCard />,
     tanda: '-',
     warna: 'var(--color-expense)',
-    warnaSoft: 'var(--color-expense-soft)',
-    gradient: 'linear-gradient(135deg, var(--color-expense), var(--color-expense-deep))',
-    bayangan: 'rgba(var(--color-danger-solid-rgb),0.3)',
-    subjudul: 'Total pengambilan bulan ini',
+    deskripsi: 'Riwayat pengambilan kasbon kamu per bulan',
+    subjudul: 'Pengambilan bulan ini',
     kosong: 'Belum ada kasbon di bulan ini',
   },
 };
 
-const rowsPerPage = 5;
-
 /**
- * Riwayat gaji / pemasukan lain / kasbon milik pengawas yang sedang login — pola sama dengan
- * halaman Kasbon ladies (hanya-baca). Pencatatannya tetap lewat menu
- * Transaksi Pengawas di admin.
+ * Riwayat gaji / pemasukan lain / kasbon milik pengawas yang sedang login —
+ * pola sama dengan halaman Kasbon ladies (hanya-baca). Pencatatannya tetap
+ * lewat menu Transaksi Pengawas di admin.
  */
 const RiwayatPengawasPage = ({ jenis }: { jenis: Jenis }) => {
   const k = KONFIG[jenis];
   const pengawasId = useSelector((state: RootState) => state.user.currentUser?.pengawas_id);
 
-  const { selectedMonth, page, setPage, handleMonthChange, prevMonth, nextMonth, isNextDisabled } =
-    useMonthNavigation();
+  const { selectedMonth, handleMonthChange, prevMonth, nextMonth, isNextDisabled } = useMonthNavigation();
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const { list, loading, refetch } = useLedgerData<Baris>(
@@ -102,6 +85,17 @@ const RiwayatPengawasPage = ({ jenis }: { jenis: Jenis }) => {
   );
 
   const total = useMemo(() => list.reduce((sum, item) => sum + (item.jumlah || 0), 0), [list]);
+
+  const items = list.map((item) => ({
+    id: item.id,
+    tanggal: item.tanggal,
+    mainValue: (
+      <>
+        {k.tanda} Rp{item.jumlah.toLocaleString('id-ID')}
+      </>
+    ),
+    keterangan: item.keterangan,
+  }));
 
   if (isMobile) {
     return (
@@ -118,74 +112,30 @@ const RiwayatPengawasPage = ({ jenis }: { jenis: Jenis }) => {
         nextDisabled={isNextDisabled}
         summaryLabel={`Total ${k.judul}`}
         summaryValue={<>Rp{total.toLocaleString('id-ID')}</>}
-        items={list.map((item) => ({
-          id: item.id,
-          tanggal: item.tanggal,
-          mainValue: (
-            <>
-              {k.tanda} Rp{item.jumlah.toLocaleString('id-ID')}
-            </>
-          ),
-          keterangan: item.keterangan,
-        }))}
+        items={items}
         valueColor={k.warna}
         emptyMessage={k.kosong}
       />
     );
   }
 
-  if (loading) {
-    return <LedgerLoadingState text={`Memuat data ${k.judul.toLowerCase()}...`} />;
-  }
-
   return (
-    <PullToRefresh onRefresh={refetch}>
-      <div className="page-shell d-flex flex-column gap-3" style={{ paddingBottom: 20, maxWidth: 560 }}>
-        <MonthNavigator
-          selectedMonth={selectedMonth}
-          onChange={handleMonthChange}
-          onPrev={prevMonth}
-          onNext={nextMonth}
-          nextDisabled={isNextDisabled}
-        />
-
-        <LedgerSummaryCard
-          gradient={k.gradient}
-          shadowColor={k.bayangan}
-          icon={k.ikon}
-          label={`Total ${k.judul}`}
-          value={<>Rp {total.toLocaleString('id-ID')}</>}
-          subtitle={<div style={{ fontSize: 'var(--font-size-xs)', opacity: 0.9 }}>{k.subjudul}</div>}
-        />
-
-        {list.length === 0 ? (
-          <LedgerEmptyState message={k.kosong} />
-        ) : (
-          <CardTable
-            data={list}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            onPageChange={setPage}
-            rowClassName="p-2 mb-2"
-            renderItem={(item, index) => (
-              <LedgerCardRowV2
-                tanggal={item.tanggal}
-                label={k.judul}
-                color={k.warna}
-                colorSoft={k.warnaSoft}
-                mainValue={
-                  <>
-                    {k.tanda} Rp {item.jumlah.toLocaleString('id-ID')}
-                  </>
-                }
-                keterangan={item.keterangan}
-                index={index}
-              />
-            )}
-          />
-        )}
-      </div>
-    </PullToRefresh>
+    <LedgerPageDesktop
+      title={k.judul}
+      description={k.deskripsi}
+      loading={loading}
+      selectedMonth={selectedMonth}
+      onPrev={prevMonth}
+      onNext={nextMonth}
+      nextDisabled={isNextDisabled}
+      kartu={[
+        { label: `Total ${k.judul.toLowerCase()}`, nilai: <>Rp{total.toLocaleString('id-ID')}</>, sub: k.subjudul, utama: true },
+      ]}
+      kolomNilai="Jumlah"
+      items={items}
+      valueColor={k.warna}
+      emptyMessage={k.kosong}
+    />
   );
 };
 

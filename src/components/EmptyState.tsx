@@ -8,8 +8,7 @@ type Props = {
   description?: string;
 };
 
-/** Empty state generik (bukan card-boxed seperti LedgerEmptyState punya Ladies)
-    — dipakai di tabel/list Admin ketika data kosong. Sebelumnya sebagian
+/** Empty state generik — dipakai di tabel/list Admin ketika data kosong. Sebelumnya sebagian
     halaman pakai versi custom emoji+judul (RiwayatTransaksi), sebagian pakai
     <div className="alert alert-info"> polos satu baris (PerformaLadies,
     BukuKuning) — sekarang satu bahasa visual. */

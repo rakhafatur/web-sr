@@ -3,17 +3,11 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../app/store';
 import { FiGift } from 'react-icons/fi';
 import type { UserWithLadies } from '../../../types/user';
-import CardTable from '../../../components/CardTable';
-import PullToRefresh from '../../../components/PullToRefresh';
-import MonthNavigator from '../components/MonthNavigator';
-import LedgerSummaryCard from '../components/LedgerSummaryCard';
-import LedgerEmptyState from '../components/LedgerEmptyState';
-import LedgerLoadingState from '../components/LedgerLoadingState';
-import LedgerCardRowV2 from '../components/LedgerCardRowV2';
 import { useMonthNavigation } from '../hooks/useMonthNavigation';
 import { useLedgerData } from '../hooks/useLedgerData';
 import { useMediaQuery } from 'react-responsive';
 import LedgerPageMobile from '../components/LedgerPageMobile';
+import LedgerPageDesktop from '../components/LedgerPageDesktop';
 
 type Voucher = {
   id: string;
@@ -23,23 +17,12 @@ type Voucher = {
   keterangan?: string;
 };
 
-const rowsPerPage = 5;
-
 const VoucherListPage = () => {
   const user = useSelector(
     (state: RootState) => state.user.currentUser
   ) as UserWithLadies;
 
-  const {
-    selectedMonth,
-    page,
-    setPage,
-    handleMonthChange,
-    prevMonth,
-    nextMonth,
-    isNextDisabled,
-  } = useMonthNavigation();
-  // Mobile: tampilan baru (LedgerPageMobile). Desktop: tampilan lama di bawah.
+  const { selectedMonth, handleMonthChange, prevMonth, nextMonth, isNextDisabled } = useMonthNavigation();
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const { list: vouchers, loading, refetch } = useLedgerData<Voucher>(
@@ -61,6 +44,14 @@ const VoucherListPage = () => {
     [vouchers]
   );
 
+  const items = vouchers.map((item) => ({
+    id: item.id,
+    tanggal: item.tanggal,
+    mainValue: <>{item.jumlah_voucher} pcs</>,
+    subValue: <>Rp{(item.jumlah || 0).toLocaleString('id-ID')}</>,
+    keterangan: item.keterangan,
+  }));
+
   if (isMobile) {
     return (
       <LedgerPageMobile
@@ -76,75 +67,32 @@ const VoucherListPage = () => {
         summaryLabel="Total Voucher"
         summaryValue={<>{totalPcs} pcs</>}
         summaryFoot={{ label: 'Estimasi Pendapatan', value: <>Rp{totalRp.toLocaleString('id-ID')}</> }}
-        items={vouchers.map((item) => ({
-          id: item.id,
-          tanggal: item.tanggal,
-          mainValue: <>{item.jumlah_voucher} pcs</>,
-          subValue: <>Rp{(item.jumlah || 0).toLocaleString('id-ID')}</>,
-          keterangan: item.keterangan,
-        }))}
+        items={items}
         valueColor="var(--color-voucher)"
         emptyMessage="Belum ada voucher di bulan ini"
       />
     );
   }
 
-  if (loading) {
-    return <LedgerLoadingState text="Memuat voucher..." />;
-  }
-
   return (
-    <PullToRefresh onRefresh={refetch}>
-      <div className="page-shell d-flex flex-column gap-3" style={{ paddingBottom: 20, maxWidth: 560 }}>
-        <MonthNavigator
-          selectedMonth={selectedMonth}
-          onChange={handleMonthChange}
-          onPrev={prevMonth}
-          onNext={nextMonth}
-          nextDisabled={isNextDisabled}
-        />
-
-        <LedgerSummaryCard
-          gradient="linear-gradient(135deg, var(--color-voucher), var(--color-voucher-deep))"
-          shadowColor="rgba(var(--color-warning-solid-rgb),0.3)"
-          icon={<FiGift size={18} />}
-          label="Total Voucher"
-          value={<>{totalPcs} pcs</>}
-          subtitle={
-            <>
-              <div style={{ fontSize: 'var(--font-size-xs)', opacity: 0.9 }}>Estimasi Pendapatan</div>
-              <div style={{ fontSize: 'var(--font-size-xl)', fontWeight: 700, marginTop: 2 }}>
-                Rp {totalRp.toLocaleString('id-ID')}
-              </div>
-            </>
-          }
-        />
-
-        {vouchers.length === 0 ? (
-          <LedgerEmptyState message="Belum ada voucher di bulan ini" />
-        ) : (
-          <CardTable
-            data={vouchers}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            onPageChange={setPage}
-            rowClassName="p-2 mb-2"
-            renderItem={(row, index) => (
-              <LedgerCardRowV2
-                tanggal={row.tanggal}
-                label="Voucher"
-                color="var(--color-voucher)"
-                colorSoft="var(--color-voucher-soft)"
-                mainValue={<>{row.jumlah_voucher} pcs</>}
-                subValue={<>Rp{(row.jumlah || 0).toLocaleString('id-ID')}</>}
-                keterangan={row.keterangan}
-                index={index}
-              />
-            )}
-          />
-        )}
-      </div>
-    </PullToRefresh>
+    <LedgerPageDesktop
+      title="Voucher"
+      description="Riwayat voucher & estimasi pendapatan kamu per bulan"
+      loading={loading}
+      selectedMonth={selectedMonth}
+      onPrev={prevMonth}
+      onNext={nextMonth}
+      nextDisabled={isNextDisabled}
+      kartu={[
+        { label: 'Total voucher', nilai: <>{totalPcs} pcs</>, sub: 'Bulan ini', utama: true },
+        { label: 'Estimasi pendapatan', nilai: <>Rp{totalRp.toLocaleString('id-ID')}</>, sub: 'Bagian kamu dari voucher' },
+      ]}
+      kolomNilai="Voucher"
+      kolomSub="Pendapatan"
+      items={items}
+      valueColor="var(--color-voucher)"
+      emptyMessage="Belum ada voucher di bulan ini"
+    />
   );
 };
 
