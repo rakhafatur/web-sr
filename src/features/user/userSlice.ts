@@ -6,6 +6,7 @@ export type User = {
   nama: string | null;
   user_group_id?: string | null;
   ladies_id?: string | null;
+  pengawas_id?: string | null;
 };
 
 /**

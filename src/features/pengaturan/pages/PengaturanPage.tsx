@@ -7,6 +7,7 @@ import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
 import { useTema } from '../../../hooks/useTema';
 import type { PilihanTema, TemaAktif } from '../../../lib/tema';
 import MenuAplikasi from '../components/MenuAplikasi';
+import { BERANDA, peranDari } from '../../../layout/peran';
 import '../../../styles/mobile-admin.css';
 import '../../../styles/desktop-admin.css';
 import './Pengaturan.css';
@@ -48,7 +49,7 @@ const Pratinjau = ({ pilihan }: { pilihan: PilihanTema }) => {
 };
 
 /**
- * Pengaturan — dipakai admin & ladies.
+ * Pengaturan — dipakai admin, ladies & pengawas.
  * - Tampilan: pilihan tema (bawaan: ikuti sistem), tersimpan di perangkat
  *   ini, berlaku langsung tanpa memuat ulang. Lihat src/lib/tema.ts.
  * - Menu aplikasi (khusus admin): saklar menu, berlaku untuk semua pengguna.
@@ -56,7 +57,8 @@ const Pratinjau = ({ pilihan }: { pilihan: PilihanTema }) => {
 const PengaturanPage = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const user = useSelector((state: RootState) => state.user.currentUser);
-  const isLadies = !!user?.ladies_id;
+  const peran = peranDari(user);
+  const isAdmin = peran === 'admin';
   const { pilihan, tema, setPilihan } = useTema();
 
   const pilihanTema = (
@@ -87,7 +89,7 @@ const PengaturanPage = () => {
   if (isMobile) {
     return (
       <div className="tm-page">
-        <MobilePageBar title="Pengaturan" backTo={isLadies ? '/ladies/home' : '/'} />
+        <MobilePageBar title="Pengaturan" backTo={BERANDA[peran]} />
 
         <div className="tm-stack">
           <h2 className="tm-section-title">Tampilan</h2>
@@ -97,7 +99,7 @@ const PengaturanPage = () => {
             atau dimatikan.
           </div>
 
-          {!isLadies && (
+          {isAdmin && (
             <>
               <h2 className="tm-section-title">Menu aplikasi</h2>
               <div className="tm-help" style={{ marginTop: 0 }}>
@@ -116,7 +118,7 @@ const PengaturanPage = () => {
     <div className="page-shell dk-page">
       <DesktopPageHeader
         title="Pengaturan"
-        description={isLadies ? 'Atur tampilan aplikasi di perangkat ini' : 'Atur tampilan perangkat ini dan menu aplikasi'}
+        description={isAdmin ? 'Atur tampilan perangkat ini dan menu aplikasi' : 'Atur tampilan aplikasi di perangkat ini'}
       />
 
       <section className="dk-card" aria-label="Tampilan">
@@ -129,7 +131,7 @@ const PengaturanPage = () => {
         <div className="dk-card-body">{pilihanTema}</div>
       </section>
 
-      {!isLadies && (
+      {isAdmin && (
         <section className="dk-card pg-menu-card" aria-label="Menu aplikasi">
           <div className="dk-card-head">
             <h2 className="dk-card-title">Menu aplikasi</h2>

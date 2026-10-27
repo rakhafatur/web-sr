@@ -182,21 +182,30 @@
   font-weight: 600;
 }
 
-/* Mobile: satu kolom (admin lalu ladies). Desktop: dua kolom sejajar. */
+/* Mobile: satu kolom (admin, ladies, pengawas). Desktop: dua kolom koran —
+   menu admin yang panjang di kiri, ladies + pengawas bertumpuk di kanan,
+   jadi tidak ada lubang di bawah kolom yang pendek. */
 .pg-menu-grid {
   display: grid;
   gap: var(--space-5);
 }
 
 .pg-menu-grid--dk {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-6);
-  align-items: start;
+  display: block;
+  column-count: 2;
+  column-gap: var(--space-6);
+}
+
+/* Jarak di bawah, bukan di atas — margin atas akan ikut menggeser kolom
+   yang kebetulan memulai kolom kanan. */
+.pg-menu-grid--dk .pg-menu-kolom {
+  break-inside: avoid;
+  padding-bottom: var(--space-6);
 }
 
 @media (max-width: 1100px) {
   .pg-menu-grid--dk {
-    grid-template-columns: minmax(0, 1fr);
+    column-count: 1;
   }
 }
 

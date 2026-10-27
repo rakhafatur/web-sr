@@ -4,7 +4,7 @@ import { FiInbox } from 'react-icons/fi';
 import PullToRefresh from '../../../components/PullToRefresh';
 import Skeleton from '../../../components/Skeleton';
 import MonthPill from './MonthPill';
-import LadiesPageBar from './LadiesPageBar';
+import MobilePageBar from '../../../components/MobilePageBar';
 import './LedgerPageMobile.css';
 
 export type LedgerItemMobile = {
@@ -17,6 +17,8 @@ export type LedgerItemMobile = {
 
 type Props = {
   title: string;
+  /** Tujuan tombol kembali di bar atas. Bawaan Home Ladies; pengawas memakai Home Pengawas. */
+  backTo?: string;
   icon: ReactNode;
   loading: boolean;
   onRefresh: () => Promise<unknown>;
@@ -49,13 +51,14 @@ const bulanSingkat = (t: string) =>
 
 /**
  * Tampilan mobile untuk halaman riwayat ladies (Voucher, Kasbon, Dokter,
- * Pemasukan Lain) — selaras dengan Home Ladies & Smart Chat: bar atas
+ * Pemasukan Lain) dan pengawas (Gaji, Kasbon) — selaras dengan Home Ladies & Smart Chat: bar atas
  * sendiri (Header app dicabut di MainLayout), pemilih bulan berbentuk pil,
  * hero navy, dan daftar berkelompok tanpa paginasi. Desktop tetap memakai
  * tampilan lama di masing-masing halaman.
  */
 const LedgerPageMobile = ({
   title,
+  backTo = '/ladies/home',
   icon,
   loading,
   onRefresh,
@@ -76,7 +79,7 @@ const LedgerPageMobile = ({
   return (
     <PullToRefresh onRefresh={async () => { await onRefresh(); }}>
       <div className="lp">
-        <LadiesPageBar title={title} />
+        <MobilePageBar title={title} backTo={backTo} />
 
         <div className="lp-month">
           <MonthPill

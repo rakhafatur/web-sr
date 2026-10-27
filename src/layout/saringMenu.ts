@@ -7,8 +7,9 @@
  * bagian sidebar / tab sheet yang semua isinya nonaktif ikut disembunyikan.
  */
 import { halamanAktif, type BagianMenu, type Halaman, type TabNavbar, type TataSidebar } from './menu';
+import type { Peran } from './peran';
 
-export type Peran = 'admin' | 'ladies';
+export type { Peran };
 
 /** Kunci baris di tabel pengaturan_menu, mis. 'admin.absensi'. */
 export const kunciMenu = (peran: Peran, id: string) => `${peran}.${id}`;

@@ -1,19 +1,20 @@
 import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiCompass, FiHome } from 'react-icons/fi';
 import { useAuth } from '../../../context/AuthContext';
+import { BERANDA, peranDari } from '../../../layout/peran';
 import './NotFoundPage.css';
 
 /**
  * Halaman 404. Berada di luar layout & login (lihat App.tsx), jadi tampil
- * mandiri. Tombol beranda menyesuaikan siapa yang membuka: ladies → Home
- * Ladies, user lain → Home admin, belum login → Login. Navigasi di dalam
+ * mandiri. Tombol beranda menyesuaikan siapa yang membuka: Home sesuai
+ * peran (layout/peran.ts), belum login → Login. Navigasi di dalam
  * SPA (tanpa memuat ulang aplikasi).
  */
 function NotFoundPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const beranda = !user ? '/login' : user.ladies_id ? '/ladies/home' : '/';
+  const beranda = !user ? '/login' : BERANDA[peranDari(user)];
   const labelBeranda = user ? 'Ke beranda' : 'Ke halaman masuk';
   const bisaKembali = window.history.length > 1;
 

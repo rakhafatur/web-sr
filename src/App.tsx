@@ -43,6 +43,10 @@ const PeraturanPage = lazy(() => import('./features/ladies/pages/PeraturanPage')
 const ProfilePage = lazy(() => import('./features/ladies/pages/ProfilePage'));
 const PengaturanPage = lazy(() => import('./features/pengaturan/pages/PengaturanPage'));
 
+const HomePengawasPage = lazy(() => import('./features/pengawas/pages/HomePengawasPage'));
+const RiwayatPengawasPage = lazy(() => import('./features/pengawas/pages/RiwayatPengawasPage'));
+const TargetAbsenPage = lazy(() => import('./features/pengawas/pages/TargetAbsenPage'));
+
 import ProtectedRoute from './components/ProtectedRoute';
 import RootRoute from './components/RootRoute';
 import MainLayout from './layout/MainLayout';
@@ -116,8 +120,14 @@ function App() {
               <Route path="/agent-detail/:id" element={<DetailAgentPage />} />
               <Route path="/outlet" element={<OutletListPage />} />
 
-              {/* Admin & ladies */}
+              {/* Semua peran */}
               <Route path="/pengaturan" element={<PengaturanPage />} />
+
+              {/* Pengawas-specific */}
+              <Route path="/pengawas/home" element={<HomePengawasPage />} />
+              <Route path="/pengawas/gaji" element={<RiwayatPengawasPage key="gaji" jenis="gaji" />} />
+              <Route path="/pengawas/kasbon" element={<RiwayatPengawasPage key="kasbon" jenis="kasbon" />} />
+              <Route path="/pengawas/absen-ladies" element={<TargetAbsenPage />} />
 
               {/* Ladies-specific */}
               <Route path="/ladies/home" element={<HomeLadiesPage />} />

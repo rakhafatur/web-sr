@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { FiEye, FiEyeOff, FiUser, FiLock } from 'react-icons/fi';
 import Button from '../../../components/Button';
 import { AUTH_SUBMIT_STYLE } from '../authStyles';
+import { BERANDA, peranDari } from '../../../layout/peran';
 import '../../../styles/auth.css';
 
 type LoginFormData = {
@@ -27,12 +28,7 @@ function LoginPage() {
 
     if (result === 'success') {
       const localUser = JSON.parse(localStorage.getItem('user') || '{}');
-
-      if (localUser.ladies_id) {
-        navigate('/ladies/home');
-      } else {
-        navigate('/');
-      }
+      navigate(BERANDA[peranDari(localUser)]);
     } else if (result === 'inactive') {
       toast.warning('Akunmu belum aktif. Menunggu persetujuan admin.');
     } else if (result === 'invalid') {

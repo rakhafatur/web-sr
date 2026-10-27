@@ -9,8 +9,10 @@ import { KUNCI_PENGATURAN_MENU, usePengaturanMenu, type SaklarMenu } from '../..
 import {
   HALAMAN_ADMIN,
   HALAMAN_LADIES,
+  HALAMAN_PENGAWAS,
   SIDEBAR_ADMIN,
   SIDEBAR_LADIES,
+  SIDEBAR_PENGAWAS,
   type BagianMenu,
   type Halaman,
   type TataSidebar,
@@ -24,6 +26,7 @@ type Grup = { peran: Peran; judul: string; halaman: Record<string, Halaman>; tat
 const GRUP: Grup[] = [
   { peran: 'admin', judul: 'Menu admin', halaman: HALAMAN_ADMIN, tata: SIDEBAR_ADMIN },
   { peran: 'ladies', judul: 'Menu ladies', halaman: HALAMAN_LADIES, tata: SIDEBAR_LADIES },
+  { peran: 'pengawas', judul: 'Menu pengawas', halaman: HALAMAN_PENGAWAS, tata: SIDEBAR_PENGAWAS },
 ];
 
 const bagianGrup = (g: Grup): BagianMenu<string>[] => [...g.tata.bagian, { items: g.tata.bawah }];

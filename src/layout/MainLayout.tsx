@@ -6,9 +6,11 @@ import { RootState } from '../app/store';
 
 import Sidebar from '../components/Sidebar/Sidebar';
 import SidebarLadies from '../components/Sidebar/SidebarLadies';
+import SidebarPengawas from '../components/Sidebar/SidebarPengawas';
 import Header from '../components/Header/Header';
 import BottomNavbarAdmin from '../components/Bottombar/BottomNavbarAdmin';
 import BottomNavbarLadies from '../components/Bottombar/BottomNavbarLadies';
+import BottomNavbarPengawas from '../components/Bottombar/BottomNavbarPengawas';
 
 import {
   SIDEBAR_WIDTH,
@@ -17,10 +19,44 @@ import {
 import { cocokRute } from '../utils/cocokRute';
 // Halaman yang di mobile punya bar atas sendiri (MobilePageBar) — diturunkan
 // dari `barSendiri` di daftar menu, bukan ditulis ulang di sini.
-import { HALAMAN_ADMIN, HALAMAN_LADIES, RUTE_ADMIN_TANPA_HEADER, RUTE_LADIES_TANPA_HEADER } from './menu';
+import {
+  HALAMAN_ADMIN,
+  HALAMAN_LADIES,
+  HALAMAN_PENGAWAS,
+  RUTE_ADMIN_TANPA_HEADER,
+  RUTE_LADIES_TANPA_HEADER,
+  RUTE_PENGAWAS_TANPA_HEADER,
+  type Halaman,
+} from './menu';
 import { halamanNonaktifDi } from './saringMenu';
+import { BERANDA, peranDari, type Peran } from './peran';
 import { useMenuNonaktif } from '../hooks/useMenu';
 import MenuNonaktif from '../components/MenuNonaktif';
+
+/** Daftar halaman, rute tanpa Header, sidebar, dan navbar bawah per peran. */
+const TATA_PERAN: Record<
+  Peran,
+  {
+    halaman: Record<string, Halaman>;
+    ruteTanpaHeader: string[];
+    Sidebar: typeof Sidebar;
+    Navbar: () => React.ReactNode;
+  }
+> = {
+  admin: { halaman: HALAMAN_ADMIN, ruteTanpaHeader: RUTE_ADMIN_TANPA_HEADER, Sidebar, Navbar: BottomNavbarAdmin },
+  ladies: {
+    halaman: HALAMAN_LADIES,
+    ruteTanpaHeader: RUTE_LADIES_TANPA_HEADER,
+    Sidebar: SidebarLadies,
+    Navbar: BottomNavbarLadies,
+  },
+  pengawas: {
+    halaman: HALAMAN_PENGAWAS,
+    ruteTanpaHeader: RUTE_PENGAWAS_TANPA_HEADER,
+    Sidebar: SidebarPengawas,
+    Navbar: BottomNavbarPengawas,
+  },
+};
 
 // Status ciut sidebar desktop diingat per perangkat. localStorage bisa
 // melempar (mode privat, data situs diblokir) — kegagalan cukup diabaikan.
@@ -44,7 +80,8 @@ const tulisSidebarCiut = (ciut: boolean) => {
 
 function MainLayout({ children }: { children: React.ReactNode }) {
   const user = useSelector((state: RootState) => state.user.currentUser);
-  const isLadies = !!user?.ladies_id;
+  const peran = peranDari(user);
+  const tata = TATA_PERAN[peran];
 
   const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 768);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
@@ -73,10 +110,11 @@ function MainLayout({ children }: { children: React.ReactNode }) {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  // Home mengatur jaraknya sendiri (padding main 0). Home ladies di desktop
-  // memakai gaya dk- seperti halaman lain, jadi tetap dapat padding 2rem.
+  // Home mengatur jaraknya sendiri (padding main 0). Home ladies & pengawas
+  // di desktop memakai gaya dk- seperti halaman lain, jadi tetap dapat
+  // padding 2rem.
   const isHomePage =
-    location.pathname === '/' || (isMobile && location.pathname === '/ladies/home');
+    location.pathname === '/' || (isMobile && peran !== 'admin' && location.pathname === BERANDA[peran]);
   // Smart Chat (ladies & admin) mengisi penuh area konten, jadi padding dan
   // min-height main dicabut di semua ukuran. Di mobile tampil layar penuh:
   // header & navbar bawah ikut dicabut (bar atas & dok milik halaman itu).
@@ -85,19 +123,13 @@ function MainLayout({ children }: { children: React.ReactNode }) {
   // Halaman yang di mobile punya bar atas sendiri (pola referensi), jadi
   // Header app dan padding main dicabut — lihat MobilePageBar. Navbar bawah
   // tetap tampil.
-  const isTanpaHeader = isMobile && (
-    isLadies
-      ? cocokRute(RUTE_LADIES_TANPA_HEADER, location.pathname)
-      : cocokRute(RUTE_ADMIN_TANPA_HEADER, location.pathname)
-  );
+  const isTanpaHeader = isMobile && cocokRute(tata.ruteTanpaHeader, location.pathname);
   const sidebarWidth = isCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH;
 
   // Menu yang dinonaktifkan di Pengaturan juga ditolak saat dibuka lewat URL
   // langsung — bukan hanya disembunyikan dari sidebar/navbar.
   const nonaktif = useMenuNonaktif();
-  const halamanTertutup = isLadies
-    ? halamanNonaktifDi(HALAMAN_LADIES, 'ladies', nonaktif, location.pathname)
-    : halamanNonaktifDi(HALAMAN_ADMIN, 'admin', nonaktif, location.pathname);
+  const halamanTertutup = halamanNonaktifDi(tata.halaman, peran, nonaktif, location.pathname);
 
   return (
     <div
@@ -109,13 +141,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
       {!isTanpaHeader && !isChatLayarPenuh && <Header />}
 
       <div className="d-flex" style={{ width: '100%' }}>
-        {!isMobile && (
-          isLadies ? (
-            <SidebarLadies isCollapsed={isCollapsed} onToggleCollapse={toggleSidebar} />
-          ) : (
-            <Sidebar isCollapsed={isCollapsed} onToggleCollapse={toggleSidebar} />
-          )
-        )}
+        {!isMobile && <tata.Sidebar isCollapsed={isCollapsed} onToggleCollapse={toggleSidebar} />}
 
         <div
           className="flex-grow-1 d-flex flex-column"
@@ -147,11 +173,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
                 transition={{ duration: 0.18, ease: 'easeOut' }}
               >
                 {halamanTertutup ? (
-                  <MenuNonaktif
-                    halaman={halamanTertutup}
-                    beranda={isLadies ? '/ladies/home' : '/'}
-                    untukLadies={isLadies}
-                  />
+                  <MenuNonaktif halaman={halamanTertutup} beranda={BERANDA[peran]} untukAdmin={peran === 'admin'} />
                 ) : (
                   children
                 )}
@@ -161,7 +183,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      {isMobile && !isChatLayarPenuh && (isLadies ? <BottomNavbarLadies /> : <BottomNavbarAdmin />)}
+      {isMobile && !isChatLayarPenuh && <tata.Navbar />}
     </div>
   );
 }

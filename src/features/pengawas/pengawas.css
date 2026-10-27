@@ -1,0 +1,175 @@
+/* =========================
+   TARGET ABSEN LADIES — tampilan pengawas (tm-tg- mobile, dk-tg- desktop)
+   Kerangka (kartu, segmen, kosong, avatar) memakai kelas tm-/dk- bersama;
+   di sini hanya baris & bar progres per ladies.
+========================= */
+
+.tm-tg-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tm-tg-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+
+.tm-tg-row + .tm-tg-row {
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.tm-tg-row .tm-row-title {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tm-tg-row .tm-row-sub {
+  display: block;
+}
+
+.tm-tg-avatar {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* Kolom kanan: "10/15" + badge kekurangan. */
+.tm-tg-angka {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.tm-tg-hari {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.tm-tg-hari span {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-gray-600);
+}
+
+.tm-tg-badge,
+.dk-tg-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Bar progres tipis di bawah nama. Isi di-skala, bukan diubah lebarnya. */
+.tm-tg-bar,
+.dk-tg-bar {
+  display: block;
+  height: 4px;
+  margin-top: 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-gray-200);
+  overflow: hidden;
+}
+
+.tm-tg-bar-fill,
+.dk-tg-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-full);
+  transform-origin: left center;
+  transition: transform 0.4s ease;
+}
+
+/* ---------- Home pengawas (ph-) — kartu "Paling Kurang" ---------- */
+
+/* Baris di dalam kartu Home: kartunya sudah berpadding. */
+.ph-list .tm-tg-row {
+  padding-inline: 0;
+}
+
+.ph-link {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-green);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ph-kosong {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+  color: var(--color-income);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ---------- Desktop ---------- */
+
+.dk-tg-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.dk-tg-summary .dk-stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.dk-tg-utama {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--space-4) var(--space-5);
+}
+
+.dk-tg-hari {
+  min-width: 140px;
+}
+
+.dk-tg-hari .dk-tg-bar {
+  max-width: 160px;
+}
+
+@media (max-width: 1100px) {
+  .dk-tg-summary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .dk-tg-utama {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tm-tg-bar-fill,
+  .dk-tg-bar-fill {
+    transition: none;
+  }
+}

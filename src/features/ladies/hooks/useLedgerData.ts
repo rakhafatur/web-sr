@@ -3,21 +3,23 @@ import type { Dayjs } from 'dayjs';
 import { supabase } from '../../../lib/supabaseClient';
 
 /**
- * Fetch data bulanan (voucher/kasbon/dokter/pemasukan lain) milik satu ladies dari Supabase.
- * Di-cache per (table, ladiesId, bulan) lewat React Query — pindah bulan/halaman lalu balik
- * lagi akan langsung tampil dari cache dulu sambil di-refresh diam-diam di belakang.
+ * Fetch data bulanan (voucher/kasbon/dokter/pemasukan lain milik ladies, atau
+ * gaji/kasbon milik pengawas) dari Supabase. Di-cache per (table, pemilik, bulan)
+ * lewat React Query — pindah bulan/halaman lalu balik lagi akan langsung tampil
+ * dari cache dulu sambil di-refresh diam-diam di belakang.
  */
 export function useLedgerData<T>(
   table: string,
-  ladiesId: string | undefined,
+  pemilikId: string | null | undefined,
   selectedMonth: Dayjs,
   errorLabel: string,
-  columns = '*'
+  columns = '*',
+  kolomPemilik: 'ladies_id' | 'pengawas_id' = 'ladies_id'
 ) {
   const monthKey = selectedMonth.format('YYYY-MM');
 
   const query = useQuery({
-    queryKey: ['ledger', table, ladiesId, monthKey],
+    queryKey: ['ledger', table, pemilikId, monthKey],
     queryFn: async () => {
       const bulanAwal = selectedMonth.startOf('month');
       const bulanAkhir = selectedMonth.endOf('month');
@@ -25,7 +27,7 @@ export function useLedgerData<T>(
       const { data, error } = await supabase
         .from(table)
         .select(columns)
-        .eq('ladies_id', ladiesId as string)
+        .eq(kolomPemilik, pemilikId as string)
         .gte('tanggal', bulanAwal.format('YYYY-MM-DD'))
         .lte('tanggal', bulanAkhir.format('YYYY-MM-DD'))
         .order('tanggal', { ascending: false });
@@ -34,7 +36,7 @@ export function useLedgerData<T>(
 
       return (data ?? []) as T[];
     },
-    enabled: !!ladiesId,
+    enabled: !!pemilikId,
     meta: { errorLabel },
   });
 

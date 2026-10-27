@@ -30,6 +30,7 @@ import {
   FiPlusCircle,
   FiShield,
   FiSliders,
+  FiTarget,
   FiTrendingUp,
   FiUser,
   FiUserCheck,
@@ -370,6 +371,72 @@ export const NAVBAR_LADIES: TabNavbar<IdLadies>[] = [
 ];
 
 // =========================================================
+// PENGAWAS
+// =========================================================
+
+export const HALAMAN_PENGAWAS = {
+  home: { rute: '/pengawas/home', label: 'Home', ikon: <FiHome />, barSendiri: true, selaluAktif: true },
+
+  // Pola menu ladies (riwayat per jenis), bukan Buku Kuning — pengawas
+  // hanya melihat, pencatatannya tetap di admin.
+  gaji: {
+    rute: '/pengawas/gaji',
+    label: 'Gaji',
+    ikon: <FiTrendingUp />,
+    desc: 'Pemasukan bulan ini',
+    barSendiri: true,
+  },
+  kasbon: {
+    rute: '/pengawas/kasbon',
+    label: 'Kasbon',
+    ikon: <FiCreditCard />,
+    desc: 'Pengeluaran bulan ini',
+    barSendiri: true,
+  },
+
+  absenLadies: {
+    rute: '/pengawas/absen-ladies',
+    label: 'Target Absen',
+    ikon: <FiTarget />,
+    desc: 'Ladies yang kurang target',
+    barSendiri: true,
+  },
+
+  pengaturan: PENGATURAN,
+} satisfies Record<string, Halaman>;
+
+export type IdPengawas = keyof typeof HALAMAN_PENGAWAS;
+
+export const SIDEBAR_PENGAWAS: TataSidebar<IdPengawas> = {
+  bagian: [
+    { items: ['home'] },
+    { judul: 'Transaksi', items: ['gaji', 'kasbon'] },
+    { judul: 'Ladies', items: ['absenLadies'] },
+  ],
+  bawah: ['pengaturan'],
+};
+
+export const NAVBAR_PENGAWAS: TabNavbar<IdPengawas>[] = [
+  { jenis: 'link', label: 'Home', ikon: FiHome, halaman: 'home' },
+  {
+    jenis: 'sheet',
+    label: 'Transaksi',
+    ikon: FiDollarSign,
+    judul: 'Transaksi',
+    bagian: [{ judul: 'Riwayat transaksi', items: ['gaji', 'kasbon'] }],
+  },
+  { jenis: 'link', label: 'Absen', ikon: FiTarget, halaman: 'absenLadies' },
+  {
+    jenis: 'sheet',
+    label: 'Menu',
+    ikon: FiUser,
+    judul: 'Menu',
+    keluar: true,
+    bagian: [{ judul: 'Aplikasi', items: ['pengaturan'] }],
+  },
+];
+
+// =========================================================
 // TURUNAN
 // =========================================================
 
@@ -381,3 +448,4 @@ const ruteTanpaHeader = (daftar: Record<string, Halaman>) =>
 
 export const RUTE_ADMIN_TANPA_HEADER = ruteTanpaHeader(HALAMAN_ADMIN);
 export const RUTE_LADIES_TANPA_HEADER = ruteTanpaHeader(HALAMAN_LADIES);
+export const RUTE_PENGAWAS_TANPA_HEADER = ruteTanpaHeader(HALAMAN_PENGAWAS);

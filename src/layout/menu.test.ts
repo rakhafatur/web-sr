@@ -2,12 +2,17 @@ import { describe, it, expect } from 'vitest';
 import {
   HALAMAN_ADMIN,
   HALAMAN_LADIES,
+  HALAMAN_PENGAWAS,
   NAVBAR_ADMIN,
   NAVBAR_LADIES,
+  NAVBAR_PENGAWAS,
   RUTE_ADMIN_TANPA_HEADER,
   RUTE_LADIES_TANPA_HEADER,
+  RUTE_PENGAWAS_TANPA_HEADER,
   SIDEBAR_ADMIN,
   SIDEBAR_LADIES,
+  SIDEBAR_PENGAWAS,
+  polaHalaman,
   type Halaman,
   type TabNavbar,
   type TataSidebar,
@@ -24,6 +29,7 @@ const itemSheet = (tabs: TabNavbar<string>[]) =>
 const kasus: [string, Record<string, Halaman>, TataSidebar<string>, TabNavbar<string>[]][] = [
   ['admin', HALAMAN_ADMIN, SIDEBAR_ADMIN, NAVBAR_ADMIN],
   ['ladies', HALAMAN_LADIES, SIDEBAR_LADIES, NAVBAR_LADIES],
+  ['pengawas', HALAMAN_PENGAWAS, SIDEBAR_PENGAWAS, NAVBAR_PENGAWAS],
 ];
 
 describe.each(kasus)('menu %s', (_, halaman, sidebar, navbar) => {
@@ -103,6 +109,20 @@ describe('rute tanpa Header app', () => {
         '/pengaturan',
       ].sort()
     );
+  });
+
+  it('pengawas: semua halamannya punya bar atas sendiri', () => {
+    expect([...RUTE_PENGAWAS_TANPA_HEADER].sort()).toEqual(
+      ['/pengawas/home', '/pengawas/gaji', '/pengawas/kasbon', '/pengawas/absen-ladies', '/pengaturan'].sort()
+    );
+  });
+
+  it('rute pengawas tidak bertabrakan dengan halaman Pengawas milik admin', () => {
+    const ruteAdmin = Object.values(HALAMAN_ADMIN as Record<string, Halaman>).flatMap(polaHalaman);
+    const rutePengawas = Object.values(HALAMAN_PENGAWAS)
+      .map((h) => h.rute)
+      .filter((r) => r !== '/pengaturan');
+    expect(rutePengawas.filter((r) => ruteAdmin.includes(r))).toEqual([]);
   });
 
   it('halaman chat tidak masuk (diatur sendiri sebagai layar penuh)', () => {

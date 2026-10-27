@@ -10,9 +10,10 @@ import '../styles/desktop-admin.css';
 
 type Props = {
   halaman: Halaman;
-  /** Tujuan tombol kembali: '/' (admin) atau '/ladies/home'. */
+  /** Tujuan tombol kembali: Home peran yang sedang login (layout/peran.ts). */
   beranda: string;
-  untukLadies: boolean;
+  /** Admin bisa menyalakannya sendiri; ladies & pengawas diminta menghubungi admin. */
+  untukAdmin: boolean;
 };
 
 /**
@@ -20,7 +21,7 @@ type Props = {
  * dibuka lewat tautan/URL langsung. Hanya tampilan — bukan pengaman (lihat
  * supabase/sql/e2-pengaturan-menu.sql).
  */
-const MenuNonaktif = ({ halaman, beranda, untukLadies }: Props) => {
+const MenuNonaktif = ({ halaman, beranda, untukAdmin }: Props) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const navigate = useNavigate();
   const nama = halaman.namaLengkap ?? halaman.label;
@@ -35,9 +36,9 @@ const MenuNonaktif = ({ halaman, beranda, untukLadies }: Props) => {
         Menu {nama} sedang dinonaktifkan
       </h2>
       <div className={`${k}-empty-text`}>
-        {untukLadies
-          ? 'Menu ini sedang tidak tersedia. Hubungi admin kalau kamu membutuhkannya.'
-          : 'Nyalakan lagi lewat Pengaturan → Menu aplikasi.'}
+        {untukAdmin
+          ? 'Nyalakan lagi lewat Pengaturan → Menu aplikasi.'
+          : 'Menu ini sedang tidak tersedia. Hubungi admin kalau kamu membutuhkannya.'}
       </div>
       <button
         type="button"
