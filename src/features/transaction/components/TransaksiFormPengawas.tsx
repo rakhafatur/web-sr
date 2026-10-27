@@ -10,7 +10,7 @@ import { validasiWajib } from '../../../utils/validasiForm';
 import {
   FiTrendingDown,
   FiTrendingUp,
-  FiFileText,
+  FiPlusCircle,
   FiPlus,
   FiCalendar,
   FiEdit3,
@@ -34,13 +34,13 @@ type Props = {
 const TIPE_LABELS: Record<string, string> = {
   gaji_pengawas: 'Gaji',
   kasbon_pengawas: 'Kasbon',
-  lainnya_pengawas: 'Lainnya',
+  pemasukan_lain_pengawas: 'Pemasukan Lain',
 };
 
 const TIPE_PRIORITY: Record<string, number> = {
   gaji_pengawas: 1,
   kasbon_pengawas: 2,
-  lainnya_pengawas: 3,
+  pemasukan_lain_pengawas: 3,
 };
 
 type RiwayatRow = {
@@ -206,12 +206,14 @@ const TransaksiFormPengawas = ({
       color: 'var(--color-income)',
       bg: 'var(--color-income-soft)',
     },
+    // Pemasukan selain gaji (bonus, uang makan, dll.) — dihitung (+) di Buku
+    // Kuning Pengawas. Dulu "Lainnya" ke tabel yang tidak pernah ada.
     {
-      value: 'lainnya_pengawas',
-      label: 'Lainnya',
-      icon: <FiFileText />,
-      color: 'var(--color-medical)',
-      bg: 'var(--color-medical-soft)',
+      value: 'pemasukan_lain_pengawas',
+      label: 'Pemasukan Lain',
+      icon: <FiPlusCircle />,
+      color: 'var(--color-voucher)',
+      bg: 'var(--color-voucher-soft)',
     },
   ];
 

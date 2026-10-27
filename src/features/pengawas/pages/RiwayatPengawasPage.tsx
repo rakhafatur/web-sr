@@ -1,7 +1,7 @@
 import { useMemo, type ReactNode } from 'react';
 import { useSelector } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
-import { FiCreditCard, FiTrendingUp } from 'react-icons/fi';
+import { FiCreditCard, FiDollarSign, FiTrendingUp } from 'react-icons/fi';
 import { RootState } from '../../../app/store';
 import CardTable from '../../../components/CardTable';
 import PullToRefresh from '../../../components/PullToRefresh';
@@ -22,7 +22,7 @@ type Baris = {
   keterangan?: string;
 };
 
-type Jenis = 'gaji' | 'kasbon';
+type Jenis = 'gaji' | 'pemasukanLain' | 'kasbon';
 
 const KONFIG: Record<
   Jenis,
@@ -48,8 +48,20 @@ const KONFIG: Record<
     warnaSoft: 'var(--color-income-soft)',
     gradient: 'linear-gradient(135deg, var(--color-income), var(--color-income-deep))',
     bayangan: 'rgba(var(--color-success-rgb),0.3)',
-    subjudul: 'Total pemasukan bulan ini',
+    subjudul: 'Total gaji bulan ini',
     kosong: 'Belum ada gaji di bulan ini',
+  },
+  pemasukanLain: {
+    tabel: 'pemasukan_lain_pengawas',
+    judul: 'Pemasukan Lain',
+    ikon: <FiDollarSign />,
+    tanda: '+',
+    warna: 'var(--color-voucher)',
+    warnaSoft: 'var(--color-voucher-soft)',
+    gradient: 'linear-gradient(135deg, var(--color-voucher), var(--color-voucher-deep))',
+    bayangan: 'rgba(var(--color-warning-solid-rgb),0.3)',
+    subjudul: 'Bonus & pemasukan tambahan bulan ini',
+    kosong: 'Belum ada pemasukan lain di bulan ini',
   },
   kasbon: {
     tabel: 'kasbon_pengawas',
@@ -68,7 +80,7 @@ const KONFIG: Record<
 const rowsPerPage = 5;
 
 /**
- * Riwayat gaji / kasbon milik pengawas yang sedang login — pola sama dengan
+ * Riwayat gaji / pemasukan lain / kasbon milik pengawas yang sedang login — pola sama dengan
  * halaman Kasbon ladies (hanya-baca). Pencatatannya tetap lewat menu
  * Transaksi Pengawas di admin.
  */

@@ -113,7 +113,14 @@ describe('rute tanpa Header app', () => {
 
   it('pengawas: semua halamannya punya bar atas sendiri', () => {
     expect([...RUTE_PENGAWAS_TANPA_HEADER].sort()).toEqual(
-      ['/pengawas/home', '/pengawas/gaji', '/pengawas/kasbon', '/pengawas/absen-ladies', '/pengaturan'].sort()
+      [
+        '/pengawas/home',
+        '/pengawas/gaji',
+        '/pengawas/pemasukan-lain',
+        '/pengawas/kasbon',
+        '/pengawas/absen-ladies',
+        '/pengaturan',
+      ].sort()
     );
   });
 

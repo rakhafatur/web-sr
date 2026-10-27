@@ -53,7 +53,7 @@ const GAYA_TIPE: Record<string, GayaTipe> = {
   dokter: { label: 'Dokter', icon: <FiHeart />, color: 'var(--color-medical)', soft: 'var(--color-medical-soft)', tanda: '-' },
   gaji_pengawas: { label: 'Gaji', icon: <FiTrendingUp />, color: 'var(--color-income)', soft: 'var(--color-income-soft)', tanda: '+' },
   kasbon_pengawas: { label: 'Kasbon', icon: <FiCreditCard />, color: 'var(--color-expense)', soft: 'var(--color-expense-soft)', tanda: '-' },
-  lainnya_pengawas: { label: 'Lainnya', icon: <FiFileText />, color: 'var(--color-medical)', soft: 'var(--color-medical-soft)', tanda: '-' },
+  pemasukan_lain_pengawas: { label: 'Pemasukan Lain', icon: <FiDollarSign />, color: 'var(--color-voucher)', soft: 'var(--color-voucher-soft)', tanda: '+' },
 };
 
 const GAYA_DEFAULT: GayaTipe = {

@@ -75,11 +75,20 @@ const BukuKuningPengawasPage = () => {
 
       const saldoAwal = rekap?.saldo_akhir ?? 0;
 
-      // Ambil data kasbon_pengawas dan gaji_pengawas
-      const [kasbon, gaji] = await Promise.all([
-        supabase.from('kasbon_pengawas').select('tanggal, jumlah, keterangan').eq('pengawas_id', selectedId).gte('tanggal', from).lte('tanggal', to),
-        supabase.from('gaji_pengawas').select('tanggal, jumlah, keterangan').eq('pengawas_id', selectedId).gte('tanggal', from).lte('tanggal', to),
+      // Ambil kasbon (−), gaji (+), dan pemasukan lain (+) pengawas.
+      const ambil = (tabel: string) =>
+        supabase.from(tabel).select('tanggal, jumlah, keterangan').eq('pengawas_id', selectedId).gte('tanggal', from).lte('tanggal', to);
+
+      const [kasbon, gaji, lain] = await Promise.all([
+        ambil('kasbon_pengawas'),
+        ambil('gaji_pengawas'),
+        ambil('pemasukan_lain_pengawas'),
       ]);
+
+      // Satu jenis gagal dimuat = saldo salah. Tampilkan error, jangan
+      // diam-diam menghitung tanpa jenis itu.
+      const gagal = kasbon.error || gaji.error || lain.error;
+      if (gagal) throw gagal;
 
       const transaksi: Row[] = [];
 
@@ -89,6 +98,19 @@ const BukuKuningPengawasPage = () => {
           keterangan: g.keterangan || '',
           voucher: '', // tidak ada voucher untuk pengawas
           pemasukan: Number(g.jumlah),
+          pengeluaran: '',
+          saldo: 0,
+        });
+      });
+
+      // Kolomnya sama dengan gaji (pemasukan); keterangan kosong diberi label
+      // supaya di buku tetap bisa dibedakan dari gaji.
+      (lain?.data || []).forEach((l) => {
+        transaksi.push({
+          tanggal: l.tanggal,
+          keterangan: l.keterangan || 'Pemasukan lain',
+          voucher: '',
+          pemasukan: Number(l.jumlah),
           pengeluaran: '',
           saldo: 0,
         });
@@ -155,7 +177,7 @@ const BukuKuningPengawasPage = () => {
 
     // Angka ringkasan dari fungsi murni yang sama dengan tampilan mobile.
     const {
-      totalPemasukan: totalGaji,
+      totalPemasukan,
       totalPengeluaran: totalKasbon,
       saldoAwal,
       saldoAkhir,
@@ -236,7 +258,7 @@ const BukuKuningPengawasPage = () => {
         head: [['Ringkasan', 'Nominal']],
 
         body: [
-          ['Gaji', formatRupiah(totalGaji)],
+          ['Pemasukan (gaji + lain)', formatRupiah(totalPemasukan)],
           ['Kasbon', formatRupiah(totalKasbon)],
           ['Saldo Awal', formatRupiah(saldoAwal)],
           ['Saldo Akhir', formatRupiah(saldoAkhir)],
@@ -430,7 +452,7 @@ const BukuKuningPengawasPage = () => {
         }}
         loading={loadingBuku}
         rows={rows}
-        labelPemasukan="Gaji"
+        labelPemasukan="Pemasukan"
         labelPengeluaran="Kasbon"
         onTutupBuku={handleTutupBuku}
         onCetak={handleExportPDF}
@@ -441,7 +463,7 @@ const BukuKuningPengawasPage = () => {
   return (
     <BukuKuningDesktop
       title="Buku kuning pengawas"
-      description="Gaji dan kasbon pengawas per bulan — dengan saldo berjalan"
+      description="Gaji, pemasukan lain, dan kasbon pengawas per bulan — dengan saldo berjalan"
       entitas="Pengawas"
       options={pengawasList.map((p) => ({ value: p.id, label: p.nama_panggilan ?? '-' }))}
       selectedId={selectedId}
@@ -454,7 +476,7 @@ const BukuKuningPengawasPage = () => {
       }}
       loading={loadingBuku}
       rows={rows}
-      labelPemasukan="Gaji"
+      labelPemasukan="Pemasukan"
       labelPengeluaran="Kasbon"
       onTutupBuku={handleTutupBuku}
       onCetak={handleExportPDF}

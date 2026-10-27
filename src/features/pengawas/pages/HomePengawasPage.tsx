@@ -9,9 +9,9 @@ import {
   FiArrowRight,
   FiCheckCircle,
   FiCreditCard,
+  FiDollarSign,
   FiEye,
   FiEyeOff,
-  FiSliders,
   FiTarget,
   FiTrendingUp,
 } from 'react-icons/fi';
@@ -54,7 +54,7 @@ const labelKurang = (b: BarisTarget) =>
   b.status === 'tidak-tercapai' ? `Kurang ${b.kurang} hari · tidak terkejar` : `Kurang ${b.kurang} hari`;
 
 /**
- * Home pengawas: gaji & kasbon miliknya bulan ini, plus ringkasan target
+ * Home pengawas: pemasukan (gaji + lain) & kasbon miliknya bulan ini, plus ringkasan target
  * absen ladies (siapa yang paling kurang). Datanya memakai hook yang sama
  * dengan halaman Gaji/Kasbon/Target Absen, jadi cache-nya terpakai bersama.
  */
@@ -83,12 +83,15 @@ const HomePengawasPage = () => {
     enabled: !!pengawasId,
   });
 
-  const gaji = useLedgerData<Nominal>('gaji_pengawas', pengawasId, bulanIni, 'gaji', 'id, tanggal, jumlah, keterangan', 'pengawas_id');
-  const kasbon = useLedgerData<Nominal>('kasbon_pengawas', pengawasId, bulanIni, 'kasbon', 'id, tanggal, jumlah, keterangan', 'pengawas_id');
+  // Kolom sama dengan halaman Gaji/Pemasukan Lain/Kasbon, jadi cache-nya terpakai bersama.
+  const KOLOM = 'id, tanggal, jumlah, keterangan';
+  const gaji = useLedgerData<Nominal>('gaji_pengawas', pengawasId, bulanIni, 'gaji', KOLOM, 'pengawas_id');
+  const lain = useLedgerData<Nominal>('pemasukan_lain_pengawas', pengawasId, bulanIni, 'pemasukan lain', KOLOM, 'pengawas_id');
+  const kasbon = useLedgerData<Nominal>('kasbon_pengawas', pengawasId, bulanIni, 'kasbon', KOLOM, 'pengawas_id');
   const target = useTargetLadies(bulanIni);
 
   const total = (list: Nominal[]) => list.reduce((s, r) => s + (r.jumlah || 0), 0);
-  const totalGaji = total(gaji.list);
+  const totalPemasukan = total(gaji.list) + total(lain.list);
   const totalKasbon = total(kasbon.list);
 
   const kurang = target.baris.filter((b) => b.status !== 'tercapai');
@@ -97,17 +100,18 @@ const HomePengawasPage = () => {
 
   const nama = namaPengawas || namaUser || 'Pengawas';
   const sapaan = sapaanWaktu(new Date().getHours());
-  const loading = gaji.loading || kasbon.loading || target.loading;
+  const loading = gaji.loading || lain.loading || kasbon.loading || target.loading;
 
   const refresh = async () => {
-    await Promise.all([gaji.refetch(), kasbon.refetch(), target.refetch()]);
+    await Promise.all([gaji.refetch(), lain.refetch(), kasbon.refetch(), target.refetch()]);
   };
 
+  // Pengaturan tidak di sini — sudah ada di tab Menu navbar bawah.
   const menuCepat = [
     { label: 'Gaji', icon: <FiTrendingUp />, path: HALAMAN_PENGAWAS.gaji.rute },
+    { label: 'Pemasukan Lain', icon: <FiDollarSign />, path: HALAMAN_PENGAWAS.pemasukanLain.rute },
     { label: 'Kasbon', icon: <FiCreditCard />, path: HALAMAN_PENGAWAS.kasbon.rute },
     { label: 'Target Absen', icon: <FiTarget />, path: HALAMAN_PENGAWAS.absenLadies.rute },
-    { label: 'Pengaturan', icon: <FiSliders />, path: HALAMAN_PENGAWAS.pengaturan.rute },
   ];
 
   const tombolMata = (kelas: string) => (
@@ -126,11 +130,11 @@ const HomePengawasPage = () => {
     <>
       <div className="ladies-home-hero-circle" />
       <div className="ladies-home-hero-top">
-        <span className="ladies-home-hero-label">Gaji Bulan Ini</span>
+        <span className="ladies-home-hero-label">Pemasukan Bulan Ini</span>
         {tombolMata(`ladies-home-eye-btn${isMobile ? ' tap-scale' : ''}`)}
       </div>
-      <div className="ladies-home-hero-amount">{sembunyikan ? TERSEMBUNYI : rupiah(totalGaji)}</div>
-      <div className="ladies-home-hero-sub">Pemasukan · {labelBulan}</div>
+      <div className="ladies-home-hero-amount">{sembunyikan ? TERSEMBUNYI : rupiah(totalPemasukan)}</div>
+      <div className="ladies-home-hero-sub">Gaji + pemasukan lain · {labelBulan}</div>
       <div className="ladies-home-hero-foot">
         <span>Kasbon bulan ini</span>
         <span className="ladies-home-hero-foot-value">{sembunyikan ? TERSEMBUNYI : rupiah(totalKasbon)}</span>
@@ -154,7 +158,7 @@ const HomePengawasPage = () => {
           </div>
         ) : (
           <div className="dk-lh-grid">
-            <section className="ladies-home-hero dk-lh-hero" aria-label="Gaji bulan ini">
+            <section className="ladies-home-hero dk-lh-hero" aria-label="Pemasukan bulan ini">
               {isiHero}
             </section>
 
@@ -262,7 +266,7 @@ const HomePengawasPage = () => {
             <h1 className="ladies-home-greeting-name">{nama}</h1>
           </motion.div>
 
-          <motion.section {...muncul(0.05)} className="ladies-home-hero" aria-label="Gaji bulan ini">
+          <motion.section {...muncul(0.05)} className="ladies-home-hero" aria-label="Pemasukan bulan ini">
             {isiHero}
           </motion.section>
 

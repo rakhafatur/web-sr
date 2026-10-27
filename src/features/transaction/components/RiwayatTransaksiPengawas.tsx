@@ -28,12 +28,14 @@ import {
 const FILTER_TIPE = [
   { value: '', label: 'Semua' },
   { value: 'gaji_pengawas', label: 'Gaji' },
+  { value: 'pemasukan_lain_pengawas', label: 'Pemasukan Lain' },
   { value: 'kasbon_pengawas', label: 'Kasbon' },
 ];
 
 /** Tampilan tipe di tabel desktop: badge + tanda arah uang (teks netral). */
 const GAYA_TIPE: Record<string, { label: string; tanda: string; className: string }> = {
   gaji_pengawas: { label: 'Gaji', tanda: '+', className: 'is-on' },
+  pemasukan_lain_pengawas: { label: 'Pemasukan Lain', tanda: '+', className: 'is-warn' },
   kasbon_pengawas: { label: 'Kasbon', tanda: '−', className: 'is-off' },
 };
 
@@ -94,6 +96,8 @@ const RiwayatTransaksiPengawas = ({ pengawasId }: Props) => {
         return 'kasbon_pengawas';
       case 'gaji_pengawas':
         return 'gaji_pengawas';
+      case 'pemasukan_lain_pengawas':
+        return 'pemasukan_lain_pengawas';
       default:
         return '';
     }
@@ -109,20 +113,23 @@ const RiwayatTransaksiPengawas = ({ pengawasId }: Props) => {
       const bulanAwal = selectedMonth.startOf('month').format('YYYY-MM-DD');
       const bulanAkhir = selectedMonth.endOf('month').format('YYYY-MM-DD');
 
-      const [kasbon, gaji] = await Promise.all([
+      const ambil = (tabel: string) =>
         supabase
-          .from('kasbon_pengawas')
+          .from(tabel)
           .select('id, tanggal, jumlah, keterangan')
           .eq('pengawas_id', pengawasId)
           .gte('tanggal', bulanAwal)
-          .lte('tanggal', bulanAkhir),
-        supabase
-          .from('gaji_pengawas')
-          .select('id, tanggal, jumlah, keterangan')
-          .eq('pengawas_id', pengawasId)
-          .gte('tanggal', bulanAwal)
-          .lte('tanggal', bulanAkhir),
+          .lte('tanggal', bulanAkhir);
+
+      const [kasbon, gaji, lain] = await Promise.all([
+        ambil('kasbon_pengawas'),
+        ambil('gaji_pengawas'),
+        ambil('pemasukan_lain_pengawas'),
       ]);
+
+      // Gagal = tampil error, bukan daftar yang diam-diam kurang satu jenis.
+      const gagal = kasbon.error || gaji.error || lain.error;
+      if (gagal) throw gagal;
 
       const combined: Transaksi[] = [
         ...(gaji.data || []).map((p) => ({
@@ -136,6 +143,12 @@ const RiwayatTransaksiPengawas = ({ pengawasId }: Props) => {
           tipe: 'kasbon_pengawas',
           tipeLabel: 'Kasbon',
           priority: 2,
+        })),
+        ...(lain.data || []).map((l) => ({
+          ...l,
+          tipe: 'pemasukan_lain_pengawas',
+          tipeLabel: 'Pemasukan Lain',
+          priority: 3,
         })),
       ];
 

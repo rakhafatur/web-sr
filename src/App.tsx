@@ -126,6 +126,10 @@ function App() {
               {/* Pengawas-specific */}
               <Route path="/pengawas/home" element={<HomePengawasPage />} />
               <Route path="/pengawas/gaji" element={<RiwayatPengawasPage key="gaji" jenis="gaji" />} />
+              <Route
+                path="/pengawas/pemasukan-lain"
+                element={<RiwayatPengawasPage key="pemasukanLain" jenis="pemasukanLain" />}
+              />
               <Route path="/pengawas/kasbon" element={<RiwayatPengawasPage key="kasbon" jenis="kasbon" />} />
               <Route path="/pengawas/absen-ladies" element={<TargetAbsenPage />} />
 

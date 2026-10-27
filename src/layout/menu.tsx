@@ -383,7 +383,14 @@ export const HALAMAN_PENGAWAS = {
     rute: '/pengawas/gaji',
     label: 'Gaji',
     ikon: <FiTrendingUp />,
-    desc: 'Pemasukan bulan ini',
+    desc: 'Gaji bulanan',
+    barSendiri: true,
+  },
+  pemasukanLain: {
+    rute: '/pengawas/pemasukan-lain',
+    label: 'Pemasukan Lain',
+    ikon: <FiDollarSign />,
+    desc: 'Bonus & pemasukan tambahan',
     barSendiri: true,
   },
   kasbon: {
@@ -410,7 +417,7 @@ export type IdPengawas = keyof typeof HALAMAN_PENGAWAS;
 export const SIDEBAR_PENGAWAS: TataSidebar<IdPengawas> = {
   bagian: [
     { items: ['home'] },
-    { judul: 'Transaksi', items: ['gaji', 'kasbon'] },
+    { judul: 'Transaksi', items: ['gaji', 'pemasukanLain', 'kasbon'] },
     { judul: 'Ladies', items: ['absenLadies'] },
   ],
   bawah: ['pengaturan'],
@@ -423,7 +430,7 @@ export const NAVBAR_PENGAWAS: TabNavbar<IdPengawas>[] = [
     label: 'Transaksi',
     ikon: FiDollarSign,
     judul: 'Transaksi',
-    bagian: [{ judul: 'Riwayat transaksi', items: ['gaji', 'kasbon'] }],
+    bagian: [{ judul: 'Riwayat transaksi', items: ['gaji', 'pemasukanLain', 'kasbon'] }],
   },
   { jenis: 'link', label: 'Absen', ikon: FiTarget, halaman: 'absenLadies' },
   {
