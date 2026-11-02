@@ -24,6 +24,7 @@ const AddTransaksiPengawasPage = lazy(() => import('./features/transaction/pages
 const BukuKuningPengawasPage = lazy(() => import('./features/transaction/pages/BukuKuningPengawasPage'));
 const SmartChatPage = lazy(() => import('./features/smartchat/pages/SmartChatPage'));
 const SmartChatLadiesPage = lazy(() => import('./features/smartchat/pages/SmartChatLadiesPage'));
+const SmartChatPengawasPage = lazy(() => import('./features/smartchat/pages/SmartChatPengawasPage'));
 const AgentPage = lazy(() => import('./features/agent/pages/AgentListPage'));
 const CreateAgentPage = lazy(() => import('./features/agent/pages/CreateAgent'));
 const DetailAgentPage = lazy(() => import('./features/agent/pages/DetailAgent'));
@@ -132,6 +133,7 @@ function App() {
               />
               <Route path="/pengawas/kasbon" element={<RiwayatPengawasPage key="kasbon" jenis="kasbon" />} />
               <Route path="/pengawas/absen-ladies" element={<TargetAbsenPage />} />
+              <Route path="/pengawas/smart-chat" element={<SmartChatPengawasPage />} />
 
               {/* Ladies-specific */}
               <Route path="/ladies/home" element={<HomeLadiesPage />} />

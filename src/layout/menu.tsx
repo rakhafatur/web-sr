@@ -409,6 +409,14 @@ export const HALAMAN_PENGAWAS = {
     barSendiri: true,
   },
 
+  smartChat: {
+    rute: '/pengawas/smart-chat',
+    label: 'Smart Chat',
+    ikon: <FiMessageCircle />,
+    desc: 'Tanya status absen hari ini',
+    barSendiri: false,
+  },
+
   pengaturan: PENGATURAN,
 } satisfies Record<string, Halaman>;
 
@@ -419,6 +427,7 @@ export const SIDEBAR_PENGAWAS: TataSidebar<IdPengawas> = {
     { items: ['home'] },
     { judul: 'Transaksi', items: ['gaji', 'pemasukanLain', 'kasbon'] },
     { judul: 'Ladies', items: ['absenLadies'] },
+    { judul: 'Asisten', items: ['smartChat'] },
   ],
   bawah: ['pengaturan'],
 };
@@ -439,7 +448,10 @@ export const NAVBAR_PENGAWAS: TabNavbar<IdPengawas>[] = [
     ikon: FiUser,
     judul: 'Menu',
     keluar: true,
-    bagian: [{ judul: 'Aplikasi', items: ['pengaturan'] }],
+    bagian: [
+      { judul: 'Asisten', items: ['smartChat'] },
+      { judul: 'Aplikasi', items: ['pengaturan'] },
+    ],
   },
 ];
 

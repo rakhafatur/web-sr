@@ -115,10 +115,13 @@ function MainLayout({ children }: { children: React.ReactNode }) {
   // padding 2rem.
   const isHomePage =
     location.pathname === '/' || (isMobile && peran !== 'admin' && location.pathname === BERANDA[peran]);
-  // Smart Chat (ladies & admin) mengisi penuh area konten, jadi padding dan
+  // Smart Chat (semua peran) mengisi penuh area konten, jadi padding dan
   // min-height main dicabut di semua ukuran. Di mobile tampil layar penuh:
   // header & navbar bawah ikut dicabut (bar atas & dok milik halaman itu).
-  const isRuteChat = location.pathname === '/smart-chat-ladies' || location.pathname === '/smart-chat';
+  const isRuteChat =
+    location.pathname === '/smart-chat-ladies' ||
+    location.pathname === '/smart-chat' ||
+    location.pathname === '/pengawas/smart-chat';
   const isChatLayarPenuh = isMobile && isRuteChat;
   // Halaman yang di mobile punya bar atas sendiri (pola referensi), jadi
   // Header app dan padding main dicabut — lihat MobilePageBar. Navbar bawah

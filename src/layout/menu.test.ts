@@ -111,7 +111,7 @@ describe('rute tanpa Header app', () => {
     );
   });
 
-  it('pengawas: semua halamannya punya bar atas sendiri', () => {
+  it('pengawas: semua halamannya punya bar atas sendiri, kecuali chat', () => {
     expect([...RUTE_PENGAWAS_TANPA_HEADER].sort()).toEqual(
       [
         '/pengawas/home',
@@ -135,5 +135,6 @@ describe('rute tanpa Header app', () => {
   it('halaman chat tidak masuk (diatur sendiri sebagai layar penuh)', () => {
     expect(RUTE_ADMIN_TANPA_HEADER).not.toContain('/smart-chat');
     expect(RUTE_LADIES_TANPA_HEADER).not.toContain('/smart-chat-ladies');
+    expect(RUTE_PENGAWAS_TANPA_HEADER).not.toContain('/pengawas/smart-chat');
   });
 });
