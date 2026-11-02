@@ -4,13 +4,9 @@ import {
   BIAYA_BULANAN_OUTLETS,
   KASBON_ADMIN_JUMLAH,
   DOKTER_SPEKULO_JUMLAH,
+  bacaBiayaOutlet,
+  type BiayaOutlet,
 } from '../utils/biayaBulanan';
-
-export type BiayaOutlet = {
-  nama_outlet: string;
-  kasbon_admin: number;
-  dokter_spekulo: number;
-};
 
 /**
  * Konfigurasi biaya bulanan per outlet, dibaca dari tabel `outlets`.
@@ -19,10 +15,10 @@ export type BiayaOutlet = {
  * tidak pernah ikut proses biaya bulanan dan nominalnya cuma bisa diubah
  * lewat deploy.
  *
- * Kalau kolom konfigurasinya belum ada di database (SQL d3 belum dijalankan),
- * hook ini jatuh ke nilai lama yang persis sama dengan perilaku sebelumnya —
- * jadi kode ini aman dirilis lebih dulu dan otomatis berpindah ke konfigurasi
- * database begitu SQL-nya dijalankan.
+ * Kalau kolom konfigurasinya belum ada di database (SQL d3/e4 belum
+ * dijalankan), hook ini jatuh ke nilai lama yang persis sama dengan perilaku
+ * sebelumnya — jadi kode ini aman dirilis lebih dulu dan otomatis berpindah ke
+ * konfigurasi database begitu SQL-nya dijalankan.
  */
 export function useBiayaBulananConfig() {
   const query = useQuery({
@@ -30,7 +26,7 @@ export function useBiayaBulananConfig() {
     queryFn: async (): Promise<{ outlets: BiayaOutlet[]; dariDatabase: boolean }> => {
       const { data, error } = await supabase
         .from('outlets')
-        .select('nama_outlet, kasbon_admin, dokter_spekulo')
+        .select('nama_outlet, kasbon_admin, dokter_spekulo, dokter_gigi')
         .eq('kena_biaya_bulanan', true)
         .eq('is_active', true)
         .order('nama_outlet');
@@ -42,19 +38,14 @@ export function useBiayaBulananConfig() {
             nama_outlet,
             kasbon_admin: KASBON_ADMIN_JUMLAH,
             dokter_spekulo: DOKTER_SPEKULO_JUMLAH,
+            dokter_gigi: null,
           })),
           dariDatabase: false,
         };
       }
 
       return {
-        outlets: (data ?? []).map((o) => ({
-          nama_outlet: o.nama_outlet,
-          // Nominal kosong di database diperlakukan sebagai nol, bukan
-          // diam-diam memakai angka lama — supaya salah konfigurasi terlihat.
-          kasbon_admin: Number(o.kasbon_admin ?? 0),
-          dokter_spekulo: Number(o.dokter_spekulo ?? 0),
-        })),
+        outlets: (data ?? []).map(bacaBiayaOutlet),
         dariDatabase: true,
       };
     },

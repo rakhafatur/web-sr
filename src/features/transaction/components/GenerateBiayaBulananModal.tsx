@@ -11,6 +11,11 @@ import {
   formatRupiah,
   pad,
   getLastDay,
+  komponenBiaya,
+  biayaBelumDibuat,
+  kunciBiaya,
+  type BiayaOutlet,
+  type KomponenBiaya,
 } from '../utils/biayaBulanan';
 import { useBiayaBulananConfig } from '../hooks/useBiayaBulananConfig';
 
@@ -20,9 +25,14 @@ type LadyPreview = {
   id: string;
   nama_ladies: string;
   nama_outlet: string;
-  kasbonDone: boolean;
-  dokterDone: boolean;
+  /** Biaya bulan terpilih yang belum tersimpan untuk ladies ini. */
+  belum: KomponenBiaya[];
 };
+
+const rincianNominal = (biaya: BiayaOutlet) =>
+  komponenBiaya(biaya, '')
+    .map((k) => `${k.nama} ${formatRupiah(k.jumlah)}`)
+    .join(' · ');
 
 type Props = {
   show: boolean;
@@ -43,30 +53,20 @@ const GenerateBiayaBulananModal = ({ show, onClose, onGenerated }: Props) => {
   const namaOutletBiaya = outletBiaya.map((o) => o.nama_outlet);
 
   // Array-nya dibuat ulang tiap render, jadi tidak bisa langsung jadi
-  // dependency useEffect. Versi string-nya stabil selama isinya sama.
-  const kunciOutletBiaya = namaOutletBiaya.join(',');
+  // dependency useEffect. Versi string-nya stabil selama isinya sama, dan ikut
+  // berubah kalau nominalnya berubah karena preview menyimpan nominal.
+  const kunciOutletBiaya = JSON.stringify(outletBiaya);
 
-  /** Nominal berlaku per outlet, jadi dicari saat menyusun payload. */
+  /** Nominal berlaku per outlet, jadi dicari saat menyusun preview. */
   const biayaUntuk = (namaOutlet: string) =>
     outletBiaya.find((o) => o.nama_outlet === namaOutlet);
 
-  // Nominal kini bisa berbeda antar outlet. Kalau semuanya sama, tampilkan
-  // angkanya seperti dulu; kalau berbeda, jangan menampilkan satu angka yang
-  // menyesatkan.
-  const nominalSeragam =
-    outletBiaya.length > 0 &&
-    outletBiaya.every(
-      (o) =>
-        o.kasbon_admin === outletBiaya[0].kasbon_admin &&
-        o.dokter_spekulo === outletBiaya[0].dokter_spekulo
-    );
-
-  const ringkasanBiaya = nominalSeragam
-    ? `Kasbon Admin ${formatRupiah(outletBiaya[0].kasbon_admin)} & Dokter ${formatRupiah(outletBiaya[0].dokter_spekulo)}`
-    : 'Nominal mengikuti pengaturan tiap outlet';
-
   useEffect(() => {
     if (!show || namaOutletBiaya.length === 0) return;
+
+    // Preview menyimpan keterangan berisi nama bulan, jadi hasil dari bulan
+    // yang sudah diganti user tidak boleh menimpa preview bulan yang baru.
+    let dibatalkan = false;
 
     const fetchPreview = async () => {
       setLoadingPreview(true);
@@ -79,6 +79,8 @@ const GenerateBiayaBulananModal = ({ show, onClose, onGenerated }: Props) => {
         .order('nama_outlet')
         .order('nama_ladies');
 
+      if (dibatalkan) return;
+
       if (ladiesError || !eligibleLadies) {
         toast.error('Gagal mengambil data ladies: ' + (ladiesError?.message || ''));
         setLadies([]);
@@ -86,9 +88,7 @@ const GenerateBiayaBulananModal = ({ show, onClose, onGenerated }: Props) => {
         return;
       }
 
-      const monthLabel = monthNames[bulan - 1];
-      const keteranganKasbon = `Admin ${monthLabel} ${tahun}`;
-      const keteranganDokter = `Spekulo ${monthLabel} ${tahun}`;
+      const periode = `${monthNames[bulan - 1]} ${tahun}`;
       const from = `${tahun}-${pad(bulan)}-01`;
       const to = `${tahun}-${pad(bulan)}-${pad(getLastDay(tahun, bulan))}`;
       const ladiesIds = eligibleLadies.map((l) => l.id);
@@ -96,31 +96,47 @@ const GenerateBiayaBulananModal = ({ show, onClose, onGenerated }: Props) => {
       const [existingKasbon, existingDokter] = await Promise.all([
         supabase
           .from('kasbon')
-          .select('ladies_id')
-          .eq('keterangan', keteranganKasbon)
+          .select('ladies_id, keterangan')
+          .eq('keterangan', `Admin ${periode}`)
           .in('ladies_id', ladiesIds)
           .gte('tanggal', from)
           .lte('tanggal', to),
 
         supabase
           .from('dokter')
-          .select('ladies_id')
-          .eq('keterangan', keteranganDokter)
+          .select('ladies_id, keterangan')
+          .in('keterangan', [`Spekulo ${periode}`, `Gigi ${periode}`])
           .in('ladies_id', ladiesIds)
           .gte('tanggal', from)
           .lte('tanggal', to),
       ]);
 
-      const kasbonDoneIds = new Set((existingKasbon.data || []).map((r) => r.ladies_id));
-      const dokterDoneIds = new Set((existingDokter.data || []).map((r) => r.ladies_id));
+      if (dibatalkan) return;
+
+      // Kalau riwayat gagal dibaca, semua biaya akan terlihat belum ada dan
+      // generate akan membuat catatan dobel. Lebih baik berhenti di sini.
+      if (existingKasbon.error || existingDokter.error) {
+        toast.error(
+          'Gagal memeriksa biaya yang sudah ada: ' +
+            (existingKasbon.error?.message || existingDokter.error?.message)
+        );
+        setLadies([]);
+        setLoadingPreview(false);
+        return;
+      }
+
+      const sudahAda = new Set(
+        [...(existingKasbon.data || []), ...(existingDokter.data || [])].map((r) =>
+          kunciBiaya(r.ladies_id, r.keterangan)
+        )
+      );
 
       setLadies(
         eligibleLadies.map((l) => ({
           id: l.id,
           nama_ladies: l.nama_ladies,
           nama_outlet: l.nama_outlet,
-          kasbonDone: kasbonDoneIds.has(l.id),
-          dokterDone: dokterDoneIds.has(l.id),
+          belum: biayaBelumDibuat(biayaUntuk(l.nama_outlet), periode, l.id, sudahAda),
         }))
       );
 
@@ -128,37 +144,36 @@ const GenerateBiayaBulananModal = ({ show, onClose, onGenerated }: Props) => {
     };
 
     fetchPreview();
+
+    return () => {
+      dibatalkan = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [show, bulan, tahun, kunciOutletBiaya]);
 
-  const pendingCount = ladies.filter((l) => !l.kasbonDone || !l.dokterDone).length;
+  const pendingCount = ladies.filter((l) => l.belum.length > 0).length;
 
   const handleGenerate = async () => {
     const monthLabel = monthNames[bulan - 1];
-    const keteranganKasbon = `Admin ${monthLabel} ${tahun}`;
-    const keteranganDokter = `Spekulo ${monthLabel} ${tahun}`;
     const tanggalInput = `${tahun}-${pad(bulan)}-01`;
 
     setGenerating(true);
 
     // Nominal diambil per outlet ladies-nya, bukan satu angka untuk semua.
-    const kasbonPayload = ladies
-      .filter((l) => !l.kasbonDone)
-      .map((l) => ({
-        ladies_id: l.id,
-        tanggal: tanggalInput,
-        jumlah: biayaUntuk(l.nama_outlet)?.kasbon_admin ?? 0,
-        keterangan: keteranganKasbon,
-      }));
+    const payloadUntuk = (tabel: KomponenBiaya['tabel']) =>
+      ladies.flatMap((l) =>
+        l.belum
+          .filter((b) => b.tabel === tabel)
+          .map((b) => ({
+            ladies_id: l.id,
+            tanggal: tanggalInput,
+            jumlah: b.jumlah,
+            keterangan: b.keterangan,
+          }))
+      );
 
-    const dokterPayload = ladies
-      .filter((l) => !l.dokterDone)
-      .map((l) => ({
-        ladies_id: l.id,
-        tanggal: tanggalInput,
-        jumlah: biayaUntuk(l.nama_outlet)?.dokter_spekulo ?? 0,
-        keterangan: keteranganDokter,
-      }));
+    const kasbonPayload = payloadUntuk('kasbon');
+    const dokterPayload = payloadUntuk('dokter');
 
     // Jangan pernah menyimpan transaksi bernominal nol karena konfigurasi
     // outlet belum diisi — lebih baik gagal terlihat daripada diam-diam
@@ -237,7 +252,7 @@ const GenerateBiayaBulananModal = ({ show, onClose, onGenerated }: Props) => {
         <ModalHeading
           icon={<FiRepeat />}
           title="Generate Biaya Bulanan"
-          subtitle={ringkasanBiaya}
+          subtitle="Nominal mengikuti pengaturan tiap outlet"
         />
       }
       footer={footer}
@@ -283,7 +298,12 @@ const GenerateBiayaBulananModal = ({ show, onClose, onGenerated }: Props) => {
           marginBottom: 'var(--space-3)',
         }}
       >
-        Berlaku untuk semua ladies aktif di outlet {namaOutletBiaya.join('/')}.
+        <div>Berlaku untuk semua ladies aktif:</div>
+        {outletBiaya.map((o) => (
+          <div key={o.nama_outlet}>
+            <strong>{o.nama_outlet}</strong>: {rincianNominal(o)}
+          </div>
+        ))}
       </div>
 
       {/* PREVIEW LIST */}
@@ -296,7 +316,7 @@ const GenerateBiayaBulananModal = ({ show, onClose, onGenerated }: Props) => {
       ) : (
         <div className="d-flex flex-column gap-2" style={{ maxHeight: 280, overflowY: 'auto' }}>
           {ladies.map((l) => {
-            const done = l.kasbonDone && l.dokterDone;
+            const done = l.belum.length === 0;
 
             return (
               <div
@@ -330,7 +350,7 @@ const GenerateBiayaBulananModal = ({ show, onClose, onGenerated }: Props) => {
                     className="d-flex align-items-center gap-1"
                     style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-voucher)', fontWeight: 600 }}
                   >
-                    <FiClock size={14} /> Akan dibuat
+                    <FiClock size={14} /> Akan dibuat: {l.belum.map((b) => b.nama).join(', ')}
                   </span>
                 )}
               </div>
