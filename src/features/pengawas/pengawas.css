@@ -127,6 +127,136 @@
   font-weight: 600;
 }
 
+/* ---------- Foto Stempel (fs-) ---------- */
+
+.fs-desktop {
+  max-width: 560px;
+}
+
+.fs-lokasi {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.fs-lokasi-ikon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--color-primary-rgb), 0.14);
+  color: var(--color-green);
+  font-size: 18px;
+}
+
+.fs-lokasi-teks {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fs-lokasi-utama {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-dark);
+}
+
+.fs-lokasi-sub {
+  font-size: 12px;
+  color: var(--color-gray-600);
+}
+
+.fs-lokasi-galat {
+  font-size: 13px;
+  color: var(--color-expense);
+}
+
+.fs-lokasi .ph-link:disabled {
+  opacity: 0.5;
+}
+
+.fs-putar {
+  animation: fs-putar 0.9s linear infinite;
+}
+
+@keyframes fs-putar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.fs-pratinjau {
+  margin: 0;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface);
+  transition: opacity 0.2s ease;
+}
+
+.fs-pratinjau[aria-busy='true'] {
+  opacity: 0.7;
+}
+
+.fs-pratinjau img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Kotak kosong sekaligus tombol: ketuk = buka kamera. */
+.fs-kosong {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-8) var(--space-5);
+  border: 1.5px dashed var(--color-gray-300);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  color: var(--color-dark);
+  font-family: inherit;
+  text-align: center;
+}
+
+.fs-kosong-ikon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--color-primary-rgb), 0.14);
+  color: var(--color-green);
+  font-size: 24px;
+}
+
+.fs-kosong-judul {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.fs-kosong-teks {
+  font-size: 13px;
+  color: var(--color-gray-600);
+  max-width: 280px;
+}
+
+.fs-halaman .tm-btn:disabled {
+  opacity: 0.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fs-putar {
+    animation: none;
+  }
+}
+
 /* ---------- Desktop ---------- */
 
 .dk-tg-summary {

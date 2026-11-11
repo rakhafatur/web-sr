@@ -47,6 +47,7 @@ const PengaturanPage = lazy(() => import('./features/pengaturan/pages/Pengaturan
 const HomePengawasPage = lazy(() => import('./features/pengawas/pages/HomePengawasPage'));
 const RiwayatPengawasPage = lazy(() => import('./features/pengawas/pages/RiwayatPengawasPage'));
 const TargetAbsenPage = lazy(() => import('./features/pengawas/pages/TargetAbsenPage'));
+const FotoStempelPage = lazy(() => import('./features/pengawas/pages/FotoStempelPage'));
 
 import ProtectedRoute from './components/ProtectedRoute';
 import RootRoute from './components/RootRoute';
@@ -133,6 +134,7 @@ function App() {
               />
               <Route path="/pengawas/kasbon" element={<RiwayatPengawasPage key="kasbon" jenis="kasbon" />} />
               <Route path="/pengawas/absen-ladies" element={<TargetAbsenPage />} />
+              <Route path="/pengawas/foto" element={<FotoStempelPage />} />
               <Route path="/pengawas/smart-chat" element={<SmartChatPengawasPage />} />
 
               {/* Ladies-specific */}

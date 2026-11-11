@@ -18,6 +18,7 @@ import {
   FiBookOpen,
   FiBriefcase,
   FiCalendar,
+  FiCamera,
   FiCheckSquare,
   FiClipboard,
   FiCreditCard,
@@ -409,6 +410,14 @@ export const HALAMAN_PENGAWAS = {
     barSendiri: true,
   },
 
+  fotoStempel: {
+    rute: '/pengawas/foto',
+    label: 'Foto Stempel',
+    ikon: <FiCamera />,
+    desc: 'Foto + waktu, lokasi & logo SR',
+    barSendiri: true,
+  },
+
   smartChat: {
     rute: '/pengawas/smart-chat',
     label: 'Smart Chat',
@@ -427,6 +436,7 @@ export const SIDEBAR_PENGAWAS: TataSidebar<IdPengawas> = {
     { items: ['home'] },
     { judul: 'Transaksi', items: ['gaji', 'pemasukanLain', 'kasbon'] },
     { judul: 'Ladies', items: ['absenLadies'] },
+    { judul: 'Alat', items: ['fotoStempel'] },
     { judul: 'Asisten', items: ['smartChat'] },
   ],
   bawah: ['pengaturan'],
@@ -449,6 +459,7 @@ export const NAVBAR_PENGAWAS: TabNavbar<IdPengawas>[] = [
     judul: 'Menu',
     keluar: true,
     bagian: [
+      { judul: 'Alat', items: ['fotoStempel'] },
       { judul: 'Asisten', items: ['smartChat'] },
       { judul: 'Aplikasi', items: ['pengaturan'] },
     ],

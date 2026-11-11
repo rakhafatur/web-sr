@@ -119,6 +119,7 @@ describe('rute tanpa Header app', () => {
         '/pengawas/pemasukan-lain',
         '/pengawas/kasbon',
         '/pengawas/absen-ladies',
+        '/pengawas/foto',
         '/pengaturan',
       ].sort()
     );
