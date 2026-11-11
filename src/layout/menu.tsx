@@ -414,7 +414,7 @@ export const HALAMAN_PENGAWAS = {
     rute: '/pengawas/foto',
     label: 'Foto Stempel',
     ikon: <FiCamera />,
-    desc: 'Foto + waktu, lokasi & logo SR',
+    desc: 'Foto + waktu, lokasi & nama',
     barSendiri: true,
   },
 

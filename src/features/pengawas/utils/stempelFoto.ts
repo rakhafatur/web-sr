@@ -1,5 +1,5 @@
 /**
- * Foto berstempel pengawas: waktu, lokasi, nama, catatan, dan logo SR
+ * Foto berstempel pengawas: waktu, lokasi, "Nama - SR AGENT", dan catatan
  * digambar di pita bawah foto. Semuanya terjadi di browser — tidak ada yang
  * disimpan ke server; hasilnya diunduh atau dibagikan (WA) oleh pengawas.
  *
@@ -80,6 +80,12 @@ export const teksLokasi = (alamat: string | null, koordinat: { lat: number; lon:
   return 'Lokasi tidak tersedia';
 };
 
+/** Baris nama di stempel: nama akun yang login + penanda agensi. */
+export const teksNama = (nama: string) => {
+  const n = nama.trim();
+  return n ? `${n} - SR AGENT` : 'SR AGENT';
+};
+
 /** Ukuran keluaran: sisi terpanjang dibatasi, rasio tetap, tidak diperbesar. */
 export const ukuranKeluaran = (w: number, h: number, maks: number) => {
   const skala = Math.min(1, maks / Math.max(w, h));
@@ -148,7 +154,6 @@ const WARNA = {
   pita: 'rgba(0, 0, 0, 0.72)',
   teks: '#ffffff',
   teksRedup: 'rgba(255, 255, 255, 0.82)',
-  kotakLogo: '#ffffff',
 };
 
 const FONT = '"Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
@@ -160,43 +165,10 @@ export type InfoStempel = {
   catatan: string;
 };
 
-/** Logo dengan tepi transparan dipangkas, supaya ukurannya bisa diatur pas. */
-export const pangkasLogo = (img: HTMLImageElement): HTMLCanvasElement => {
-  const c = document.createElement('canvas');
-  c.width = img.naturalWidth;
-  c.height = img.naturalHeight;
-  const ctx = c.getContext('2d')!;
-  ctx.drawImage(img, 0, 0);
-  const { data, width, height } = ctx.getImageData(0, 0, c.width, c.height);
-
-  let x0 = width, y0 = height, x1 = -1, y1 = -1;
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      if (data[(y * width + x) * 4 + 3] > 16) {
-        if (x < x0) x0 = x;
-        if (x > x1) x1 = x;
-        if (y < y0) y0 = y;
-        if (y > y1) y1 = y;
-      }
-    }
-  }
-  if (x1 < 0) return c;
-
-  const hasil = document.createElement('canvas');
-  hasil.width = x1 - x0 + 1;
-  hasil.height = y1 - y0 + 1;
-  hasil.getContext('2d')!.drawImage(c, x0, y0, hasil.width, hasil.height, 0, 0, hasil.width, hasil.height);
-  return hasil;
-};
-
 type Baris = { teks: string; font: string; warna: string; tinggi: number };
 
 /** Gambar foto + pita stempel ke canvas baru seukuran keluaran. */
-export const gambarFotoBerstempel = (
-  foto: HTMLImageElement,
-  logo: HTMLCanvasElement | null,
-  info: InfoStempel
-): HTMLCanvasElement => {
+export const gambarFotoBerstempel = (foto: HTMLImageElement, info: InfoStempel): HTMLCanvasElement => {
   const { w, h } = ukuranKeluaran(foto.naturalWidth, foto.naturalHeight, SISI_MAKS);
   const canvas = document.createElement('canvas');
   canvas.width = w;
@@ -211,12 +183,7 @@ export const gambarFotoBerstempel = (
   const ukWaktu = Math.round(36 * s);
   const ukTeks = Math.round(29 * s);
   const jarak = 1.32;
-
-  const tinggiLogo = Math.round(120 * s);
-  const padLogo = Math.round(14 * s);
-  const lebarLogo = logo ? Math.round((tinggiLogo * logo.width) / logo.height) : 0;
-  const lebarKotakLogo = logo ? lebarLogo + padLogo * 2 : 0;
-  const lebarTeks = w - pad * 2 - (logo ? lebarKotakLogo + pad : 0);
+  const lebarTeks = w - pad * 2;
 
   const fontWaktu = `700 ${ukWaktu}px ${FONT}`;
   const fontNama = `600 ${ukTeks}px ${FONT}`;
@@ -235,7 +202,7 @@ export const gambarFotoBerstempel = (
   ];
 
   const tinggiTeks = baris.reduce((n, b) => n + b.tinggi * jarak, 0);
-  const tinggiPita = Math.max(tinggiTeks, logo ? tinggiLogo + padLogo * 2 : 0) + pad * 2;
+  const tinggiPita = tinggiTeks + pad * 2;
   const atasPita = h - tinggiPita;
 
   // Gradasi lembut di atas pita supaya tidak terlihat seperti kotak tempelan.
@@ -254,23 +221,6 @@ export const gambarFotoBerstempel = (
     ctx.fillStyle = b.warna;
     ctx.fillText(b.teks, pad, y + (b.tinggi * (jarak - 1)) / 2);
     y += b.tinggi * jarak;
-  }
-
-  if (logo) {
-    const kotakW = lebarKotakLogo;
-    const kotakH = tinggiLogo + padLogo * 2;
-    const kx = w - pad - kotakW;
-    const ky = atasPita + (tinggiPita - kotakH) / 2;
-    ctx.fillStyle = WARNA.kotakLogo;
-    // roundRect belum ada di Safari < 16 — cukup kotak biasa di sana.
-    if (typeof ctx.roundRect === 'function') {
-      ctx.beginPath();
-      ctx.roundRect(kx, ky, kotakW, kotakH, Math.round(16 * s));
-      ctx.fill();
-    } else {
-      ctx.fillRect(kx, ky, kotakW, kotakH);
-    }
-    ctx.drawImage(logo, kx + padLogo, ky + padLogo, lebarLogo, tinggiLogo);
   }
 
   return canvas;

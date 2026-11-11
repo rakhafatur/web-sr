@@ -9,15 +9,8 @@ import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
 import Skeleton from '../../../components/Skeleton';
 import { BERANDA } from '../../../layout/peran';
 import type { RootState } from '../../../app/store';
-import logoSr from '../../../assets/logosr-blue.png';
 import { useLokasi, type StatusLokasi } from '../hooks/useLokasi';
-import {
-  formatWaktuStempel,
-  gambarFotoBerstempel,
-  keJpeg,
-  pangkasLogo,
-  teksLokasi,
-} from '../utils/stempelFoto';
+import { formatWaktuStempel, gambarFotoBerstempel, keJpeg, teksLokasi, teksNama } from '../utils/stempelFoto';
 import '../../../styles/mobile-admin.css';
 import '../pengawas.css';
 
@@ -50,8 +43,8 @@ type Foto = { img: HTMLImageElement; waktu: Date };
 type Hasil = { url: string; blob: Blob; nama: string };
 
 /**
- * Foto berstempel (pengawas): kamera bawaan HP → waktu, lokasi, nama,
- * catatan, dan logo SR digambar di bawah foto → dibagikan (WA) atau diunduh.
+ * Foto berstempel (pengawas): kamera bawaan HP → waktu, lokasi,
+ * "Nama - SR AGENT", dan catatan digambar di bawah foto → dibagikan (WA) atau diunduh.
  * Tidak ada yang disimpan ke server. Perhitungan teks & gambar di
  * utils/stempelFoto.ts.
  */
@@ -61,20 +54,13 @@ const FotoStempelPage = () => {
   const { status, koordinat, alamat, alamatMemuat, perbarui } = useLokasi();
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const [logo, setLogo] = useState<HTMLCanvasElement | null>(null);
   const [foto, setFoto] = useState<Foto | null>(null);
   const [catatan, setCatatan] = useState('');
   const [hasil, setHasil] = useState<Hasil | null>(null);
   const [memproses, setMemproses] = useState(false);
 
-  // Logo dipangkas sekali; kalau gagal, stempel tetap jalan tanpa logo.
-  useEffect(() => {
-    muatGambar(logoSr)
-      .then((img) => setLogo(pangkasLogo(img)))
-      .catch(() => setLogo(null));
-  }, []);
-
   const lokasi = teksLokasi(alamat, koordinat);
+  const barisNama = teksNama(nama);
 
   // Gambar ulang stempel tiap kali isinya berubah (catatan diketik, lokasi
   // baru masuk). Ditunda sebentar supaya tidak menggambar tiap ketukan.
@@ -86,10 +72,10 @@ const FotoStempelPage = () => {
       try {
         // Pastikan font Inter sudah termuat — canvas tidak menunggu sendiri.
         await document.fonts?.load('700 36px "Inter Variable"').catch(() => undefined);
-        const canvas = gambarFotoBerstempel(foto.img, logo, {
+        const canvas = gambarFotoBerstempel(foto.img, {
           waktu: formatWaktuStempel(foto.waktu),
           lokasi,
-          nama,
+          nama: barisNama,
           catatan: catatan.trim(),
         });
         const blob = await keJpeg(canvas);
@@ -105,7 +91,7 @@ const FotoStempelPage = () => {
       batal = true;
       clearTimeout(t);
     };
-  }, [foto, logo, lokasi, nama, catatan]);
+  }, [foto, lokasi, barisNama, catatan]);
 
   // Lepas object URL lama begitu diganti hasil baru / halaman ditinggal.
   const urlHasil = hasil?.url;
@@ -207,7 +193,7 @@ const FotoStempelPage = () => {
           onChange={(e) => setCatatan(e.target.value)}
         />
         <div className="tm-help">
-          Ikut tercetak di foto bersama waktu, lokasi, dan nama {nama ? <strong>{nama}</strong> : 'kamu'}.
+          Ikut tercetak di foto bersama waktu, lokasi, dan <strong>{barisNama}</strong>.
         </div>
       </section>
 
@@ -225,7 +211,7 @@ const FotoStempelPage = () => {
             <FiCamera />
           </span>
           <span className="fs-kosong-judul">Belum ada foto</span>
-          <span className="fs-kosong-teks">Waktu, lokasi, nama, dan logo SR otomatis ditempel di bawah foto.</span>
+          <span className="fs-kosong-teks">Waktu, lokasi, dan nama otomatis ditempel di bawah foto.</span>
         </button>
       )}
 
@@ -267,7 +253,7 @@ const FotoStempelPage = () => {
     <div className="page-shell dk-page">
       <DesktopPageHeader
         title="Foto Stempel"
-        description="Foto dengan waktu, lokasi, nama, dan logo SR — untuk dibagikan ke WA"
+        description="Foto dengan waktu, lokasi, dan nama — untuk dibagikan ke WA"
       />
       <div className="fs-desktop">{isi}</div>
     </div>

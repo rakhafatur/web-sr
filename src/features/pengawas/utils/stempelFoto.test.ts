@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { formatWaktuStempel, ringkasAlamat, teksLokasi, ukuranKeluaran, potongBaris } from './stempelFoto';
+import {
+  formatWaktuStempel,
+  ringkasAlamat,
+  teksLokasi,
+  teksNama,
+  ukuranKeluaran,
+  potongBaris,
+} from './stempelFoto';
 
 describe('formatWaktuStempel', () => {
   // 2026-11-11 14:05 waktu lokal, offset diberikan eksplisit agar tidak
@@ -59,6 +66,17 @@ describe('teksLokasi', () => {
 
   it('tanpa GPS sama sekali', () => {
     expect(teksLokasi(null, null)).toBe('Lokasi tidak tersedia');
+  });
+});
+
+describe('teksNama', () => {
+  it('nama akun + " - SR AGENT"', () => {
+    expect(teksNama('Rakha')).toBe('Rakha - SR AGENT');
+    expect(teksNama('  Budi Santoso ')).toBe('Budi Santoso - SR AGENT');
+  });
+
+  it('tanpa nama tetap ada penanda agensi', () => {
+    expect(teksNama('')).toBe('SR AGENT');
   });
 });
 
