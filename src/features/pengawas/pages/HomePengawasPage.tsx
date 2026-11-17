@@ -280,11 +280,11 @@ const HomePengawasPage = () => {
           <AngkaNaik nilai={tercapai} />
         </Petak>
 
-        <Petak label="Kurang target" nada="merah" ikon={<FiTarget />} satuan="ladies" sub="Belum mencapai target">
+        <Petak label="Kurang target" nada="aksen3" ikon={<FiTarget />} satuan="ladies" sub="Belum mencapai target">
           <AngkaNaik nilai={kurang.length} />
         </Petak>
 
-        <Petak label="Target" nada="ungu" ikon={<FiTrendingUp />} satuan="hari/bulan" sub="Minimal hari kerja ladies">
+        <Petak label="Target" nada="aksen2" ikon={<FiTrendingUp />} satuan="hari/bulan" sub="Minimal hari kerja ladies">
           <AngkaNaik nilai={TARGET_HARI_KERJA} />
         </Petak>
       </KisiPetak>

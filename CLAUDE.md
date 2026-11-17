@@ -83,7 +83,7 @@ Kalau menambah perhitungan uang baru, ikuti pola yang sama: fungsi murni di
   `--shadow-float`. Kartu hero bertulisan putih pakai
   `--color-hero-from`/`--color-hero-to` (selalu navy), bukan
   `--color-green-light` (di tema terang jadi biru pucat).
-- **Aksen "aurora" (biru → ungu → merah muda)** untuk momen masuk dan Home
+- **Aksen "aurora" palet Laut (biru → biru laut → teal)** untuk momen masuk dan Home
   mobile. `--brand-*` / `--grad-brand` untuk teks & hiasan di atas latar
   halaman; `--hero-brand-*` / `--grad-hero-brand` untuk bidang berteks putih
   (tombol utama, hero, tab navbar aktif). Jangan ditukar: `--brand-*` terlalu

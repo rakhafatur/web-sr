@@ -197,11 +197,11 @@ const HomeLadiesPage = () => {
           <AngkaNaik nilai={hariMasuk} />
         </Petak>
 
-        <Petak label="Voucher" nada="merah" ikon={<FiGift />} satuan="pcs" sub={bulanIni}>
+        <Petak label="Voucher" nada="aksen3" ikon={<FiGift />} satuan="pcs" sub={bulanIni}>
           <AngkaNaik nilai={voucherPcs} />
         </Petak>
 
-        <Petak label="Rata-rata" nada="ungu" ikon={<FiTrendingUp />} satuan="pcs/hari" sub="Voucher per hari masuk">
+        <Petak label="Rata-rata" nada="aksen2" ikon={<FiTrendingUp />} satuan="pcs/hari" sub="Voucher per hari masuk">
           {rataVoucherPerHari === null ? (
             '–'
           ) : (

@@ -148,7 +148,7 @@ function HomePageMobile() {
 
         <Petak
           label="Hari ini"
-          nada="merah"
+          nada="aksen3"
           ikon={<FiGift />}
           satuan="pcs"
           sub={`Kemarin ${ringkasan.pcsKemarin.toLocaleString('id-ID')} pcs`}
@@ -158,7 +158,7 @@ function HomePageMobile() {
 
         <Petak
           label="Ladies aktif"
-          nada="ungu"
+          nada="aksen2"
           ikon={<FiUsers />}
           satuan="orang"
           sub="Lihat daftar ladies"

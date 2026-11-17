@@ -82,21 +82,21 @@
   --color-hero-from: var(--color-accent);
   --color-hero-to: #1c2740;
 
-  /* ===== Aksen khas "aurora" (biru → ungu → merah muda) =====
+  /* ===== Aksen khas "aurora" — palet Laut (biru → biru laut → teal) =====
      Dipakai untuk momen masuk (splash, login, tirai) dan Home mobile.
      --brand-* = versi terang/tajam untuk teks, garis, dan hiasan DI ATAS
      latar halaman (≥ 4,5:1 di kedua tema). --hero-brand-* = versi pekat
      untuk bidang berisi teks putih (≥ 4,9:1), sama di kedua tema — jangan
      tukar keduanya. Varian *-rgb untuk cahaya (glow) & orb aurora. */
   --brand-1: #6f95ff;
-  --brand-2: #b08cff;
-  --brand-3: #ff7fb0;
-  --brand-1-rgb: 79, 124, 255;
-  --brand-2-rgb: 155, 92, 255;
-  --brand-3-rgb: 255, 92, 154;
-  --hero-brand-1: #3558e0;
-  --hero-brand-2: #6f3fd8;
-  --hero-brand-3: #c23a80;
+  --brand-2: #56b6f7;
+  --brand-3: #3fd0d9;
+  --brand-1-rgb: 111, 149, 255;
+  --brand-2-rgb: 86, 182, 247;
+  --brand-3-rgb: 63, 208, 217;
+  --hero-brand-1: #2f5bd8;
+  --hero-brand-2: #1769aa;
+  --hero-brand-3: #0e7490;
   --grad-brand: linear-gradient(120deg, var(--brand-1) 0%, var(--brand-2) 50%, var(--brand-3) 100%);
   --grad-hero-brand: linear-gradient(
     135deg,
@@ -288,8 +288,8 @@
   /* ===== Aksen khas "aurora" — versi lebih gelap untuk teks di atas terang.
      --hero-brand-* sengaja tidak ditimpa (bidang berteks putih). ===== */
   --brand-1: #2f52d6;
-  --brand-2: #6a3bd0;
-  --brand-3: #b8347a;
+  --brand-2: #0b6aa8;
+  --brand-3: #0a7286;
   --glow-brand: 0 18px 40px -14px rgba(var(--brand-2-rgb), 0.45);
   --aurora-kuat: 0.3;
   --glass-bg: rgba(255, 255, 255, 0.62);

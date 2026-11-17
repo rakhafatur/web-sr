@@ -221,13 +221,13 @@ type PetakProps = {
   satuan?: ReactNode;
   sub?: ReactNode;
   /** Warna aksen ikon. */
-  nada?: 'biru' | 'ungu' | 'merah' | 'hijau';
+  nada?: 'aksen1' | 'aksen2' | 'aksen3' | 'hijau';
   onClick?: () => void;
   /** Petak selebar dua kolom. */
   lebar?: boolean;
 };
 
-export const Petak = ({ label, ikon, hiasan, children, satuan, sub, nada = 'biru', onClick, lebar }: PetakProps) => {
+export const Petak = ({ label, ikon, hiasan, children, satuan, sub, nada = 'aksen1', onClick, lebar }: PetakProps) => {
   const kelas = `bm-petak bm-petak--${nada}${lebar ? ' bm-petak--lebar' : ''}${hiasan ? ' bm-petak--hiasan' : ''}`;
   const isi = (
     <>

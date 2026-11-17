@@ -352,12 +352,12 @@
   --petak-rgb: var(--brand-1-rgb);
 }
 
-.bm-petak--ungu {
+.bm-petak--aksen2 {
   --petak-warna: var(--brand-2);
   --petak-rgb: var(--brand-2-rgb);
 }
 
-.bm-petak--merah {
+.bm-petak--aksen3 {
   --petak-warna: var(--brand-3);
   --petak-rgb: var(--brand-3-rgb);
 }
