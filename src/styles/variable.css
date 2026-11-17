@@ -107,6 +107,18 @@
   --glow-brand: 0 18px 44px -12px rgba(var(--brand-2-rgb), 0.55);
   /* Kekuatan orb aurora di latar (lebih redup di tema terang). */
   --aurora-kuat: 0.5;
+  /* Isian elemen utama (tombol, segmen aktif, header modal) yang dipakai
+     web & mobile sekaligus. Di web tetap nilai lama; di layar ≤768px
+     ditimpa gradien Laut (blok @media di akhir file) — jadi komponen
+     bersama cukup memakai token ini, tanpa tahu sedang di layar apa. */
+  /* Cahaya aurora statis di latar halaman kerja mobile (MainLayout): versi
+     tenang dari aurora Home, tanpa gerak, selalu di belakang semua isi. */
+  --aurora-halaman:
+    radial-gradient(60% 100% at 0% 0%, rgba(var(--brand-1-rgb), calc(var(--aurora-kuat) * 0.5)) 0%, transparent 70%),
+    radial-gradient(55% 90% at 100% 0%, rgba(var(--brand-3-rgb), calc(var(--aurora-kuat) * 0.4)) 0%, transparent 70%),
+    radial-gradient(70% 80% at 50% 0%, rgba(var(--brand-2-rgb), calc(var(--aurora-kuat) * 0.25)) 0%, transparent 75%);
+  --isi-utama: var(--color-primary);
+  --isi-gradien: linear-gradient(135deg, var(--color-green), var(--color-accent));
   /* Permukaan kaca: kartu tembus pandang di atas aurora. */
   --glass-bg: rgba(255, 255, 255, 0.045);
   --glass-bg-kuat: rgba(255, 255, 255, 0.075);
@@ -311,4 +323,15 @@
   --color-gray-500-rgb: 106, 111, 120;
   --color-gray-600-rgb: 93, 98, 107;
   --color-primary-hover-rgb: 36, 74, 150;
+}
+
+/* =========================================================
+   MOBILE (≤768px) — elemen utama ikut aksen Laut seperti Home.
+   Web (desktop) sengaja tidak berubah.
+========================================================= */
+@media (max-width: 768px) {
+  :root {
+    --isi-utama: var(--grad-hero-brand);
+    --isi-gradien: var(--grad-hero-brand);
+  }
 }

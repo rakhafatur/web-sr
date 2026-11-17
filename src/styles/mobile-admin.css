@@ -113,8 +113,9 @@
 }
 
 .tm-segment.is-active {
-  background: var(--color-primary);
+  background: var(--grad-hero-brand);
   color: var(--color-white);
+  box-shadow: 0 6px 16px -8px rgba(var(--brand-2-rgb), 0.8);
   font-weight: 600;
 }
 
@@ -456,8 +457,9 @@
 .tm-hero {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(145deg, var(--color-hero-from), var(--color-hero-to));
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  /* Gradien Laut, sama dengan hero Home (components/beranda). */
+  background: var(--grad-hero-brand);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: var(--radius-xl);
   padding: var(--space-4) var(--space-5);
   color: var(--color-white);
@@ -551,9 +553,10 @@
 }
 
 .tm-btn--primary {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
+  background: var(--grad-hero-brand);
+  border-color: transparent;
   color: var(--color-white);
+  box-shadow: var(--glow-brand);
 }
 
 .tm-btn:focus-visible {
@@ -1182,7 +1185,7 @@
 .tm-ah-bar-fill {
   height: 100%;
   border-radius: var(--radius-full);
-  background: var(--color-green);
+  background: var(--grad-brand);
   transform-origin: left center;
   transition: transform 0.4s ease;
 }

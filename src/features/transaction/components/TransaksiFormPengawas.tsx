@@ -22,7 +22,7 @@ import '../../../styles/desktop-admin.css';
 const TOMBOL_PIL: React.CSSProperties = {
   height: 52,
   borderRadius: 'var(--radius-full)',
-  background: 'var(--color-primary)',
+  background: 'var(--isi-utama)',
   boxShadow: 'none',
   fontWeight: 600,
 };

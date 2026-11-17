@@ -38,7 +38,7 @@
 }
 
 .react-calendar__navigation button:hover {
-  background: var(--color-green);
+  background: var(--isi-utama);
   color: white;
 }
 
@@ -98,7 +98,7 @@
 
 /* ACTIVE */
 .react-calendar__tile--active {
-  background: var(--color-green) !important;
+  background: var(--isi-utama) !important;
   color: white !important;
 }
 

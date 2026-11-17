@@ -29,8 +29,9 @@
 .lp-hero {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(145deg, var(--color-hero-from), var(--color-hero-to));
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  /* Gradien Laut, sama dengan hero Home (components/beranda). */
+  background: var(--grad-hero-brand);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: var(--radius-xl);
   padding: var(--space-4) var(--space-5);
   color: var(--color-white);

@@ -18,7 +18,7 @@ type Props = {
 
 const variantStyles: Record<Variant, React.CSSProperties> = {
   primary: {
-    background: 'linear-gradient(135deg, var(--color-green), var(--color-accent))',
+    background: 'var(--isi-gradien)',
     color: 'white',
     boxShadow: '0 10px 25px rgba(var(--color-primary-rgb),0.35)',
     fontWeight: 700,

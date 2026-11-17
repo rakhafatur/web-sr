@@ -116,7 +116,7 @@ const PeraturanPage = () => {
       <div
         style={{
           background:
-            'linear-gradient(135deg, var(--color-green), var(--color-accent))',
+            'var(--isi-gradien)',
           borderRadius: 'var(--radius-xl)',
           padding:
             'var(--space-5)',

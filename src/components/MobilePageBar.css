@@ -37,9 +37,10 @@ button.mpb-btn:focus-visible {
   outline-offset: 2px;
 }
 
-/* Aksi utama (mis. +): lingkaran biru solid, tampil 40px dalam area 44px. */
+/* Aksi utama (mis. +): lingkaran bergradien Laut, tampil 40px dalam area 44px. */
 .mpb-btn--action {
-  background: var(--color-primary);
+  background: var(--grad-hero-brand);
+  box-shadow: 0 8px 18px -8px rgba(var(--brand-2-rgb), 0.85);
   color: var(--color-white);
   font-size: 20px;
   width: 40px;
@@ -48,6 +49,6 @@ button.mpb-btn:focus-visible {
 }
 
 button.mpb-btn--action:active {
-  background: var(--color-primary-hover);
+  background: var(--grad-hero-brand);
   transform: scale(0.95);
 }

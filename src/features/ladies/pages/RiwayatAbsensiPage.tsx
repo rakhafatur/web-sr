@@ -160,7 +160,7 @@ const RiwayatAbsensiPage = () => {
       {/* HERO */}
       <div
         style={{
-          background: 'linear-gradient(135deg, var(--color-green), var(--color-accent))',
+          background: 'var(--isi-gradien)',
           borderRadius: 'var(--radius-xl)',
           padding: 'var(--space-5)',
           color: '#fff',

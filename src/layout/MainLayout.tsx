@@ -128,6 +128,9 @@ function MainLayout({ children }: { children: React.ReactNode }) {
   // tetap tampil.
   const isTanpaHeader = isMobile && cocokRute(tata.ruteTanpaHeader, location.pathname);
   const sidebarWidth = isCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH;
+  // Halaman kerja mobile (punya bar sendiri) mendapat cahaya aurora redup di
+  // latar atas, menyambung Home. Home menggambar aurora-nya sendiri.
+  const cahayaAurora = isTanpaHeader && !isHomePage;
 
   // Menu yang dinonaktifkan di Pengaturan juga ditolak saat dibuka lewat URL
   // langsung — bukan hanya disembunyikan dari sidebar/navbar.
@@ -139,7 +142,15 @@ function MainLayout({ children }: { children: React.ReactNode }) {
       className="layout-container"
       // Chat layar penuh mengatur tingginya sendiri (100dvh); 100vh di Safari
       // lebih tinggi dari layar terlihat dan membuat halaman bisa ter-scroll.
-      style={{ backgroundColor: 'var(--color-bg)', minHeight: isChatLayarPenuh ? undefined : '100vh' }}
+      style={{
+        backgroundColor: 'var(--color-bg)',
+        minHeight: isChatLayarPenuh ? undefined : '100vh',
+        ...(cahayaAurora && {
+          backgroundImage: 'var(--aurora-halaman)',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: '100% 340px',
+        }),
+      }}
     >
       {!isTanpaHeader && !isChatLayarPenuh && <Header />}
 

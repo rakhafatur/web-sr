@@ -20,7 +20,7 @@ const FeaturePageHeader = ({ icon, title, description }: Props) => {
     <div
       className="mb-4 p-4 rounded-4 shadow-sm"
       style={{
-        background: 'linear-gradient(135deg, var(--color-green), var(--color-accent))',
+        background: 'var(--isi-gradien)',
         color: 'white',
       }}
     >

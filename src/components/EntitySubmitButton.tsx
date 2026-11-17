@@ -21,7 +21,7 @@ const EntitySubmitButton = ({ onClick, loading, loadingLabel = 'Menyimpan...', c
       style={{
         border: 'none',
         borderRadius: 'var(--radius-lg)',
-        background: 'linear-gradient(135deg, var(--color-green), var(--color-accent))',
+        background: 'var(--isi-gradien)',
         color: 'white',
         fontWeight: 700,
         padding: 'var(--space-4)',

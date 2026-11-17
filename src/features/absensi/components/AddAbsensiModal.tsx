@@ -13,7 +13,7 @@ import {
   FiSave,
 } from 'react-icons/fi';
 
-const HEADER_GRADIENT = 'linear-gradient(135deg,var(--color-green),var(--color-accent))';
+const HEADER_GRADIENT = 'var(--isi-gradien)';
 
 type Absensi = {
   status: string;
@@ -183,7 +183,7 @@ const AddAbsensiModal = ({
                       : '1px solid var(--color-gray-200)',
                   background:
                     active
-                      ? 'linear-gradient(135deg, var(--color-green), var(--color-accent))'
+                      ? 'var(--isi-gradien)'
                       : 'var(--color-surface)',
                   color:
                     active

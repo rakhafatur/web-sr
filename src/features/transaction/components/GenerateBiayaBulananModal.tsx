@@ -19,7 +19,7 @@ import {
 } from '../utils/biayaBulanan';
 import { useBiayaBulananConfig } from '../hooks/useBiayaBulananConfig';
 
-const HEADER_GRADIENT = 'linear-gradient(135deg,var(--color-green),var(--color-accent))';
+const HEADER_GRADIENT = 'var(--isi-gradien)';
 
 type LadyPreview = {
   id: string;

@@ -439,7 +439,7 @@ body {
 
 .segmented-chip.active {
   border: none;
-  background: linear-gradient(135deg, var(--color-green), var(--color-accent));
+  background: var(--isi-gradien);
   color: white;
   box-shadow: 0 8px 18px rgba(var(--color-primary-rgb), 0.3);
 }

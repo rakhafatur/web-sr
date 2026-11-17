@@ -14,7 +14,7 @@ type Props = {
 const ProfileHeroCard = ({ avatarIcon, name, subtitle, subtitleIcon, statusLabel }: Props) => (
   <div
     style={{
-      background: 'linear-gradient(135deg, var(--color-green), var(--color-accent))',
+      background: 'var(--isi-gradien)',
       borderRadius: 'var(--radius-xl)',
       padding: '24px 20px',
       color: '#fff',
