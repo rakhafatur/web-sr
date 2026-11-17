@@ -4,7 +4,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useMediaQuery } from 'react-responsive';
 import dayjs from 'dayjs';
-import { motion } from 'framer-motion';
 import {
   FiArrowRight,
   FiCheckCircle,
@@ -18,28 +17,31 @@ import {
 
 import { RootState } from '../../../app/store';
 import { supabase } from '../../../lib/supabaseClient';
-import PullToRefresh from '../../../components/PullToRefresh';
 import Skeleton from '../../../components/Skeleton';
 import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
-import HomeLadiesSkeleton from '../../ladies/components/HomeLadiesSkeleton';
+import AngkaNaik from '../../../components/beranda/AngkaNaik';
+import CincinProgres from '../../../components/beranda/CincinProgres';
+import BerandaSkeleton from '../../../components/beranda/BerandaSkeleton';
+import {
+  BarisHero,
+  BerandaAtas,
+  BerandaShell,
+  Kartu,
+  KartuHero,
+  KisiPetak,
+  MenuCepat,
+  Petak,
+} from '../../../components/beranda/BerandaMobile';
+import { sapaanWaktu } from '../../../utils/sapaanWaktu';
 import { useLedgerData } from '../../ladies/hooks/useLedgerData';
 import { TARGET_HARI_KERJA } from '../../absensi/utils/targetAbsensi';
 import type { BarisTarget } from '../../absensi/utils/targetLadies';
 import { HALAMAN_PENGAWAS } from '../../../layout/menu';
 import { useTargetLadies } from '../hooks/useTargetLadies';
-// Kerangka Home (sapaan, hero navy, ringkasan, menu cepat) sama dengan Home
-// Ladies, jadi kelasnya dipakai bersama.
+// Desktop: hero memakai kelas ladies-home-hero* bersama Home Ladies.
+// Mobile: components/beranda (kelas bm-), sama dengan Home admin & ladies.
 import '../../ladies/pages/HomeLadiesPage.css';
-import '../../../styles/mobile-admin.css';
 import '../../../styles/desktop-admin.css';
-import '../pengawas.css';
-
-const sapaanWaktu = (jam: number) => {
-  if (jam < 11) return 'Selamat pagi';
-  if (jam < 15) return 'Selamat siang';
-  if (jam < 18) return 'Selamat sore';
-  return 'Selamat malam';
-};
 
 const rupiah = (n: number) => `Rp${Math.round(n).toLocaleString('id-ID')}`;
 const TERSEMBUNYI = '••••••••';
@@ -108,16 +110,17 @@ const HomePengawasPage = () => {
 
   // Pengaturan tidak di sini — sudah ada di tab Menu navbar bawah.
   const menuCepat = [
-    { label: 'Gaji', icon: <FiTrendingUp />, path: HALAMAN_PENGAWAS.gaji.rute },
-    { label: 'Pemasukan Lain', icon: <FiDollarSign />, path: HALAMAN_PENGAWAS.pemasukanLain.rute },
-    { label: 'Kasbon', icon: <FiCreditCard />, path: HALAMAN_PENGAWAS.kasbon.rute },
-    { label: 'Target Absen', icon: <FiTarget />, path: HALAMAN_PENGAWAS.absenLadies.rute },
+    { label: 'Gaji', ikon: <FiTrendingUp />, onClick: () => navigate(HALAMAN_PENGAWAS.gaji.rute) },
+    { label: 'Pemasukan Lain', ikon: <FiDollarSign />, onClick: () => navigate(HALAMAN_PENGAWAS.pemasukanLain.rute) },
+    { label: 'Kasbon', ikon: <FiCreditCard />, onClick: () => navigate(HALAMAN_PENGAWAS.kasbon.rute) },
+    { label: 'Target Absen', ikon: <FiTarget />, onClick: () => navigate(HALAMAN_PENGAWAS.absenLadies.rute) },
   ];
 
-  const tombolMata = (kelas: string) => (
+  // Hero desktop. Versi mobile memakai <KartuHero/> di bawah.
+  const tombolMata = (
     <button
       type="button"
-      className={kelas}
+      className="ladies-home-eye-btn"
       onClick={() => setSembunyikan((v) => !v)}
       aria-label={sembunyikan ? 'Tampilkan nominal' : 'Sembunyikan nominal'}
       aria-pressed={sembunyikan}
@@ -131,7 +134,7 @@ const HomePengawasPage = () => {
       <div className="ladies-home-hero-circle" />
       <div className="ladies-home-hero-top">
         <span className="ladies-home-hero-label">Pemasukan Bulan Ini</span>
-        {tombolMata(`ladies-home-eye-btn${isMobile ? ' tap-scale' : ''}`)}
+        {tombolMata}
       </div>
       <div className="ladies-home-hero-amount">{sembunyikan ? TERSEMBUNYI : rupiah(totalPemasukan)}</div>
       <div className="ladies-home-hero-sub">Gaji + pemasukan lain · {labelBulan}</div>
@@ -236,128 +239,94 @@ const HomePengawasPage = () => {
   // MOBILE
   // =========================================================
   if (loading) {
-    return <HomeLadiesSkeleton />;
+    return <BerandaSkeleton />;
   }
 
-  const muncul = (delay: number) => ({
-    initial: { opacity: 0, y: 16 },
-    animate: { opacity: 1, y: 0 },
-    transition: { delay },
-  });
-
-  const ringkasan = [
-    { label: 'Kurang target', nilai: kurang.length, satuan: 'ladies', icon: <FiTarget /> },
-    { label: 'Tercapai', nilai: tercapai, satuan: 'ladies', icon: <FiCheckCircle /> },
-    { label: 'Target', nilai: TARGET_HARI_KERJA, satuan: 'hari/bulan', icon: <FiTrendingUp /> },
-  ];
+  const jumlahLadies = target.baris.length;
+  const persenTercapai = jumlahLadies ? tercapai / jumlahLadies : 0;
 
   return (
-    <PullToRefresh onRefresh={refresh}>
-      <div className="ladies-home-wrapper">
-        <div className="content-container d-flex flex-column">
-          {/* Di mobile, MainLayout tidak merender Header di halaman ini. */}
-          <motion.div {...muncul(0)} className="ladies-home-top">
-            <div className="ladies-home-topbar">
-              <span className="ladies-home-avatar" aria-hidden>
-                {nama.charAt(0).toUpperCase()}
-              </span>
-            </div>
-            <div className="ladies-home-greeting-time">{sapaan},</div>
-            <h1 className="ladies-home-greeting-name">{nama}</h1>
-          </motion.div>
+    <BerandaShell onRefresh={refresh}>
+      {/* Di mobile, MainLayout tidak merender Header di halaman ini. */}
+      <BerandaAtas sapaan={sapaan} nama={nama} />
 
-          <motion.section {...muncul(0.05)} className="ladies-home-hero" aria-label="Pemasukan bulan ini">
-            {isiHero}
-          </motion.section>
+      <KartuHero
+        label="Pemasukan Bulan Ini"
+        ariaLabel="Pemasukan bulan ini"
+        sembunyi={{ aktif: sembunyikan, onToggle: () => setSembunyikan((v) => !v) }}
+        sub={<>Gaji + pemasukan lain · {labelBulan}</>}
+        kaki={<BarisHero label="Kasbon bulan ini">{sembunyikan ? TERSEMBUNYI : rupiah(totalKasbon)}</BarisHero>}
+      >
+        {sembunyikan ? (
+          <span className="is-uang">{TERSEMBUNYI}</span>
+        ) : (
+          <AngkaNaik className="is-uang" nilai={totalPemasukan} format={rupiah} />
+        )}
+      </KartuHero>
 
-          <motion.section {...muncul(0.1)} className="ladies-home-overview" aria-label="Target absen ladies">
-            <div className="ladies-home-card-head">
-              <h2 className="ladies-home-card-title">Target Absen Ladies</h2>
-              <span className="ladies-home-chip">{labelBulan}</span>
-            </div>
+      <KisiPetak>
+        <Petak
+          lebar
+          label="Ladies mencapai target"
+          hiasan={
+            <CincinProgres nilai={persenTercapai} ukuran={76} tebal={8}>
+              {Math.round(persenTercapai * 100)}%
+            </CincinProgres>
+          }
+          satuan={`dari ${jumlahLadies} ladies`}
+          sub={`Target ${TARGET_HARI_KERJA} hari kerja · ${labelBulan}`}
+          onClick={() => navigate(HALAMAN_PENGAWAS.absenLadies.rute)}
+        >
+          <AngkaNaik nilai={tercapai} />
+        </Petak>
 
-            <div className="ladies-home-stats">
-              {ringkasan.map((s) => (
-                <div key={s.label} className="ladies-home-stat">
-                  <span className="ladies-home-stat-label">{s.label}</span>
-                  <span className="ladies-home-stat-value">{s.nilai}</span>
-                  <div className="ladies-home-stat-foot">
-                    <span className="ladies-home-stat-unit">{s.satuan}</span>
-                    <span className="ladies-home-stat-icon" aria-hidden>{s.icon}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.section>
+        <Petak label="Kurang target" nada="merah" ikon={<FiTarget />} satuan="ladies" sub="Belum mencapai target">
+          <AngkaNaik nilai={kurang.length} />
+        </Petak>
 
-          <motion.section {...muncul(0.15)} className="ladies-home-card" aria-label="Ladies paling kurang target">
-            <div className="ladies-home-card-head">
-              <h2 className="ladies-home-card-title">Paling Kurang</h2>
-              <button
-                type="button"
-                className="ph-link tap-scale"
-                onClick={() => navigate(HALAMAN_PENGAWAS.absenLadies.rute)}
-              >
-                Lihat semua <FiArrowRight aria-hidden />
-              </button>
-            </div>
+        <Petak label="Target" nada="ungu" ikon={<FiTrendingUp />} satuan="hari/bulan" sub="Minimal hari kerja ladies">
+          <AngkaNaik nilai={TARGET_HARI_KERJA} />
+        </Petak>
+      </KisiPetak>
 
-            {sorotan.length === 0 ? (
-              <div className="ph-kosong">
-                <FiCheckCircle aria-hidden />
-                Semua ladies sudah memenuhi target
-              </div>
-            ) : (
-              <ul className="tm-tg-list ph-list">
-                {sorotan.map((b) => {
-                  const warna = b.status === 'mengejar' ? 'voucher' : 'expense';
-                  return (
-                    <li key={b.id} className="tm-tg-row">
-                      <span
-                        className="tm-tg-avatar"
-                        style={{ background: `var(--color-${warna}-soft)`, color: `var(--color-${warna})` }}
-                        aria-hidden
-                      >
-                        {(b.nama || '?').charAt(0).toUpperCase()}
-                      </span>
-                      <span className="tm-row-main">
-                        <span className="tm-row-title">{b.nama}</span>
-                        <span className="tm-row-sub">
-                          {b.hariKerja} dari {TARGET_HARI_KERJA} hari · {b.outlet || '-'}
-                        </span>
-                      </span>
-                      <span
-                        className="tm-tg-badge"
-                        style={{ background: `var(--color-${warna}-soft)`, color: `var(--color-${warna})` }}
-                      >
-                        Kurang {b.kurang} hari
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </motion.section>
+      <Kartu
+        judul="Paling Kurang"
+        ariaLabel="Ladies paling kurang target"
+        aksi={{ label: 'Lihat semua', onClick: () => navigate(HALAMAN_PENGAWAS.absenLadies.rute) }}
+      >
+        {sorotan.length === 0 ? (
+          <div className="bm-kosong is-baik">
+            <FiCheckCircle aria-hidden />
+            Semua ladies sudah memenuhi target
+          </div>
+        ) : (
+          <ul className="bm-daftar">
+            {sorotan.map((b) => {
+              const warna = b.status === 'mengejar' ? 'voucher' : 'expense';
+              const gaya = { background: `var(--color-${warna}-soft)`, color: `var(--color-${warna})` };
+              return (
+                <li key={b.id} className="bm-baris">
+                  <span className="bm-lencana" style={{ ...gaya, borderColor: 'transparent' }} aria-hidden>
+                    {(b.nama || '?').charAt(0).toUpperCase()}
+                  </span>
+                  <span className="bm-baris-utama">
+                    <span className="bm-baris-judul">{b.nama}</span>
+                    <span className="bm-baris-sub">
+                      {b.hariKerja} dari {TARGET_HARI_KERJA} hari · {b.outlet || '-'}
+                    </span>
+                  </span>
+                  <span className="bm-badge" style={gaya}>
+                    Kurang {b.kurang} hari
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </Kartu>
 
-          <motion.section {...muncul(0.2)} className="ladies-home-card" aria-label="Menu cepat">
-            <h2 className="ladies-home-card-title">Menu Cepat</h2>
-            <div className="ladies-home-menu-grid">
-              {menuCepat.map((item) => (
-                <button
-                  key={item.label}
-                  type="button"
-                  className="ladies-home-menu-item tap-scale"
-                  onClick={() => navigate(item.path)}
-                >
-                  <div className="ladies-home-menu-icon">{item.icon}</div>
-                  <span className="ladies-home-menu-label">{item.label}</span>
-                </button>
-              ))}
-            </div>
-          </motion.section>
-        </div>
-      </div>
-    </PullToRefresh>
+      <MenuCepat items={menuCepat} />
+    </BerandaShell>
   );
 };
 

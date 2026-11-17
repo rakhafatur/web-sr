@@ -6,6 +6,8 @@ import { supabase } from '../lib/supabaseClient';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiUser, FiLock, FiEdit3, FiUsers, FiEye, FiEyeOff, FiChevronDown } from 'react-icons/fi';
 import Button from './Button';
+import Aurora from './momen/Aurora';
+import TandaSR from './momen/TandaSR';
 import bgImage from '../assets/bg-home.jpg';
 import { AUTH_SUBMIT_STYLE } from '../features/auth/authStyles';
 import '../styles/auth.css';
@@ -72,8 +74,12 @@ function SignUpForm() {
   if (isMobile) {
     return (
       <div className="auth-m">
+        <Aurora varian="penuh" />
+
         <div className="auth-m-card">
-          <div className="auth-m-mark" aria-hidden>SR</div>
+          <div className="auth-m-tanda">
+            <TandaSR ukuran={76} />
+          </div>
           <h1 className="auth-m-title">Daftar</h1>
           <p className="auth-m-subtitle">Akun aktif setelah disetujui admin</p>
 

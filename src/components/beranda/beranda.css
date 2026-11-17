@@ -1,0 +1,793 @@
+/* =========================================================
+   HOME MOBILE (bm-) — dipakai Home admin, ladies, dan pengawas lewat
+   components/beranda/BerandaMobile.tsx. Hanya tampil di layar ≤768px
+   (halaman memilih tampilan desktop sendiri), jadi tidak ada aturan di sini
+   yang menyentuh desktop.
+
+   Warna dari token aksen "aurora" di variable.css. Kartu kaca memakai
+   --glass-*; bidang berteks putih memakai --grad-hero-brand.
+========================================================= */
+
+.bm {
+  position: relative;
+  overflow: hidden;
+  /* Sisa ruang setelah padding bawah main (ruang navbar pil). */
+  min-height: calc(100vh - 96px - env(safe-area-inset-bottom));
+  min-height: calc(100dvh - 96px - env(safe-area-inset-bottom));
+  background: var(--color-bg);
+}
+
+.bm-isi {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: calc(env(safe-area-inset-top) + var(--space-5)) 16px var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ---------- Sapaan ---------- */
+
+.bm-atas {
+  padding: 0 2px var(--space-1);
+}
+
+.bm-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+/* Avatar bercincin gradien: cincin = latar, isi = lingkaran di dalamnya. */
+.bm-avatar {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  padding: 2px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--grad-brand);
+  box-shadow: 0 8px 22px -8px rgba(var(--brand-2-rgb), 0.7);
+  display: inline-flex;
+  font-family: inherit;
+}
+
+.bm-avatar-isi {
+  flex: 1;
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  color: var(--color-dark);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bm-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: var(--radius-full);
+  background: var(--glass-bg-kuat);
+  border: 1px solid var(--glass-border);
+  box-shadow: inset 0 1px 0 var(--glass-kilau);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  color: var(--color-gray-800);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.bm-sapa {
+  font-size: 15px;
+  color: var(--color-gray-700);
+}
+
+.bm-nama {
+  margin: 2px 0 0;
+  font-size: 2.125rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+  /* Ruang untuk huruf berekor (g, y) — teks bergradien terpotong tanpa ini. */
+  padding-bottom: 0.08em;
+  overflow-wrap: anywhere;
+  background: var(--grad-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* ---------- Hero ---------- */
+
+.bm-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 28px;
+  padding: var(--space-5);
+  color: #fff;
+  background: var(--grad-hero-brand);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    var(--glow-brand),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+/* Cahaya yang bergeser pelan di dalam hero (hanya transform). */
+.bm-hero-cahaya {
+  position: absolute;
+  inset: -45%;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 28% 30%, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 38%),
+    radial-gradient(circle at 76% 72%, rgba(0, 0, 0, 0.26) 0%, rgba(0, 0, 0, 0) 46%);
+  animation: bm-cahaya 14s ease-in-out infinite alternate;
+  will-change: transform;
+  pointer-events: none;
+}
+
+/* Kilau yang sesekali menyapu hero. */
+.bm-hero-kilau {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 38%;
+  z-index: -1;
+  background: linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%);
+  transform: translateX(-160%) skewX(-18deg);
+  animation: bm-kilau 6.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes bm-cahaya {
+  from { transform: translate3d(-6%, -4%, 0) rotate(0deg); }
+  to { transform: translate3d(8%, 6%, 0) rotate(18deg); }
+}
+
+@keyframes bm-kilau {
+  0%,
+  62% { transform: translateX(-160%) skewX(-18deg); }
+  100% { transform: translateX(420%) skewX(-18deg); }
+}
+
+.bm-hero-atas {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 40px;
+}
+
+.bm-hero-label {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.bm-hero-mata {
+  position: relative;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tampil 40px, area sentuh 48px. */
+.bm-hero-mata::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+}
+
+.bm-hero-angka {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+}
+
+/* Nominal rupiah panjang: sedikit lebih kecil supaya muat satu baris. */
+.bm-hero-angka.is-uang,
+.bm-hero-angka .is-uang {
+  font-size: 2.125rem;
+}
+
+.bm-hero-satuan {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  letter-spacing: 0;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.bm-hero-sub {
+  margin-top: 6px;
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.bm-hero-sub strong {
+  color: #fff;
+  font-weight: 700;
+}
+
+.bm-hero-kaki {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.bm-hero-baris {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.bm-hero-baris-nilai {
+  color: #fff;
+  font-weight: 700;
+}
+
+/* ---------- Grafik batang mini ---------- */
+
+.bm-grafik-judul {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: var(--space-3);
+}
+
+.bm-batang {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 8px;
+  align-items: end;
+}
+
+.bm-batang-kolom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.bm-batang-nilai {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.86);
+  font-variant-numeric: tabular-nums;
+}
+
+.bm-batang-rel {
+  width: 100%;
+  height: 64px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.bm-batang-isi {
+  display: block;
+  width: 100%;
+  max-width: 26px;
+  border-radius: 8px 8px 4px 4px;
+  background: rgba(255, 255, 255, 0.34);
+  transform-origin: center bottom;
+}
+
+.bm-batang-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.bm-batang-kolom.is-sorot .bm-batang-isi {
+  background: #fff;
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.55);
+}
+
+.bm-batang-kolom.is-sorot .bm-batang-nilai,
+.bm-batang-kolom.is-sorot .bm-batang-label {
+  color: #fff;
+  font-weight: 700;
+}
+
+/* ---------- Petak statistik ---------- */
+
+.bm-kisi {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.bm-petak {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: 124px;
+  padding: var(--space-4);
+  border-radius: var(--radius-xl);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    inset 0 1px 0 var(--glass-kilau),
+    var(--shadow-sm);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+  color: var(--color-dark);
+  font-family: inherit;
+  text-align: left;
+  --petak-warna: var(--brand-1);
+  --petak-rgb: var(--brand-1-rgb);
+}
+
+.bm-petak--ungu {
+  --petak-warna: var(--brand-2);
+  --petak-rgb: var(--brand-2-rgb);
+}
+
+.bm-petak--merah {
+  --petak-warna: var(--brand-3);
+  --petak-rgb: var(--brand-3-rgb);
+}
+
+.bm-petak--hijau {
+  --petak-warna: var(--color-income);
+  --petak-rgb: var(--color-success-rgb);
+}
+
+.bm-petak--lebar {
+  grid-column: 1 / -1;
+  min-height: 0;
+  align-items: center;
+}
+
+/* Petak dengan cincin: hiasan di tengah secara vertikal. */
+.bm-petak--hiasan {
+  align-items: center;
+}
+
+.bm-petak-utama {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.bm-petak-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-gray-700);
+}
+
+.bm-petak-angka {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  column-gap: 5px;
+  margin-top: var(--space-2);
+  font-size: 1.875rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--color-dark);
+}
+
+.bm-petak-satuan {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--color-gray-600);
+}
+
+.bm-petak-sub {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--color-gray-600);
+}
+
+/* Ikon menempel di pojok kanan atas, di luar alur — supaya baris angka dan
+   keterangan memakai lebar penuh petak. Hanya label yang memberi ruang. */
+.bm-petak:not(.bm-petak--hiasan) .bm-petak-label {
+  padding-right: 44px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+}
+
+.bm-petak-ikon {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: rgba(var(--petak-rgb), 0.18);
+  border: 1px solid rgba(var(--petak-rgb), 0.28);
+  color: var(--petak-warna);
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- Cincin kemajuan ---------- */
+
+.bm-cincin {
+  position: relative;
+  flex-shrink: 0;
+  display: inline-flex;
+}
+
+.bm-cincin svg {
+  display: block;
+  filter: drop-shadow(0 4px 10px rgba(var(--brand-2-rgb), 0.35));
+}
+
+.bm-cincin-tengah {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Kartu bagian ---------- */
+
+.bm-kartu {
+  padding: var(--space-4);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  border: 1px solid var(--color-gray-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.bm-kartu-kepala {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: 32px;
+  margin-bottom: var(--space-2);
+}
+
+.bm-kartu-judul {
+  margin: 0;
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--color-dark);
+}
+
+.bm-tautan {
+  min-height: 44px;
+  margin: -6px 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--brand-1);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ---------- Daftar di dalam kartu ---------- */
+
+.bm-daftar {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.bm-baris {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+}
+
+.bm-baris + .bm-baris {
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.bm-baris:last-child {
+  padding-bottom: 2px;
+}
+
+.bm-baris-utama {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bm-baris-judul {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bm-baris-sub {
+  font-size: 13px;
+  color: var(--color-gray-600);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bm-baris-kanan {
+  flex-shrink: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.bm-baris-kanan small {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-gray-600);
+}
+
+/* Lencana peringkat / inisial. */
+.bm-lencana {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-gray-200);
+  color: var(--color-gray-800);
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bm-lencana--juara {
+  background: var(--grad-hero-brand);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 8px 18px -8px rgba(var(--brand-2-rgb), 0.8);
+}
+
+/* Garis kemajuan tipis di bawah nama. Isi di-skala, bukan diubah lebarnya. */
+.bm-garis {
+  display: block;
+  height: 5px;
+  margin-top: 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-gray-200);
+  overflow: hidden;
+}
+
+.bm-garis-isi {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--grad-brand);
+  transform-origin: left center;
+}
+
+.bm-badge {
+  flex-shrink: 0;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.bm-kosong {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) 0 var(--space-1);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-gray-700);
+}
+
+.bm-kosong.is-baik {
+  color: var(--color-income);
+  font-weight: 600;
+}
+
+/* ---------- Menu cepat ---------- */
+
+.bm-menu {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  padding: var(--space-4) var(--space-3);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  border: 1px solid var(--color-gray-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.bm-menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+}
+
+/* Ikon "squircle" bergradien — tiap posisi memakai potongan gradien berbeda
+   supaya keempatnya terasa satu spektrum. Ikon putih ≥ 4,9:1 di semua stop. */
+.bm-menu-ikon {
+  width: 56px;
+  height: 56px;
+  border-radius: 20px;
+  color: #fff;
+  font-size: 23px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 10px 20px -10px rgba(var(--brand-2-rgb), 0.75);
+}
+
+.bm-menu-ikon--0 {
+  background: linear-gradient(140deg, var(--hero-brand-1), var(--hero-brand-2));
+}
+
+.bm-menu-ikon--1 {
+  background: linear-gradient(140deg, var(--hero-brand-2), var(--hero-brand-3));
+}
+
+.bm-menu-ikon--2 {
+  background: linear-gradient(140deg, var(--hero-brand-3), var(--hero-brand-2));
+}
+
+.bm-menu-ikon--3 {
+  background: linear-gradient(140deg, var(--hero-brand-2), var(--hero-brand-1));
+}
+
+.bm-menu-label {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.25;
+  text-align: center;
+  color: var(--color-gray-800);
+}
+
+/* ---------- Strip ajakan ---------- */
+
+.bm-strip {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  border: 1px solid var(--color-gray-200);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-dark);
+  font-family: inherit;
+  text-align: left;
+}
+
+.bm-strip-ikon {
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  background: var(--grad-hero-brand);
+  color: #fff;
+  font-size: 21px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 20px -10px rgba(var(--brand-2-rgb), 0.75);
+}
+
+.bm-strip-teks {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bm-strip-judul {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.bm-strip-sub {
+  font-size: 13px;
+  color: var(--color-gray-600);
+}
+
+.bm-strip-panah {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-gray-200);
+  color: var(--color-dark);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bm-strip--peringatan {
+  background: var(--color-voucher-soft);
+  border-color: var(--color-voucher-border);
+}
+
+.bm-strip--peringatan .bm-strip-ikon {
+  background: var(--color-warning-solid);
+  color: var(--color-ink-on-warning);
+  box-shadow: none;
+}
+
+.bm-strip--peringatan .bm-strip-sub {
+  color: var(--color-gray-700);
+}
+
+.bm-strip--peringatan .bm-strip-panah {
+  background: transparent;
+  border-color: var(--color-voucher-border);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bm-hero-cahaya,
+  .bm-hero-kilau {
+    animation: none;
+  }
+}

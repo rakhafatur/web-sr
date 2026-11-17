@@ -82,6 +82,37 @@
   --color-hero-from: var(--color-accent);
   --color-hero-to: #1c2740;
 
+  /* ===== Aksen khas "aurora" (biru → ungu → merah muda) =====
+     Dipakai untuk momen masuk (splash, login, tirai) dan Home mobile.
+     --brand-* = versi terang/tajam untuk teks, garis, dan hiasan DI ATAS
+     latar halaman (≥ 4,5:1 di kedua tema). --hero-brand-* = versi pekat
+     untuk bidang berisi teks putih (≥ 4,9:1), sama di kedua tema — jangan
+     tukar keduanya. Varian *-rgb untuk cahaya (glow) & orb aurora. */
+  --brand-1: #6f95ff;
+  --brand-2: #b08cff;
+  --brand-3: #ff7fb0;
+  --brand-1-rgb: 79, 124, 255;
+  --brand-2-rgb: 155, 92, 255;
+  --brand-3-rgb: 255, 92, 154;
+  --hero-brand-1: #3558e0;
+  --hero-brand-2: #6f3fd8;
+  --hero-brand-3: #c23a80;
+  --grad-brand: linear-gradient(120deg, var(--brand-1) 0%, var(--brand-2) 50%, var(--brand-3) 100%);
+  --grad-hero-brand: linear-gradient(
+    135deg,
+    var(--hero-brand-1) 0%,
+    var(--hero-brand-2) 52%,
+    var(--hero-brand-3) 100%
+  );
+  --glow-brand: 0 18px 44px -12px rgba(var(--brand-2-rgb), 0.55);
+  /* Kekuatan orb aurora di latar (lebih redup di tema terang). */
+  --aurora-kuat: 0.5;
+  /* Permukaan kaca: kartu tembus pandang di atas aurora. */
+  --glass-bg: rgba(255, 255, 255, 0.045);
+  --glass-bg-kuat: rgba(255, 255, 255, 0.075);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-kilau: rgba(255, 255, 255, 0.14);
+
   /* ===== Lapisan interaksi & bayangan mengambang =====
      Dulu rgba putih di-hardcode per file — tak terlihat di tema terang. */
   --overlay-hover: rgba(255, 255, 255, 0.05);
@@ -253,6 +284,18 @@
   /* ===== Hero: tetap navy tua (teks putih) ===== */
   --color-hero-from: #2f5bb7;
   --color-hero-to: #1d3a78;
+
+  /* ===== Aksen khas "aurora" — versi lebih gelap untuk teks di atas terang.
+     --hero-brand-* sengaja tidak ditimpa (bidang berteks putih). ===== */
+  --brand-1: #2f52d6;
+  --brand-2: #6a3bd0;
+  --brand-3: #b8347a;
+  --glow-brand: 0 18px 40px -14px rgba(var(--brand-2-rgb), 0.45);
+  --aurora-kuat: 0.3;
+  --glass-bg: rgba(255, 255, 255, 0.62);
+  --glass-bg-kuat: rgba(255, 255, 255, 0.82);
+  --glass-border: rgba(15, 23, 42, 0.08);
+  --glass-kilau: rgba(255, 255, 255, 0.9);
 
   /* ===== Lapisan interaksi & bayangan ===== */
   --overlay-hover: rgba(15, 23, 42, 0.04);

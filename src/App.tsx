@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
-import { Suspense, lazy, useEffect, useState } from 'react';
+import { Suspense, lazy, useCallback, useState } from 'react';
+import { AnimatePresence, MotionConfig } from 'framer-motion';
 import { ToastContainer } from 'react-toastify';
 import { useMediaQuery } from 'react-responsive';
 import 'react-toastify/dist/ReactToastify.css';
@@ -53,6 +54,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import RootRoute from './components/RootRoute';
 import MainLayout from './layout/MainLayout';
 import SplashScreen from './components/Common/SplashScreen';
+import TiraiMasuk from './components/momen/TiraiMasuk';
 import RouteLoader from './components/Common/RouteLoader';
 import OfflineBanner from './components/OfflineBanner';
 import ConfirmDialogHost from './components/ConfirmDialog';
@@ -61,20 +63,17 @@ import SessionGuard from './components/SessionGuard';
 function App() {
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const [showSplash, setShowSplash] = useState(true);
+  const tutupSplash = useCallback(() => setShowSplash(false), []);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 1500); // durasi splash
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (showSplash) {
-    return <SplashScreen onFinish={() => setShowSplash(false)} />;
-  }
-
+  // App dirender DI BAWAH splash, bukan menunggu splash selesai: berkas
+  // halaman dan datanya ikut dimuat selama splash tampil, jadi saat splash
+  // menghilang halaman sudah siap dan langsung memainkan animasi masuknya
+  // (lihat lib/momenMasuk). `reducedMotion="user"` mematikan gerak
+  // perpindahan/skala di seluruh app untuk user yang memintanya di sistem.
   return (
-    <>
+    <MotionConfig reducedMotion="user">
+      <AnimatePresence>{showSplash && <SplashScreen key="splash" onSelesai={tutupSplash} />}</AnimatePresence>
+
       <OfflineBanner />
 
       <BrowserRouter>
@@ -166,7 +165,8 @@ function App() {
         theme="dark"
       />
       <ConfirmDialogHost />
-    </>
+      <TiraiMasuk />
+    </MotionConfig>
   );
 }
 

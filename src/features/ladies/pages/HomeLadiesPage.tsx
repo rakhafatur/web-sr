@@ -6,35 +6,31 @@ import { useMediaQuery } from 'react-responsive';
 import { RootState } from '../../../app/store';
 import { supabase } from '../../../lib/supabaseClient';
 import dayjs from 'dayjs';
+// Kelas hero (ladies-home-hero*) masih dipakai tampilan desktop.
 import './HomeLadiesPage.css';
 
-import {
-  FiEye,
-  FiEyeOff,
-  FiMessageCircle,
-  FiArrowRight,
-  FiTrendingUp,
-  FiGift,
-  FiCreditCard,
-  FiHeart,
-  FiCalendar,
-} from 'react-icons/fi';
-
-import { motion } from 'framer-motion';
+import { FiMessageCircle, FiTrendingUp, FiGift, FiCreditCard, FiHeart, FiCalendar } from 'react-icons/fi';
 
 import type { UserWithLadies } from '../../../types/user';
-import HomeLadiesSkeleton from '../components/HomeLadiesSkeleton';
 import HomeLadiesDesktop from '../components/HomeLadiesDesktop';
-import PullToRefresh from '../../../components/PullToRefresh';
 import NotificationBell from '../../../components/Header/NotificationBell';
+import AngkaNaik from '../../../components/beranda/AngkaNaik';
+import CincinProgres from '../../../components/beranda/CincinProgres';
+import BerandaSkeleton from '../../../components/beranda/BerandaSkeleton';
+import {
+  BarisHero,
+  BerandaAtas,
+  BerandaShell,
+  KartuHero,
+  KisiPetak,
+  MenuCepat,
+  Petak,
+  Strip,
+} from '../../../components/beranda/BerandaMobile';
 import { TARGET_HARI_KERJA } from '../../absensi/utils/targetAbsensi';
+import { sapaanWaktu } from '../../../utils/sapaanWaktu';
 
-const sapaanWaktu = (jam: number) => {
-  if (jam < 11) return 'Selamat pagi';
-  if (jam < 15) return 'Selamat siang';
-  if (jam < 18) return 'Selamat sore';
-  return 'Selamat malam';
-};
+const TERSEMBUNYI = '••••••••';
 
 const HomeLadiesPage = () => {
   const user = useSelector(
@@ -42,7 +38,7 @@ const HomeLadiesPage = () => {
   ) as UserWithLadies;
 
   const navigate = useNavigate();
-  // Mobile: tampilan di bawah. Desktop: HomeLadiesDesktop (gaya dk-).
+  // Mobile: tampilan di bawah (components/beranda). Desktop: HomeLadiesDesktop (gaya dk-).
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const [hideAmount, setHideAmount] = useState(false);
@@ -127,50 +123,6 @@ const HomeLadiesPage = () => {
 
   const formatRpNumber = (n: number) => `Rp${Math.round(n).toLocaleString('id-ID')}`;
 
-  const menuItems = [
-    {
-      label: 'Voucher',
-      icon: <FiGift />,
-      path: '/ladies/voucher',
-    },
-    {
-      label: 'Kasbon',
-      icon: <FiCreditCard />,
-      path: '/ladies/kasbon',
-    },
-    {
-      label: 'Dokter',
-      icon: <FiHeart />,
-      path: '/ladies/dokter',
-    },
-    {
-      label: 'Absensi',
-      icon: <FiCalendar />,
-      path: '/ladies/absensi',
-    },
-  ];
-
-  // Pola "angka besar + satuan kecil" dari kartu Health Overview referensi.
-  const ringkasan = [
-    { label: 'Hari Masuk', nilai: hariMasuk, satuan: `dari ${TARGET_HARI_KERJA} hari`, icon: <FiCalendar /> },
-    { label: 'Voucher', nilai: voucherPcs, satuan: 'pcs', icon: <FiGift /> },
-    {
-      label: 'Rata-rata',
-      nilai:
-        rataVoucherPerHari === null
-          ? '–'
-          : rataVoucherPerHari.toLocaleString('id-ID', { maximumFractionDigits: 1 }),
-      satuan: 'pcs/hari',
-      icon: <FiTrendingUp />,
-    },
-  ];
-
-  const muncul = (delay: number) => ({
-    initial: { opacity: 0, y: 16 },
-    animate: { opacity: 1, y: 0 },
-    transition: { delay },
-  });
-
   if (!isMobile) {
     return (
       <HomeLadiesDesktop
@@ -190,123 +142,86 @@ const HomeLadiesPage = () => {
   }
 
   if (loading) {
-    return <HomeLadiesSkeleton />;
+    return <BerandaSkeleton />;
   }
 
+  const sisaHari = Math.max(0, TARGET_HARI_KERJA - hariMasuk);
+
+  const menuItems = [
+    { label: 'Voucher', ikon: <FiGift />, onClick: () => navigate('/ladies/voucher') },
+    { label: 'Kasbon', ikon: <FiCreditCard />, onClick: () => navigate('/ladies/kasbon') },
+    { label: 'Dokter', ikon: <FiHeart />, onClick: () => navigate('/ladies/dokter') },
+    { label: 'Absensi', ikon: <FiCalendar />, onClick: () => navigate('/ladies/absensi') },
+  ];
+
   return (
-    <PullToRefresh onRefresh={async () => { await refetch(); }}>
-      <div className="ladies-home-wrapper">
-        <div className="content-container d-flex flex-column">
-          {/* ATAS: avatar + lonceng + sapaan (pola referensi). Di mobile,
-              MainLayout tidak merender Header di halaman ini. */}
-          <motion.div {...muncul(0)} className="ladies-home-top">
-            <div className="ladies-home-topbar">
-              <button
-                type="button"
-                className="ladies-home-avatar tap-scale"
-                onClick={() => navigate('/ladies/profile')}
-                aria-label="Buka profil"
-              >
-                {nama.charAt(0).toUpperCase()}
-              </button>
-              {ladiesId && <NotificationBell ladiesId={ladiesId} />}
-            </div>
+    <BerandaShell onRefresh={refetch}>
+      {/* Di mobile, MainLayout tidak merender Header di halaman ini. */}
+      <BerandaAtas
+        sapaan={sapaanWaktu(new Date().getHours())}
+        nama={nama}
+        onAvatar={() => navigate('/ladies/profile')}
+        labelAvatar="Buka profil"
+        kanan={ladiesId ? <NotificationBell ladiesId={ladiesId} /> : undefined}
+      />
 
-            <div className="ladies-home-greeting-time">{sapaanWaktu(new Date().getHours())},</div>
-            <h1 className="ladies-home-greeting-name">{nama}</h1>
-          </motion.div>
+      <KartuHero
+        label="Estimasi Pendapatan"
+        ariaLabel="Estimasi pendapatan"
+        sembunyi={{ aktif: hideAmount, onToggle: () => setHideAmount((v) => !v) }}
+        sub={<>Dari voucher · {bulanIni}</>}
+        kaki={
+          <BarisHero label="Kasbon bulan ini">{hideAmount ? TERSEMBUNYI : formatRpNumber(pengeluaran)}</BarisHero>
+        }
+      >
+        {hideAmount ? (
+          <span className="is-uang">{TERSEMBUNYI}</span>
+        ) : (
+          <AngkaNaik className="is-uang" nilai={voucherNominal} format={formatRpNumber} />
+        )}
+      </KartuHero>
 
-          {/* HERO */}
-          <motion.div {...muncul(0.05)} className="ladies-home-hero">
-            <div className="ladies-home-hero-circle" />
+      <KisiPetak>
+        <Petak
+          lebar
+          label="Hari masuk bulan ini"
+          hiasan={
+            <CincinProgres nilai={hariMasuk / TARGET_HARI_KERJA} ukuran={76} tebal={8}>
+              {Math.min(100, Math.round((hariMasuk / TARGET_HARI_KERJA) * 100))}%
+            </CincinProgres>
+          }
+          satuan={`dari ${TARGET_HARI_KERJA} hari`}
+          sub={sisaHari === 0 ? 'Target bulan ini tercapai' : `Kurang ${sisaHari} hari untuk mencapai target`}
+          onClick={() => navigate('/ladies/absensi')}
+        >
+          <AngkaNaik nilai={hariMasuk} />
+        </Petak>
 
-            <div className="ladies-home-hero-top">
-              <span className="ladies-home-hero-label">Estimasi Pendapatan</span>
-              <button
-                type="button"
-                className="ladies-home-eye-btn tap-scale"
-                onClick={() => setHideAmount((v) => !v)}
-                aria-label={hideAmount ? 'Tampilkan nominal' : 'Sembunyikan nominal'}
-              >
-                {hideAmount ? <FiEyeOff /> : <FiEye />}
-              </button>
-            </div>
+        <Petak label="Voucher" nada="merah" ikon={<FiGift />} satuan="pcs" sub={bulanIni}>
+          <AngkaNaik nilai={voucherPcs} />
+        </Petak>
 
-            <div className="ladies-home-hero-amount">
-              {hideAmount ? '••••••••' : formatRpNumber(voucherNominal)}
-            </div>
-            <div className="ladies-home-hero-sub">Dari voucher · {bulanIni}</div>
+        <Petak label="Rata-rata" nada="ungu" ikon={<FiTrendingUp />} satuan="pcs/hari" sub="Voucher per hari masuk">
+          {rataVoucherPerHari === null ? (
+            '–'
+          ) : (
+            <AngkaNaik
+              nilai={rataVoucherPerHari}
+              format={(n) => n.toLocaleString('id-ID', { maximumFractionDigits: 1 })}
+            />
+          )}
+        </Petak>
+      </KisiPetak>
 
-            <div className="ladies-home-hero-foot">
-              <span>Kasbon bulan ini</span>
-              <span className="ladies-home-hero-foot-value">
-                {hideAmount ? '••••••••' : formatRpNumber(pengeluaran)}
-              </span>
-            </div>
-          </motion.div>
+      <MenuCepat items={menuItems} />
 
-          {/* RINGKASAN */}
-          <motion.section {...muncul(0.1)} className="ladies-home-overview" aria-label="Ringkasan bulan ini">
-            <div className="ladies-home-card-head">
-              <h2 className="ladies-home-card-title">Ringkasan Bulan Ini</h2>
-              <span className="ladies-home-chip">{bulanIni}</span>
-            </div>
-
-            <div className="ladies-home-stats">
-              {ringkasan.map((s) => (
-                <div key={s.label} className="ladies-home-stat">
-                  <span className="ladies-home-stat-label">{s.label}</span>
-                  <span className="ladies-home-stat-value">{s.nilai}</span>
-                  <div className="ladies-home-stat-foot">
-                    <span className="ladies-home-stat-unit">{s.satuan}</span>
-                    <span className="ladies-home-stat-icon" aria-hidden>{s.icon}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.section>
-
-          {/* MENU CEPAT */}
-          <motion.section {...muncul(0.15)} className="ladies-home-card" aria-label="Menu cepat">
-            <h2 className="ladies-home-card-title">Menu Cepat</h2>
-            <div className="ladies-home-menu-grid">
-              {menuItems.map((item) => (
-                <button
-                  key={item.label}
-                  type="button"
-                  className="ladies-home-menu-item tap-scale"
-                  onClick={() => navigate(item.path)}
-                >
-                  <div className="ladies-home-menu-icon">
-                    {item.icon}
-                  </div>
-                  <span className="ladies-home-menu-label">{item.label}</span>
-                </button>
-              ))}
-            </div>
-          </motion.section>
-
-          {/* SMART CHAT CTA */}
-          <motion.button
-            type="button"
-            {...muncul(0.2)}
-            className="ladies-home-cta tap-scale"
-            onClick={() => navigate('/smart-chat-ladies')}
-          >
-            <div className="ladies-home-cta-icon">
-              <FiMessageCircle />
-            </div>
-            <div className="ladies-home-cta-text">
-              <div className="ladies-home-cta-title">Tanya Smart Assistant</div>
-              <div className="ladies-home-cta-subtitle">Cek voucher & absensi kamu</div>
-            </div>
-            <span className="ladies-home-arrow-btn" aria-hidden>
-              <FiArrowRight />
-            </span>
-          </motion.button>
-        </div>
-      </div>
-    </PullToRefresh>
+      <Strip
+        ikon={<FiMessageCircle />}
+        judul="Tanya Smart Assistant"
+        sub="Cek voucher & absensi kamu"
+        onClick={() => navigate('/smart-chat-ladies')}
+      />
+    </BerandaShell>
   );
 };
 

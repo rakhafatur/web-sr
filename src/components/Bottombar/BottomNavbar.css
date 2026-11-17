@@ -124,8 +124,12 @@
 ========================================================= */
 
 .nav-item.active {
-  background: var(--color-primary);
+  /* Gradien aksen (teks putih ≥ 4,9:1), selaras hero Home & tombol Masuk. */
+  background: var(--grad-hero-brand);
   color: var(--color-white);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 8px 18px -8px rgba(var(--brand-2-rgb), 0.8);
 }
 
 .nav-item.active span {

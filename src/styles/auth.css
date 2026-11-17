@@ -141,11 +141,14 @@
 }
 
 /* =========================================================
-   MOBILE — layar penuh tanpa kartu/ilustrasi (pola referensi):
-   form langsung di atas latar halaman, input & tombol berbentuk pil.
+   MOBILE — layar penuh di atas latar aurora: tanda brand bercincin, judul
+   bergradien, form dalam panel kaca, tombol pil bergradien dengan kilau.
+   Dipakai Login & Daftar (LoginPage, SignUpForm).
 ========================================================= */
 
 .auth-m {
+  position: relative;
+  overflow: hidden;
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
@@ -153,52 +156,58 @@
   justify-content: center;
   padding:
     calc(env(safe-area-inset-top) + var(--space-8))
-    var(--space-6)
+    var(--space-5)
     calc(env(safe-area-inset-bottom) + var(--space-8));
   background: var(--color-bg);
 }
 
 .auth-m-card {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 400px;
 }
 
-.auth-m-mark {
-  width: 56px;
-  height: 56px;
-  margin: 0 auto var(--space-5);
-  border-radius: var(--radius-full);
-  background: var(--color-green-lighter);
-  border: 1px solid var(--color-green-light);
-  color: var(--color-green);
-  font-size: var(--font-size-lg);
-  font-weight: 700;
+.auth-m-tanda {
   display: flex;
-  align-items: center;
   justify-content: center;
+  margin-bottom: var(--space-6);
 }
 
 .auth-m-title {
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--color-dark);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
   text-align: center;
   margin: 0;
+  background: var(--grad-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 .auth-m-subtitle {
   font-size: var(--font-size-sm);
-  color: var(--color-gray-600);
+  color: var(--color-gray-700);
   text-align: center;
   margin: var(--space-2) 0 0;
 }
 
+/* Panel kaca: tembus ke aurora di belakangnya. */
 .auth-m-form {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  margin-top: var(--space-8);
+  margin-top: var(--space-6);
+  padding: var(--space-5);
+  border-radius: 28px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: inset 0 1px 0 var(--glass-kilau), var(--shadow-float);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  backdrop-filter: blur(22px) saturate(140%);
 }
 
 .auth-m-field {
@@ -207,11 +216,11 @@
 
 .auth-m-input {
   width: 100%;
-  height: 52px;
+  height: 54px;
   padding: 0 var(--space-5) 0 48px;
   border-radius: var(--radius-full);
-  border: 1px solid var(--color-gray-200);
-  background: var(--color-surface);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg-kuat);
   color: var(--color-dark);
   font-family: inherit;
   /* Minimal 16px: di bawah itu Safari iOS men-zoom halaman saat fokus. */
@@ -219,7 +228,7 @@
   outline: none;
   appearance: none;
   -webkit-appearance: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .auth-m-input::placeholder {
@@ -227,8 +236,10 @@
 }
 
 .auth-m-input:focus {
-  border-color: var(--color-green);
-  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.3);
+  border-color: var(--brand-2);
+  box-shadow:
+    0 0 0 3px rgba(var(--brand-2-rgb), 0.28),
+    0 8px 24px -10px rgba(var(--brand-2-rgb), 0.6);
 }
 
 .auth-m-input.is-invalid {
@@ -240,22 +251,27 @@
   padding-right: 52px;
 }
 
-/* top 26px = setengah tinggi input, supaya tetap di tengah kolom walau
+/* top 27px = setengah tinggi input, supaya tetap di tengah kolom walau
    pesan error muncul di bawahnya. */
 .auth-m-field-icon {
   position: absolute;
-  top: 26px;
+  top: 27px;
   left: 18px;
   transform: translateY(-50%);
   color: var(--color-gray-600);
   font-size: 18px;
   pointer-events: none;
+  transition: color 0.2s ease;
+}
+
+.auth-m-field:focus-within .auth-m-field-icon {
+  color: var(--brand-2);
 }
 
 .auth-m-field-trailing {
   position: absolute;
-  top: 26px;
-  right: 4px;
+  top: 27px;
+  right: 5px;
   transform: translateY(-50%);
   width: 44px;
   height: 44px;
@@ -267,6 +283,12 @@
   align-items: center;
   justify-content: center;
   font-size: 18px;
+}
+
+/* Tombol global mengecil saat ditekan (global.css) — di sini transform sudah
+   dipakai untuk menengahkan, jadi tekanannya digabung. */
+button.auth-m-field-trailing:active {
+  transform: translateY(-50%) scale(0.92);
 }
 
 span.auth-m-field-trailing {
@@ -284,10 +306,54 @@ span.auth-m-field-trailing {
   margin-top: var(--space-3);
 }
 
+/* Kilau yang sesekali menyapu tombol submit. */
+.auth-m-submit-gap .btn {
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+}
+
+.auth-m-submit-gap .btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 45%;
+  background: linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, 0.32) 50%, transparent 100%);
+  transform: translateX(-140%) skewX(-18deg);
+  animation: auth-kilau 3.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.auth-m-submit-gap .btn:disabled {
+  opacity: 0.85;
+}
+
+@keyframes auth-kilau {
+  0%,
+  55% { transform: translateX(-140%) skewX(-18deg); }
+  100% { transform: translateX(340%) skewX(-18deg); }
+}
+
+.auth-m-putar {
+  animation: spin 0.7s linear infinite;
+}
+
 .auth-m-footer {
   display: block;
   text-align: center;
   margin-top: var(--space-6);
-  color: var(--color-gray-600);
+  color: var(--color-gray-700);
   font-size: var(--font-size-sm);
+}
+
+.auth-m .auth-link {
+  color: var(--brand-1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-m-submit-gap .btn::after {
+    animation: none;
+  }
 }

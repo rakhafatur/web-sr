@@ -83,6 +83,19 @@ Kalau menambah perhitungan uang baru, ikuti pola yang sama: fungsi murni di
   `--shadow-float`. Kartu hero bertulisan putih pakai
   `--color-hero-from`/`--color-hero-to` (selalu navy), bukan
   `--color-green-light` (di tema terang jadi biru pucat).
+- **Aksen "aurora" (biru → ungu → merah muda)** untuk momen masuk dan Home
+  mobile. `--brand-*` / `--grad-brand` untuk teks & hiasan di atas latar
+  halaman; `--hero-brand-*` / `--grad-hero-brand` untuk bidang berteks putih
+  (tombol utama, hero, tab navbar aktif). Jangan ditukar: `--brand-*` terlalu
+  terang untuk teks putih di tema gelap.
+- **Home mobile ketiga peran disusun dari `components/beranda`** (kelas
+  `bm-`): `BerandaShell`, `KartuHero`, `Petak`, `Kartu`, `MenuCepat`,
+  `AngkaNaik`, `CincinProgres`. Home desktop tidak memakainya.
+- **Animasi masuk halaman menunggu layar terbuka.** Splash dan tirai login
+  menutupi app yang sudah dirender di bawahnya; pakai `useLayarTerbuka()`
+  (`lib/momenMasuk.ts`) + varian `wadahMuncul`/`anakMuncul`
+  (`components/momen/gerak.ts`) supaya animasi tidak selesai diam-diam di
+  balik lapisan itu.
 - Komponen bersama yang sudah ada: `DataTable`, `CardTable`, `ModalWrapper`,
   `FormField`, `Button`, `ActionIconButton`, `ListPageToolbar`,
   `TransaksiFilterBar`, `SearchableSelect`, `EmptyState`, `Pagination`.
