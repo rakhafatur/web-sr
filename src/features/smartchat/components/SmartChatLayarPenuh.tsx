@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiCheck, FiChevronDown, FiHelpCircle, FiSend } from 'react-icons/fi';
 import robotImg from '../../../assets/robot-assistant.png';
 import { ChatReportBody, type ChatReport } from './ChatReport';
+import Aurora from '../../../components/momen/Aurora';
 import './SmartChatLayarPenuh.css';
 
 export type ChatMessage = {
@@ -83,6 +84,9 @@ const SmartChatLayarPenuh: React.FC<Props> = ({ messages, loading, questions, on
 
   return (
     <div className="sc">
+      {/* Latar aurora hanya di mobile — disembunyikan di desktop lewat CSS. */}
+      <Aurora varian="penuh" />
+
       <header className="sc-bar">
         <div className="sc-inner sc-bar-inner">
           <button

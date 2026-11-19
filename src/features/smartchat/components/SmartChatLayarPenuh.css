@@ -464,4 +464,132 @@ button.sc-icon-btn:focus-visible {
     width: 220px;
     height: 220px;
   }
+
+  /* Aurora hanya untuk mobile — desktop tetap dengan latar lamanya. */
+  .sc > .aurora {
+    display: none;
+  }
+}
+
+/* =========================
+   MOBILE — aksen Laut, selaras Home & momen masuk.
+   Semua aturan di sini hanya untuk ≤768px; desktop di atas tidak berubah.
+========================= */
+@media (max-width: 768px) {
+  .sc {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-bg);
+  }
+
+  /* Isi di atas lapisan aurora. */
+  .sc-bar,
+  .sc-scroll,
+  .sc-dock {
+    position: relative;
+    z-index: 1;
+  }
+
+  .sc-bar-title {
+    font-weight: 700;
+    background: var(--grad-brand);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  .sc-hero-img {
+    filter: drop-shadow(0 14px 40px rgba(var(--brand-2-rgb), 0.5));
+  }
+
+  .sc-hero-caption {
+    color: var(--color-gray-700);
+  }
+
+  /* Pesan baru muncul dengan pegas kecil. */
+  .sc-row {
+    animation: sc-muncul 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .sc-row.is-ai {
+    transform-origin: left bottom;
+  }
+
+  .sc-row.is-user {
+    transform-origin: right bottom;
+  }
+
+  /* Bubble asisten: kaca di atas aurora. */
+  .sc-bubble.is-ai {
+    background: var(--glass-bg-kuat);
+    border-color: var(--glass-border);
+    box-shadow: inset 0 1px 0 var(--glass-kilau);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    backdrop-filter: blur(18px) saturate(140%);
+  }
+
+  .sc-bubble.is-user {
+    background: var(--grad-hero-brand);
+    box-shadow: 0 10px 24px -12px rgba(var(--brand-2-rgb), 0.8);
+  }
+
+  .sc-dock {
+    border-top-color: var(--glass-border);
+  }
+
+  .sc-pick-trigger {
+    background: var(--glass-bg-kuat);
+    border-color: var(--glass-border);
+  }
+
+  .sc-pick-trigger[aria-expanded='true'],
+  .sc-pick-trigger:focus-visible {
+    border-color: var(--brand-2);
+    box-shadow:
+      0 0 0 3px rgba(var(--brand-2-rgb), 0.28),
+      0 8px 24px -10px rgba(var(--brand-2-rgb), 0.6);
+  }
+
+  .sc-pick-trigger-icon,
+  .sc-pick-option-check {
+    color: var(--brand-1);
+  }
+
+  .sc-pick-option:active,
+  .sc-pick-option.is-active {
+    background: rgba(var(--brand-1-rgb), 0.18);
+  }
+
+  .sc-pick-option-icon {
+    background: rgba(var(--brand-1-rgb), 0.16);
+    border-color: rgba(var(--brand-1-rgb), 0.3);
+    color: var(--brand-1);
+  }
+
+  .sc-send {
+    background: var(--grad-hero-brand);
+    box-shadow: 0 10px 22px -10px rgba(var(--brand-2-rgb), 0.85);
+  }
+
+  .sc-send:disabled {
+    box-shadow: none;
+  }
+}
+
+@keyframes sc-muncul {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-row {
+    animation: none;
+  }
 }

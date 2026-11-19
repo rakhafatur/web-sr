@@ -284,25 +284,6 @@ body {
   box-shadow: var(--shadow);
 }
 
-/* ========= TABLE SR CUSTOM ========== */
-.sr-table tr:hover {
-  background-color: var(--color-green-lighter);
-}
-
-.sr-table th,
-.sr-table td {
-  font-family: var(--font-base);
-  font-size: 0.9rem;
-}
-
-.sr-table thead tr {
-  background-color: var(--color-green-light);
-}
-
-.sr-table tbody tr {
-  transition: background-color 0.2s ease;
-}
-
 /* ========= FORM INPUT ========== */
 .form-input-sr {
   background-color: var(--color-surface);
@@ -544,19 +525,6 @@ button:active,
 .spinner-icon {
   animation: spin 0.7s linear infinite;
   color: var(--color-primary);
-}
-
-.sr-table th,
-.sr-table td {
-  border-bottom: 1.5px solid var(--color-green-light, #c9ecd8) !important;
-}
-
-/* Jika ingin ada grid penuh: */
-.sr-table th, .sr-table td {
-  border-right: 1px solid var(--color-green-light, #c9ecd8) !important;
-}
-.sr-table th:last-child, .sr-table td:last-child {
-  border-right: none !important;
 }
 
 @media (max-width: 768px) {

@@ -96,9 +96,10 @@ Kalau menambah perhitungan uang baru, ikuti pola yang sama: fungsi murni di
   (`lib/momenMasuk.ts`) + varian `wadahMuncul`/`anakMuncul`
   (`components/momen/gerak.ts`) supaya animasi tidak selesai diam-diam di
   balik lapisan itu.
-- Komponen bersama yang sudah ada: `DataTable`, `CardTable`, `ModalWrapper`,
-  `FormField`, `Button`, `ActionIconButton`, `ListPageToolbar`,
-  `TransaksiFilterBar`, `SearchableSelect`, `EmptyState`, `Pagination`.
+- Komponen bersama yang sudah ada: `ModalWrapper`, `Button`,
+  `SearchableSelect`, `Pagination`, `TransaksiFilterBar`; daftar & form
+  mobile `MobilePageBar`, `MobileListPage`, `MobileFormPage`; daftar & header
+  desktop `DesktopPageHeader`, `DesktopListCard`.
 - Gunakan `confirmDialog()` dari `components/ConfirmDialog`, bukan
   `window.confirm`.
 - **Menu hanya ditambah di `src/layout/menu.tsx`**: satu entri di
