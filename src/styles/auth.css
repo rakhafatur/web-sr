@@ -306,6 +306,32 @@ span.auth-m-field-trailing {
   margin-top: var(--space-3);
 }
 
+/* Pemberitahuan sisa percobaan / kunci login (mobile & desktop). */
+.auth-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--color-expense-border);
+  border-radius: var(--radius-md);
+  background: var(--color-expense-soft);
+  color: var(--color-expense);
+  font-size: var(--font-size-sm);
+  line-height: 1.45;
+  text-align: left;
+}
+
+.auth-alert svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.auth-alert-waktu {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
 /* Kilau yang sesekali menyapu tombol submit. */
 .auth-m-submit-gap .btn {
   position: relative;

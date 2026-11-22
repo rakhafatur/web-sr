@@ -1,11 +1,20 @@
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
-import { FiEye, FiEyeOff, FiUser, FiLock, FiLoader } from 'react-icons/fi';
+import { FiEye, FiEyeOff, FiUser, FiLock, FiLoader, FiAlertCircle } from 'react-icons/fi';
+import {
+  CATATAN_KOSONG,
+  bacaCatatan,
+  catatGagal,
+  formatSisaKunci,
+  simpanCatatan,
+  statusLogin,
+  type CatatanLogin,
+} from '../utils/batasLogin';
 import Button from '../../../components/Button';
 import Aurora from '../../../components/momen/Aurora';
 import TandaSR from '../../../components/momen/TandaSR';
@@ -32,8 +41,38 @@ function LoginPage() {
   const terbuka = useLayarTerbuka();
   const tombolRef = useRef<HTMLDivElement>(null);
 
+  // Batas 3x gagal → kunci 5 menit (lihat utils/batasLogin).
+  const [catatan, setCatatan] = useState<CatatanLogin>(bacaCatatan);
+  const [sekarang, setSekarang] = useState(() => Date.now());
+  const status = statusLogin(catatan, sekarang);
+
+  // Detak tiap detik hanya selama terkunci, untuk hitung mundur.
+  useEffect(() => {
+    if (!status.terkunci) return;
+    const t = window.setInterval(() => setSekarang(Date.now()), 1000);
+    return () => window.clearInterval(t);
+  }, [status.terkunci]);
+
+  const perbaruiCatatan = (baru: CatatanLogin) => {
+    simpanCatatan(baru);
+    setCatatan(baru);
+    setSekarang(Date.now());
+  };
+
   const onSubmit = async (data: LoginFormData) => {
+    // Dibaca ulang dari storage: tab lain mungkin sudah menambah hitungan.
+    const terbaru = bacaCatatan();
+    if (statusLogin(terbaru, Date.now()).terkunci) {
+      perbaruiCatatan(terbaru);
+      return;
+    }
+
     const result = await login(data.username, data.password);
+
+    // Password benar (termasuk akun belum aktif) → hitungan gagal dihapus.
+    if (result === 'success' || result === 'inactive') {
+      perbaruiCatatan(CATATAN_KOSONG);
+    }
 
     if (result === 'success') {
       const localUser = JSON.parse(localStorage.getItem('user') || '{}');
@@ -56,13 +95,38 @@ function LoginPage() {
     } else if (result === 'inactive') {
       toast.warning('Akunmu belum aktif. Menunggu persetujuan admin.');
     } else if (result === 'invalid') {
-      // Sengaja tidak membedakan "username tidak ada" dan "password salah" —
-      // pesan yang berbeda memberi tahu orang luar username mana yang valid.
-      toast.error('Username atau password salah.');
+      // Pesannya tampil di halaman (pemberitahuan), bukan toast. Sengaja
+      // tidak membedakan "username tidak ada" dan "password salah" — pesan
+      // yang berbeda memberi tahu orang luar username mana yang valid.
+      perbaruiCatatan(catatGagal(terbaru, Date.now()));
     } else {
       toast.error('Terjadi kesalahan saat login.');
     }
   };
+
+  const pemberitahuan = status.terkunci ? (
+    <div className="auth-alert" role="alert">
+      <FiLock aria-hidden />
+      <span>
+        Terlalu banyak percobaan gagal. Coba lagi dalam{' '}
+        {/* Angka berdetak tiap detik — disembunyikan dari pembaca layar
+            supaya tidak dibacakan terus-menerus. */}
+        <span className="auth-alert-waktu" aria-hidden>{formatSisaKunci(status.sisaMs)}</span>
+        <span className="visually-hidden">beberapa menit</span>.
+      </span>
+    </div>
+  ) : status.pernahGagal ? (
+    <div className="auth-alert" role="alert">
+      <FiAlertCircle aria-hidden />
+      <span>
+        Username atau password salah. Sisa{' '}
+        <span className="auth-alert-waktu">{status.sisaPercobaan}</span> kali percobaan
+        {status.sisaPercobaan === 1 ? ' sebelum login dikunci 5 menit.' : '.'}
+      </span>
+    </div>
+  ) : null;
+
+  const terkunci = status.terkunci;
 
   if (isMobile) {
     return (
@@ -133,12 +197,14 @@ function LoginPage() {
               {errors.password && <div className="auth-m-field-error">Password wajib diisi</div>}
             </div>
 
+            {pemberitahuan}
+
             <div className="auth-m-submit-gap" ref={tombolRef}>
               <Button
                 type="submit"
                 variant="primary"
                 fullWidth
-                disabled={isSubmitting}
+                disabled={isSubmitting || terkunci}
                 style={AUTH_SUBMIT_STYLE}
                 icon={isSubmitting ? <FiLoader className="auth-m-putar" aria-hidden /> : undefined}
               >
@@ -211,7 +277,9 @@ function LoginPage() {
                 {errors.password && <div className="invalid-feedback d-block">Password wajib diisi</div>}
               </div>
 
-              <Button type="submit" variant="primary" fullWidth>
+              {pemberitahuan && <div className="mb-3">{pemberitahuan}</div>}
+
+              <Button type="submit" variant="primary" fullWidth disabled={isSubmitting || terkunci}>
                 Masuk
               </Button>
             </form>

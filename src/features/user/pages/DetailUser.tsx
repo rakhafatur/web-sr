@@ -14,13 +14,8 @@ import {
   FiEye,
   FiEyeOff,
   FiClock,
-  FiTrash2,
 } from 'react-icons/fi';
 import { useMediaQuery } from 'react-responsive';
-import { useSelector } from 'react-redux';
-import { useQueryClient } from '@tanstack/react-query';
-import type { RootState } from '../../../app/store';
-import { confirmDialog } from '../../../components/ConfirmDialog';
 import { formatAksesLengkap, formatAksesTerakhir, kolomAksesBelumAda } from '../utils/aksesTerakhir';
 import MobilePageBar from '../../../components/MobilePageBar';
 import DesktopPageHeader from '../../../components/desktop/DesktopPageHeader';
@@ -65,12 +60,6 @@ const DetailUser = () => {
 
   /** `undefined` = kolom belum dibuat (SQL e5 belum dijalankan) → disembunyikan. */
   const [aksesTerakhir, setAksesTerakhir] = useState<string | null | undefined>(undefined);
-
-  const [menghapus, setMenghapus] = useState(false);
-
-  const queryClient = useQueryClient();
-  const idSaya = useSelector((state: RootState) => state.user.currentUser?.id);
-  const akunSendiri = !!id && id === idSaya;
 
   // Mobile: tampilan baru (Header app dicabut di MainLayout). Desktop: lama.
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -211,28 +200,6 @@ const DetailUser = () => {
     }
   };
 
-  const handleDelete = async () => {
-    if (akunSendiri) return;
-
-    const ok = await confirmDialog(
-      `Hapus user "${form.nama || form.username}"? Akun ini tidak bisa login lagi dan tindakan ini tidak bisa dibatalkan.`
-    );
-    if (!ok) return;
-
-    setMenghapus(true);
-    const { error } = await supabase.from('users').delete().eq('id', id as string);
-    setMenghapus(false);
-
-    if (error) {
-      toast.error('Gagal menghapus user. Coba lagi.');
-      return;
-    }
-
-    toast.success('User berhasil dihapus');
-    queryClient.invalidateQueries({ queryKey: ['user-list'] });
-    navigate('/users', { replace: true });
-  };
-
   if (loading) {
     return <DetailFormSkeleton label="Mengambil data user" fields={2} />;
   }
@@ -360,19 +327,6 @@ const DetailUser = () => {
             )}
           </div>
 
-          {readonly && !akunSendiri && (
-            <button
-              type="button"
-              className="tm-btn tm-btn--danger"
-              style={{ width: '100%', marginTop: 'var(--space-2)' }}
-              onClick={handleDelete}
-              disabled={menghapus}
-            >
-              <FiTrash2 aria-hidden />
-              {menghapus ? 'Menghapus...' : 'Hapus user'}
-            </button>
-          )}
-
           {!readonly && (
             <div className="tm-actions">
               <button type="button" className="tm-btn" onClick={batal} disabled={saving}>
@@ -404,18 +358,10 @@ const DetailUser = () => {
         description="Informasi akun dan akses sistem"
         actions={
           readonly ? (
-            <>
-              {!akunSendiri && (
-                <button type="button" className="dk-btn dk-btn--danger-ghost" onClick={handleDelete} disabled={menghapus}>
-                  <FiTrash2 aria-hidden />
-                  {menghapus ? 'Menghapus...' : 'Hapus'}
-                </button>
-              )}
-              <button type="button" className="dk-btn dk-btn--primary" onClick={() => setReadonly(false)}>
-                <FiEdit2 aria-hidden />
-                Ubah
-              </button>
-            </>
+            <button type="button" className="dk-btn dk-btn--primary" onClick={() => setReadonly(false)}>
+              <FiEdit2 aria-hidden />
+              Ubah
+            </button>
           ) : (
             <>
               <button type="button" className="dk-btn" onClick={batalUbah} disabled={saving}>
