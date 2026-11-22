@@ -17,6 +17,9 @@ import SwipeToDelete from '../../../components/SwipeToDelete';
 import '../../../styles/mobile-admin.css';
 
 import { useMediaQuery } from 'react-responsive';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../../app/store';
+import { formatAksesLengkap, formatAksesTerakhir, kolomAksesBelumAda } from '../utils/aksesTerakhir';
 
 import {
   FiPlus,
@@ -31,10 +34,13 @@ type User = {
   id: string;
   username: string;
   nama: string | null;
+  /** `undefined` = kolom belum dibuat (SQL e5 belum dijalankan). */
+  last_access_at?: string | null;
 };
 
 const UserListPage = () => {
   const navigate = useNavigate();
+  const idSaya = useSelector((state: RootState) => state.user.currentUser?.id);
 
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
@@ -51,36 +57,55 @@ const UserListPage = () => {
       const from = (page - 1) * limit;
       const to = from + limit - 1;
 
-      let query = supabase
-        .from('users')
-        .select('id, username, nama', { count: 'exact' })
-        .eq('is_active', true)
-        .range(from, to);
-
       const safeKeyword = sanitizeSearchKeyword(keyword.trim());
 
-      if (safeKeyword) {
-        query = query.or(
-          `username.ilike.%${safeKeyword}%,nama.ilike.%${safeKeyword}%`
-        );
+      const ambil = (kolom: string) => {
+        let query = supabase
+          .from('users')
+          .select(kolom, { count: 'exact' })
+          .eq('is_active', true)
+          .range(from, to);
+
+        if (safeKeyword) {
+          query = query.or(
+            `username.ilike.%${safeKeyword}%,nama.ilike.%${safeKeyword}%`
+          );
+        }
+        return query;
+      };
+
+      let hasil = await ambil('id, username, nama, last_access_at');
+      if (kolomAksesBelumAda(hasil.error)) {
+        hasil = await ambil('id, username, nama');
       }
 
-      const { data, count, error } = await query;
+      const { data, count, error } = hasil;
 
       if (error) throw error;
 
-      return { list: (data as User[]) || [], total: count || 0 };
+      return { list: (data as unknown as User[]) || [], total: count || 0 };
     },
     meta: { errorLabel: 'data user' },
   });
 
   const userList = data?.list ?? [];
   const total = data?.total ?? 0;
+  // Kolom "Terakhir akses" baru tampil setelah SQL e5 dijalankan.
+  const adaKolomAkses = userList.some((u) => u.last_access_at !== undefined);
 
   /** Optimistic delete — baris langsung hilang dari list, dikembalikan lagi
       kalau ternyata gagal di server. */
-  const handleDelete = async (id: string) => {
-    const confirmDelete = await confirmDialog('Yakin ingin hapus user?');
+  const handleDelete = async (u: User) => {
+    const id = u.id;
+    // Menghapus akun sendiri langsung mengunci admin keluar dari aplikasi.
+    if (id === idSaya) {
+      toast.error('Tidak bisa menghapus akun yang sedang kamu pakai.');
+      return;
+    }
+
+    const confirmDelete = await confirmDialog(
+      `Hapus user "${u.nama || u.username}"? Akun ini tidak bisa login lagi dan tindakan ini tidak bisa dibatalkan.`
+    );
     if (!confirmDelete) return;
 
     await queryClient.cancelQueries({ queryKey });
@@ -174,7 +199,7 @@ const UserListPage = () => {
               <div>
                 <div className="tm-group tm-list">
                   {userList.map((u) => (
-                    <SwipeToDelete key={u.id} onDelete={() => handleDelete(u.id)} borderRadius={0}>
+                    <SwipeToDelete key={u.id} onDelete={() => handleDelete(u)} borderRadius={0}>
                       <button
                         type="button"
                         className="tm-row tm-row-btn"
@@ -185,7 +210,12 @@ const UserListPage = () => {
                         </span>
                         <div className="tm-row-main">
                           <div className="tm-row-title">{u.nama || u.username}</div>
-                          <div className="tm-row-sub">@{u.username}</div>
+                          <div className="tm-row-sub">
+                            @{u.username}
+                            {u.last_access_at !== undefined && (
+                              <> · {formatAksesTerakhir(u.last_access_at)}</>
+                            )}
+                          </div>
                         </div>
                         <FiChevronRight className="tm-chevron" aria-hidden />
                       </button>
@@ -265,6 +295,7 @@ const UserListPage = () => {
               <tr>
                 <th scope="col">Nama</th>
                 <th scope="col">Username</th>
+                {adaKolomAkses && <th scope="col">Terakhir akses</th>}
                 <th scope="col" className="dk-col-actions">
                   <span className="visually-hidden">Aksi</span>
                 </th>
@@ -296,19 +327,26 @@ const UserListPage = () => {
                     </div>
                   </td>
                   <td className="dk-person-sub">@{u.username}</td>
+                  {adaKolomAkses && (
+                    <td className="dk-person-sub" title={formatAksesLengkap(u.last_access_at ?? null) ?? undefined}>
+                      {formatAksesTerakhir(u.last_access_at ?? null)}
+                    </td>
+                  )}
                   <td className="dk-col-actions">
-                    <button
-                      type="button"
-                      className="dk-icon-btn dk-icon-btn--danger"
-                      title="Hapus"
-                      aria-label={`Hapus ${u.nama || u.username}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(u.id);
-                      }}
-                    >
-                      <FiTrash2 />
-                    </button>
+                    {u.id !== idSaya && (
+                      <button
+                        type="button"
+                        className="dk-icon-btn dk-icon-btn--danger"
+                        title="Hapus"
+                        aria-label={`Hapus ${u.nama || u.username}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(u);
+                        }}
+                      >
+                        <FiTrash2 />
+                      </button>
+                    )}
                     {/* Penanda baris bisa diklik (bukan tombol) — ubah dilakukan di detail. */}
                     <FiChevronRight className="dk-row-chevron" aria-hidden />
                   </td>

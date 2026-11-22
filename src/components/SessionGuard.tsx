@@ -24,7 +24,7 @@ const SessionGuard = () => {
 
   const userId = currentUser?.id;
 
-  const { data, isSuccess } = useQuery({
+  const { data, isSuccess, dataUpdatedAt } = useQuery({
     queryKey: ['session-check', userId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -53,6 +53,21 @@ const SessionGuard = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, isSuccess, userId]);
+
+  // Catat "terakhir akses" (dibaca admin di halaman Users) setiap kali cek
+  // sesi berhasil — momennya sudah pas: app dibuka, kembali difokus, dan
+  // tiap 5 menit selama layar terbuka. Sengaja tanpa toast/error: kalau
+  // kolomnya belum dibuat (supabase/sql/e5-users-last-access.sql) atau
+  // jaringan putus, pencatatan ini tidak boleh mengganggu user.
+  useEffect(() => {
+    if (!userId || !isSuccess || !data?.is_active) return;
+
+    supabase
+      .from('users')
+      .update({ last_access_at: new Date().toISOString() })
+      .eq('id', userId)
+      .then(() => undefined, () => undefined);
+  }, [dataUpdatedAt, data, isSuccess, userId]);
 
   return null;
 };
