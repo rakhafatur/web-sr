@@ -53,6 +53,20 @@
   margin-top: 1px;
 }
 
+/* Web: nama app bergradien Laut seperti di splash & login. Mobile tetap. */
+@media (min-width: 769px) {
+  .app-title {
+    font-weight: 700;
+    padding-bottom: 0.14em;
+    margin-bottom: -0.14em;
+    background: var(--grad-brand);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+}
+
 /* =========================================================
    RIGHT
 ========================================================= */

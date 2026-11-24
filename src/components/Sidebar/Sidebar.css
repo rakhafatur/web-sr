@@ -130,15 +130,24 @@
   background: var(--overlay-press);
 }
 
-.sidebar-link.is-active {
-  background: var(--color-nav-active);
-  color: var(--color-green);
+/* Menu aktif: bidang gradien Laut bertulisan putih, sama dengan tab aktif
+   navbar bawah mobile. */
+.sidebar-link.is-active,
+.sidebar-link.is-active:hover {
+  background: var(--grad-hero-brand);
+  color: var(--color-white);
   font-weight: var(--font-weight-semibold);
+  box-shadow: var(--glow-brand-kecil);
 }
 
 .sidebar-link:focus-visible {
   outline: 2px solid var(--color-green);
   outline-offset: -2px;
+}
+
+/* Di atas bidang gradien, outline biru tidak terlihat — pakai putih. */
+.sidebar-link.is-active:focus-visible {
+  outline-color: var(--color-white);
 }
 
 .sidebar-icon {

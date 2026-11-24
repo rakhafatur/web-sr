@@ -20,12 +20,21 @@
   margin-bottom: var(--space-6);
 }
 
+/* Judul bergradien Laut, sama dengan judul mobile (MobilePageBar/Home). */
 .dk-title {
   font-size: 1.75rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.02em;
-  color: var(--color-dark);
   margin: 0;
+  /* Ruang untuk huruf berekor (g, y, p) — teks bergradien hanya diwarnai
+     sebatas kotaknya. Margin negatif menjaga jarak ke deskripsi. */
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+  background: var(--grad-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 .dk-desc {
@@ -75,14 +84,17 @@
   outline-offset: 2px;
 }
 
+/* Tombol utama: gradien Laut seperti tombol utama mobile (.tm-btn--primary). */
 .dk-btn--primary {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
+  background: var(--grad-hero-brand);
+  border-color: transparent;
   color: var(--color-white);
+  box-shadow: var(--glow-brand-kecil);
 }
 
 .dk-btn--primary:hover {
-  background: var(--color-primary-hover);
+  background: var(--grad-hero-brand);
+  box-shadow: var(--glow-brand);
 }
 
 /* Pengingat (mis. user menunggu persetujuan) */
@@ -117,8 +129,8 @@
 }
 
 .dk-btn--soft:hover {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
+  background: var(--grad-hero-brand);
+  border-color: transparent;
   color: var(--color-white);
 }
 
@@ -1143,7 +1155,7 @@ textarea.dk-input {
   height: 24px;
   margin: -2px 0 0 -4px;
   border-radius: var(--radius-full);
-  background: var(--color-primary);
+  background: var(--grad-hero-brand);
   color: var(--color-white);
 }
 
@@ -1193,8 +1205,9 @@ textarea.dk-input {
 }
 
 .dk-segment.is-active {
-  background: var(--color-primary);
+  background: var(--grad-hero-brand);
   color: var(--color-white);
+  box-shadow: var(--glow-brand-kecil);
 }
 
 .dk-segment:focus-visible {
@@ -1691,7 +1704,7 @@ textarea.dk-input {
 .dk-lh-progress-fill {
   height: 100%;
   border-radius: var(--radius-full);
-  background: var(--color-green);
+  background: var(--grad-brand);
   transition: width 0.4s ease;
 }
 
@@ -1781,7 +1794,7 @@ textarea.dk-input {
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-full);
-  background: var(--color-primary);
+  background: var(--grad-hero-brand);
   color: var(--color-white);
 }
 
@@ -1910,7 +1923,7 @@ textarea.dk-input {
 .dk-ah-bar-fill {
   height: 100%;
   border-radius: var(--radius-full);
-  background: var(--color-green);
+  background: var(--grad-brand);
   transform-origin: left center;
   transition: transform 0.4s ease;
 }

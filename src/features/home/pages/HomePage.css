@@ -54,11 +54,18 @@
     height: auto;
   }
 
+  /* Sapaan bergradien Laut, sama dengan nama di Home mobile (.bm-nama).
+     Padding bawah = ruang huruf berekor (g, y); margin dikurangi setara. */
   .home-title {
     font-size: 2.5rem;
     font-weight: 700;
-    margin-bottom: 1rem;
-    color: var(--color-dark);
+    padding-bottom: 0.14em;
+    margin-bottom: calc(1rem - 0.14em);
+    background: var(--grad-brand);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
   }
 
   .home-subtitle {
