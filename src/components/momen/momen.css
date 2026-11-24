@@ -176,6 +176,11 @@
   letter-spacing: -0.02em;
   line-height: 1.1;
   margin: 0;
+  /* Ruang untuk huruf berekor (g, y) — teks bergradien hanya diwarnai
+     sebatas kotaknya, jadi ekor yang menjulur keluar tampak terpotong.
+     Margin negatif menjaga jarak ke tagline tetap sama. */
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
   background: var(--grad-brand);
   -webkit-background-clip: text;
   background-clip: text;

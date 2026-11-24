@@ -181,6 +181,9 @@
   line-height: 1.15;
   text-align: center;
   margin: 0;
+  /* Ruang untuk huruf berekor ("g" di "datang") — lihat .splash-nama. */
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
   background: var(--grad-brand);
   -webkit-background-clip: text;
   background-clip: text;
