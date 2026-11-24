@@ -105,7 +105,9 @@ const SmartChatLayarPenuh: React.FC<Props> = ({ messages, loading, questions, on
       <div className="sc-scroll">
         <div className="sc-inner">
           <div className="sc-hero">
-            <img src={robotImg} alt="" className="sc-hero-img" width={200} height={200} />
+            <span className="sc-hero-robot">
+              <img src={robotImg} alt="" className="sc-hero-img" width={200} height={200} />
+            </span>
             <p className="sc-hero-caption">Pilih pertanyaan di bawah untuk mulai</p>
           </div>
 

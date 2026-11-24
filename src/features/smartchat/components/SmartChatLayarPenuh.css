@@ -99,6 +99,13 @@ button.sc-icon-btn:focus-visible {
   padding: var(--space-4) 0 var(--space-6);
 }
 
+/* Pembungkus robot — di mobile memegang cahaya di belakangnya (lihat bawah). */
+.sc-hero-robot {
+  position: relative;
+  display: inline-flex;
+  isolation: isolate;
+}
+
 .sc-hero-img {
   width: 200px;
   height: 200px;
@@ -499,8 +506,27 @@ button.sc-icon-btn:focus-visible {
     color: transparent;
   }
 
+  /* Cahaya robot pakai gradien melingkar, BUKAN filter drop-shadow: di
+     Safari iOS (dan sebagian Chrome Android) bayangan blur besar dipotong
+     berbentuk kotak, jadi di atas aurora terlihat persegi "tempelan" di
+     sekeliling robot. Gradien memudar sendiri ke transparan — tanpa tepi. */
   .sc-hero-img {
-    filter: drop-shadow(0 14px 40px rgba(var(--brand-2-rgb), 0.5));
+    filter: none;
+  }
+
+  .sc-hero-robot::before {
+    content: '';
+    position: absolute;
+    inset: -36px -36px -50px;
+    z-index: -1;
+    border-radius: 50%;
+    background: radial-gradient(
+      closest-side at 50% 56%,
+      rgba(var(--brand-2-rgb), 0.5) 0%,
+      rgba(var(--brand-2-rgb), 0.22) 55%,
+      rgba(var(--brand-2-rgb), 0) 100%
+    );
+    pointer-events: none;
   }
 
   .sc-hero-caption {
